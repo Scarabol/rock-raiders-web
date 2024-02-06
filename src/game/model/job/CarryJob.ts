@@ -154,6 +154,19 @@ export class CarryJob extends Job {
                 raider.setJob(material.carryJob)
                 raider.carries = material
                 raider.sceneEntity.pickupEntity(material.sceneEntity)
+            } else if (droppedItem.entityType === EntityType.ELECTRIC_FENCE) {
+                droppedItem.worldMgr.sceneMgr.addMeshGroup(droppedItem.sceneEntity)
+                droppedItem.sceneEntity.rotation.set(0, 0, 0)
+                const stats = GameConfig.instance.stats.electricFence
+                const pickSphere = droppedItem.worldMgr.ecs.getComponents(droppedItem.entity).get(SceneSelectionComponent).pickSphere
+                droppedItem.worldMgr.ecs.addComponent(droppedItem.entity, new SelectionFrameComponent(pickSphere, stats))
+                droppedItem.targetSurface.fence = droppedItem.entity
+                droppedItem.targetSurface.fenceRequested = false
+                droppedItem.worldMgr.entityMgr.placedFences.add(droppedItem)
+                const neighborsFence = droppedItem.targetSurface.neighborsFence
+                if (neighborsFence.some((s) => s.selected)) EventBroker.publish(new SelectionChanged(droppedItem.worldMgr.entityMgr))
+            } else if (droppedItem.entityType === EntityType.DYNAMITE) {
+                if (droppedItem.targetSurface?.dynamiteJob === this) this.igniteDynamite()
             } else {
                 droppedItem.sceneEntity.addToScene(droppedItem.worldMgr.sceneMgr, null, null)
                 if (droppedItem.entityType === EntityType.BARRIER) {
@@ -163,8 +176,6 @@ export class CarryJob extends Job {
                 this.target.site?.addItem(droppedItem)
             }
         })
-        if (this.carryItem.entityType === EntityType.DYNAMITE && this.carryItem.targetSurface?.dynamiteJob === this) this.igniteDynamite()
-        else if (this.carryItem.entityType === EntityType.ELECTRIC_FENCE) this.placeFence()
     }
 
     private igniteDynamite() {
@@ -177,19 +188,6 @@ export class CarryJob extends Job {
             EventBroker.publish(new DynamiteExplosionEvent(this.carryItem.getPosition2D()))
             this.carryItem.disposeFromWorld()
         })
-    }
-
-    private placeFence() {
-        this.carryItem.worldMgr.sceneMgr.addMeshGroup(this.carryItem.sceneEntity)
-        this.carryItem.sceneEntity.rotation.set(0, 0, 0)
-        const stats = GameConfig.instance.stats.electricFence
-        const pickSphere = this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(SceneSelectionComponent).pickSphere
-        this.carryItem.worldMgr.ecs.addComponent(this.carryItem.entity, new SelectionFrameComponent(pickSphere, stats))
-        this.carryItem.targetSurface.fence = this.carryItem.entity
-        this.carryItem.targetSurface.fenceRequested = false
-        this.carryItem.worldMgr.entityMgr.placedFences.add(this.carryItem)
-        const neighborsFence = this.carryItem.targetSurface.neighborsFence
-        if (neighborsFence.some((s) => s.selected)) EventBroker.publish(new SelectionChanged(this.carryItem.worldMgr.entityMgr))
     }
 
     assign(fulfiller: JobFulfiller) {
