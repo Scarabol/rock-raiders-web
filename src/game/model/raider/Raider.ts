@@ -449,8 +449,12 @@ export class Raider implements Updatable, JobFulfiller {
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
-        this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture(this.job?.getJobBubble() || 'bubbleIdle')
         this.followUpJob = null
+        if (this.job && !GameState.priorityList.isEnabled(this.job.priorityIdentifier)) {
+            this.job.unAssign(this)
+            this.job = null
+        }
+        this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture(this.job?.getJobBubble() || 'bubbleIdle')
     }
 
     private grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {

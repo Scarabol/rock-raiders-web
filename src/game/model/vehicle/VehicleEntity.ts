@@ -41,6 +41,7 @@ import { ScannerComponent } from '../../component/ScannerComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
 import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
+import { GameState } from '../GameState'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -264,6 +265,10 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
         this.followUpJob = null
+        if (this.job && !GameState.priorityList.isEnabled(this.job.priorityIdentifier)) {
+            this.job.unAssign(this)
+            this.job = null
+        }
     }
 
     getDrillTimeSeconds(surface: Surface): number {
