@@ -121,15 +121,6 @@ export class NerpMessageEvent extends BaseEvent {
     }
 }
 
-export class SetupPriorityList extends BaseEvent {
-    priorityList: PriorityEntry[]
-
-    constructor(priorityList: PriorityEntry[]) {
-        super(EventKey.SETUP_PRIORITY_LIST)
-        this.priorityList = priorityList
-    }
-}
-
 export class UpdatePriorities extends BaseEvent {
     priorityList: PriorityEntry[]
 

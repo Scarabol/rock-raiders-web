@@ -16,7 +16,7 @@ import { SelectionFrameLayer } from './layer/SelectionFrameLayer'
 import { ScreenMaster } from './ScreenMaster'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventKey } from '../event/EventKeyEnum'
-import { GameResultEvent, LevelSelectedEvent, SetupPriorityList } from '../event/WorldEvents'
+import { GameResultEvent, LevelSelectedEvent } from '../event/WorldEvents'
 import { EntityType } from '../game/model/EntityType'
 import { AdvisorLayer } from './layer/AdvisorLayer'
 import { EventBroker } from '../event/EventBroker'
@@ -92,7 +92,7 @@ export class GameScreen {
         // setup GUI
         this.guiMgr.buildingCycleIndex = 0
         this.overlayLayer.showBriefing(this.levelConf)
-        EventBroker.publish(new SetupPriorityList(this.levelConf.priorities))
+        GameState.priorityList.setList(this.levelConf.priorities)
         // load in non-space objects next
         const objectList = ResourceManager.getResource(this.levelConf.oListFile)
         new ObjectListLoader(this.worldMgr, this.levelConf.disableStartTeleport || DEV_MODE).loadObjectList(objectList)

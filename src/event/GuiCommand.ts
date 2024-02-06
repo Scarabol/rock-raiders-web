@@ -1,5 +1,4 @@
 import { EntityType } from '../game/model/EntityType'
-import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { RaiderTool } from '../game/model/raider/RaiderTool'
 import { RaiderTraining } from '../game/model/raider/RaiderTraining'
 import { EventKey } from './EventKeyEnum'
@@ -149,15 +148,6 @@ export class BeamUpBuilding extends BaseEvent {
 export class BeamUpFence extends BaseEvent {
     constructor() {
         super(EventKey.COMMAND_FENCE_BEAMUP)
-    }
-}
-
-export class ChangePriorityList extends BaseEvent {
-    priorityList: PriorityEntry[]
-
-    constructor(priorityList: PriorityEntry[]) {
-        super(EventKey.COMMAND_CHANGE_PRIORITY_LIST)
-        this.priorityList = priorityList
     }
 }
 

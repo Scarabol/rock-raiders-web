@@ -1,6 +1,6 @@
 import { BuildingsChangedEvent, DeselectAll, FollowerSetCanvasEvent, FollowerSetLookAtEvent, InitRadarMap, RaidersAmountChangedEvent, RaiderTrainingCompleteEvent, SaveScreenshot, SelectionChanged, SelectionFrameChangeEvent, SetSpaceToContinueEvent, ShowGameResultEvent, ShowMissionBriefingEvent, ShowOptionsEvent, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain, VehicleUpgradeCompleteEvent } from './LocalEvents'
-import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, NerpMessageEvent, NerpSuppressArrowEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, SetupPriorityList, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged } from './WorldEvents'
-import { CameraControl, CancelBuilding, CancelBuildMode, CancelSurfaceJobs, ChangeBuildingPowerState, ChangeCameraEvent, ChangeCursor, ChangePreferences, ChangePriorityList, ChangeRaiderSpawnRequest, ChangeTooltip, CreateClearRubbleJob, CreateDrillJob, CreateDynamiteJob, CreatePowerPath, CreateReinforceJob, DropBirdScarer, HideTooltip, MakeRubble, PickTool, PlaceFence, PlaySoundEvent, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade, RemoveSelection, RepairBuilding, RepairLava, RequestVehicleSpawn, SelectBuildMode, TrainRaider, UpgradeBuilding, UpgradeVehicle, VehicleBeamUp, VehicleCallMan, VehicleDriverGetOut, VehicleUnload } from './GuiCommand'
+import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, NerpMessageEvent, NerpSuppressArrowEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged } from './WorldEvents'
+import { CameraControl, CancelBuilding, CancelBuildMode, CancelSurfaceJobs, ChangeBuildingPowerState, ChangeCameraEvent, ChangeCursor, ChangePreferences, ChangeRaiderSpawnRequest, ChangeTooltip, CreateClearRubbleJob, CreateDrillJob, CreateDynamiteJob, CreatePowerPath, CreateReinforceJob, DropBirdScarer, HideTooltip, MakeRubble, PickTool, PlaceFence, PlaySoundEvent, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade, RemoveSelection, RepairBuilding, RepairLava, RequestVehicleSpawn, SelectBuildMode, TrainRaider, UpgradeBuilding, UpgradeVehicle, VehicleBeamUp, VehicleCallMan, VehicleDriverGetOut, VehicleUnload } from './GuiCommand'
 import { CrystalFoundEvent, GenericDeathEvent, GenericMonsterEvent, LandslideEvent, PowerDrainEvent, RaiderDiscoveredEvent, SlugEmergeEvent, UnderAttackEvent, WorldLocationEvent } from './WorldLocationEvent'
 
 export class BaseEvent {
@@ -62,7 +62,6 @@ export interface DefaultEventMap {
     'command-vehicle-beamup': VehicleBeamUp
     'command-vehicle-driver-get-out': VehicleDriverGetOut
     'command-vehicle-unload': VehicleUnload
-    'command-change-priority-list': ChangePriorityList
     'command-camera-control': CameraControl
     'command-repair-lava': RepairLava
     'command-change-preferences': ChangePreferences
@@ -83,7 +82,6 @@ export interface DefaultEventMap {
     'nerp-message': NerpMessageEvent
     'nerp-message-next': BaseEvent
     'nerp-suppress-arrow': NerpSuppressArrowEvent
-    'setup-priority-list': SetupPriorityList
     'pause-game': BaseEvent
     'unpause-game': BaseEvent
     'update-priorities': UpdatePriorities

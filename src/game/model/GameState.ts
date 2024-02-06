@@ -1,4 +1,5 @@
 import { Vector2 } from 'three'
+import { PriorityList } from '../../gui/toppanel/PriorityList'
 
 export class GameState {
     static numCrystal: number = 0
@@ -16,6 +17,7 @@ export class GameState {
     static objectiveShowing: number = 1
     static showObjInfo: boolean = false
     static monsterCongregation: Vector2 = null
+    static priorityList: PriorityList = new PriorityList()
 
     static reset() {
         this.numCrystal = 0
@@ -32,5 +34,6 @@ export class GameState {
         this.alarmMode = false
         this.objectiveShowing = 1
         this.monsterCongregation = null
+        this.priorityList = new PriorityList()
     }
 }

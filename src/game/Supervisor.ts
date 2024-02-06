@@ -4,7 +4,6 @@ import { CHECK_CLEAR_RUBBLE_INTERVAL, ITEM_ACTION_RANGE_SQ, JOB_SCHEDULE_INTERVA
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { Job } from './model/job/Job'
 import { JobState } from './model/job/JobState'
-import { PriorityEntry } from './model/job/PriorityEntry'
 import { PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { GetToolJob } from './model/job/raider/GetToolJob'
 import { MoveJob } from './model/job/MoveJob'
@@ -16,11 +15,11 @@ import { PathTarget } from './model/PathTarget'
 import { EntityType } from './model/EntityType'
 import { EatBarracksJob } from './model/job/raider/EatBarracksJob'
 import { EventBroker } from '../event/EventBroker'
+import { GameState } from './model/GameState'
 
 export class Supervisor {
     jobs: Job[] = []
     priorityIndexList: PriorityIdentifier[] = []
-    priorityList: PriorityEntry[] = []
     assignJobsTimer: number = 0
     checkClearRubbleTimer: number = 0
 
@@ -39,8 +38,7 @@ export class Supervisor {
                     })
                 }
             })
-            this.priorityList = [...event.priorityList]
-            this.priorityIndexList = this.priorityList.map((p) => p.key)
+            this.priorityIndexList = GameState.priorityList.current.map((p) => p.key)
         })
     }
 
@@ -60,13 +58,13 @@ export class Supervisor {
         const availableJobs: Job[] = []
         this.jobs = this.jobs.filter((j) => {
             const result = j.jobState === JobState.INCOMPLETE
-            if (result && !j.hasFulfiller() && this.isEnabled(j.priorityIdentifier)) {
+            if (result && !j.hasFulfiller() && GameState.priorityList.isEnabled(j.priorityIdentifier)) {
                 availableJobs.push(j)
             }
             return result
         })
         availableJobs.sort((left, right) => {
-            return Math.sign(this.getPriority(left) - this.getPriority(right))
+            return Math.sign(GameState.priorityList.getPriority(left.priorityIdentifier) - GameState.priorityList.getPriority(right.priorityIdentifier))
         })
         this.worldMgr.entityMgr.raiders.forEach((raider) => {
             if (!raider.isReadyToTakeAJob() || raider.foodLevel > 0.25) return
@@ -214,7 +212,7 @@ export class Supervisor {
                             const clearRubbleJob = surface.setupClearRubbleJob()
                             if (!clearRubbleJob || clearRubbleJob.hasFulfiller() || !raider.findShortestPath(clearRubbleJob.lastRubblePositions)) continue
                             if (raider.hasTool(clearRubbleJob.requiredTool)) {
-                                if (this.isEnabled(PriorityIdentifier.CLEARING)) raider.setJob(clearRubbleJob)
+                                if (GameState.priorityList.isEnabled(PriorityIdentifier.CLEARING)) raider.setJob(clearRubbleJob)
                                 return
                             } else {
                                 const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
@@ -230,13 +228,5 @@ export class Supervisor {
                 console.error(e)
             }
         })
-    }
-
-    private getPriority(job: Job) {
-        return this.priorityIndexList.indexOf(job.priorityIdentifier)
-    }
-
-    private isEnabled(priorityIdentifier: PriorityIdentifier): boolean {
-        return !!this.priorityList.find((p) => p.key === priorityIdentifier)?.enabled
     }
 }

@@ -1,7 +1,7 @@
 import { EventKey } from '../event/EventKeyEnum'
-import { CameraControl, CameraViewMode, ChangeBuildingPowerState, ChangeCameraEvent, ChangePriorityList, ChangeRaiderSpawnRequest, PickTool, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
+import { CameraControl, CameraViewMode, ChangeBuildingPowerState, ChangeCameraEvent, ChangeRaiderSpawnRequest, PickTool, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
 import { DeselectAll, SelectionChanged } from '../event/LocalEvents'
-import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged, UpdatePriorities } from '../event/WorldEvents'
+import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
 import { EatJob } from './model/job/raider/EatJob'
@@ -177,9 +177,6 @@ export class GuiManager {
         })
         EventBroker.subscribe(EventKey.COMMAND_VEHICLE_UNLOAD, () => {
             entityMgr.selection.vehicles.forEach((v) => v.stopJob())
-        })
-        EventBroker.subscribe(EventKey.COMMAND_CHANGE_PRIORITY_LIST, (event: ChangePriorityList) => {
-            EventBroker.publish(new UpdatePriorities(event.priorityList))
         })
         EventBroker.subscribe(EventKey.COMMAND_CAMERA_CONTROL, (event: CameraControl) => {
             if (event.zoom) {
