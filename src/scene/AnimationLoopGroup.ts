@@ -81,6 +81,7 @@ export class AnimationLoopGroup extends AnimationGroup {
 
     resetAnimation() {
         super.resetAnimation()
+        this.looping = false
         this.playing = false
     }
 }
