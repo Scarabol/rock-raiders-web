@@ -93,7 +93,7 @@ export class CarryJob extends Job {
                 if (!carryItem.targetSurface.isWalkable()) {
                     return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
                 } else {
-                    return [PathTarget.fromLocation(carryItem.targetSurface.getCenterWorld2D())].filter((p) => !!entity.findShortestPath(p))
+                    return [PathTarget.fromLocation(carryItem.targetSurface.getCenterWorld2D(), 25)].filter((p) => !!entity.findShortestPath(p))
                 }
         }
     }
