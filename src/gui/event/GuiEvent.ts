@@ -9,13 +9,13 @@ export class GuiHoverEvent extends GuiEvent {
     hoverStateChanged: boolean = false
 }
 
-export class GuiClickEvent extends GuiEvent {
+export class GuiPointerDownEvent extends GuiEvent {
     constructor(sx: number, sy: number, public button: MOUSE_BUTTON) {
         super(sx, sy)
     }
 }
 
-export class GuiReleaseEvent extends GuiEvent {
+export class GuiPointerUpEvent extends GuiEvent {
     constructor(sx: number, sy: number, public button: MOUSE_BUTTON) {
         super(sx, sy)
     }

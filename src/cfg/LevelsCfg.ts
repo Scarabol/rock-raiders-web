@@ -69,9 +69,9 @@ export class LevelEntryCfg extends BaseConfig {
     objectiveText: string = ''
     objectiveTextCfg: LevelObjectiveTextEntry = null
     objectiveImage640x480: ObjectiveImageCfg = null
-    erodeTriggerTime: number = 0 // 1, 20, 40, 60, 120 time in seconds until erosion starts on next surface
+    erodeTriggerTime: number = 0 // 1, 20, 40, 60, 120
     erodeErodeTime: number = 0 // 1, 5, 7, 20, 30, 40, 60 time in seconds until next erosion level is reached
-    erodeLockTime: number = 0 // 1, 300, 500, 600 grace time no erosion happens on surface with power path
+    erodeLockTime: number = 0 // 1, 300, 500, 600 grace time no erosion happens on surface
     nextLevel: any = ''
     levelLinks: string[] = []
     frontEndX: number = 0

@@ -47,10 +47,6 @@ export class PriorityListPanel extends Panel {
         })
     }
 
-    reset() {
-        super.reset()
-    }
-
     private updateList(priorityList: PriorityEntry[]) {
         this.prioByName.forEach((btn) => btn.hidden = true)
         let index = 0

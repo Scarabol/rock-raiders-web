@@ -12,7 +12,7 @@ export class LavaErosionComponent extends AbstractGameComponent {
         this.isSelfEroding = this.erosionLevel % 2 === 0
     }
 
-    increaseErosionLevel() {
+    increaseErosionLevel(addSmokeEffect: boolean) {
         if (!this.surface.surfaceType.floor ||
             !this.surface.discovered ||
             Math.random() * 10 >= this.erosionLevel) return
@@ -27,13 +27,15 @@ export class LavaErosionComponent extends AbstractGameComponent {
             this.surface.containedCrystals = 0
         }
         this.surface.setSurfaceType(erosionSurfaceType)
-        const lwsFilename = [
-            GameConfig.instance.miscObjects.LavaErosionSmoke1,
-            GameConfig.instance.miscObjects.LavaErosionSmoke2,
-            GameConfig.instance.miscObjects.LavaErosionSmoke3,
-            GameConfig.instance.miscObjects.LavaErosionSmoke4,
-        ].random()
-        const smoke = this.surface.worldMgr.sceneMgr.addMiscAnim(lwsFilename, this.surface.getCenterWorld(), Math.random() * 2 * Math.PI, false)
-        smoke.meshList.forEach((m) => m.getMaterials().forEach((m) => m.color.setRGB(1, 0.5, 0)))
+        if (addSmokeEffect) {
+            const lwsFilename = [
+                GameConfig.instance.miscObjects.LavaErosionSmoke1,
+                GameConfig.instance.miscObjects.LavaErosionSmoke2,
+                GameConfig.instance.miscObjects.LavaErosionSmoke3,
+                GameConfig.instance.miscObjects.LavaErosionSmoke4,
+            ].random()
+            const smoke = this.surface.worldMgr.sceneMgr.addMiscAnim(lwsFilename, this.surface.getCenterWorld(), Math.random() * 2 * Math.PI, false)
+            smoke.meshList.forEach((m) => m.getMaterials().forEach((m) => m.color.setRGB(1, 0.5, 0)))
+        }
     }
 }

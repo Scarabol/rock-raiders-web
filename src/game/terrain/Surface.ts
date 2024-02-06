@@ -21,7 +21,7 @@ import { Terrain } from './Terrain'
 import { WALL_TYPE } from './WallType'
 import { Job } from '../model/job/Job'
 import { JobState } from '../model/job/JobState'
-import { MaterialSpawner } from '../entity/MaterialSpawner'
+import { MaterialSpawner } from '../factory/MaterialSpawner'
 import { degToRad } from 'three/src/math/MathUtils'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimationGroup } from '../../scene/AnimationGroup'
@@ -78,7 +78,6 @@ export class Surface {
         // proMesh.scale.setScalar(1 / TILESIZE)
         // this.terrain.floorGroup.add(proMesh)
         this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
-        this.terrain.floorGroup.add(this.mesh)
     }
 
     /**
@@ -504,7 +503,7 @@ export class Surface {
         this.updateTexture()
         if (oldSurfaceType.connectsPath || this.surfaceType.connectsPath) this.neighbors.forEach((n) => n.updateTexture())
         EventBroker.publish(new UpdateRadarSurface(this))
-        if (wasPath !== this.isPath()) this.terrain.powerGrid.onPathChange(this)
+        if (wasPath !== this.isPath()) this.worldMgr.powerGrid.onPathChange(this)
         this.terrain.pathFinder.updateSurface(this)
         if (this.selected && !this.surfaceType.selectable) EventBroker.publish(new DeselectAll())
         if (this.surfaceType === SurfaceType.LAVA5) {

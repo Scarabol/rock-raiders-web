@@ -56,9 +56,7 @@ export class FollowerRenderer extends WebGLRenderer {
             const lookAtPosition = components?.get(PositionComponent)?.position
             if (components?.has(BeamUpComponent) || !lookAtPosition) {
                 this.trackEntity = null
-                const gl = this.getContext()
-                gl.clearColor(0, 0, 0, 0)
-                gl.clear(gl.COLOR_BUFFER_BIT)
+                this.clear()
                 this.renderInterval = clearIntervalSafe(this.renderInterval)
                 EventBroker.publish(new FollowerSetCanvasEvent(null))
                 return

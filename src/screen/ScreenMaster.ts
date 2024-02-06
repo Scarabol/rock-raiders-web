@@ -1,5 +1,4 @@
 import { createCanvas } from '../core/ImageHelper'
-import { getElementByIdOrThrow } from '../core/Util'
 import { EventKey } from '../event/EventKeyEnum'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { ScreenLayer } from './layer/ScreenLayer'
@@ -10,10 +9,10 @@ import { LoadingLayer } from './layer/LoadingLayer'
 import { EventBroker } from '../event/EventBroker'
 
 export class ScreenMaster {
+    static readonly ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
     readonly gameContainer: HTMLElement
     readonly gameCanvasContainer: HTMLElement
     readonly layers: ScreenLayer[] = []
-    readonly ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
     readonly loadingLayer: LoadingLayer
     width: number = NATIVE_SCREEN_WIDTH
     height: number = NATIVE_SCREEN_HEIGHT
@@ -23,8 +22,8 @@ export class ScreenMaster {
     }
 
     constructor() {
-        this.gameContainer = getElementByIdOrThrow('game-container')
-        this.gameCanvasContainer = getElementByIdOrThrow('game-canvas-container')
+        this.gameContainer = document.getElementById('game-container')
+        this.gameCanvasContainer = document.getElementById('game-canvas-container')
         this.gameCanvasContainer.addEventListener('contextmenu', (event: MouseEvent) => event.preventDefault())
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
@@ -120,9 +119,9 @@ export class ScreenMaster {
     private onWindowResize() {
         const maxWidth = this.gameContainer.offsetWidth
         const maxHeight = this.gameContainer.offsetHeight
-        const idealHeight = Math.round(maxWidth / this.ratio)
+        const idealHeight = Math.round(maxWidth / ScreenMaster.ratio)
         if (idealHeight > maxHeight) {
-            const width = Math.round(maxHeight * this.ratio)
+            const width = Math.round(maxHeight * ScreenMaster.ratio)
             this.resize(width, maxHeight)
         } else {
             this.resize(maxWidth, idealHeight)

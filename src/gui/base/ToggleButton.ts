@@ -1,6 +1,5 @@
 import { ButtonCfg } from '../../cfg/ButtonCfg'
-import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
-import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
+import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../event/GuiEvent'
 import { BaseElement } from './BaseElement'
 import { Button } from './Button'
 
@@ -16,61 +15,61 @@ export class ToggleButton extends Button {
         this.toggleState = false
     }
 
-    checkHover(event: GuiHoverEvent): void {
+    onPointerMove(event: GuiHoverEvent): void {
         const inRect = this.isInRect(event.sx, event.sy)
         if (inRect && !this.hover) this.onHoverStart()
         else if (!inRect && this.hover) this.onHoverEnd()
         if (!this.isInactive()) {
             event.hoverStateChanged = event.hoverStateChanged || this.hover !== inRect
             this.hover = inRect
-            if (!this.hover && !this.toggleState) this.pressedByButton = null
+            if (!this.hover && !this.toggleState) this.pressed = false
         }
-        this.children.forEach((child) => child.checkHover(event))
+        this.children.forEach((child) => child.onPointerMove(event))
     }
 
-    checkClick(event: GuiClickEvent): boolean {
+    onPointerDown(event: GuiPointerDownEvent): boolean {
         if (this.isInactive()) return false
-        const oldState = this.pressedByButton
+        const oldState = this.pressed
         if (this.isInRect(event.sx, event.sy) || this.toggleState) {
-            if (this.pressedByButton === null && event.button === MOUSE_BUTTON.MAIN && this.onClick) {
-                this.pressedByButton = event.button
+            if (!this.pressed && this.onClick) {
+                this.pressed = true
             }
         } else {
-            this.pressedByButton = null
+            this.pressed = false
         }
-        let updated = this.pressedByButton !== oldState
-        this.children.forEach((child) => updated = child.checkClick(event) || updated)
+        let updated = this.pressed !== oldState
+        this.children.forEach((child) => updated = child.onPointerDown(event) || updated)
         if (updated) this.notifyRedraw()
         return updated
     }
 
-    checkRelease(event: GuiReleaseEvent): boolean {
+    onPointerUp(event: GuiPointerUpEvent): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(event.sx, event.sy)
-        let updated = inRect && this.pressedByButton !== null
+        let updated = inRect && this.pressed
         if (updated) {
             this.clicked(event)
-            this.pressedByButton = (updated && this.toggleState) ? event.button : null
+            this.pressed = updated && this.toggleState
             this.hover = inRect
         }
-        this.children.forEach((child) => updated = child.checkRelease(event) || updated)
+        this.children.forEach((child) => updated = child.onPointerUp(event) || updated)
         if (updated) this.notifyRedraw()
         return updated
     }
 
-    clicked(event: GuiClickEvent) {
+    clicked(event: GuiPointerDownEvent) {
         this.toggleState = !this.toggleState
         super.clicked(event)
     }
 
-    release(): boolean {
+    onPointerLeave(): boolean {
         return false
     }
 
     setToggleState(toggleState: boolean) {
         if (this.toggleState === toggleState) return
         this.toggleState = toggleState
-        if (this.toggleState) this.pressedByButton = MOUSE_BUTTON.MAIN // XXX improve GUI element state handling and set pressed to true
+        if (this.toggleState) this.pressed = true
         this.notifyRedraw()
     }
 }

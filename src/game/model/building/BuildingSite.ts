@@ -11,8 +11,10 @@ import { BuildingEntity } from './BuildingEntity'
 import { BuildingType } from './BuildingType'
 import { BarrierActivity } from '../anim/AnimationActivity'
 import { EventBroker } from '../../../event/EventBroker'
+import { GameEntity } from '../../ECS'
 
 export class BuildingSite {
+    entity: GameEntity
     surfaces: Surface[] = []
     heading: number = 0
     neededByType: Map<EntityType, number> = new Map()
@@ -24,6 +26,7 @@ export class BuildingSite {
     isEmptyTimer: number = 0
 
     constructor(readonly worldMgr: WorldManager, readonly primarySurface: Surface, readonly secondarySurface: Surface, readonly primaryPathSurface: Surface, secondaryPathSurface: Surface, readonly buildingType: BuildingType) {
+        this.entity = this.worldMgr.ecs.addEntity()
         this.primarySurface.site = this
         this.surfaces.push(this.primarySurface)
         if (this.secondarySurface) {

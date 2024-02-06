@@ -15,7 +15,7 @@ import { NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
 import { GameResultEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
-import { MonsterSpawner } from '../game/entity/MonsterSpawner'
+import { MonsterSpawner } from '../game/factory/MonsterSpawner'
 import { SlugEmergeEvent } from '../event/WorldLocationEvent'
 import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEntityComponent'
 import { AnimEntityActivity, SlugActivity } from '../game/model/anim/AnimationActivity'
@@ -283,7 +283,7 @@ export class NerpRunner {
     }
 
     cameraUnlock() {
-        this.worldMgr.sceneMgr.controls.unlockCamera()
+        this.worldMgr.sceneMgr.birdViewControls.unlockCamera()
     }
 
     cameraLockOnObject(recordedEntity: number) {
@@ -297,7 +297,7 @@ export class NerpRunner {
             console.warn(`Given entity ${entity} has no position to jump to`)
             return
         }
-        this.worldMgr.sceneMgr.controls.lockOnObject(pos)
+        this.worldMgr.sceneMgr.birdViewControls.lockOnObject(pos)
     }
 
     setMessage(messageNumber: number, arrowDisabled: number) {
@@ -346,7 +346,7 @@ export class NerpRunner {
         if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} to move camera to, using first one`)
         const targetBlock = tutoBlocks[0]
         if (!targetBlock) return
-        this.worldMgr.sceneMgr.controls.forceMoveToTarget(targetBlock.getCenterWorld())
+        this.worldMgr.sceneMgr.birdViewControls.forceMoveToTarget(targetBlock.getCenterWorld())
     }
 
     setTutorialBlockIsGround(tutoBlockId: number, state: number): void {

@@ -1,7 +1,7 @@
 import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
-import { GuiClickEvent } from '../event/GuiEvent'
+import { GuiPointerDownEvent } from '../event/GuiEvent'
 import { IconPanelButton } from './IconPanelButton'
 import { ResourceManager } from '../../resource/ResourceManager'
 
@@ -21,7 +21,7 @@ export class IconPanelToggleButton extends IconPanelButton {
         this.imgOnDisabled = ResourceManager.getImageOrNull(menuItemOnCfg.disabledFile)
     }
 
-    clicked(event: GuiClickEvent) {
+    clicked(event: GuiPointerDownEvent) {
         this.toggleState = !this.toggleState
         super.clicked(event)
     }
@@ -44,7 +44,7 @@ export class IconPanelToggleButton extends IconPanelButton {
             } else {
                 img = this.imgDisabled || this.imgPressed || this.imgNormal
             }
-        } else if (this.pressedByButton !== null) {
+        } else if (this.pressed) {
             if (this.toggleState) {
                 img = this.imgOnPressed || this.imgOnNormal
             } else {

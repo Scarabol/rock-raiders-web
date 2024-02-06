@@ -66,27 +66,26 @@ export class NerpParser {
         }
         // somewhat precompile the script and create syntax tree
         // must be done in separate block to make sure the script is complete, and we can refer/rely on line-numbers for label jumps
-        for (let c = 0; c < result.lines.length; c++) {
-            const line = result.lines[c]
-            result.statements[c] = line
+        result.statements = result.lines.map((line, c) => {
+            const statement = line
                 .replace(/\(\)/g, '') // now the macros are applied and obsolete empty "()" can be removed
                 .split(' ? ')
             const labelMatch = line.match(/(\S+):/)
-            if (result.statements[c].length === 2) { // line contains condition (primary operator)
-                result.statements[c] = {
+            if (statement.length === 2) { // line contains condition (primary operator)
+                return {
                     invoke: 'conditional',
-                    args: [this.preProcess(result.statements[c][0]), this.preProcess(result.statements[c][1])],
+                    args: [this.preProcess(statement[0]), this.preProcess(statement[1])],
                 }
             } else if (labelMatch) { // keep label line number for later usage
                 const labelName = labelMatch[1].toLowerCase()
                 result.labelsByName.set(labelName, c)
-                result.statements[c] = {label: labelName}
-            } else if (result.statements[c].length === 1) { // just a call
-                result.statements[c] = this.preProcess(result.statements[c][0])
+                return {label: labelName}
+            } else if (statement.length === 1) { // just a call
+                return this.preProcess(statement[0])
             } else { // line contains more than 1 condition statement
                 throw new Error(`Can't deal with line: ${line}`)
             }
-        }
+        })
         return result
     }
 
@@ -125,7 +124,8 @@ export class NerpParser {
         const labelMatch = expression.match(/([^:]+):$/)
         const jumpMatch = expression.match(/^:([^:]+)$/)
         if (opSplit.length === 3) { // expression contains secondary operator
-            return {left: this.preProcess(opSplit[0]), comparator: opSplit[1], right: this.preProcess(opSplit[2])}
+            const op = opSplit[1] as '=' | '!=' | '<' | '>'
+            return {left: this.preProcess(opSplit[0]), comparator: op, right: this.preProcess(opSplit[2])}
         } else if (brackets) {
             const args = brackets[2].split(',').map(a => this.preProcess(a))
             return {invoke: brackets[1], args: args}

@@ -1,7 +1,7 @@
 import { MenuCycleItemCfg } from '../../cfg/MenuCycleItemCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
-import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
+import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../event/GuiEvent'
 import { MenuLayer } from './MenuLayer'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
@@ -44,25 +44,25 @@ export class MenuCycleItem extends BaseElement {
         this.state = state
     }
 
-    checkHover(event: GuiHoverEvent): void {
-        super.checkHover(event)
+    onPointerMove(event: GuiHoverEvent): void {
+        super.onPointerMove(event)
         if (event.hoverStateChanged) this.notifyRedraw()
     }
 
-    checkClick(event: GuiClickEvent): boolean {
-        const stateChanged = super.checkClick(event)
+    onPointerDown(event: GuiPointerDownEvent): boolean {
+        const stateChanged = super.onPointerDown(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    checkRelease(event: GuiReleaseEvent): boolean {
-        const stateChanged = super.checkRelease(event)
+    onPointerUp(event: GuiPointerUpEvent): boolean {
+        const stateChanged = super.onPointerUp(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    release(): boolean {
-        const stateChanged = super.release()
+    onPointerLeave(): boolean {
+        const stateChanged = super.onPointerLeave()
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }

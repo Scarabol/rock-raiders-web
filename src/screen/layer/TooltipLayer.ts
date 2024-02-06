@@ -16,7 +16,6 @@ export class TooltipLayer extends ScreenLayer {
     cursorLeft: boolean = false
     tooltipCanvas: HTMLCanvasElement = null
     lastTooltipText: string = null
-    lastTooltipSfx: string = null
 
     constructor() {
         super()
@@ -24,7 +23,6 @@ export class TooltipLayer extends ScreenLayer {
         EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_CHANGE, (event: ChangeTooltip) => {
             if (this.cursorLeft || !this.active || event.tooltipText === this.lastTooltipText) return
             this.lastTooltipText = event.tooltipText
-            this.lastTooltipSfx = event.tooltipSfx
             this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
             this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
             if (this.tooltipCanvas) {
@@ -74,7 +72,6 @@ export class TooltipLayer extends ScreenLayer {
             this.tooltipCanvas = null
         }
         this.lastTooltipText = null
-        this.lastTooltipSfx = null
     }
 
     private changeTooltipImage(tooltipImg: HTMLCanvasElement | OffscreenCanvas) {

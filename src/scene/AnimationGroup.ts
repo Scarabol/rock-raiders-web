@@ -86,7 +86,7 @@ export class AnimationGroup extends Group implements Updatable {
             animationAction.setLoop(LoopOnce, 0)
             animationAction.clampWhenFinished = true
             mixer.addEventListener('finished', () => {
-                if (!this.isDone) {
+                if (this.onAnimationDone && !this.isDone) {
                     this.isDone = true
                     this.onAnimationDone()
                 }
@@ -95,7 +95,8 @@ export class AnimationGroup extends Group implements Updatable {
     }
 
     update(elapsedMs: number) {
-        this.animationMixers.forEach((m) => m.update(elapsedMs / 1000 * this.animationTransCoef))
+        const deltaTimeInSeconds = elapsedMs / 1000 * this.animationTransCoef
+        this.animationMixers.forEach((m) => m.update(deltaTimeInSeconds))
         this.meshList.forEach((m) => m.update(elapsedMs))
         if (this.durationTimeoutMs || this.animationTriggerTimeMs) { // otherwise animationTime counter may become very high for loop
             if (this.onAnimationTrigger && this.animationTime < this.animationTriggerTimeMs && this.animationTime + elapsedMs >= this.animationTriggerTimeMs) {

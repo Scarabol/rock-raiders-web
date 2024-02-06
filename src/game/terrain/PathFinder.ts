@@ -70,7 +70,7 @@ export class PathFinder {
     }
 
     static getPathFindingWalkWeight(surface: Surface): number {
-        return surface.isWalkable() ? surface.hasRubble() ? 4 : 1 : 0
+        return surface.isWalkable() ? (surface.hasRubble() ? 4 : 1) : 0
     }
 
     static getPathFindingDriveWeight(surface: Surface): number {
@@ -136,39 +136,19 @@ export class PathFinder {
     private findPath(start: Vector2, targetLocation: Vector2, stats: MovableEntityStats, highPrecision: boolean): Vector2[] {
         // const canEnterToolstore = !!iGet(stats, 'EnterToolStore') // TODO consider enter toolstore in path finding
         if (highPrecision) {
-            return this.findWalkPath(start, targetLocation)
+            return PathFinder.getPath(start, targetLocation, this.cachedWalkPaths, this.graphWalk, TILESIZE / 3, 0.25)
         } else if (stats.CrossLand && !stats.CrossWater && !stats.CrossLava) {
-            return this.findDrivePath(start, targetLocation)
+            return PathFinder.getPath(start, targetLocation, this.cachedDrivePaths, this.graphDrive, TILESIZE, 0)
         } else if (!stats.CrossLand && stats.CrossWater && !stats.CrossLava) {
-            return this.findSwimPath(start, targetLocation)
+            return PathFinder.getPath(start, targetLocation, this.cachedSwimPaths, this.graphSwim, TILESIZE, 0)
         } else if (stats.CrossLand && stats.CrossWater && stats.CrossLava) {
-            return this.findFlyPath(start, targetLocation)
+            return PathFinder.getPath(start, targetLocation, this.cachedFlyPaths, this.graphFly, TILESIZE, 0)
         } else if (stats.CrossLand && !stats.CrossWater && stats.CrossLava) {
-            return this.findLavaPath(start, targetLocation)
+            return PathFinder.getPath(start, targetLocation, this.cachedLavaPaths, this.graphLava, TILESIZE, 0)
         } else {
             console.error(`Unexpected path finding combination (${(stats.CrossLand)}, ${(stats.CrossWater)}, ${(stats.CrossLava)}) found. No graph available returning direct path`)
             return [targetLocation]
         }
-    }
-
-    private findWalkPath(start: Vector2, target: Vector2): Vector2[] {
-        return PathFinder.getPath(start, target, this.cachedWalkPaths, this.graphWalk, TILESIZE / 3, 0.25)
-    }
-
-    private findDrivePath(start: Vector2, target: Vector2): Vector2[] {
-        return PathFinder.getPath(start, target, this.cachedDrivePaths, this.graphDrive, TILESIZE, 0)
-    }
-
-    private findFlyPath(start: Vector2, target: Vector2): Vector2[] {
-        return PathFinder.getPath(start, target, this.cachedFlyPaths, this.graphFly, TILESIZE, 0)
-    }
-
-    private findSwimPath(start: Vector2, target: Vector2): Vector2[] {
-        return PathFinder.getPath(start, target, this.cachedSwimPaths, this.graphSwim, TILESIZE, 0)
-    }
-
-    private findLavaPath(start: Vector2, target: Vector2): Vector2[] {
-        return PathFinder.getPath(start, target, this.cachedLavaPaths, this.graphLava, TILESIZE, 0)
     }
 
     private static getPath(start: Vector2, targetLocation: Vector2, cachedPaths: Map<string, Vector2[]>, graph: Graph, gridSize: number, maxRandomOffset: number): Vector2[] {

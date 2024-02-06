@@ -9,7 +9,6 @@ import { MapRenderer } from './MapRenderer'
 import { GameEntity } from '../../game/ECS'
 import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
 import { TILESIZE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
-import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { Cursor } from '../../resource/Cursor'
 
@@ -163,8 +162,8 @@ export class MapView extends BaseElement {
             const surface = this.surfaceMap[surfaceX]?.[surfaceY]
             if (surface && surface !== this.lastSurface) {
                 this.lastSurface = surface
-                const tooltip = GameConfig.instance.surfaceTypeDescriptions.get(surface.name.toLowerCase())
-                if (tooltip) EventBroker.publish(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
+                const objectName = surface.objectName
+                if (objectName) EventBroker.publish(new ChangeTooltip(objectName, TOOLTIP_DELAY_TEXT_SCENE, surface.sfxKey, TOOLTIP_DELAY_SFX))
             }
         }
         return inRect

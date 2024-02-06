@@ -43,7 +43,7 @@ export class LavaErosionSystem extends AbstractGameSystem {
                 }
                 erosionComponent.erosionTimer += elapsedMs
                 while (erosionComponent.erosionTimer > this.increaseErosionDelayMs + (erosionComponent.surface.surfaceType.hasErosion ? 0 : this.erosionStartDelayTimeMs)) {
-                    erosionComponent.increaseErosionLevel()
+                    erosionComponent.increaseErosionLevel(true)
                     erosionComponent.erosionTimer -= this.increaseErosionDelayMs
                 }
             } catch (e) {

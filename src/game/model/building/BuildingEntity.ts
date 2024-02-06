@@ -22,7 +22,7 @@ import { MaterialEntity } from '../material/MaterialEntity'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
-import { MaterialSpawner } from '../../entity/MaterialSpawner'
+import { MaterialSpawner } from '../../factory/MaterialSpawner'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { OxygenComponent } from '../../component/OxygenComponent'
 import { PositionComponent } from '../../component/PositionComponent'
@@ -243,7 +243,7 @@ export class BuildingEntity {
             this.energized = energized
             if (this.energized) {
                 this.changeUsedCrystals(this.crystalDrain)
-                if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.addEnergySource(this.surfaces)
+                if (this.stats.PowerBuilding) this.worldMgr.powerGrid.addEnergySource(this.surfaces)
                 if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
                 if (this.stats.OxygenCoef) this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
                 const components = this.worldMgr.ecs.getComponents(this.entity)
@@ -253,7 +253,7 @@ export class BuildingEntity {
                 }
             } else {
                 this.changeUsedCrystals(-this.crystalDrain)
-                if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.removeEnergySource(this.surfaces)
+                if (this.stats.PowerBuilding) this.worldMgr.powerGrid.removeEnergySource(this.surfaces)
                 this.engineSound = SoundManager.stopAudio(this.engineSound)
                 this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
             }
@@ -348,7 +348,7 @@ export class BuildingEntity {
         this.surfaces.forEach((surface) => {
             surface.updateTexture()
             if (surface.surfaceType.connectsPath) surface.neighbors.forEach((n) => n.updateTexture())
-            surface.terrain.powerGrid.onPathChange(surface)
+            this.worldMgr.powerGrid.onPathChange(surface)
         })
         this.getToolPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())
         this.carryPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())

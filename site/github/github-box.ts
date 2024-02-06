@@ -1,12 +1,11 @@
-import { getElementByIdOrThrow } from '../../src/core/Util'
 import './github.css'
 import GithubIcon from './github.png'
 
 export class GithubBox {
     rootElement: HTMLDivElement
 
-    constructor(parentId: string) {
-        this.rootElement = getElementByIdOrThrow(parentId).appendChild(document.createElement('div'))
+    constructor() {
+        this.rootElement = document.createElement('div')
         this.rootElement.classList.add('github-box')
 
         const link = this.rootElement.appendChild(document.createElement('a'))

@@ -5,7 +5,7 @@
 // Includes Binary Heap (with modifications) from Marijn Haverbeke.
 // http://eloquentjavascript.net/appendix2.html
 
-function pathTo(node) {
+function pathTo(node: GridNode) {
     let curr = node
     const path = []
     while (curr.parent) {
@@ -16,7 +16,7 @@ function pathTo(node) {
 }
 
 function getHeap() {
-    return new BinaryHeap(function (node) {
+    return new BinaryHeap(function (node: GridNode) {
         return node.f
     })
 }
@@ -28,12 +28,10 @@ export const astar = {
      * @param {GridNode} start
      * @param {GridNode} end
      * @param {Object} [options]
-     * @param {boolean} [options.closest] Specifies whether to return the
-     path to the closest node if the target is unreachable.
-     * @param {Function} [options.heuristic] Heuristic function (see
-     *          astar.heuristics).
+     * @param {boolean} [options.closest] Specifies whether to return the path to the closest node if the target is unreachable.
+     * @param {Function} [options.heuristic] Heuristic function (see astar.heuristics).
      */
-    search(graph: Graph, start: GridNode, end: GridNode, options = null): GridNode[] {
+    search(graph: Graph, start: GridNode, end: GridNode, options: { closest?: boolean; heuristic?: Function } = null): GridNode[] {
         graph.cleanDirty()
         options = options || {}
         const heuristic = options.heuristic || astar.heuristics.manhattan
@@ -114,13 +112,13 @@ export const astar = {
 
     // See list of heuristics: http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
     heuristics: {
-        manhattan(pos0, pos1) {
+        manhattan(pos0: { x: number, y: number }, pos1: { x: number, y: number }) {
             const d1 = Math.abs(pos1.x - pos0.x)
             const d2 = Math.abs(pos1.y - pos0.y)
             return d1 + d2
         },
 
-        diagonal(pos0, pos1) {
+        diagonal(pos0: { x: number, y: number }, pos1: { x: number, y: number }) {
             const D = 1
             const D2 = Math.sqrt(2)
             const d1 = Math.abs(pos1.x - pos0.x)
@@ -129,7 +127,7 @@ export const astar = {
         },
     },
 
-    cleanNode(node) {
+    cleanNode(node: GridNode) {
         node.f = 0
         node.g = 0
         node.h = 0
@@ -151,7 +149,7 @@ export class Graph {
      * @param {Object} [options]
      * @param {boolean} [options.diagonal] Specifies whether diagonal moves are allowed
      */
-    constructor(gridIn: number[][], options = null) {
+    constructor(gridIn: number[][], options: { diagonal?: boolean } = null) {
         options = options || {}
         this.diagonal = !!options.diagonal
         for (let x = 0; x < gridIn.length; x++) {
@@ -182,7 +180,7 @@ export class Graph {
         this.dirtyNodes = []
     }
 
-    markDirty(node) {
+    markDirty(node: GridNode) {
         this.dirtyNodes.push(node)
     }
 
@@ -275,7 +273,7 @@ class GridNode {
     parent: GridNode
     f: number
 
-    constructor(x, y, weight) {
+    constructor(x: number, y: number, weight: number) {
         this.x = x
         this.y = y
         this.weight = weight
@@ -299,15 +297,15 @@ class GridNode {
 }
 
 class BinaryHeap {
-    content = []
-    scoreFunction
+    content: GridNode[] = []
+    scoreFunction: (node: GridNode) => number
 
-    constructor(scoreFunction) {
+    constructor(scoreFunction: (node: GridNode) => number) {
         this.content = []
         this.scoreFunction = scoreFunction
     }
 
-    push(element) {
+    push(element: GridNode) {
         // Add the new element to the end of the array.
         this.content.push(element)
 
@@ -316,7 +314,7 @@ class BinaryHeap {
     }
 
     pop() {
-        // Store the first element so we can return it later.
+        // Store the first element, so we can return it later.
         const result = this.content[0]
         // Get the element at the end of the array.
         const end = this.content.pop()
@@ -329,7 +327,7 @@ class BinaryHeap {
         return result
     }
 
-    remove(node) {
+    remove(node: GridNode) {
         const i = this.content.indexOf(node)
 
         // When it is found, the process seen in 'pop' is repeated
@@ -351,11 +349,11 @@ class BinaryHeap {
         return this.content.length
     }
 
-    rescoreElement(node) {
+    rescoreElement(node: GridNode) {
         this.sinkDown(this.content.indexOf(node))
     }
 
-    sinkDown(n) {
+    sinkDown(n: number) {
         // Fetch the element that has to be sunk.
         const element = this.content[n]
 
@@ -378,7 +376,7 @@ class BinaryHeap {
         }
     }
 
-    bubbleUp(n) {
+    bubbleUp(n: number) {
         // Look up the target element and its score.
         const length = this.content.length
         const element = this.content[n]
@@ -390,7 +388,7 @@ class BinaryHeap {
             const child1N = child2N - 1
             // This is used to store the new position of the element, if any.
             let swap = null
-            let child1Score
+            let child1Score: number
             // If the first child exists (is inside the array)...
             if (child1N < length) {
                 // Look it up and compute its score.

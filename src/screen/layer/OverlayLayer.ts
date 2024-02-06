@@ -10,7 +10,7 @@ import { Panel } from '../../gui/base/Panel'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { Cursor } from '../../resource/Cursor'
 import { POINTER_EVENT } from '../../event/EventTypeEnum'
-import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../../gui/event/GuiEvent'
+import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../../gui/event/GuiEvent'
 import { BaseElement } from '../../gui/base/BaseElement'
 import { GameResultState } from '../../game/model/GameResult'
 import { GameResultEvent, RestartGameEvent } from '../../event/WorldEvents'
@@ -140,13 +140,13 @@ export class OverlayLayer extends ScaledLayer {
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (this.panels.every(p => p.hidden)) return false
         if (event.eventEnum === POINTER_EVENT.MOVE) {
-            this.rootElement.checkHover(new GuiHoverEvent(event.canvasX, event.canvasY))
+            this.rootElement.onPointerMove(new GuiHoverEvent(event.canvasX, event.canvasY))
         } else if (event.eventEnum === POINTER_EVENT.DOWN) {
-            this.rootElement.checkClick(new GuiClickEvent(event.canvasX, event.canvasY, event.button))
+            this.rootElement.onPointerDown(new GuiPointerDownEvent(event.canvasX, event.canvasY, event.button))
         } else if (event.eventEnum === POINTER_EVENT.UP) {
-            this.rootElement.checkRelease(new GuiReleaseEvent(event.canvasX, event.canvasY, event.button))
+            this.rootElement.onPointerUp(new GuiPointerUpEvent(event.canvasX, event.canvasY, event.button))
         } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
-            this.rootElement.release()
+            this.rootElement.onPointerLeave()
         }
         return true
     }

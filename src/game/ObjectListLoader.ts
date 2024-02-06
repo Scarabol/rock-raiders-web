@@ -8,10 +8,10 @@ import { Raider } from './model/raider/Raider'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { WorldManager } from './WorldManager'
-import { MonsterSpawner } from './entity/MonsterSpawner'
+import { MonsterSpawner } from './factory/MonsterSpawner'
 import { SceneSelectionComponent } from './component/SceneSelectionComponent'
 import { SelectionFrameComponent } from './component/SelectionFrameComponent'
-import { MaterialSpawner } from './entity/MaterialSpawner'
+import { MaterialSpawner } from './factory/MaterialSpawner'
 import { AnimEntityActivity } from './model/anim/AnimationActivity'
 import { PositionComponent } from './component/PositionComponent'
 import { RaiderTrainings } from './model/raider/RaiderTraining'
@@ -72,8 +72,8 @@ export class ObjectListLoader {
                 const cameraPos = this.worldMgr.sceneMgr.getFloorPosition(cameraOffset)
                 cameraPos.y += 5 * TILESIZE
                 this.worldMgr.sceneMgr.cameraBird.position.copy(cameraPos)
-                this.worldMgr.sceneMgr.controls.target.copy(this.worldMgr.sceneMgr.getFloorPosition(worldPos))
-                this.worldMgr.sceneMgr.controls.update()
+                this.worldMgr.sceneMgr.birdViewControls.target.copy(this.worldMgr.sceneMgr.getFloorPosition(worldPos))
+                this.worldMgr.sceneMgr.birdViewControls.update()
                 this.worldMgr.sceneMgr.setCursorFloorPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
                 break
             case EntityType.PILOT:

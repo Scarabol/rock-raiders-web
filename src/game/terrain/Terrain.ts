@@ -6,7 +6,6 @@ import { WorldManager } from '../WorldManager'
 import { updateSafe } from '../model/Updateable'
 import { FallIn } from './FallIn'
 import { PathFinder } from './PathFinder'
-import { PowerGrid } from './PowerGrid'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
 import { Sample } from '../../audio/Sample'
@@ -14,7 +13,7 @@ import { GenericMonsterEvent, LandslideEvent } from '../../event/WorldLocationEv
 import { PositionComponent } from '../component/PositionComponent'
 import { EntityType, MonsterEntityType } from '../model/EntityType'
 import { EmergeTrigger } from './EmergeTrigger'
-import { MonsterSpawner } from '../entity/MonsterSpawner'
+import { MonsterSpawner } from '../factory/MonsterSpawner'
 import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
@@ -31,10 +30,8 @@ export class Terrain {
     height: number = 0
     surfaces: Surface[][] = []
     floorGroup: Group = new Group()
-    roofGroup: Group = new Group()
     pathFinder: PathFinder = new PathFinder()
     fallIns: FallIn[] = []
-    powerGrid: PowerGrid
     tutoBlocksById: Map<number, Surface[]> = new Map()
     emergeCreature: MonsterEntityType = EntityType.NONE
     emergeTrigger: EmergeTrigger[] = []
@@ -44,13 +41,8 @@ export class Terrain {
     rechargeSeams: Surface[] = []
 
     constructor(readonly worldMgr: WorldManager, readonly levelConf: LevelEntryCfg) {
-        this.worldMgr.sceneMgr.terrain = this
-        this.worldMgr.sceneMgr.scene.add(this.floorGroup)
         this.floorGroup.scale.setScalar(TILESIZE)
         if (DEV_MODE) this.floorGroup.add(new AxesHelper())
-        this.roofGroup.scale.setScalar(TILESIZE)
-        this.roofGroup.visible = false // keep roof hidden unless switched to other camera
-        this.powerGrid = new PowerGrid(this.worldMgr)
         this.emergeTimeoutMs = levelConf.emergeTimeOut / 1500 * 60 * 1000 // 1500 specifies 1 minute
     }
 

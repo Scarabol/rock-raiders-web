@@ -14,8 +14,8 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { TOOLTIP_FONT_NAME, USE_KEYBOARD_SHORTCUTS } from '../../params'
 import { Cursor } from '../../resource/Cursor'
-import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
-import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../../gui/event/GuiEvent'
+import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
+import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../../gui/event/GuiEvent'
 import { CameraControlPanel } from '../../gui/cameracontrol/CameraControlPanel'
 import { ToggleAlarmEvent } from '../../event/WorldEvents'
 import { ShowOptionsEvent } from '../../event/LocalEvents'
@@ -42,7 +42,6 @@ export class GuiMainLayer extends ScaledLayer {
     panelPriorityList: PriorityListPanel
     panelCameraControl: Panel
     panelInfoDock: InfoDockPanel
-    panelEncyclopedia: Panel
 
     constructor() {
         super()
@@ -70,7 +69,6 @@ export class GuiMainLayer extends ScaledLayer {
             EventBroker.subscribe(eventType, callback)
         }
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
-        this.panelEncyclopedia = this.addPanel(new Panel(this.rootElement, panelsCfg.panelEncyclopedia))
         this.panelInformation = this.addPanel(new InformationPanel(this.rootElement, panelsCfg.panelInformation))
         this.panelInfoDock = this.addPanel(new InfoDockPanel(this.rootElement, panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, GameConfig.instance.infoMessages, this.panelInformation))
         this.panelCameraControl = this.addPanel(new CameraControlPanel(this.rootElement, panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl, GameConfig.instance.panelRotationControl))
@@ -148,18 +146,22 @@ export class GuiMainLayer extends ScaledLayer {
         if (hit) {
             EventBroker.publish(new ChangeCursor(Cursor.STANDARD)) // TODO don't spam so many events?!
             if (event.eventEnum === POINTER_EVENT.MOVE) {
-                this.rootElement.checkHover(new GuiHoverEvent(event.canvasX, event.canvasY))
+                this.rootElement.onPointerMove(new GuiHoverEvent(event.canvasX, event.canvasY))
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {
-                this.rootElement.checkClick(new GuiClickEvent(event.canvasX, event.canvasY, event.button))
+                if (event.button === MOUSE_BUTTON.MAIN) {
+                    this.rootElement.onPointerDown(new GuiPointerDownEvent(event.canvasX, event.canvasY, event.button))
+                }
             } else if (event.eventEnum === POINTER_EVENT.UP) {
-                const stateChanged = this.rootElement.checkRelease(new GuiReleaseEvent(event.canvasX, event.canvasY, event.button))
-                if (!stateChanged) {
-                    this.rootElement.publishEvent(new ChangeCursor(Cursor.NOT_OKAY, 1000))
-                    this.rootElement.publishEvent(new PlaySoundEvent(Sample.SFX_NotOkay, false))
+                if (event.button === MOUSE_BUTTON.MAIN) {
+                    const stateChanged = this.rootElement.onPointerUp(new GuiPointerUpEvent(event.canvasX, event.canvasY, event.button))
+                    if (!stateChanged) {
+                        this.rootElement.publishEvent(new ChangeCursor(Cursor.NOT_OKAY, 1000))
+                        this.rootElement.publishEvent(new PlaySoundEvent(Sample.SFX_NotOkay, false))
+                    }
                 }
             }
         } else if (event.eventEnum === POINTER_EVENT.MOVE || event.eventEnum === POINTER_EVENT.LEAVE) {
-            this.rootElement.release()
+            this.rootElement.onPointerLeave()
         }
         return hit
     }
@@ -171,7 +173,11 @@ export class GuiMainLayer extends ScaledLayer {
         if (USE_KEYBOARD_SHORTCUTS) {
             const buttonWithKey = activeIconPanelButtons.find((b) => b.hotkey === event.key)
             if (buttonWithKey && !buttonWithKey.isInactive()) {
-                if (event.eventEnum === KEY_EVENT.UP) buttonWithKey.onClick()
+                if (event.eventEnum === KEY_EVENT.UP) {
+                    const bx = buttonWithKey.x + buttonWithKey.width / 2
+                    const by = buttonWithKey.y + buttonWithKey.height / 2
+                    buttonWithKey.onClick(bx, by)
+                }
                 return true
             }
         }

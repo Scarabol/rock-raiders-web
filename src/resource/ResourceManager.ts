@@ -133,7 +133,10 @@ export class ResourceManager {
             return this.getTextureImageDataFromSharedPaths(lTextureFilename, textureFilename, lMeshFilepath)
         })
         if (!imgData) {
-            console.warn(`Could not find texture ${textureFilename}`)
+            // ignore known texture issues
+            if (!VERBOSE && !['teofoilreflections.jpg', 'wingbase3.bmp', 'a_side.bmp', 'a_top.bmp', 'sand.bmp'].includes(textureFilename)) {
+                console.warn(`Could not find texture ${textureFilename}`)
+            }
             return null
         }
         // without repeat wrapping some entities are not fully textured
@@ -148,7 +151,6 @@ export class ResourceManager {
         return this.resourceByName.getOrUpdate(ugSharedFilename, () => {
             const worldSharedFilename = `world/shared/${lTextureFilename}`
             return this.resourceByName.getOrUpdate(worldSharedFilename, () => {
-                console.log(`Image data for '${textureFilename}' not found at '${lMeshFilepath}' or '${worldSharedFilename}'`)
                 return null
             })
         })

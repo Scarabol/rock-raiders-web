@@ -12,7 +12,7 @@ import { LavaErosionComponent } from './component/LavaErosionComponent'
 import { GameConfig } from '../cfg/GameConfig'
 
 export class TerrainLoader {
-    static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
+    static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager): Terrain {
         const terrain = new Terrain(worldMgr, levelConf)
         terrain.textureSet = GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet)
         terrain.rockFallStyle = levelConf.rockFallStyle.toLowerCase()
@@ -21,6 +21,7 @@ export class TerrainLoader {
         const terrainMap = ResourceManager.getResource(levelConf.terrainMap)
         terrain.width = terrainMap.width
         terrain.height = terrainMap.height
+        // TODO Check width/height of given map and print at least warning
         const pathMap = ResourceManager.getResource(levelConf.pathMap)?.level
         const surfaceMap = ResourceManager.getResource(levelConf.surfaceMap)?.level
         const predugMap = ResourceManager.getResource(levelConf.predugMap)?.level
@@ -98,6 +99,7 @@ export class TerrainLoader {
                                         break
                                     case SurfaceType.RECHARGE_SEAM:
                                         terrain.rechargeSeams.add(surface)
+                                        // TODO Move sparkles effect to surface mesh (creation)
                                         const position = new Vector3(0.5, 0.5 + surface.terrain.getHeightOffset(surface.x, surface.y), 0.5)
                                         const floorNeighbor = surface.neighbors.find((n) => n.surfaceType.floor)
                                         const angle = Math.atan2(floorNeighbor.y - surface.y, surface.x - floorNeighbor.x) + Math.PI / 2
@@ -146,7 +148,7 @@ export class TerrainLoader {
                     worldMgr.ecs.addComponent(targetSurface.entity, lavaErosionComponent)
                     if (lavaErosionComponent.isSelfEroding) {
                         for (let c = 0; c < 5; c++) {
-                            lavaErosionComponent.increaseErosionLevel()
+                            lavaErosionComponent.increaseErosionLevel(false)
                         }
                     }
                 }
@@ -177,6 +179,7 @@ export class TerrainLoader {
                 }
             }
         }
+        return terrain
     }
 }
 

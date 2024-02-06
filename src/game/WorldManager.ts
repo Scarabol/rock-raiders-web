@@ -36,6 +36,7 @@ import { MaterialEntity } from './model/material/MaterialEntity'
 import { LavaErosionSystem } from './system/LavaErosionSystem'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventBroker } from '../event/EventBroker'
+import { PowerGrid } from './terrain/PowerGrid'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -44,6 +45,7 @@ export class WorldManager {
     sceneMgr: SceneManager
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
+    powerGrid: PowerGrid
     gameLoopInterval: NodeJS.Timeout = null
     elapsedGameTimeMs: number = 0
     requestedRaiders: number = 0
@@ -55,6 +57,7 @@ export class WorldManager {
 
     constructor() {
         this.ecs.worldMgr = this
+        this.powerGrid = new PowerGrid(this) // TODO Transform into system with components
         this.ecs.addSystem(new MovementSystem())
         this.ecs.addSystem(new SceneEntityPositionSystem())
         this.ecs.addSystem(new SceneEntityHeadingSystem())

@@ -22,34 +22,28 @@ import { AdvisorLayer } from './layer/AdvisorLayer'
 import { EventBroker } from '../event/EventBroker'
 
 export class GameScreen {
-    gameLayer: GameLayer
-    selectionFrameLayer: SelectionFrameLayer
-    advisorLayer: AdvisorLayer
-    guiLayer: GuiMainLayer
-    overlayLayer: OverlayLayer
-    worldMgr: WorldManager
-    sceneMgr: SceneManager
-    entityMgr: EntityManager
-    guiMgr: GuiManager
+    readonly worldMgr: WorldManager
+    readonly gameLayer: GameLayer
+    readonly selectionFrameLayer: SelectionFrameLayer
+    readonly advisorLayer: AdvisorLayer
+    readonly guiLayer: GuiMainLayer
+    readonly overlayLayer: OverlayLayer
+    readonly sceneMgr: SceneManager
+    readonly entityMgr: EntityManager
+    readonly guiMgr: GuiManager
     levelConf: LevelEntryCfg
 
     constructor(readonly screenMaster: ScreenMaster) {
-        this.gameLayer = screenMaster.addLayer(new GameLayer(), 500)
+        this.worldMgr = new WorldManager()
+        this.gameLayer = screenMaster.addLayer(new GameLayer(this.worldMgr), 500)
         this.screenMaster.onGlobalPointerMoveEvent = this.gameLayer.onGlobalPointerMoveEvent.bind(this.gameLayer)
         this.screenMaster.onGlobalPointerLeaveEvent = this.gameLayer.onGlobalPointerLeaveEvent.bind(this.gameLayer)
         this.selectionFrameLayer = screenMaster.addLayer(new SelectionFrameLayer(), 510)
         this.advisorLayer = screenMaster.addLayer(new AdvisorLayer(), 515)
         this.guiLayer = screenMaster.addLayer(new GuiMainLayer(), 520)
         this.overlayLayer = screenMaster.addLayer(new OverlayLayer(), 530)
-        this.worldMgr = new WorldManager()
+        this.sceneMgr = new SceneManager(this.worldMgr, this.gameLayer.canvas)
         this.entityMgr = new EntityManager(this.worldMgr)
-        this.sceneMgr = new SceneManager(this.gameLayer.canvas)
-        this.sceneMgr.worldMgr = this.worldMgr
-        this.worldMgr.sceneMgr = this.sceneMgr
-        this.worldMgr.entityMgr = this.entityMgr
-        this.gameLayer.worldMgr = this.worldMgr
-        this.gameLayer.sceneMgr = this.sceneMgr
-        this.gameLayer.entityMgr = this.entityMgr
         this.guiMgr = new GuiManager(this.worldMgr)
         EventBroker.subscribe(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
             this.selectionFrameLayer.active = false
@@ -94,7 +88,7 @@ export class GameScreen {
         // load in non-space objects next
         const objectList = ResourceManager.getResource(this.levelConf.oListFile)
         new ObjectListLoader(this.worldMgr, this.levelConf.disableStartTeleport || DEV_MODE).loadObjectList(objectList)
-        EventBroker.publish(new InitRadarMap(this.sceneMgr.controls.target.clone(), this.sceneMgr.terrain))
+        EventBroker.publish(new InitRadarMap(this.sceneMgr.birdViewControls.target.clone(), this.sceneMgr.terrain))
         this.show()
     }
 

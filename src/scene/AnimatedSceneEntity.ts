@@ -4,7 +4,6 @@ import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
 import { ResourceManager } from '../resource/ResourceManager'
 import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
-import { AnimationGroup } from './AnimationGroup'
 import { VERBOSE } from '../params'
 import { AnimationQualityGroup } from './AnimationQualityGroup'
 import { SceneManager } from '../game/SceneManager'
@@ -12,8 +11,8 @@ import { GameConfig } from '../cfg/GameConfig'
 
 export class AnimatedSceneEntity extends Group implements Updatable {
     readonly animationData: AnimEntityData[] = []
-    readonly cacheAnimationGroups: Map<string, AnimationGroup> = new Map()
-    readonly animationGroups: AnimationGroup[] = []
+    readonly cacheAnimationGroups: Map<string, AnimationQualityGroup> = new Map()
+    readonly animationGroups: AnimationQualityGroup[] = []
     readonly meshesByLName: Map<string, SceneMesh[]> = new Map()
     readonly installedUpgrades: { parent: Object3D, child: AnimatedSceneEntity }[] = []
     readonly animationParent: Group = new Group()
@@ -144,7 +143,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                 const parent = this.meshesByLName.get(upgrade.parentNullName.toLowerCase())?.[upgrade.parentNullIndex]
                 if (!parent) {
                     if (this.currentAnimation !== AnimEntityActivity.TeleportIn) {
-                        console.warn(`Could not find upgrade parent for '${upgrade.lNameType}' with name '${upgrade.parentNullName}' in  animation '${this.currentAnimation}'`)
+                        console.warn(`Could not find upgrade parent for '${upgrade.lNameType}' with name '${upgrade.parentNullName}' in animation '${this.currentAnimation}'`)
                     }
                     return
                 }

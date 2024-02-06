@@ -4,6 +4,7 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventKey } from '../event/EventKeyEnum'
 import { NerpRunner } from '../nerp/NerpRunner'
 import { EventBroker } from '../event/EventBroker'
+import { VERBOSE } from '../params'
 
 export class SoundManager {
     static readonly playingAudio: Set<PositionalAudio> = new Set()
@@ -55,7 +56,10 @@ export class SoundManager {
 
     static getSoundBuffer(sfxName: string): AudioBuffer {
         return this.sfxBuffersByKey.getOrUpdate(sfxName.toLowerCase(), () => {
-            console.warn(`Could not find SFX with name '${sfxName}'`)
+            // ignore known sound issues
+            if (!VERBOSE && !['SurfaceSFX_Tunnel'].includes(sfxName)) {
+                console.warn(`Could not find SFX with name '${sfxName}'`)
+            }
             return []
         }).random()
     }

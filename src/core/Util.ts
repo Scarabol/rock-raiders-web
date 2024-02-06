@@ -41,12 +41,6 @@ export function cancelAnimationFrameSafe(handle: number): null {
     return null
 }
 
-export function getElementByIdOrThrow(elementId: string): HTMLElement {
-    const element = document.getElementById(elementId)
-    if (!element) throw new Error('Fatal error: "' + elementId + '" not found!')
-    return element
-}
-
 export function yieldToMainThread(): Promise<void> {
     return new Promise(resolve => setTimeout(resolve))
 }

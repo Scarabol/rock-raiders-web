@@ -46,20 +46,18 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Development Roadmap
 
-### v0.8.0 - Late game features
+### v0.8.x - Late game features
 
 - Move camera with click on radar map panel
 - Show camera view area as wireframe on radar map panel
-- Move camera at window borders
 
-- Replace scene management with event driven approach rendered offscreen
-- Switch to respective canvas instead of just changing the camera
+- Implement first person and shoulder camera views
 - Add entity movement controller with arrow keys for fpv/shoulder view
 
 - Tutorial levels and helper features
 - Implement laser shooting for turrets and mobile lasers
 
-### v0.9.0 - Polishing
+### v0.9.x - Polishing
 
 - Use same team for all missions and add names to raiders
 - Auto switch from portrait to landscape mode in fullscreen
@@ -75,12 +73,12 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Important
 
-- Lava erosion seems to slow or not working in Level 23 and others
 - Forbidding collection of ores or crystals stops building projects too
 - Level is not marked as failed even if too many crystals are missing
 - Separate UI components to support other screen ratios then 4:3
 - FPS histogram sometimes not rendered on debug layer
-- Mark start and end tile in path finding always as accessible to make entering water vehicles and drilling easier, also frees raider stuck on lava
+- Mark start and end tile in path finding always as accessible to make entering water vehicles and drilling easier, also
+  frees raider stuck on lava
 - Large Cat not usable to carry vehicles in Level 19
 - Damage and blow up buildings with lava erosion
 - Make idle raider leave lava fields
@@ -91,7 +89,8 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Allow raider in alarm mode to be moved by player
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Save complete game state in browser cache to allow reload
-- Hardware cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position manipulation
+- Hardware cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position
+  manipulation
 - Add level reference to URL for easier reloading, check if game is unlocked when not in dev mode
 - Add option to read savegames from URL
 
@@ -99,10 +98,8 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - No click sound for save-/load-game-buttons in main menu
 - No sirene sound when alarm mode is enabled
-- Electric fences may show small beam into nowhere
 - Digger vehicles have big offset to wall when drilling
 - Lava rockies texture not using correct UV coordinates
-- Show health percentage in vehicle tooltip as power
 - Play vehicle SFX when tooltip is shown
 - Orange smoke column above lava tiles missing
 - Water and lava animation missing, might use texture UV coords tearing
@@ -110,17 +107,20 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Numbers above ticking dynamite are not shown correctly sometimes
 - Two buttons in priority list can be hovered/pressed/released at the same time
 - Roof mesh is not added as ceiling to scene
-- Play mission briefing SFX when briefing is shown on level start
 - Use pro-meshes to render high-detail walls in first person and shoulder view
-- Medium raider meshes seem to have wrong normal vectors and shown with holes
+- Medium raider meshes seem to have wrong UV coordinates and shown with holes
 - Bats don't appear in flocks
 
 ## Technical Debt
 
 - Improve type safety for job system with separate sets for each fulfiller type
-- Introduce async UI load functions to make sure all assets are ready before showing UI and avoid unnecessary re-renders on start
+- Introduce async UI load functions to make sure all assets are ready before showing UI and avoid unnecessary re-renders
+  on start
 - Uplift configuration parsing into loading process for type safety and error resilience
-- Move three.js rendering to separate worker (blocked until [worker support for audio](https://github.com/WebAudio/web-audio-api/issues/2423) is solved, so [AudioContext](https://github.com/mrdoob/three.js/blob/master/src/audio/AudioContext.js) does not need _window_ anymore)
+- Move three.js rendering to separate worker (blocked
+  until [worker support for audio](https://github.com/WebAudio/web-audio-api/issues/2423) is solved,
+  so [AudioContext](https://github.com/mrdoob/three.js/blob/master/src/audio/AudioContext.js) does not need _window_
+  anymore)
 
 ## Development
 

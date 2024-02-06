@@ -31,13 +31,12 @@ export class SceneManager implements Updatable {
     readonly cameraShoulder: PerspectiveCamera
     readonly cameraFPV: PerspectiveCamera
     readonly renderer: SceneRenderer
-    readonly controls: BirdViewControls
+    readonly birdViewControls: BirdViewControls
     readonly entities: AnimatedSceneEntity[] = []
     readonly miscAnims: AnimationGroup[] = []
     readonly sprites: (Sprite & Updatable)[] = []
     readonly lastCameraWorldPos: Vector3 = new Vector3()
     readonly raycaster: Raycaster = new Raycaster()
-    worldMgr: WorldManager
     ambientLight: AmbientLight
     terrain: Terrain
     cursor: TorchLightCursor
@@ -47,7 +46,8 @@ export class SceneManager implements Updatable {
     bumpTimeout: number = 0
     cameraActive: PerspectiveCamera
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(readonly worldMgr: WorldManager, canvas: HTMLCanvasElement) {
+        this.worldMgr.sceneMgr = this
         this.scene = new Scene()
         const aspect = canvas.width / canvas.height
         this.cameraBird = new BirdViewCamera(aspect)
@@ -55,8 +55,8 @@ export class SceneManager implements Updatable {
         this.cameraFPV = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 200) // TODO Adjust camera parameters
         this.renderer = new SceneRenderer(canvas)
         this.setActiveCamera(this.cameraBird)
-        this.controls = new BirdViewControls(this.cameraBird, canvas)
-        if (!DEV_MODE) this.controls.addEventListener('change', () => this.forceCameraBirdAboveFloor())
+        this.birdViewControls = new BirdViewControls(this.cameraBird, canvas)
+        if (!DEV_MODE) this.birdViewControls.addEventListener('change', () => this.forceCameraBirdAboveFloor())
         EventBroker.subscribe(EventKey.DYNAMITE_EXPLOSION, () => {
             this.shakeTimeout = 1000
             this.bumpTimeout = 0
@@ -179,8 +179,11 @@ export class SceneManager implements Updatable {
         this.scene.add(this.buildMarker.group)
         this.setBuildModeSelection(null)
 
-        // create terrain mesh and add it to the scene
-        TerrainLoader.loadTerrain(levelConf, this.worldMgr)
+        this.terrain = TerrainLoader.loadTerrain(levelConf, this.worldMgr)
+        this.terrain.forEachSurface((s) => {
+            this.terrain.floorGroup.add(s.mesh)
+        })
+        this.scene.add(this.terrain.floorGroup)
 
         // gather level start details for game result score calculation
         GameState.totalDiggables = this.terrain.countDiggables()
@@ -201,7 +204,7 @@ export class SceneManager implements Updatable {
         this.miscAnims.forEach((a) => updateSafe(a, elapsedMs))
         this.sprites.forEach((s) => updateSafe(s, elapsedMs))
         updateSafe(this.cursor, elapsedMs)
-        this.controls?.updateControlsSafe(elapsedMs)
+        this.birdViewControls?.updateControlsSafe(elapsedMs)
         this.shakeScene(elapsedMs)
     }
 
@@ -328,12 +331,12 @@ export class SceneManager implements Updatable {
         const terrainIntersectionPoint = this.raycaster.intersectObject(this.terrain.floorGroup, true)?.[0]?.point
         if (!terrainIntersectionPoint) return
         const minCameraPosY = terrainIntersectionPoint.y + MIN_CAMERA_HEIGHT_ABOVE_TERRAIN
-        const centerPosition = this.controls.target.clone()
+        const centerPosition = this.birdViewControls.target.clone()
         centerPosition.y = 0
         const groundPosition = this.cameraBird.position.clone()
         groundPosition.y = 0
-        const origin = new Vector2(this.controls.target.y, 0)
+        const origin = new Vector2(this.birdViewControls.target.y, 0)
         const remote = new Vector2(minCameraPosY, centerPosition.distanceTo(groundPosition))
-        this.controls.maxPolarAngle = Math.atan2(remote.y - origin.y, remote.x - origin.x)
+        this.birdViewControls.maxPolarAngle = Math.atan2(remote.y - origin.y, remote.x - origin.x)
     }
 }

@@ -25,10 +25,12 @@ export async function start() {
     SaveGameManager.loadSaveGames()
     SaveGameManager.loadSaveGameScreenshots()
     if (DEV_MODE) SaveGameManager.loadGame(0)
+    const githubBox = new GithubBox()
+    const clearCacheButton = new ClearCacheButton()
+    const gameContainer = document.getElementById('game-container')
+    gameContainer.append(githubBox.rootElement, clearCacheButton.rootElement)
     const screenMaster = new ScreenMaster()
-    const githubBox = new GithubBox('game-container')
-    const clearCacheButton = new ClearCacheButton('game-container')
-    const vfs = await new GameFilesLoader(screenMaster).loadGameFiles()
+    const vfs = await new GameFilesLoader(screenMaster.loadingLayer).loadGameFiles()
     const assetLoader = new AssetLoader(vfs)
     await assetLoader.assetRegistry.registerAllAssets(GameConfig.instance) // dynamically register all assets from config
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')
@@ -93,9 +95,9 @@ export async function start() {
     screenMaster.loadingLayer.hide()
     githubBox.hide()
     clearCacheButton.hide()
+
     const params = new URLSearchParams(window.location.search)
     const entry = params.get('entry')
-
     if (DEV_MODE && entry) {
         GameState.numCrystal = Number(params.get('numCrystal')) || 0
         GameState.numOre = Number(params.get('numOre')) || 0

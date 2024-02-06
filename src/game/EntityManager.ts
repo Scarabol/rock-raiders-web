@@ -59,6 +59,7 @@ export class EntityManager {
     bullets: GameEntity[] = []
 
     constructor(readonly worldMgr: WorldManager) {
+        this.worldMgr.entityMgr = this
         // event handler must be placed here, because only this class knows the "actual" selection instance
         EventBroker.subscribe(EventKey.DESELECT_ALL, () => {
             this.selection.deselectAll()

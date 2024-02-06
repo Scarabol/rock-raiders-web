@@ -1,4 +1,5 @@
 import { Cursor } from '../../resource/Cursor'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class SurfaceType {
     name: string // human-readable config name
@@ -229,5 +230,13 @@ export class SurfaceType {
                 console.error(`Unexpected surface type num: ${typeNum}`)
                 return SurfaceType.SOLID_ROCK
         }
+    }
+
+    getObjectName(): string {
+        return GameConfig.instance.surfaceTypeDescriptions.get(this.name.toLowerCase())?.objectName
+    }
+
+    getSfxKey(): string {
+        return GameConfig.instance.surfaceTypeDescriptions.get(this.name.toLowerCase())?.sfxKey
     }
 }

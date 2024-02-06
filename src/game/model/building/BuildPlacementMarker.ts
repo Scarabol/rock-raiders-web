@@ -54,7 +54,7 @@ export class BuildPlacementMarker {
         if (!worldPosition || !this.buildingType) {
             this.hideAllMarker()
         } else {
-            this.worldMgr.sceneMgr.controls.setBuildLock(true)
+            this.worldMgr.sceneMgr.birdViewControls.setBuildLock(true)
             this.updateAllMarker(worldPosition)
             this.buildingMarkerPrimary.setColor(this.buildingMarkerColor)
             this.buildingMarkerSecondary.setColor(this.buildingMarkerColor)
@@ -116,7 +116,7 @@ export class BuildPlacementMarker {
     }
 
     hideAllMarker() {
-        this.worldMgr.sceneMgr.controls.setBuildLock(false)
+        this.worldMgr.sceneMgr.birdViewControls.setBuildLock(false)
         this.markers.forEach((m) => m.visible = false)
         this.lastCheck = false
         this.buildingMarkerColor = BuildPlacementMarker.invalidMarkerColor
@@ -144,8 +144,8 @@ export class BuildPlacementMarker {
         }
         this.worldMgr.entityMgr.buildingSites.push(site)
         EventBroker.publish(new DeselectAll())
-        const closestToolstation = this.worldMgr.entityMgr.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
         if (needsAnything) {
+            const closestToolstation = this.worldMgr.entityMgr.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
             if (closestToolstation) {
                 closestToolstation.spawnBarriers(barrierLocations, site)
                 closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)

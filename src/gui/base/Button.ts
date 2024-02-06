@@ -1,7 +1,7 @@
 import { BaseButtonCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
-import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
+import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../event/GuiEvent'
 import { BaseElement } from './BaseElement'
 import { TOOLTIP_DELAY_SFX } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
@@ -66,25 +66,25 @@ export class Button extends BaseElement {
     showTooltipDisabled() {
     }
 
-    checkHover(event: GuiHoverEvent): void {
-        super.checkHover(event)
+    onPointerMove(event: GuiHoverEvent): void {
+        super.onPointerMove(event)
         if (event.hoverStateChanged) this.notifyRedraw()
     }
 
-    checkClick(event: GuiClickEvent): boolean {
-        const stateChanged = super.checkClick(event)
+    onPointerDown(event: GuiPointerDownEvent): boolean {
+        const stateChanged = super.onPointerDown(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    checkRelease(event: GuiReleaseEvent): boolean {
-        const stateChanged = super.checkRelease(event)
+    onPointerUp(event: GuiPointerUpEvent): boolean {
+        const stateChanged = super.onPointerUp(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    release(): boolean {
-        const stateChanged = super.release()
+    onPointerLeave(): boolean {
+        const stateChanged = super.onPointerLeave()
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
@@ -94,7 +94,7 @@ export class Button extends BaseElement {
         let img = this.imgNormal
         if (this.disabled) {
             img = this.imgDisabled || this.imgPressed || this.imgNormal
-        } else if (this.pressedByButton !== null) {
+        } else if (this.pressed) {
             img = this.imgPressed || this.imgNormal
         } else if (this.hover) {
             img = this.imgHover || this.imgNormal

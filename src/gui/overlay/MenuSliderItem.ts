@@ -73,8 +73,8 @@ export class MenuSliderItem extends BaseElement {
         this.value = Math.max(0, Math.min(1, value)) * this.max
     }
 
-    checkHover(event: GuiHoverEvent): void {
-        super.checkHover(event)
+    onPointerMove(event: GuiHoverEvent): void {
+        super.onPointerMove(event)
         if (event.hoverStateChanged) this.notifyRedraw()
     }
 

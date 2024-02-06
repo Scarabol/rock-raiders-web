@@ -5,13 +5,15 @@ export class MapSurfaceRect {
     y: number
     surfaceColor: string
     borderColor: string
-    name: string
+    objectName: string
+    sfxKey: string
 
     constructor(surface: Surface) {
         this.x = surface.x
         this.y = surface.y
         this.surfaceColor = surface.surfaceType.mapSurfaceColor
         this.borderColor = surface.reinforced ? '#FFFF00' : null
-        this.name = surface.surfaceType.name
+        this.objectName = surface.surfaceType.getObjectName()
+        this.sfxKey = surface.surfaceType.getSfxKey()
     }
 }

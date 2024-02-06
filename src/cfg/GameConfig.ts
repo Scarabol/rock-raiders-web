@@ -36,7 +36,7 @@ export class GameConfig extends BaseConfig {
     reward: RewardCfg = new RewardCfg()
     menu: GameMenuCfg = new GameMenuCfg()
     toolTipInfo: Map<string, string> = new Map()
-    surfaceTypeDescriptions: Map<string, string[]> = new Map()
+    surfaceTypeDescriptions: Map<string, { objectName: string, sfxKey: string }> = new Map()
     objInfo: ObjInfoCfg = new ObjInfoCfg()
     pointers: Map<Cursor, string> = new Map()
     interfaceImages: Map<string, MenuItemCfg> = new Map()
@@ -58,6 +58,7 @@ export class GameConfig extends BaseConfig {
     upgradeTypesCfg: Map<string, string> = new Map()
     infoMessages: InfoMessagesCfg = new InfoMessagesCfg()
     stats: GameStatsCfg = new GameStatsCfg()
+    objTtSFXs: Map<string, string> = new Map()
     advisor: Map<string, AdvisorTypeCfg> = new Map()
     advisorPositions640x480: Map<string, AdvisorPositionCfg> = new Map()
     weaponTypes: Map<string, WeaponTypeCfg> = new Map()
@@ -79,7 +80,7 @@ export class GameConfig extends BaseConfig {
         } else if ('ToolTipInfo'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.toolTipInfo.set(cfgKey.toLowerCase(), parseLabel(value as string)))
         } else if ('SurfaceTypeDescriptions'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.surfaceTypeDescriptions.set(this.stripKey(cfgKey), value as string[]))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.surfaceTypeDescriptions.set(this.stripKey(cfgKey), {objectName: value[0], sfxKey: value[1]}))
         } else if ('ObjInfo'.equalsIgnoreCase(unifiedKey)) {
             this.objInfo.setFromCfgObj(cfgValue)
         } else if ('Pointers'.equalsIgnoreCase(unifiedKey)) {
@@ -123,6 +124,8 @@ export class GameConfig extends BaseConfig {
             this.infoMessages.setFromCfgObj(cfgValue)
         } else if ('Stats'.equalsIgnoreCase(unifiedKey)) {
             this.stats.setFromCfgObj(cfgValue)
+        } else if ('ObjTtSFXs'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objTtSFXs.set(cfgKey.toLowerCase(), value as string))
         } else if ('Advisor'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.advisor.set(cfgKey.toLowerCase(), new AdvisorTypeCfg(value)))
         } else if ('AdvisorPositions640x480'.equalsIgnoreCase(unifiedKey)) {

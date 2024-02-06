@@ -8,7 +8,7 @@ import { Raider } from '../game/model/raider/Raider'
 import { BuildingSite } from '../game/model/building/BuildingSite'
 import { VehicleUpgrade } from '../game/model/vehicle/VehicleUpgrade'
 import { CameraRotation } from '../scene/BirdViewControls'
-import { PositionComponent } from '../game/component/PositionComponent'
+import { Vector2 } from 'three'
 import { BaseEvent } from './EventTypeMap'
 
 export class ChangeCursor extends BaseEvent {
@@ -260,10 +260,12 @@ export class VehicleUnload extends BaseEvent {
 
 export class CameraControl extends BaseEvent {
     constructor(
-        readonly zoom: number,
-        readonly cycleBuilding: boolean,
-        readonly rotationIndex: CameraRotation,
-        readonly jumpToWorld: PositionComponent,
+        readonly args: {
+            zoom?: number,
+            cycleBuilding?: boolean,
+            rotationIndex?: CameraRotation,
+            jumpToWorld?: Vector2,
+        }
     ) {
         super(EventKey.COMMAND_CAMERA_CONTROL)
     }

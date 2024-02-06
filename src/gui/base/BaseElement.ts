@@ -1,8 +1,7 @@
 import { Sample } from '../../audio/Sample'
 import { SpriteContext } from '../../core/Sprite'
-import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { ChangeCursor, PlaySoundEvent } from '../../event/GuiCommand'
-import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
+import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../event/GuiEvent'
 import { Cursor } from '../../resource/Cursor'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 
@@ -18,9 +17,9 @@ export class BaseElement {
     hidden: boolean = false
     disabled: boolean = false
     hover: boolean = false
-    pressedByButton: MOUSE_BUTTON = null
-    onClick: (cx?: number, cy?: number) => any = null
-    onPublishEvent: (event: BaseEvent) => any = (event) => console.log(`TODO publish event: ${event.type}`)
+    pressed: boolean = false
+    onClick: (cx: number, cy: number) => void = null
+    onPublishEvent: (event: BaseEvent) => void = (event) => console.log(`TODO publish event: ${event.type}`)
 
     constructor(parent: BaseElement) {
         this.parent = parent
@@ -30,7 +29,7 @@ export class BaseElement {
         this.hidden = false
         this.disabled = false
         this.hover = false
-        this.pressedByButton = null
+        this.pressed = false
         this.children.forEach((c) => c.reset())
     }
 
@@ -75,16 +74,16 @@ export class BaseElement {
         return sx >= this.x && sy >= this.y && sx < this.x + this.width && sy < this.y + this.height
     }
 
-    checkHover(event: GuiHoverEvent): void {
+    onPointerMove(event: GuiHoverEvent): void {
         const inRect = this.isInRect(event.sx, event.sy)
         if (inRect && !this.hover) this.onHoverStart()
         else if (!inRect && this.hover) this.onHoverEnd()
         if (!this.isInactive()) {
             event.hoverStateChanged = event.hoverStateChanged || this.hover !== inRect
             this.hover = inRect
-            if (!this.hover) this.pressedByButton = null
+            if (!this.hover) this.pressed = false
         }
-        this.children.forEach((child) => child.checkHover(event))
+        this.children.forEach((child) => child.onPointerMove(event))
     }
 
     onHoverStart(): void {
@@ -93,49 +92,47 @@ export class BaseElement {
     onHoverEnd(): void {
     }
 
-    checkClick(event: GuiClickEvent): boolean {
+    onPointerDown(event: GuiPointerDownEvent): boolean {
         if (this.isInactive()) return false
-        const oldState = this.pressedByButton
+        const oldState = this.pressed
         if (this.isInRect(event.sx, event.sy)) {
-            if (this.pressedByButton === null && event.button === MOUSE_BUTTON.MAIN && this.onClick) {
-                this.pressedByButton = event.button
+            if (!this.pressed && this.onClick) {
+                this.pressed = true
             }
         } else {
-            this.pressedByButton = null
+            this.pressed = false
         }
-        let stateChanged = this.pressedByButton !== oldState
-        this.children.forEach((child) => stateChanged = child.checkClick(event) || stateChanged)
+        let stateChanged = this.pressed !== oldState
+        this.children.forEach((child) => stateChanged = child.onPointerDown(event) || stateChanged)
         return stateChanged
     }
 
-    checkRelease(event: GuiReleaseEvent): boolean {
+    onPointerUp(event: GuiPointerUpEvent): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(event.sx, event.sy)
         let stateChanged = false
-        this.children.forEach((child) => stateChanged = child.checkRelease(event) || stateChanged)
-        if (!stateChanged && inRect && this.pressedByButton !== null) {
+        this.children.forEach((child) => stateChanged = child.onPointerUp(event) || stateChanged)
+        if (!stateChanged && inRect && this.pressed) {
             this.clicked(event)
         }
-        stateChanged = this.pressedByButton !== null || stateChanged
-        this.pressedByButton = null
+        stateChanged = this.pressed || stateChanged
+        this.pressed = false
         return stateChanged
     }
 
-    clicked(event: GuiClickEvent) {
-        if (event.button === MOUSE_BUTTON.MAIN) {
-            if (this.onClick) {
-                this.publishEvent(new ChangeCursor(Cursor.OKAY, 1000))
-                this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed, false))
-                this.onClick(event.sx, event.sy)
-            }
+    clicked(event: GuiPointerDownEvent) {
+        if (this.onClick) {
+            this.publishEvent(new ChangeCursor(Cursor.OKAY, 1000))
+            this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed, false))
+            this.onClick(event.sx, event.sy)
         }
     }
 
-    release(): boolean {
-        let stateChanged = this.pressedByButton !== null || this.hover
-        this.pressedByButton = null
+    onPointerLeave(): boolean {
+        let stateChanged = this.pressed || this.hover
+        this.pressed = false
         this.hover = false
-        this.children.forEach((child) => stateChanged = child.release() || stateChanged)
+        this.children.forEach((child) => stateChanged = child.onPointerLeave() || stateChanged)
         return stateChanged
     }
 
