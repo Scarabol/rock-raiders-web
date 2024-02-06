@@ -16,7 +16,7 @@ export class AnimationGroup extends Group implements Updatable {
     maxDurationMs: number = 0
     animationTriggerTimeMs: number = 0
 
-    constructor(readonly lwsFilepath: string, readonly onAnimationDone: () => void, readonly durationTimeoutMs: number = 0, readonly onAnimationTrigger: () => void = null) {
+    constructor(readonly lwsFilepath: string, public onAnimationDone: () => void, public durationTimeoutMs: number = 0, public onAnimationTrigger: () => void = null) {
         super()
         this.maxDurationMs = durationTimeoutMs
         this.animationTriggerTimeMs = durationTimeoutMs

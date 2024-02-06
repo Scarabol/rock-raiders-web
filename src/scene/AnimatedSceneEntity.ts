@@ -69,6 +69,9 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                 return new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs, onAnimationTrigger).setup()
             })
             animatedGroup.resetAnimation()
+            animatedGroup.onAnimationDone = onAnimationDone
+            animatedGroup.durationTimeoutMs = durationTimeoutMs
+            animatedGroup.onAnimationTrigger = onAnimationTrigger
             animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
             this.animationParent.add(animatedGroup)
             this.animationGroups.push(animatedGroup)
