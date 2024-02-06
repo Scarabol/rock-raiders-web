@@ -13,7 +13,9 @@ export class LavaErosionComponent extends AbstractGameComponent {
     }
 
     increaseErosionLevel() {
-        if (Math.random() * 10 >= this.erosionLevel) return
+        if (!this.surface.surfaceType.floor ||
+            !this.surface.discovered ||
+            Math.random() * 10 >= this.erosionLevel) return
         let erosionSurfaceType: SurfaceType = SurfaceType.LAVA1
         if (this.surface.surfaceType === SurfaceType.LAVA1) erosionSurfaceType = SurfaceType.LAVA2
         else if (this.surface.surfaceType === SurfaceType.LAVA2) erosionSurfaceType = SurfaceType.LAVA3
