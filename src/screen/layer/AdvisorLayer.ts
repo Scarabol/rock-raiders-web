@@ -59,6 +59,7 @@ export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeL
         this.group.play()
         // XXX Play SFX for advisor, which seems always null
         this.renderer.startRendering(this.scene, this.camera)
+        this.groupUpdateInterval = clearIntervalSafe(this.groupUpdateInterval)
         this.groupUpdateInterval = setInterval(() => {
             this.group.update(NATIVE_UPDATE_INTERVAL)
         }, NATIVE_UPDATE_INTERVAL)
