@@ -10,13 +10,13 @@ export class SamplesCfg extends BaseConfig {
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         const sndFilePaths: string[] = Array.isArray(cfgValue) ? cfgValue : [cfgValue]
-        sndFilePaths.map((sndPath) => {
+        sndFilePaths.forEach((sndPath) => {
             if (sndPath.startsWith('*') || // XXX no clue what this means... don't loop maybe, see teleportup
                 sndPath.startsWith('@')) {
                 sndPath = sndPath.slice(1)
             }
-            return `${sndPath}.wav`
-        }).forEach(sndPath => this.pathToSfxKeys.getOrUpdate(sndPath, () => []).push(unifiedKey))
+            this.pathToSfxKeys.getOrUpdate(`${sndPath}.wav`, () => []).push(unifiedKey)
+        })
         return true
     }
 }

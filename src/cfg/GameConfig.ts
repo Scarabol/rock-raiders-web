@@ -55,9 +55,6 @@ export class GameConfig extends BaseConfig {
     samples: SamplesCfg = new SamplesCfg()
     textures: TexturesCfg = new TexturesCfg()
     objectNamesCfg: Map<string, string> = new Map()
-    // vehicleTypes: VehicleTypesCfg = new VehicleTypesCfg()
-    // rockMonsterTypes: RockMonsterTypesCfg = new RockMonsterTypesCfg()
-    // buildingTypes: BuildingTypesCfg = new BuildingTypesCfg()
     upgradeTypesCfg: Map<string, string> = new Map()
     infoMessages: InfoMessagesCfg = new InfoMessagesCfg()
     stats: GameStatsCfg = new GameStatsCfg()
@@ -108,8 +105,6 @@ export class GameConfig extends BaseConfig {
             this.priorityImages.setFromCfgObj(cfgValue)
         } else if ('PrioritiesImagePositions'.equalsIgnoreCase(unifiedKey)) {
             this.prioritiesImagePositions.setFromCfgObj(cfgValue)
-            // } else if ('MiscObjects'.equalsIgnoreCase(unifiedKey)) {
-            //     this.miscObjects.setFromCfgObj(cfgValue)
         } else if ('Bubbles'.equalsIgnoreCase(unifiedKey)) {
             this.bubbles.setFromCfgObj(cfgValue)
         } else if ('RockFallStyles'.equalsIgnoreCase(unifiedKey)) {
@@ -122,12 +117,6 @@ export class GameConfig extends BaseConfig {
             this.textures.setFromCfgObj(cfgValue)
         } else if ('ObjectNames'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objectNamesCfg.set(this.unifyKey(cfgKey), parseLabel(value as string)))
-            // } else if ('VehicleTypes'.equalsIgnoreCase(unifiedKey)) {
-            //     this.vehicleTypes.setFromCfgObj(cfgValue)
-            // } else if ('RockMonsterTypes'.equalsIgnoreCase(unifiedKey)) {
-            //     this.rockMonsterTypes.setFromCfgObj(cfgValue)
-            // } else if ('BuildingTypes'.equalsIgnoreCase(unifiedKey)) {
-            //     this.buildingTypes.setFromCfgObj(cfgValue)
         } else if ('UpgradeTypes'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.upgradeTypesCfg.set(cfgKey.toLowerCase(), value as string))
         } else if ('InfoMessages'.equalsIgnoreCase(unifiedKey)) {

@@ -42,7 +42,10 @@ export class SoundManager {
             source.buffer = audioBuffer
             source.connect(SoundManager.setupSfxAudioTarget())
             source.start()
-            if (isVoice) setTimeout(() => this.skipVoiceLines = false, audioBuffer.duration * 1000 + NerpRunner.timeAddedAfterSample)
+            if (isVoice) {
+                const blockVoiceLinesMs = Math.round(audioBuffer.duration * 1000 + NerpRunner.timeAddedAfterSample)
+                setTimeout(() => this.skipVoiceLines = false, blockVoiceLinesMs)
+            }
             return source
         } catch (e) {
             console.error(`Could not play sound ${soundName}`, e)
