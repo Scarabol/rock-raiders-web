@@ -101,7 +101,7 @@ export class RestartGameEvent extends BaseEvent {
 }
 
 export class LevelSelectedEvent extends BaseEvent {
-    constructor(readonly levelName: string, readonly levelConf: LevelEntryCfg) {
+    constructor(readonly levelConf: LevelEntryCfg) {
         super(EventKey.LEVEL_SELECTED)
     }
 }

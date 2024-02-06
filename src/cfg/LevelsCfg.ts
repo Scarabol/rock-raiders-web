@@ -9,7 +9,7 @@ export class LevelsCfg extends BaseConfig {
     setFromCfgObj(cfgObj: any): this {
         Object.keys(cfgObj).forEach((levelName) => {
             if (!levelName.startsWith('Tutorial') && !levelName.startsWith('Level')) return // ignore incomplete test levels and duplicates
-            const levelConf = new LevelEntryCfg().setFromCfgObj(cfgObj[levelName])
+            const levelConf = new LevelEntryCfg(levelName).setFromCfgObj(cfgObj[levelName])
             const tileSize = levelConf.blockSize
             if (tileSize !== TILESIZE) console.warn(`Unexpected tile size in level configuration: ${tileSize}`)
             this.levelCfgByName.set(levelName, levelConf)
@@ -80,6 +80,10 @@ export class LevelEntryCfg extends BaseConfig {
     priorities: LevelPrioritiesEntryConfig[] = [] // priority order matters!
     reward: LevelRewardConfig = null
     menuBMP: string[] = []
+
+    constructor(readonly levelName: string) {
+        super()
+    }
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         if (unifiedKey === 'fullName'.toLowerCase()) {

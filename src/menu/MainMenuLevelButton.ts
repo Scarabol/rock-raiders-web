@@ -18,14 +18,13 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
 
     constructor(
         readonly layer: MainMenuLayer,
-        readonly levelName: string,
-        readonly levelCfg: LevelEntryCfg,
+        readonly levelConf: LevelEntryCfg,
     ) {
-        super(levelCfg.frontEndX, levelCfg.frontEndY)
+        super(levelConf.frontEndX, levelConf.frontEndY)
         this.actionName = 'selectlevel'
         this.zIndex = 10
         this.scrollAffected = true
-        const [imgActive, imgInactive, imgCross] = levelCfg.menuBMP
+        const [imgActive, imgInactive, imgCross] = levelConf.menuBMP
         this.imgActive = ResourceManager.getImage(imgActive)
         this.imgInactive = ResourceManager.getImage(imgInactive)
         this.imgCross = ResourceManager.getImage(imgCross)
@@ -35,18 +34,18 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
     }
 
     isLocked(): boolean {
-        return (!DEV_MODE && this.levelName.toLowerCase().includes('tutorial')) || // TODO Remove this line when tutorial helper functions implemented
+        return (!DEV_MODE && this.levelConf.levelName.toLowerCase().includes('tutorial')) || // TODO Remove this line when tutorial helper functions implemented
             !(() => true) && // TODO Remove this line before release 1.0
-            !this.levelCfg.frontEndOpen &&
-            !this.levelName.equalsIgnoreCase(GameConfig.instance.main.startLevel) &&
-            !this.levelName.equalsIgnoreCase(GameConfig.instance.main.tutorialStartLevel) &&
-            !SaveGameManager.getLevelScoreString(this.levelName) &&
+            !this.levelConf.frontEndOpen &&
+            !this.levelConf.levelName.equalsIgnoreCase(GameConfig.instance.main.startLevel) &&
+            !this.levelConf.levelName.equalsIgnoreCase(GameConfig.instance.main.tutorialStartLevel) &&
+            !SaveGameManager.getLevelScoreString(this.levelConf.levelName) &&
             !this.isUnlockedByLevelLink()
     }
 
     private isUnlockedByLevelLink(): boolean {
         return Array.from(GameConfig.instance.levels.levelCfgByName.entries()).some(([levelName, levelEntryCfg]) =>
-            SaveGameManager.getLevelScoreString(levelName) && levelEntryCfg.levelLinks.some((levelLink) => this.levelName.equalsIgnoreCase(levelLink))
+            SaveGameManager.getLevelScoreString(levelName) && levelEntryCfg.levelLinks.some((levelLink) => this.levelConf.levelName.equalsIgnoreCase(levelLink))
         )
     }
 

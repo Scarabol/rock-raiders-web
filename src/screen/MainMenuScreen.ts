@@ -73,7 +73,7 @@ export class MainMenuScreen {
         if (item.actionName.equalsIgnoreCase('next')) {
             this.showMainMenu(item.targetIndex)
         } else if (item.actionName.equalsIgnoreCase('selectlevel')) {
-            this.selectLevel((item as MainMenuLevelButton).levelName)
+            this.selectLevel((item as MainMenuLevelButton).levelConf.levelName)
         } else if (item.actionName.toLowerCase().startsWith('load_game')) {
             SaveGameManager.loadGame(item.targetIndex)
             this.showLevelSelection()
@@ -125,7 +125,7 @@ export class MainMenuScreen {
         this.screenMaster.loadingLayer.show()
         this.menuLayers.forEach((m) => m.hide())
         this.rockWipeLayer.hide()
-        EventBroker.publish(new LevelSelectedEvent(levelName, levelConf))
+        EventBroker.publish(new LevelSelectedEvent(levelConf))
         EventBroker.publish(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
     }
 }

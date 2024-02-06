@@ -31,7 +31,6 @@ export class GameScreen {
     sceneMgr: SceneManager
     entityMgr: EntityManager
     guiMgr: GuiManager
-    levelName: string
     levelConf: LevelEntryCfg
 
     constructor(readonly screenMaster: ScreenMaster) {
@@ -60,7 +59,6 @@ export class GameScreen {
         })
         EventBroker.subscribe(EventKey.RESTART_GAME, () => this.restartLevel())
         EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
-            this.levelName = event.levelName
             this.levelConf = event.levelConf
             this.setupAndStartLevel()
         })
@@ -83,8 +81,8 @@ export class GameScreen {
     }
 
     private setupAndStartLevel() {
-        console.log(`Starting level ${this.levelName} - ${this.levelConf.fullName}`)
-        document.title = `${this.levelName} - ${this.levelConf.fullName} - Rock Raiders Web`
+        console.log(`Starting level ${this.levelConf.levelName} - ${this.levelConf.fullName}`)
+        document.title = `${this.levelConf.levelName} - ${this.levelConf.fullName} - Rock Raiders Web`
         this.entityMgr.reset()
         this.guiLayer.reset()
         this.worldMgr.setup(this.levelConf)
@@ -133,7 +131,7 @@ export class GameScreen {
             const numMaxAirRaiders = this.levelConf.oxygenRate ? this.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT : MAX_RAIDER_BASE
             result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, numMaxAirRaiders, gameTimeSeconds, canvas)
             if (result.state === GameResultState.COMPLETE) {
-                SaveGameManager.setLevelScore(this.levelName, result.score)
+                SaveGameManager.setLevelScore(this.levelConf.levelName, result.score)
             }
         }
         if (!DEV_MODE && !this.levelConf.disableEndTeleport) await this.worldMgr.teleportEnd()
