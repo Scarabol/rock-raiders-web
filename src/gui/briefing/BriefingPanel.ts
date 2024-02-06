@@ -7,6 +7,7 @@ import { BriefingPanelCfg } from './BriefingPanelCfg'
 import { SetSpaceToContinueEvent, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
+import { SoundManager } from '../../audio/SoundManager'
 
 export class BriefingPanel extends Panel {
     cfg: BriefingPanelCfg = null
@@ -19,6 +20,8 @@ export class BriefingPanel extends Panel {
     imgParagraphList: SpriteImage[] = []
     paragraph: number = 0
     objectiveParagraphs: string[] = []
+    objectiveSfxName: string = ''
+    objectiveSfx: AudioBufferSourceNode = null
     onContinueMission: () => any = () => console.log('Start mission')
 
     constructor(parent: BaseElement) {
@@ -38,9 +41,10 @@ export class BriefingPanel extends Panel {
         super.reset()
         this.hidden = true
         this.setParagraph(0)
+        this.objectiveSfxName = ''
     }
 
-    setup(dialogTitle: string, objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
+    setup(dialogTitle: string, objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg, objectiveSfx: string) {
         this.imgBack = ResourceManager.getImageOrNull(objectiveBackImgCfg.filename)
         this.relX = this.xIn = objectiveBackImgCfg.x
         this.relY = this.yIn = objectiveBackImgCfg.y
@@ -48,6 +52,7 @@ export class BriefingPanel extends Panel {
         this.height = this.imgBack.height
         this.updatePosition()
         this.objectiveParagraphs = objectiveText.split('\\a')
+        this.objectiveSfxName = objectiveSfx
         BitmapFontWorkerPool.instance.createTextImage(this.cfg.titleFontName, dialogTitle).then((textImage) => {
             this.imgTitle = textImage
             this.notifyRedraw()
@@ -63,6 +68,7 @@ export class BriefingPanel extends Panel {
     setParagraph(paragraph: number) {
         if (paragraph < 0) return
         if (paragraph > 0 && paragraph > this.objectiveParagraphs.length - 1) {
+            this.objectiveSfx?.stop()
             this.onContinueMission()
             return
         }
@@ -83,6 +89,7 @@ export class BriefingPanel extends Panel {
     show() {
         super.show()
         this.setParagraph(0)
+        if (this.objectiveSfxName) this.objectiveSfx = SoundManager.playSound(this.objectiveSfxName, false)
         this.btnNext.hidden = this.paragraph >= this.objectiveParagraphs.length - 1
         this.btnBack.hidden = this.paragraph < 1
         this.publishEvent(new SetSpaceToContinueEvent(true))

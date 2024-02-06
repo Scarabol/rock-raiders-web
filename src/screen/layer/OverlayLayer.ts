@@ -81,7 +81,8 @@ export class OverlayLayer extends ScaledLayer {
     }
 
     showBriefing(levelConf: LevelEntryCfg) {
-        this.panelBriefing.setup(GameConfig.instance.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage640x480)
+        const objectiveSfx = `Stream_Objective_Levels::${levelConf.levelName}`.toLowerCase()
+        this.panelBriefing.setup(GameConfig.instance.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage640x480, objectiveSfx)
         this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
         this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
     }
@@ -90,20 +91,24 @@ export class OverlayLayer extends ScaledLayer {
         const mainCfg = GameConfig.instance.main
         let title = ''
         let text = ''
+        let sfx = ''
         if (result === GameResultState.COMPLETE) {
             title = mainCfg.missionCompletedText
             text = levelConf.objectiveTextCfg.completion
+            sfx = `Stream_ObjectiveAcheived_Levels::${levelConf.levelName}`.toLowerCase()
         } else if (result === GameResultState.FAILED) {
             title = mainCfg.missionFailedText
             text = levelConf.objectiveTextCfg.failure
+            sfx = `Stream_ObjectiveFailed_Levels::${levelConf.levelName}`.toLowerCase()
         } else if (result === GameResultState.CRYSTAL_FAILURE) {
             title = mainCfg.missionFailedText
             text = levelConf.objectiveTextCfg.crystalFailure
+            sfx = 'Stream_ObjectiveFailedCrystals'
         } else { // GameResultState.QUIT
             onContinue()
             return
         }
-        this.panelBriefing.setup(title, text, levelConf.objectiveImage640x480)
+        this.panelBriefing.setup(title, text, levelConf.objectiveImage640x480, sfx)
         this.setActivePanel(this.panelBriefing)
         this.panelBriefing.onContinueMission = onContinue
         this.active = true
