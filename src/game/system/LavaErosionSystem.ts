@@ -9,7 +9,7 @@ export class LavaErosionSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([LavaErosionComponent])
     erodeTriggerTimeMs: number = 0
     increaseErosionDelayMs: number = 0
-    powerPathLockTimeMs: number = 0
+    erosionStartDelayTimeMs: number = 0
 
     static readonly erodibleSurfaceTypes: SurfaceType[] = [
         SurfaceType.GROUND, SurfaceType.POWER_PATH, SurfaceType.POWER_PATH_BUILDING_SITE,
@@ -22,31 +22,27 @@ export class LavaErosionSystem extends AbstractGameSystem {
         EventBroker.subscribe(EventKey.LEVEL_SELECTED, (levelSelectedEvent: LevelSelectedEvent) => {
             this.erodeTriggerTimeMs = levelSelectedEvent.levelConf.erodeTriggerTime * 1000
             this.increaseErosionDelayMs = levelSelectedEvent.levelConf.erodeErodeTime * 1000
-            this.powerPathLockTimeMs = levelSelectedEvent.levelConf.erodeLockTime * 1000
+            this.erosionStartDelayTimeMs = levelSelectedEvent.levelConf.erodeLockTime * 1000
         })
     }
 
     update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
-        if (this.erodeTriggerTimeMs > 0) {
-            this.erodeTriggerTimeMs -= elapsedMs
-            return
-        }
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)
                 const erosionComponent = components.get(LavaErosionComponent)
                 if (erosionComponent.surface.surfaceType === SurfaceType.LAVA5) {
                     this.ecs.removeComponent(entity, LavaErosionComponent)
-                    return
+                    continue
                 } else if (!erosionComponent.surface.discovered) {
-                    return
+                    continue
                 } else if (!LavaErosionSystem.erodibleSurfaceTypes.includes(erosionComponent.surface.surfaceType)) {
-                    return
+                    continue
                 } else if (!erosionComponent.isSelfEroding && !erosionComponent.surface.neighbors.some((s) => s.surfaceType === SurfaceType.LAVA5)) {
-                    return
+                    continue
                 }
                 erosionComponent.erosionTimer += elapsedMs
-                while (erosionComponent.erosionTimer > this.increaseErosionDelayMs + (erosionComponent.surface.surfaceType === SurfaceType.POWER_PATH ? this.powerPathLockTimeMs : 0)) {
+                while (erosionComponent.erosionTimer > this.increaseErosionDelayMs + (erosionComponent.surface.surfaceType.hasErosion ? 0 : this.erosionStartDelayTimeMs)) {
                     erosionComponent.increaseErosionLevel()
                     erosionComponent.erosionTimer -= this.increaseErosionDelayMs
                 }
