@@ -12,6 +12,7 @@ import { CameraControl, PlaySoundEvent } from '../../event/GuiCommand'
 import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
 import { Sample } from '../../audio/Sample'
 import { WorldLocationEventMap } from '../../event/EventTypeMap'
+import { DEV_MODE } from '../../params'
 
 export class InfoDockPanel extends Panel {
     readonly stackButtons: InfoDockButton[] = []
@@ -73,7 +74,7 @@ export class InfoDockPanel extends Panel {
             while (infoDockButton.messages.length >= 9) infoDockButton.messages.pop()
             infoDockButton.messages.unshift(event)
             this.showButton(infoDockButton)
-            if (sample) this.publishEvent(new PlaySoundEvent(sample, true))
+            if (sample && !DEV_MODE) this.publishEvent(new PlaySoundEvent(sample, true))
         })
         if (eventTypeGone) {
             this.registerEventListener(eventTypeGone, (event: WorldLocationEvent) => {
