@@ -6,7 +6,7 @@ import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
 import { TILESIZE } from '../../params'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { Surface } from '../terrain/Surface'
-import { Vector3 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { GameConfig } from '../../cfg/GameConfig'
 
 const FENCE_RANGE_SQ = TILESIZE / 4 * TILESIZE / 4
@@ -143,11 +143,11 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         const shortBeams: { lwsFilename: string, beamPos: Vector3, beamHeading: number }[] = []
         this.worldMgr.entityMgr.placedFences.forEach((fence) => {
             const components = this.ecs.getComponents(fence.entity)
-            const surface = components.get(PositionComponent).surface
-            const neighbors = surface.neighbors.filter((n) => !!n.fence || n.building?.primarySurface === n || n.building?.secondarySurface === n)
+            const fenceSurface = components.get(PositionComponent).surface
+            const neighbors = fenceSurface.neighbors.filter((n) => !!n.fence || n.building?.primarySurface === n || n.building?.secondarySurface === n)
             neighbors.forEach((n) => {
-                const beamHeading = -n.getCenterWorld2D().angleTo(surface.getCenterWorld2D()) + Math.PI / 2
-                shortBeams.push({lwsFilename: GameConfig.instance.miscObjects.ShortElectricFenceBeam, beamPos: surface.getCenterWorld(), beamHeading})
+                const beamHeading = new Vector2(n.y - fenceSurface.y, n.x - fenceSurface.x).angle() // y is actually z axis here
+                shortBeams.push({lwsFilename: GameConfig.instance.miscObjects.ShortElectricFenceBeam, beamPos: fenceSurface.getCenterWorld(), beamHeading})
             })
         })
         const beamLocations = [...longBeams, ...shortBeams]
