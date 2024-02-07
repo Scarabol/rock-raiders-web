@@ -50,6 +50,7 @@ export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats
     PickSphere: number = 0
     CollRadius: number = 0
     CollHeight: number = 0
+    ToolStore: boolean = false
     TrainDriver: boolean[] = []
     TrainRepair: boolean[] = []
     TrainScanner: boolean[] = []
@@ -59,6 +60,8 @@ export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats
     CostOre: number = 0
     CostRefinedOre: number = 0
     CostCrystal: number = 0
+    UpgradeBuilding: boolean = false
+    SnaxULike: boolean = false
     SurveyRadius: number[] = []
     CrystalDrain: number | number[] = 0
     OxygenCoef: number = 0

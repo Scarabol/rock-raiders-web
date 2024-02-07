@@ -24,6 +24,7 @@ import { HealthComponent } from './component/HealthComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/MapMarkerComponent'
 import { SlugBehaviorComponent, SlugBehaviorState } from './component/SlugBehaviorComponent'
 import { EventBroker } from '../event/EventBroker'
+import { BuildingEntityStats } from '../cfg/GameStatsCfg'
 
 export interface VehicleTarget {
     entity: GameEntity
@@ -143,7 +144,11 @@ export class EntityManager {
     }
 
     getGetToolTargets(): PathTarget[] {
-        return this.getBuildingsByType(EntityType.TOOLSTATION).map((b) => b.getToolPathTarget)
+        return this.getPoweredBuildingByStatsProperty('ToolStore').map((b) => b.getToolPathTarget)
+    }
+
+    private getPoweredBuildingByStatsProperty(statsKey: keyof BuildingEntityStats) {
+        return this.buildings.filter(b => b.isPowered() && b.stats[statsKey])
     }
 
     getBuildingCarryPathTargets(entityType: EntityType): PathTarget[] {
@@ -151,15 +156,15 @@ export class EntityManager {
     }
 
     getRaiderUpgradePathTarget(): PathTarget[] {
-        return this.getBuildingsByType(EntityType.TOOLSTATION).flatMap((b) => b.getTrainingTargets())
+        return this.getPoweredBuildingByStatsProperty('ToolStore').flatMap((b) => b.getTrainingTargets())
     }
 
     getRaiderEatPathTarget(): PathTarget[] {
-        return this.getBuildingsByType(EntityType.BARRACKS).flatMap((b) => b.getTrainingTargets())
+        return this.getPoweredBuildingByStatsProperty('SnaxULike').flatMap((b) => b.getTrainingTargets())
     }
 
     getVehicleUpgradePathTargets(): PathTarget[] {
-        return this.getBuildingsByType(EntityType.UPGRADE).map((b) => PathTarget.fromBuilding(b, b.getDropPosition2D(), 1, b.primarySurface.getCenterWorld2D()))
+        return this.getPoweredBuildingByStatsProperty('UpgradeBuilding').map((b) => PathTarget.fromBuilding(b, b.getDropPosition2D(), 1, b.primarySurface.getCenterWorld2D()))
     }
 
     hasBuilding(buildingType: EntityType): boolean {
@@ -177,7 +182,7 @@ export class EntityManager {
     }
 
     hasUpgradeSite(): boolean {
-        return this.buildings.some((b) => b.isPowered() && b.entityType === EntityType.UPGRADE)
+        return this.buildings.some((b) => b.isPowered() && b.stats.UpgradeBuilding)
     }
 
     getRaiderFightTargets(): PathTarget[] {
