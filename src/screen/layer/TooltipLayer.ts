@@ -1,7 +1,6 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
 import { SaveScreenshot } from '../../event/LocalEvents'
-import { TooltipSpriteBuilder } from '../../resource/TooltipSpriteBuilder'
 import { ScreenLayer } from './ScreenLayer'
 import { CURSOR_MAX_HEIGHT, NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { clearTimeoutSafe } from '../../core/Util'
@@ -15,31 +14,29 @@ export class TooltipLayer extends ScreenLayer {
     tooltipTimeoutSfx: NodeJS.Timeout = null
     cursorLeft: boolean = false
     tooltipCanvas: HTMLCanvasElement = null
-    lastTooltipText: string = null
+    lastTooltipKey: string = null
 
     constructor() {
         super()
         this.gameCanvasContainer = document.getElementById('game-canvas-container')
         EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_CHANGE, (event: ChangeTooltip) => {
-            if (this.cursorLeft || !this.active || event.tooltipText === this.lastTooltipText) return
-            this.lastTooltipText = event.tooltipText
+            if (this.cursorLeft || !this.active || event.tooltipKey === this.lastTooltipKey) return
+            this.lastTooltipKey = event.tooltipKey
             this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
             this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
             if (this.tooltipCanvas) {
                 this.gameCanvasContainer.removeChild(this.tooltipCanvas)
                 this.tooltipCanvas = null
             }
-            if (event.tooltipText) {
-                this.tooltipTimeoutText = setTimeout(() => this.getTooltipImg(event).then((tooltipImg) => {
-                    this.changeTooltipImage(tooltipImg)
-                }), event.timeoutText)
-            }
+            this.tooltipTimeoutText = setTimeout(async () => {
+                this.changeTooltipImage(await event.getTooltipTextImg())
+            }, event.timeoutText)
             if (event.tooltipSfx) {
                 this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSound(event.tooltipSfx, true), event.timeoutSfx)
             }
         })
         EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_HIDE, (event: HideTooltip) => {
-            if (event.tooltipText && event.tooltipText !== this.lastTooltipText) return
+            if (event.tooltipText && event.tooltipText !== this.lastTooltipKey) return
             this.removeTooltip()
         })
         this.addEventListener('pointermove', (event: PointerEvent): boolean => {
@@ -71,7 +68,7 @@ export class TooltipLayer extends ScreenLayer {
             this.gameCanvasContainer.removeChild(this.tooltipCanvas)
             this.tooltipCanvas = null
         }
-        this.lastTooltipText = null
+        this.lastTooltipKey = null
     }
 
     private changeTooltipImage(tooltipImg: HTMLCanvasElement | OffscreenCanvas) {
@@ -111,19 +108,5 @@ export class TooltipLayer extends ScreenLayer {
         this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
         this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
         this.cursorLeft = false
-    }
-
-    private async getTooltipImg(event: ChangeTooltip) { // XXX cache tooltip images
-        if (event.numToolSlots || event.tools || event.trainings) {
-            return await TooltipSpriteBuilder.getRaiderTooltipSprite(event.tooltipText || '',
-                event.numToolSlots || 0, event.tools || [], event.trainings || [])
-        } else if (event.crystals || event.ores || event.bricks) {
-            return await TooltipSpriteBuilder.getBuildingSiteTooltipSprite(event.tooltipText, event.crystals, event.ores, event.bricks)
-        } else if (event.buildingMissingOreForUpgrade) {
-            return await TooltipSpriteBuilder.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, event.buildingMissingOreForUpgrade)
-        } else if (event.tooltipText) {
-            return await TooltipSpriteBuilder.getTooltipSprite(event.tooltipText, event.energy)
-        }
-        return null
     }
 }

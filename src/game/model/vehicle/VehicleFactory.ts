@@ -33,7 +33,7 @@ export class VehicleFactory {
             case EntityType.LARGE_HELI:
                 return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.largeHeli, ['Vehicles/LargeHeli'])
             default:
-                throw new Error(`Unexpected vehicle type: ${EntityType[entityType]}`)
+                throw new Error(`Unexpected vehicle type: ${entityType}`)
         }
     }
 
@@ -62,7 +62,7 @@ export class VehicleFactory {
             case EntityType.LARGE_CAT:
                 return GameConfig.instance.stats.largeCat
             default:
-                throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
+                throw new Error(`Unexpected entity type: ${entityType}`)
         }
     }
 }

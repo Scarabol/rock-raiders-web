@@ -7,6 +7,7 @@ import { IconPanelToggleButton } from '../IconPanelToggleButton'
 import { SelectBasePanel } from './SelectBasePanel'
 import { TOOLTIP_DELAY_SFX } from '../../../params'
 import { GameConfig } from '../../../cfg/GameConfig'
+import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 
 export class SelectBuildingPanel extends SelectBasePanel {
     buildingNeedsRepair: boolean = false
@@ -31,7 +32,10 @@ export class SelectBuildingPanel extends SelectBasePanel {
         upgradeItem.isDisabled = () => !this.buildingCanUpgrade
         upgradeItem.onClick = () => this.publishEvent(new UpgradeBuilding())
         upgradeItem.showTooltipDisabled = () => {
-            this.publishEvent(new ChangeTooltip(upgradeItem.tooltipDisabled, 0, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX, null, null, this.buildingMissingOreForUpgrade))
+            const event = new ChangeTooltip(upgradeItem.tooltipDisabled, 0, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX, () => {
+                return TooltipSpriteBuilder.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, this.buildingMissingOreForUpgrade)
+            })
+            this.publishEvent(event)
         }
         const deleteBuildingItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteBuilding')
         deleteBuildingItem.isDisabled = () => false

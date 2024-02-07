@@ -4,12 +4,12 @@ import { RaiderTraining } from '../game/model/raider/RaiderTraining'
 import { EventKey } from './EventKeyEnum'
 import { Cursor } from '../resource/Cursor'
 import { Sample } from '../audio/Sample'
-import { Raider } from '../game/model/raider/Raider'
-import { BuildingSite } from '../game/model/building/BuildingSite'
 import { VehicleUpgrade } from '../game/model/vehicle/VehicleUpgrade'
 import { CameraRotation } from '../scene/BirdViewControls'
 import { Vector2 } from 'three'
 import { BaseEvent } from './EventTypeMap'
+import { TooltipSpriteBuilder } from '../resource/TooltipSpriteBuilder'
+import { SpriteImage } from '../core/Sprite'
 
 export class ChangeCursor extends BaseEvent {
     constructor(readonly cursor: Cursor, readonly timeout: number = null) {
@@ -18,42 +18,22 @@ export class ChangeCursor extends BaseEvent {
 }
 
 export class ChangeTooltip extends BaseEvent {
-    readonly numToolSlots?: number
-    readonly tools?: RaiderTool[]
-    readonly trainings?: RaiderTraining[]
-    readonly crystals?: { actual: number, needed: number }
-    readonly ores?: { actual: number, needed: number }
-    readonly bricks?: { actual: number, needed: number }
+    readonly getTooltipTextImg: () => Promise<SpriteImage>
+    tooltipKey: string
 
     constructor(
-        readonly tooltipText: string,
+        public tooltipText: string,
         readonly timeoutText: number,
-        readonly tooltipSfx?: string,
-        readonly timeoutSfx?: number,
-        raider?: Raider,
-        site?: BuildingSite,
-        readonly buildingMissingOreForUpgrade?: number,
-        readonly energy?: number,
+        readonly tooltipSfx: string = null,
+        readonly timeoutSfx: number = 0,
+        callback: () => Promise<SpriteImage> = () => {
+            return TooltipSpriteBuilder.getTooltipSprite(this.tooltipText, 0)
+        },
     ) {
         super(EventKey.COMMAND_TOOLTIP_CHANGE)
-        if (raider) {
-            this.numToolSlots = raider.maxTools()
-            this.tools = [...raider.tools]
-            this.trainings = [...raider.trainings]
-        }
-        if (site) {
-            this.crystals = {
-                actual: site.onSiteByType.get(EntityType.CRYSTAL)?.length || 0,
-                needed: site.neededByType.get(EntityType.CRYSTAL),
-            }
-            this.ores = {
-                actual: site.onSiteByType.get(EntityType.ORE)?.length || 0,
-                needed: site.neededByType.get(EntityType.ORE),
-            }
-            this.bricks = {
-                actual: site.onSiteByType.get(EntityType.BRICK)?.length || 0,
-                needed: site.neededByType.get(EntityType.BRICK),
-            }
+        this.tooltipKey = tooltipText
+        this.getTooltipTextImg = () => {
+            return callback()
         }
     }
 }

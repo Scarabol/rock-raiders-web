@@ -330,7 +330,12 @@ export class EntityManager {
                     this.undiscoveredRockMonsters.add(entity)
                 }
                 break
-            case EntityType.ORE | EntityType.CRYSTAL | EntityType.BRICK | EntityType.BARRIER | EntityType.DYNAMITE | EntityType.ELECTRIC_FENCE:
+            case EntityType.ORE:
+            case EntityType.CRYSTAL:
+            case EntityType.BRICK:
+            case EntityType.BARRIER:
+            case EntityType.DYNAMITE:
+            case EntityType.ELECTRIC_FENCE:
                 // if (discovered) this.materials.add(entity) // TODO use game entities within entity manager
                 // else this.materialsUndiscovered.add(entity) // TODO use game entities within entity manager
                 break

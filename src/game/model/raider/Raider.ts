@@ -38,6 +38,8 @@ import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../compon
 import { BulletComponent } from '../../component/BulletComponent'
 import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
+import { TooltipComponent } from '../../component/TooltipComponent'
+import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -70,6 +72,12 @@ export class Raider implements Updatable, JobFulfiller {
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData('mini-figures/pilot'))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
+        const objectKey = this.entityType.toLowerCase()
+        const objectName = GameConfig.instance.objectNamesCfg.get(objectKey)
+        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey)
+        if (objectName) this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, sfxKey, () => {
+            return TooltipSpriteBuilder.getRaiderTooltipSprite(objectName, this.maxTools(), this.tools, this.trainings)
+        }))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 

@@ -6,13 +6,13 @@ import { DeselectAll, SelectionChanged, SelectionFrameChangeEvent } from '../../
 import { JobCreateEvent } from '../../event/WorldEvents'
 import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
-import { DEV_MODE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
+import { DEV_MODE } from '../../params'
 import { ScreenLayer } from './ScreenLayer'
 import { Cursor } from '../../resource/Cursor'
 import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/terrain/Surface'
 import { EventKey } from '../../event/EventKeyEnum'
-import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
+import { ChangeCursor } from '../../event/GuiCommand'
 import { CursorTarget, SelectionRaycaster } from '../../scene/SelectionRaycaster'
 import { WorldManager } from '../../game/WorldManager'
 import { GameState } from '../../game/model/GameState'
@@ -21,9 +21,8 @@ import { MaterialEntity } from '../../game/model/material/MaterialEntity'
 import { RaiderInfoComponent } from '../../game/component/RaiderInfoComponent'
 import { GameSelection } from '../../game/model/GameSelection'
 import { Rect } from '../../core/Rect'
-import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
-import { HealthComponent } from '../../game/component/HealthComponent'
+import { TooltipComponent } from '../../game/component/TooltipComponent'
 
 export class GameLayer extends ScreenLayer {
     private pointerDown: { x: number, y: number } = null
@@ -102,8 +101,7 @@ export class GameLayer extends ScreenLayer {
         const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
         EventBroker.publish(new ChangeCursor(this.determineCursor(cursorTarget)))
         if (cursorTarget.intersectionPoint) this.worldMgr.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
-        const tooltipEvent = this.determineTooltipEvent(cursorTarget)
-        if (tooltipEvent) EventBroker.publish(tooltipEvent)
+        this.publishTooltipEvent(cursorTarget)
         this.worldMgr.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
         const doubleSelection = this.worldMgr.entityMgr.selection.doubleSelect
         if (cursorTarget.intersectionPoint && doubleSelection) {
@@ -113,36 +111,22 @@ export class GameLayer extends ScreenLayer {
         return false
     }
 
-    private determineTooltipEvent(cursorTarget: CursorTarget): ChangeTooltip {
-        if (cursorTarget.entityType) {
-            const objectKey = EntityType[cursorTarget.entityType].toString().replace('_', '').toLowerCase()
-            let tooltipText = GameConfig.instance.objectNamesCfg.get(objectKey)
-            if (tooltipText) {
-                let energy = 0
-                if (cursorTarget.building) {
-                    const upgradeName = GameConfig.instance.upgradeNames[cursorTarget.building.level - 1]
-                    if (upgradeName) tooltipText += ` (${upgradeName})`
-                }
-                const entity = cursorTarget.building?.entity ?? cursorTarget.vehicle?.entity
-                if (entity) energy = Math.round(this.worldMgr.ecs.getComponents(entity).get(HealthComponent)?.health ?? 0)
-                return new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, cursorTarget.raider, null, null, energy)
-            }
-        }
-        if (cursorTarget.surface) {
-            const site = cursorTarget.surface.site
-            if (site?.buildingType) {
-                const objectKey = EntityType[site.buildingType.entityType].toString().replace('_', '').toLowerCase()
-                const tooltipText = GameConfig.instance.objectNamesCfg.get(objectKey)
-                if (tooltipText) {
-                    return new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, null, site)
-                }
-            }
-            const objectName = cursorTarget.surface.surfaceType.getObjectName()
-            if (objectName) {
-                return new ChangeTooltip(objectName, TOOLTIP_DELAY_TEXT_SCENE, cursorTarget.surface.surfaceType.getSfxKey(), TOOLTIP_DELAY_SFX)
-            }
-        }
-        return null
+    private publishTooltipEvent(cursorTarget: CursorTarget): void {
+        const tooltipComponent = [
+            cursorTarget.material?.entity,
+            cursorTarget.raider?.entity,
+            cursorTarget.vehicle?.entity,
+            cursorTarget.monster?.entity,
+            cursorTarget.fence?.entity,
+            cursorTarget.building?.entity,
+            cursorTarget.surface?.site?.entity,
+            cursorTarget.surface?.entity,
+        ].map((e) => {
+            if (!e) return null
+            return this.worldMgr.ecs.getComponents(e)?.get(TooltipComponent)
+        }).find((c) => !!c)
+        if (!tooltipComponent) return
+        EventBroker.publish(tooltipComponent.createEvent())
     }
 
     private handlePointerUpEvent(event: GamePointerEvent) {
@@ -279,6 +263,8 @@ export class GameLayer extends ScreenLayer {
             }
             return Cursor.SELECTED
         }
+        if (cursorTarget.monster) return Cursor.SELECTED
+        if (cursorTarget.fence) return Cursor.SELECTED
         if (cursorTarget.building) return Cursor.SELECTED
         if (cursorTarget.material) return this.determineMaterialCursor(cursorTarget.material)
         if (cursorTarget.surface) return this.determineSurfaceCursor(cursorTarget.surface)

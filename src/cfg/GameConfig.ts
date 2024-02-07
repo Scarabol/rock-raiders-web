@@ -117,7 +117,7 @@ export class GameConfig extends BaseConfig {
         } else if ('Textures'.equalsIgnoreCase(unifiedKey)) {
             this.textures.setFromCfgObj(cfgValue)
         } else if ('ObjectNames'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objectNamesCfg.set(this.unifyKey(cfgKey), parseLabel(value as string)))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objectNamesCfg.set(cfgKey.toLowerCase(), parseLabel(value as string)))
         } else if ('UpgradeTypes'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.upgradeTypesCfg.set(cfgKey.toLowerCase(), value as string))
         } else if ('InfoMessages'.equalsIgnoreCase(unifiedKey)) {

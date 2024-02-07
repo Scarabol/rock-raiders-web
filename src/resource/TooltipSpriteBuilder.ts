@@ -14,7 +14,7 @@ export class TooltipSpriteBuilder {
         }
         const requests: Promise<SpriteImage>[] = [BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, tooltipText)]
         if (energy) {
-            requests.add(BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.toolTipInfo.get('energytext')}: ${energy}`))
+            requests.add(BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.toolTipInfo.get('energytext')}: ${Math.round(energy)}`))
         }
         const tooltipTextImages = await Promise.all(requests)
         return this.wrapTooltipSprite(...tooltipTextImages.map((s) => [s]))

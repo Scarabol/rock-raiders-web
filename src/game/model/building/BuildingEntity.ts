@@ -31,6 +31,8 @@ import { ScannerComponent } from '../../component/ScannerComponent'
 import { MapMarkerChange, MapMarkerType } from '../../component/MapMarkerComponent'
 import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
+import { TooltipComponent } from '../../component/TooltipComponent'
+import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 
 export class BuildingEntity {
     readonly carriedItems: MaterialEntity[] = []
@@ -75,6 +77,11 @@ export class BuildingEntity {
             this.powerOffSprite.setEnabled(false)
             this.surfaces.forEach((s) => s.setBuilding(null))
             EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
+        }))
+        const objectName = this.buildingType.getObjectName(this.level)
+        if (objectName) this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, this.buildingType.getSfxKey(), () => {
+            const objectName = this.buildingType.getObjectName(this.level)
+            return TooltipSpriteBuilder.getTooltipSprite(objectName, healthComponent.health)
         }))
     }
 

@@ -42,6 +42,8 @@ import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../compon
 import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
 import { GameState } from '../GameState'
+import { TooltipComponent } from '../../component/TooltipComponent'
+import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -71,6 +73,13 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         aeNames.forEach((aeName) => this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName)))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
+        const objectKey = this.entityType.toLowerCase()
+        const objectName = GameConfig.instance.objectNamesCfg.get(objectKey)
+        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey)
+        if (objectName) this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, sfxKey, () => {
+            const health = this.worldMgr.ecs.getComponents(this.entity).get(HealthComponent)?.health ?? 0
+            return TooltipSpriteBuilder.getTooltipSprite(objectName, health)
+        }))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 

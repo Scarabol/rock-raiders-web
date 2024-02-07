@@ -12,6 +12,8 @@ import { BuildingType } from './BuildingType'
 import { BarrierActivity } from '../anim/AnimationActivity'
 import { EventBroker } from '../../../event/EventBroker'
 import { GameEntity } from '../../ECS'
+import { TooltipComponent } from '../../component/TooltipComponent'
+import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 
 export class BuildingSite {
     entity: GameEntity
@@ -27,6 +29,22 @@ export class BuildingSite {
 
     constructor(readonly worldMgr: WorldManager, readonly primarySurface: Surface, readonly secondarySurface: Surface, readonly primaryPathSurface: Surface, secondaryPathSurface: Surface, readonly buildingType: BuildingType) {
         this.entity = this.worldMgr.ecs.addEntity()
+        const objectName = this.buildingType?.getObjectName(0)
+        if (objectName) {
+            this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, this.buildingType.getSfxKey(), () => {
+                return TooltipSpriteBuilder.getBuildingSiteTooltipSprite(objectName, {
+                        actual: this.onSiteByType.get(EntityType.CRYSTAL)?.length || 0,
+                        needed: this.neededByType.get(EntityType.CRYSTAL),
+                    }, {
+                        actual: this.onSiteByType.get(EntityType.ORE)?.length || 0,
+                        needed: this.neededByType.get(EntityType.ORE),
+                    }, {
+                        actual: this.onSiteByType.get(EntityType.BRICK)?.length || 0,
+                        needed: this.neededByType.get(EntityType.BRICK),
+                    },
+                )
+            }))
+        }
         this.primarySurface.site = this
         this.surfaces.push(this.primarySurface)
         if (this.secondarySurface) {

@@ -51,7 +51,7 @@ export class BuildingType {
                     .setSecondaryBuildingPart(0, 1).setPrimaryPowerPath(-1, 0).setSecondaryPowerPath(-1, 1)
                     .addTeleport(EntityType.BULLDOZER, EntityType.WALKER_DIGGER, EntityType.LARGE_MLP, EntityType.LARGE_DIGGER) // XXX evaluate stats UseLargeTeleporter
             default:
-                if (entityType) console.error(`EntityType (${entityType}, ${EntityType[entityType]}) is not a BuildingType`)
+                if (entityType) console.error(`EntityType (${entityType}) is not a BuildingType`)
                 return null
         }
     }
@@ -84,5 +84,16 @@ export class BuildingType {
     addTeleport(...teleportedEntityTypes: EntityType[]): this {
         this.teleportedEntityTypes = teleportedEntityTypes
         return this
+    }
+
+    getObjectName(level: number): string {
+        let objectName = GameConfig.instance.objectNamesCfg.get(this.entityType.toLowerCase())
+        const upgradeName = GameConfig.instance.upgradeNames[level - 1]
+        if (upgradeName) objectName += ` (${upgradeName})`
+        return objectName
+    }
+
+    getSfxKey(): string {
+        return GameConfig.instance.objTtSFXs.get(this.entityType.toLowerCase())
     }
 }

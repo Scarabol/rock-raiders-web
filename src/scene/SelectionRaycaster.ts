@@ -7,7 +7,6 @@ import { WorldManager } from '../game/WorldManager'
 import { Terrain } from '../game/terrain/Terrain'
 import { BuildingEntity } from '../game/model/building/BuildingEntity'
 import { Raider } from '../game/model/raider/Raider'
-import { BuildingSite } from '../game/model/building/BuildingSite'
 import { EntityType } from '../game/model/EntityType'
 import { SceneSelectionComponent, SceneSelectionUserData } from '../game/component/SceneSelectionComponent'
 import { GameEntity } from '../game/ECS'
@@ -16,11 +15,12 @@ import { SelectionFrameComponent } from '../game/component/SelectionFrameCompone
 export interface CursorTarget {
     raider?: Raider
     vehicle?: VehicleEntity
+    monster?: { entity: GameEntity }
+    fence?: MaterialEntity
     building?: BuildingEntity
     material?: MaterialEntity
     surface?: Surface
     intersectionPoint?: Vector2
-    buildingSite?: BuildingSite
     entityType?: EntityType
 }
 
@@ -50,11 +50,23 @@ export class SelectionRaycaster {
         if (material) return {material: material, entityType: material.entityType}
         const vehicle = raycaster.getFirstEntity(this.worldMgr.entityMgr.vehicles)
         if (vehicle) return {vehicle: vehicle, entityType: vehicle.entityType}
+        const monster = raycaster.getFirstEntity(this.worldMgr.entityMgr.rockMonsters.map((m) => ({entity: m})))
+        if (monster) return {monster: monster, entityType: EntityType.ROCK_MONSTER}
+        const fence = raycaster.getFirstEntity(this.worldMgr.entityMgr.placedFences)
+        if (fence) return {fence: fence, entityType: EntityType.ELECTRIC_FENCE}
         const building = raycaster.getFirstEntity(this.worldMgr.entityMgr.buildings)
         if (building) return {building: building, entityType: building.entityType}
         if (this.terrain) {
-            const surfaceIntersection = raycaster.getSurfaceIntersection(this.terrain.floorGroup.children)
-            if (surfaceIntersection) return surfaceIntersection
+            const intersection = raycaster.raycaster.intersectObjects(this.terrain.floorGroup.children, false)[0]
+            if (intersection) {
+                const surface: Surface = intersection?.object?.userData?.selectable
+                if (surface?.discovered) {
+                    if (surface.building && surface.pathBlockedByBuilding) {
+                        return {building: surface.building, entityType: surface.building.entityType}
+                    }
+                    return {surface: surface, intersectionPoint: new Vector2(intersection.point.x, intersection.point.z)}
+                }
+            }
         }
         return {}
     }

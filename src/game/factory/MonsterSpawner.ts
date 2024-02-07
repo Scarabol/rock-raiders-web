@@ -26,6 +26,9 @@ import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { HeadingComponent } from '../component/HeadingComponent'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
+import { TooltipComponent } from '../component/TooltipComponent'
+import { SceneSelectionComponent } from '../component/SceneSelectionComponent'
+import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
 
 export class MonsterSpawner {
     static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {
@@ -76,31 +79,27 @@ export class MonsterSpawner {
                     sceneEntity.setAnimation(AnimEntityActivity.Stand)
                     EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
                 }))
+                const objectName = GameConfig.instance.objectNamesCfg.get(entityType.toLowerCase())
+                if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, GameConfig.instance.objTtSFXs.get(entityType.toLowerCase())))
                 break
             case EntityType.ICE_MONSTER:
-                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster', entityType)
-                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(GameConfig.instance.stats.iceMonster))
-                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(GameConfig.instance.stats.iceMonster))
+                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster', entityType, GameConfig.instance.stats.iceMonster)
                 break
             case EntityType.LAVA_MONSTER:
-                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/LavaMonster', entityType)
-                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(GameConfig.instance.stats.lavaMonster))
-                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(GameConfig.instance.stats.lavaMonster))
+                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/LavaMonster', entityType, GameConfig.instance.stats.lavaMonster)
                 break
             case EntityType.ROCK_MONSTER:
-                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/RMonster', entityType)
-                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(GameConfig.instance.stats.rockMonster))
-                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(GameConfig.instance.stats.rockMonster))
+                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/RMonster', entityType, GameConfig.instance.stats.rockMonster)
                 break
             default:
-                throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
+                throw new Error(`Unexpected entity type: ${entityType}`)
         }
         worldMgr.sceneMgr.addMeshGroup(sceneEntity)
         worldMgr.entityMgr.addEntity(entity, entityType)
         return entity
     }
 
-    private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string, entityType: EntityType) {
+    private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string, entityType: EntityType, stats: MonsterEntityStats) {
         sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
         sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
         const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, GameConfig.instance.getRockFallDamage(entityType, 0)))
@@ -127,5 +126,10 @@ export class MonsterSpawner {
                 sceneEntity.dispose()
             })
         }))
+        worldMgr.ecs.addComponent(entity, new MovableStatsComponent(stats))
+        worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(stats))
+        worldMgr.ecs.addComponent(entity, new SceneSelectionComponent(sceneEntity, {gameEntity: entity, entityType: entityType}, stats))
+        const objectName = GameConfig.instance.objectNamesCfg.get(entityType.toLowerCase())
+        if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, GameConfig.instance.objTtSFXs.get(entityType.toLowerCase())))
     }
 }

@@ -27,6 +27,7 @@ import { PositionComponent } from '../component/PositionComponent'
 import { AnimationGroup } from '../../scene/AnimationGroup'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
+import { TooltipComponent } from '../component/TooltipComponent'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -60,6 +61,7 @@ export class Surface {
     constructor(readonly terrain: Terrain, public surfaceType: SurfaceType, readonly x: number, readonly y: number) {
         this.worldMgr = this.terrain.worldMgr
         this.entity = this.worldMgr.ecs.addEntity()
+        this.updateObjectName()
         switch (surfaceType) {
             case SurfaceType.CRYSTAL_SEAM:
             case SurfaceType.ORE_SEAM:
@@ -78,6 +80,21 @@ export class Surface {
         // proMesh.scale.setScalar(1 / TILESIZE)
         // this.terrain.floorGroup.add(proMesh)
         this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
+    }
+
+    private updateObjectName() {
+        const objectName = this.surfaceType.getObjectName()
+        if (objectName) {
+            const tooltipComponent = this.worldMgr.ecs.getComponents(this.entity).get(TooltipComponent)
+            if (tooltipComponent) {
+                tooltipComponent.tooltipText = objectName
+                tooltipComponent.sfxKey = this.surfaceType.getSfxKey()
+            } else {
+                this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, this.surfaceType.getSfxKey()))
+            }
+        } else {
+            this.worldMgr.ecs.removeComponent(this.entity, TooltipComponent)
+        }
     }
 
     /**
@@ -123,11 +140,13 @@ export class Surface {
                 case SurfaceType.HIDDEN_CAVERN:
                     this.surfaceType = SurfaceType.GROUND
                     this.needsMeshUpdate = true
+                    this.updateObjectName()
                     break
                 case SurfaceType.HIDDEN_SLUG_HOLE:
                     this.surfaceType = SurfaceType.SLUG_HOLE
                     this.terrain.slugHoles.add(this)
                     this.needsMeshUpdate = true
+                    this.updateObjectName()
                     break
                 case SurfaceType.RECHARGE_SEAM:
                     this.terrain.rechargeSeams.add(this)
@@ -501,6 +520,7 @@ export class Surface {
         const wasPath = this.surfaceType === SurfaceType.POWER_PATH || this.surfaceType === SurfaceType.POWER_PATH_BUILDING
         this.surfaceType = surfaceType
         this.updateTexture()
+        this.updateObjectName()
         if (oldSurfaceType.connectsPath || this.surfaceType.connectsPath) this.neighbors.forEach((n) => n.updateTexture())
         EventBroker.publish(new UpdateRadarSurface(this))
         if (wasPath !== this.isPath()) this.worldMgr.powerGrid.onPathChange(this)
