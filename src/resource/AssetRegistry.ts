@@ -200,7 +200,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         ResourceManager.resourceByName.set(aeFile.toLowerCase(), animData)
         const wheelMeshName = animData.wheelMesh
         if (wheelMeshName && !'NULL_OBJECT'.equalsIgnoreCase(wheelMeshName)) {
-            this.addAsset(this.assetLoader.loadLWOFile, `${path + wheelMeshName}.lwo`)
+            this.addAsset(this.assetLoader.loadLWOFile, `${wheelMeshName}.lwo`)
         }
         [animData.highPolyBodies, animData.mediumPolyBodies, animData.lowPolyBodies].forEach((polyType) => {
             for (const filename of polyType.values()) {

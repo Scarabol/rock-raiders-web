@@ -87,8 +87,12 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                 }
                 wheelParentMesh.forEach((p) => {
                     const wheelMesh = ResourceManager.getLwoModel(animEntityData.wheelMesh)
-                    p.add(wheelMesh)
-                    this.wheelJoints.add({mesh: wheelMesh, radius: animEntityData.wheelRadius})
+                    if (!wheelMesh) {
+                        console.warn(`Could not find wheel mesh "${animEntityData.wheelMesh}"`)
+                    } else {
+                        p.add(wheelMesh)
+                        this.wheelJoints.add({mesh: wheelMesh, radius: animEntityData.wheelRadius})
+                    }
                 })
             }
         })
