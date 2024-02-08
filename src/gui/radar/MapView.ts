@@ -7,10 +7,11 @@ import { BaseElement } from '../base/BaseElement'
 import { MapSurfaceRect } from './MapSurfaceRect'
 import { MapRenderer } from './MapRenderer'
 import { GameEntity } from '../../game/ECS'
-import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
+import { CameraControl, ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
 import { TILESIZE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
 import { EventBroker } from '../../event/EventBroker'
 import { Cursor } from '../../resource/Cursor'
+import { Vector2 } from 'three'
 
 export class MapView extends BaseElement {
     readonly mapRenderer: MapRenderer
@@ -167,5 +168,13 @@ export class MapView extends BaseElement {
             }
         }
         return inRect
+    }
+
+    onDrag(x: number, y: number) {
+        super.onDrag(x, y)
+        const tx = (x - this.x + this.offset.x)
+        const ty = (y - this.y + this.offset.y)
+        const worldPos = new Vector2(tx, ty).multiplyScalar(TILESIZE / this.surfaceRectSize)
+        EventBroker.publish(new CameraControl({jumpToWorld: worldPos}))
     }
 }

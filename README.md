@@ -48,9 +48,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.x - Late game features
 
-- Move camera with click on radar map panel
-- Show camera view area as wireframe on radar map panel
-
 - Implement first person and shoulder camera views
 - Add entity movement controller with arrow keys for fpv/shoulder view
 
@@ -110,6 +107,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Use pro-meshes to render high-detail walls in first person and shoulder view
 - Medium raider meshes seem to have wrong UV coordinates and shown with holes
 - Bats don't appear in flocks
+- Camera frustum not shown as wireframe on radar map panel
 
 ## Technical Debt
 

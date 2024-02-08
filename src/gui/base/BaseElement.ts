@@ -18,6 +18,7 @@ export class BaseElement {
     disabled: boolean = false
     hover: boolean = false
     pressed: boolean = false
+    pointerDown: { x: number, y: number } = null
     onClick: (cx: number, cy: number) => void = null
     onPublishEvent: (event: BaseEvent) => void = (event) => console.log(`TODO publish event: ${event.type}`)
 
@@ -84,6 +85,11 @@ export class BaseElement {
             if (!this.hover) this.pressed = false
         }
         this.children.forEach((child) => child.onPointerMove(event))
+        if (this.hover && this.pointerDown && (Math.abs(event.sx - this.pointerDown.x) > 5 || Math.abs(event.sy - this.pointerDown.y) > 5)) {
+            this.onDrag(event.sx, event.sy)
+        } else {
+            this.pointerDown = null
+        }
     }
 
     onHoverStart(): void {
@@ -92,8 +98,13 @@ export class BaseElement {
     onHoverEnd(): void {
     }
 
+    onDrag(x: number, y: number): void {
+    }
+
     onPointerDown(event: GuiPointerDownEvent): boolean {
+        this.pointerDown = null
         if (this.isInactive()) return false
+        this.pointerDown = {x: event.sy, y: event.sy}
         const oldState = this.pressed
         if (this.isInRect(event.sx, event.sy)) {
             if (!this.pressed && this.onClick) {
@@ -108,6 +119,7 @@ export class BaseElement {
     }
 
     onPointerUp(event: GuiPointerUpEvent): boolean {
+        this.pointerDown = null
         if (this.isInactive()) return false
         const inRect = this.isInRect(event.sx, event.sy)
         let stateChanged = false
