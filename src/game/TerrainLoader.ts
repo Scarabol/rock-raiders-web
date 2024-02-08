@@ -125,9 +125,6 @@ export class TerrainLoader {
             }
         })
 
-        // generate path finding weights
-        terrain.pathFinder.initWeights(terrain)
-
         terrain.updateSurfaceMeshes(true)
 
         if (fallinMap) {

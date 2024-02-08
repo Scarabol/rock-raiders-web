@@ -30,7 +30,7 @@ export class Terrain {
     height: number = 0
     surfaces: Surface[][] = []
     floorGroup: Group = new Group()
-    pathFinder: PathFinder = new PathFinder()
+    pathFinder: PathFinder = new PathFinder(this.surfaces)
     fallIns: FallIn[] = []
     tutoBlocksById: Map<number, Surface[]> = new Map()
     emergeCreature: MonsterEntityType = EntityType.NONE
