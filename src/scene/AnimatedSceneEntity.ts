@@ -64,7 +64,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.animationData.forEach((animEntityData) => {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
-            const animatedGroup = this.cacheAnimationGroups.getOrUpdate(animData.name, () => {
+            const animatedGroup = this.cacheAnimationGroups.getOrUpdate(animData.file, () => {
                 return new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs, onAnimationTrigger).setup()
             })
             animatedGroup.resetAnimation()
