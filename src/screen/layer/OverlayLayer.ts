@@ -5,7 +5,7 @@ import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
 import { OptionsPanel } from '../../gui/overlay/OptionsPanel'
 import { PausePanel } from '../../gui/overlay/PausePanel'
 import { DEV_MODE } from '../../params'
-import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
+import { ChangeCursor, HideTooltip } from '../../event/GuiCommand'
 import { Panel } from '../../gui/base/Panel'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { Cursor } from '../../resource/Cursor'
@@ -119,7 +119,7 @@ export class OverlayLayer extends ScaledLayer {
         if (panel) {
             panel.show()
             EventBroker.publish(new ChangeCursor(Cursor.STANDARD))
-            EventBroker.publish(new ChangeTooltip('', 0, '', 0))
+            EventBroker.publish(new HideTooltip())
         }
         EventBroker.publish(new BaseEvent(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
         this.animationFrame.notifyRedraw()

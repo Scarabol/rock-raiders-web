@@ -39,7 +39,7 @@ export class TooltipLayer extends ScreenLayer {
             }
         })
         EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_HIDE, (event: HideTooltip) => {
-            if (this.lastTooltipText !== event.tooltipText) return
+            if (event.tooltipText && event.tooltipText !== this.lastTooltipText) return
             this.removeTooltip()
         })
         this.addEventListener('pointermove', (event: PointerEvent): boolean => {
