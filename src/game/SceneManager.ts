@@ -1,4 +1,4 @@
-import { AmbientLight, Color, Frustum, Mesh, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
+import { Frustum, Mesh, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { BirdViewControls } from '../scene/BirdViewControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
@@ -21,7 +21,7 @@ import { SceneSelectionComponent } from './component/SceneSelectionComponent'
 import { createCanvas } from '../core/ImageHelper'
 import { FollowerRenderer } from '../scene/FollowerRenderer'
 import { EventKey } from '../event/EventKeyEnum'
-import { GameConfig } from '../cfg/GameConfig'
+import { LeveledAmbientLight } from '../scene/LeveledAmbientLight'
 import { EventBroker } from '../event/EventBroker'
 
 export class SceneManager implements Updatable {
@@ -37,7 +37,7 @@ export class SceneManager implements Updatable {
     readonly sprites: (Sprite & Updatable)[] = []
     readonly lastCameraWorldPos: Vector3 = new Vector3()
     readonly raycaster: Raycaster = new Raycaster()
-    ambientLight: AmbientLight
+    ambientLight: LeveledAmbientLight
     terrain: Terrain
     cursor: TorchLightCursor
     buildMarker: BuildPlacementMarker
@@ -63,6 +63,9 @@ export class SceneManager implements Updatable {
         })
         EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
             this.setActiveCamera(this.cameraBird)
+        })
+        EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
+            this.ambientLight?.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
         })
     }
 
@@ -164,12 +167,8 @@ export class SceneManager implements Updatable {
 
     setupScene(levelConf: LevelEntryCfg) {
         this.scene.clear()
-        const ambientRgb = GameConfig.instance.main.ambientRGB
-        const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
-        const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
-        const ambientColor = new Color(normalizedRgb[0], normalizedRgb[1], normalizedRgb[2])
-        this.ambientLight = new AmbientLight(ambientColor)
-        this.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
+        this.ambientLight = new LeveledAmbientLight()
+        this.ambientLight.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
         this.scene.add(this.ambientLight)
 
         this.cursor = new TorchLightCursor()
@@ -317,11 +316,6 @@ export class SceneManager implements Updatable {
             if (autoPlay && sfxVolume > 0) audio.play() // TODO retry playing sound for looped ones, when audio context fails
         }
         return audio
-    }
-
-    setLightLevel(lightLevel: number) {
-        if (!this.ambientLight) return
-        this.ambientLight.intensity = 0.05 + Math.max(0, Math.min(1, lightLevel)) * 0.45
     }
 
     private forceCameraBirdAboveFloor() {
