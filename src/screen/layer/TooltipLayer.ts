@@ -3,7 +3,7 @@ import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
 import { SaveScreenshot } from '../../event/LocalEvents'
 import { TooltipSpriteBuilder } from '../../resource/TooltipSpriteBuilder'
 import { ScreenLayer } from './ScreenLayer'
-import { CURSOR_MAX_HEIGHT } from '../../params'
+import { CURSOR_MAX_HEIGHT, NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { clearTimeoutSafe } from '../../core/Util'
 import { SoundManager } from '../../audio/SoundManager'
 import { EventBroker } from '../../event/EventBroker'
@@ -79,7 +79,8 @@ export class TooltipLayer extends ScreenLayer {
         if (this.cursorLeft) return
         this.tooltipCanvas = document.createElement('canvas')
         this.gameCanvasContainer.appendChild(this.tooltipCanvas)
-        const scale = this.gameCanvasContainer.getBoundingClientRect().width / 640
+        const rect = this.gameCanvasContainer.getBoundingClientRect()
+        const scale = Math.min(rect.width / NATIVE_SCREEN_WIDTH, rect.height / NATIVE_SCREEN_HEIGHT)
         this.tooltipCanvas.width = Math.round(tooltipImg.width * scale)
         this.tooltipCanvas.height = Math.round(tooltipImg.height * scale)
         this.tooltipCanvas.style.position = 'absolute'
