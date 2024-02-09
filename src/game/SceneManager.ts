@@ -243,8 +243,11 @@ export class SceneManager implements Updatable {
         this.renderer.setSize(width, height)
         const aspect = width / height
         this.cameraBird.aspect = aspect
+        this.cameraBird.updateProjectionMatrix()
         this.cameraShoulder.aspect = aspect
+        this.cameraShoulder.updateProjectionMatrix()
         this.cameraFPV.aspect = aspect
+        this.cameraFPV.updateProjectionMatrix()
     }
 
     setCursorFloorPosition(position: Vector2) {
