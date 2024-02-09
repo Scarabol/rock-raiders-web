@@ -29,6 +29,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
     pivotMinZ: number = null
     pivotMaxZ: number = null
     yPivotObj: Object3D = null
+    flipCamera: boolean = false
 
     constructor() {
         super()

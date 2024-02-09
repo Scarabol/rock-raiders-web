@@ -38,6 +38,7 @@ export class MainPanel extends Panel {
     numRequestedRaiders: number = 0
     hasRaiderTeleport: boolean = false
     hasMaxRaiders: boolean = false
+    lastSelectionEvent: SelectionChanged = null
 
     constructor(parent: BaseElement) {
         super(parent)
@@ -95,6 +96,7 @@ export class MainPanel extends Panel {
         largeVehicleItem.onClick = () => this.mainPanel.toggleState(() => largeVehiclePanel.toggleState())
 
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
+            this.lastSelectionEvent = event
             if (event.selectPanelType === SelectPanelType.RAIDER) this.selectSubPanel(selectRaiderPanel)
             else if (event.selectPanelType === SelectPanelType.VEHICLE) this.selectSubPanel(event.noVehicleWithDriver ? selectVehicleEmptyPanel : selectVehicleManedPanel)
             else if (event.selectPanelType === SelectPanelType.BUILDING) this.selectSubPanel(selectBuildingPanel)
@@ -118,7 +120,11 @@ export class MainPanel extends Panel {
             cameraViewPanel.cameraViewMode = event.viewMode
             cameraViewPanel.updateAllButtonStates()
             if (event.viewMode === CameraViewMode.BIRD) {
-                this.selectSubPanel(selectRaiderPanel)
+                if (this.lastSelectionEvent?.selectPanelType === SelectPanelType.RAIDER) this.selectSubPanel(selectRaiderPanel)
+                else if (this.lastSelectionEvent?.selectPanelType === SelectPanelType.VEHICLE) this.selectSubPanel(this.lastSelectionEvent.noVehicleWithDriver ? selectVehicleEmptyPanel : selectVehicleManedPanel)
+                else {
+                    console.warn('Unexpected state', this.lastSelectionEvent)
+                }
             } else {
                 this.selectSubPanel(cameraViewPanel)
             }
@@ -138,6 +144,7 @@ export class MainPanel extends Panel {
         this.numRequestedRaiders = 0
         this.hasRaiderTeleport = false
         this.hasMaxRaiders = false
+        this.lastSelectionEvent = null
     }
 
     addSubPanel<T extends IconSubPanel>(childPanel: T): T {

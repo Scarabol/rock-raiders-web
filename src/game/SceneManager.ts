@@ -51,18 +51,18 @@ export class SceneManager implements Updatable {
         this.scene = new Scene()
         const aspect = canvas.width / canvas.height
         this.cameraBird = new BirdViewCamera(aspect)
-        this.cameraShoulder = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 200) // TODO Adjust camera parameters
-        this.cameraFPV = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 200) // TODO Adjust camera parameters
+        this.cameraShoulder = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 8 * TILESIZE) // TODO Adjust camera parameters
+        this.cameraFPV = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 8 * TILESIZE) // TODO Adjust camera parameters
         this.renderer = new SceneRenderer(canvas)
-        this.setActiveCamera(this.cameraBird)
         this.birdViewControls = new BirdViewControls(this.cameraBird, canvas)
         if (!DEV_MODE) this.birdViewControls.addEventListener('change', () => this.forceCameraBirdAboveFloor())
+        this.setActiveCamera(this.cameraBird)
         EventBroker.subscribe(EventKey.DYNAMITE_EXPLOSION, () => {
             this.shakeTimeout = 1000
             this.bumpTimeout = 0
         })
         EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
-            this.setActiveCamera(this.cameraBird)
+            this.setActiveCamera(this.cameraBird) // TODO Only reset camera, when camera parent is affected
         })
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             this.ambientLight?.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
@@ -70,6 +70,10 @@ export class SceneManager implements Updatable {
     }
 
     setActiveCamera(camera: PerspectiveCamera) {
+        const isBirdView = camera === this.cameraBird
+        if (this.cursor) this.cursor.visible = isBirdView
+        this.birdViewControls.disabled = !isBirdView
+        // TODO Showing/hiding sprites does not work since they blink or their visibility is user controlled by space key
         this.cameraActive = camera
         this.cameraActive.add(SoundManager.sceneAudioListener)
         this.renderer.camera = camera

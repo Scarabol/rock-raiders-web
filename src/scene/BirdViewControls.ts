@@ -20,6 +20,7 @@ export class BirdViewControls extends MapControls {
     moveTarget: Vector3 = null
     lastPanKey: string = ''
     lockedObject: PositionComponent
+    disabled: boolean = false
 
     constructor(camera: Camera, readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
@@ -46,11 +47,12 @@ export class BirdViewControls extends MapControls {
     }
 
     zoom(zoom: number) {
+        if (!this.enabled) return
         this.domElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 120 * zoom, deltaMode: 0}))
     }
 
     rotate(rotationIndex: CameraRotation) {
-        if (rotationIndex === CameraRotation.NONE) return
+        if (rotationIndex === CameraRotation.NONE || !this.enabled) return
         const dx = rotationIndex === CameraRotation.LEFT ? 1 : (rotationIndex === CameraRotation.RIGHT ? -1 : 0)
         const dy = rotationIndex === CameraRotation.UP ? 1 : (rotationIndex === CameraRotation.DOWN ? -1 : 0)
         const px = (this.domElement as HTMLElement).clientWidth / 2
@@ -92,7 +94,7 @@ export class BirdViewControls extends MapControls {
             if (this.moveTarget) {
                 if (this.target.distanceToSquared(this.moveTarget) < 1) {
                     this.moveTarget = null
-                    this.enabled = !this.lockBuild && !this.lockedObject
+                    this.enabled = !this.lockBuild && !this.lockedObject && !this.disabled
                 } else {
                     const nextCameraTargetPos = this.target.clone().add(this.moveTarget.clone().sub(this.target)
                         .clampLength(0, GameConfig.instance.main.CameraSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL))
@@ -113,12 +115,12 @@ export class BirdViewControls extends MapControls {
 
     unlockCamera() {
         this.lockedObject = null
-        this.enabled = !this.lockBuild
+        this.enabled = !this.lockBuild && !this.disabled
     }
 
     setBuildLock(locked: boolean) {
         this.lockBuild = locked
-        this.enabled = !this.lockBuild && !this.moveTarget && !this.lockedObject
+        this.enabled = !this.lockBuild && !this.moveTarget && !this.lockedObject && !this.disabled
     }
 
     setAutoPan(key: string) {
