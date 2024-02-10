@@ -2,7 +2,7 @@ import { AbstractGameSystem } from '../ECS'
 import { EmergeComponent } from '../component/EmergeComponent'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
-import { EntityType, getMonsterEntityTypeByName, MonsterEntityType } from '../model/EntityType'
+import { EntityType, MonsterEntityType } from '../model/EntityType'
 import { LevelSelectedEvent, MonsterEmergeEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
 import { Surface } from '../terrain/Surface'
@@ -22,8 +22,8 @@ export class EmergeSystem extends AbstractGameSystem {
     constructor() {
         super()
         EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
-            this.emergeCreature = getMonsterEntityTypeByName(event.levelConf.emergeCreature)
-            this.emergeTimeoutMs = event.levelConf.emergeTimeOut / 1500 * 60 * 1000 // 1500 specifies 1 minute
+            this.emergeCreature = event.levelConf.emergeCreature
+            this.emergeTimeoutMs = event.levelConf.emergeTimeOutMs
         })
         EventBroker.subscribe(EventKey.MONSTER_EMERGE, (event: MonsterEmergeEvent) => {
             this.emergeFromSurface(event.surface)

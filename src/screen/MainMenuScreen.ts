@@ -3,18 +3,17 @@ import { LoadSaveLayer } from '../menu/LoadSaveLayer'
 import { MainMenuBaseItem } from '../menu/MainMenuBaseItem'
 import { MainMenuLayer } from '../menu/MainMenuLayer'
 import { MainMenuLevelButton } from '../menu/MainMenuLevelButton'
-import { ResourceManager } from '../resource/ResourceManager'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { ScreenMaster } from './ScreenMaster'
 import { EventKey } from '../event/EventKeyEnum'
 import { ShowGameResultEvent } from '../event/LocalEvents'
 import { LevelSelectedEvent, MaterialAmountChanged } from '../event/WorldEvents'
-import { LevelObjectiveTextEntry } from '../resource/fileparser/ObjectiveTextParser'
 import { MainMenuCreditsLayer } from '../menu/MainMenuCreditsLayer'
 import { ScaledLayer } from './layer/ScreenLayer'
 import { RockWipeLayer } from '../menu/RockWipeLayer'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
+import { LevelLoader } from '../game/LevelLoader'
 
 export class MainMenuScreen {
     menuLayers: ScaledLayer[] = []
@@ -115,17 +114,15 @@ export class MainMenuScreen {
     }
 
     selectLevel(levelName: string) {
-        const levelConf = GameConfig.instance.levels.levelCfgByName.get(levelName)
-        if (!levelConf) {
-            console.error(`Could not find level configuration for "${levelName}"`)
-            return
+        try {
+            const levelConf = LevelLoader.fromName(levelName) // Get config first in case of error
+            this.screenMaster.loadingLayer.show()
+            this.menuLayers.forEach((m) => m.hide())
+            this.rockWipeLayer.hide()
+            EventBroker.publish(new LevelSelectedEvent(levelConf))
+            EventBroker.publish(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
+        } catch (e) {
+            console.error(e)
         }
-        const levelObjective = ResourceManager.getResource(levelConf.objectiveText) as Record<string, LevelObjectiveTextEntry>
-        levelConf.objectiveTextCfg = levelObjective[levelName.toLowerCase()]
-        this.screenMaster.loadingLayer.show()
-        this.menuLayers.forEach((m) => m.hide())
-        this.rockWipeLayer.hide()
-        EventBroker.publish(new LevelSelectedEvent(levelConf))
-        EventBroker.publish(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
     }
 }

@@ -1,11 +1,10 @@
 import { Vector2 } from 'three'
-import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { LevelConfData } from './LevelLoader'
 import { clearIntervalSafe } from '../core/Util'
 import { EventKey } from '../event/EventKeyEnum'
 import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged, ToggleAlarmEvent } from '../event/WorldEvents'
 import { NerpRunner } from '../nerp/NerpRunner'
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, DEV_MODE, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
-import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
@@ -105,12 +104,13 @@ export class WorldManager {
             this.nerpRunner.objectiveSwitch = this.nerpRunner.objectiveSwitch && event.isShowing
         })
         EventBroker.subscribe(EventKey.NERP_MESSAGE_NEXT, () => {
+            if (!this.nerpRunner) return
             this.nerpRunner.messageTimer = 0
             this.nerpRunner.execute()
         })
     }
 
-    setup(levelConf: LevelEntryCfg) {
+    setup(levelConf: LevelConfData) {
         this.ecs.reset()
         this.jobSupervisor.reset()
         this.elapsedGameTimeMs = 0
@@ -119,8 +119,7 @@ export class WorldManager {
         this.requestedVehicleTypes = []
         this.spawnVehicleTimer = 0
         // load nerp script
-        this.nerpRunner = new NerpRunner(this, levelConf.nerpFile)
-        this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
+        if (levelConf.nerpScript) this.nerpRunner = new NerpRunner(this, levelConf.nerpScript, levelConf.nerpMessages)
         this.firstUnpause = true
         const gameSpeedIndex = Math.round(SaveGameManager.currentPreferences.gameSpeed * 5)
         this.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network

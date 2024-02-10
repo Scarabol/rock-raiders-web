@@ -5,7 +5,7 @@ import { BRICK_ORE_VALUE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { Vector2 } from 'three'
 import { GameResultState } from '../game/model/GameResult'
-import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { LevelConfData } from '../game/LevelLoader'
 import { BaseEvent } from './EventTypeMap'
 import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { Surface } from '../game/terrain/Surface'
@@ -102,7 +102,7 @@ export class RestartGameEvent extends BaseEvent {
 }
 
 export class LevelSelectedEvent extends BaseEvent {
-    constructor(readonly levelConf: LevelEntryCfg) {
+    constructor(readonly levelConf: LevelConfData) {
         super(EventKey.LEVEL_SELECTED)
     }
 }

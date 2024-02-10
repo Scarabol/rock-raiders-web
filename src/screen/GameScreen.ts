@@ -1,4 +1,4 @@
-import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { LevelConfData } from '../game/LevelLoader'
 import { InitRadarMap, ShowGameResultEvent } from '../event/LocalEvents'
 import { EntityManager } from '../game/EntityManager'
 import { GuiManager } from '../game/GuiManager'
@@ -7,8 +7,7 @@ import { GameState } from '../game/model/GameState'
 import { ObjectListLoader } from '../game/ObjectListLoader'
 import { SceneManager } from '../game/SceneManager'
 import { WorldManager } from '../game/WorldManager'
-import { ADDITIONAL_RAIDER_PER_SUPPORT, DEV_MODE, MAX_RAIDER_BASE } from '../params'
-import { ResourceManager } from '../resource/ResourceManager'
+import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE } from '../params'
 import { GameLayer } from './layer/GameLayer'
 import { GuiMainLayer } from './layer/GuiMainLayer'
 import { OverlayLayer } from './layer/OverlayLayer'
@@ -31,7 +30,7 @@ export class GameScreen {
     readonly sceneMgr: SceneManager
     readonly entityMgr: EntityManager
     readonly guiMgr: GuiManager
-    levelConf: LevelEntryCfg
+    levelConf: LevelConfData
 
     constructor(readonly screenMaster: ScreenMaster) {
         this.worldMgr = new WorldManager()
@@ -86,8 +85,7 @@ export class GameScreen {
         this.overlayLayer.showBriefing(this.levelConf)
         GameState.priorityList.setList(this.levelConf.priorities)
         // load in non-space objects next
-        const objectList = ResourceManager.getResource(this.levelConf.oListFile)
-        new ObjectListLoader(this.worldMgr, this.levelConf.disableStartTeleport || DEV_MODE).loadObjectList(objectList)
+        new ObjectListLoader(this.worldMgr, this.levelConf.disableStartTeleport).loadObjectList(this.levelConf.objectList)
         EventBroker.publish(new InitRadarMap(this.sceneMgr.birdViewControls.target.clone(), this.sceneMgr.terrain))
         this.show()
     }
@@ -128,7 +126,7 @@ export class GameScreen {
                 SaveGameManager.setLevelScore(this.levelConf.levelName, result.score)
             }
         }
-        if (!DEV_MODE && !this.levelConf.disableEndTeleport) await this.worldMgr.teleportEnd()
+        if (!this.levelConf.disableEndTeleport) await this.worldMgr.teleportEnd()
         this.worldMgr.stop()
         GameState.reset()
         this.overlayLayer.showResultBriefing(result?.state, this.levelConf, () => {

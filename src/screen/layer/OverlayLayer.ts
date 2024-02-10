@@ -1,4 +1,4 @@
-import { LevelEntryCfg } from '../../cfg/LevelsCfg'
+import { LevelConfData } from '../../game/LevelLoader'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ScaledLayer } from './ScreenLayer'
 import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
@@ -80,14 +80,14 @@ export class OverlayLayer extends ScaledLayer {
         this.addEventListener('wheel', (): boolean => this.panels.some((p) => !p.hidden))
     }
 
-    showBriefing(levelConf: LevelEntryCfg) {
+    showBriefing(levelConf: LevelConfData) {
         const objectiveSfx = `Stream_Objective_Levels::${levelConf.levelName}`.toLowerCase()
         this.panelBriefing.setup(GameConfig.instance.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage640x480, objectiveSfx)
         this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
         this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
     }
 
-    showResultBriefing(result: GameResultState, levelConf: LevelEntryCfg, onContinue: () => void) {
+    showResultBriefing(result: GameResultState, levelConf: LevelConfData, onContinue: () => void) {
         const mainCfg = GameConfig.instance.main
         let title = ''
         let text = ''

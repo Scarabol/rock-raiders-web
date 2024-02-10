@@ -1,3 +1,8 @@
+export interface NerpMessage {
+    txt: string
+    snd: string
+}
+
 export class NerpScript {
     lines: string[] = [] // contains human readable script strings
     statements: any[] = [] // contains parsed statements for execution

@@ -1,6 +1,5 @@
-import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { LevelConfData } from './LevelLoader'
 import { HEIGHT_MULTIPLIER, TILESIZE } from '../params'
-import { ResourceManager } from '../resource/ResourceManager'
 import { Surface } from './terrain/Surface'
 import { SurfaceType } from './terrain/SurfaceType'
 import { Terrain } from './terrain/Terrain'
@@ -11,31 +10,16 @@ import { GameConfig } from '../cfg/GameConfig'
 import { EmergeComponent } from './component/EmergeComponent'
 
 export class TerrainLoader {
-    static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager): Terrain {
+    static loadTerrain(levelConf: LevelConfData, worldMgr: WorldManager): Terrain {
         const terrain = new Terrain(worldMgr, levelConf)
-        terrain.textureSet = GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet)
-        terrain.rockFallStyle = levelConf.rockFallStyle.toLowerCase()
-
-        const terrainMap = ResourceManager.getResource(levelConf.terrainMap)
-        terrain.width = terrainMap.width
-        terrain.height = terrainMap.height
-        // TODO Check width/height of given map and print at least warning
-        const pathMap = ResourceManager.getResource(levelConf.pathMap)?.level
-        const surfaceMap = ResourceManager.getResource(levelConf.surfaceMap)?.level
-        const predugMap = ResourceManager.getResource(levelConf.predugMap)?.level
-        const cryOreMap = ResourceManager.getResource(levelConf.cryOreMap)?.level
-        const fallinMap = ResourceManager.getResource(levelConf.fallinMap)?.level
-        const erodeMap = ResourceManager.getResource(levelConf.erodeMap)?.level
-        const blockMap = ResourceManager.getResource(levelConf.blockPointersMap)?.level
-        const emergeMap = ResourceManager.getResource(levelConf.emergeMap)?.level
 
         // maps parsed from WAD are row-wise saved, which means y (row) comes first and x (column) second
-        for (let r = 0; r < terrainMap.level.length; r++) {
-            for (let c = 0; c < (terrainMap.level)[r].length; c++) {
+        for (let r = 0; r < levelConf.terrainMap.length; r++) {
+            for (let c = 0; c < levelConf.terrainMap[r].length; c++) {
                 terrain.surfaces[c] = terrain.surfaces[c] || []
-                const surfaceTypeNum = (terrainMap.level)[r][c]
+                const surfaceTypeNum = levelConf.terrainMap[r][c]
                 let surfaceType = SurfaceType.getByNum(surfaceTypeNum)
-                const predugLevel = predugMap[r][c]
+                const predugLevel = levelConf.predugMap[r][c]
                 if (predugLevel === PredugMap.CAVERN_EXPOSED) {
                     if (surfaceType === SurfaceType.GROUND || surfaceType === SurfaceType.DIRT
                         || surfaceType === SurfaceType.SOLID_ROCK || surfaceType === SurfaceType.HARD_ROCK // as seen in level 14
@@ -50,7 +34,7 @@ export class TerrainLoader {
                     console.warn(`Unexpected predug level: ${predugLevel}`)
                 }
                 // give the path map the highest priority, if it exists
-                const pathMapLevel = pathMap && surfaceType.floor ? pathMap[r][c] : PathMap.NONE
+                const pathMapLevel = levelConf.pathMap && surfaceType.floor ? levelConf.pathMap[r][c] : PathMap.NONE
                 if (pathMapLevel === PathMap.RUBBLE) {
                     surfaceType = SurfaceType.RUBBLE4
                 } else if (pathMapLevel === PathMap.POWER_PATH) {
@@ -60,8 +44,8 @@ export class TerrainLoader {
                 }
 
                 const surface = new Surface(terrain, surfaceType, c, r)
-                if (cryOreMap) {
-                    const currentCryOre = cryOreMap[r][c]
+                if (levelConf.cryOreMap) {
+                    const currentCryOre = levelConf.cryOreMap[r][c]
                     if (currentCryOre % 2 === 1) {
                         surface.containedCrystals = (currentCryOre + 1) / 2
                     } else {
@@ -77,14 +61,14 @@ export class TerrainLoader {
         for (let x = 0; x < terrain.width + 1; x++) {
             terrain.heightOffset[x] = []
             for (let y = 0; y < terrain.height + 1; y++) {
-                const offsets = [surfaceMap?.[y - 1]?.[x - 1], surfaceMap?.[y - 1]?.[x], surfaceMap?.[y]?.[x - 1], surfaceMap?.[y]?.[x]].filter((n) => !isNaN(n))
+                const offsets = [levelConf.surfaceMap?.[y - 1]?.[x - 1], levelConf.surfaceMap?.[y - 1]?.[x], levelConf.surfaceMap?.[y]?.[x - 1], levelConf.surfaceMap?.[y]?.[x]].filter((n) => !isNaN(n))
                 terrain.heightOffset[x][y] = offsets.reduce((l, r) => l + r, 0) / offsets.length * HEIGHT_MULTIPLIER
             }
         }
 
         // explore pre-dug surfaces
         terrain.forEachSurface((s) => {
-            if (predugMap[s.y][s.x] === PredugMap.CAVERN_EXPOSED || predugMap[s.y][s.x] === PredugMap.SLUG_HOLE_EXPOSED) { // map are rows (y) first, columns (x) second
+            if (levelConf.predugMap[s.y][s.x] === PredugMap.CAVERN_EXPOSED || levelConf.predugMap[s.y][s.x] === PredugMap.SLUG_HOLE_EXPOSED) { // map are rows (y) first, columns (x) second
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
                     for (let y = s.y - 1; y <= s.y + 1; y++) {
                         const surface = terrain.getSurfaceOrNull(x, y)
@@ -114,29 +98,28 @@ export class TerrainLoader {
         })
 
         // create hidden caverns
-        terrain.forEachSurface((s) => {
-            const surface = terrain.getSurfaceOrNull(s.x, s.y)
-            if (predugMap[s.y][s.x] === PredugMap.CAVERN_HIDDEN && !surface.surfaceType.floor) {
+        terrain.forEachSurface((surface) => {
+            if (levelConf.predugMap[surface.y][surface.x] === PredugMap.CAVERN_HIDDEN && !surface.surfaceType.floor) {
                 surface.surfaceType = SurfaceType.HIDDEN_CAVERN
-            } else if (predugMap[s.y][s.x] === PredugMap.SLUG_HOLE_HIDDEN) {
+            } else if (levelConf.predugMap[surface.y][surface.x] === PredugMap.SLUG_HOLE_HIDDEN) {
                 surface.surfaceType = SurfaceType.HIDDEN_SLUG_HOLE
             }
         })
 
         terrain.updateSurfaceMeshes(true)
 
-        if (fallinMap) {
+        if (levelConf.fallinMap) {
             for (let x = 0; x < terrain.width; x++) {
                 for (let y = 0; y < terrain.height; y++) {
-                    terrain.setFallInLevel(x, y, fallinMap[y][x] * levelConf.fallinMultiplier) // rows (y) before columns (x) used in maps
+                    terrain.setFallInLevel(x, y, levelConf.fallinMap[y][x] * levelConf.fallinMultiplier) // rows (y) before columns (x) used in maps
                 }
             }
         }
 
-        if (erodeMap) {
+        if (levelConf.erodeMap) {
             for (let x = 0; x < terrain.width; x++) {
                 for (let y = 0; y < terrain.height; y++) {
-                    const erosionLevel = erodeMap[y][x]
+                    const erosionLevel = levelConf.erodeMap[y][x]
                     if (erosionLevel <= 0) continue
                     const targetSurface = terrain.getSurface(x, y)
                     const lavaErosionComponent = new LavaErosionComponent(targetSurface, erosionLevel)
@@ -150,10 +133,10 @@ export class TerrainLoader {
             }
         }
 
-        if (blockMap) {
+        if (levelConf.blockPointersMap) {
             for (let x = 0; x < terrain.width; x++) {
                 for (let y = 0; y < terrain.height; y++) {
-                    const tutoBlockId = blockMap[y][x]
+                    const tutoBlockId = levelConf.blockPointersMap[y][x]
                     if (tutoBlockId) {
                         terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(terrain.surfaces[x][y])
                     }
@@ -161,10 +144,10 @@ export class TerrainLoader {
             }
         }
 
-        if (emergeMap) {
+        if (levelConf.emergeMap) {
             for (let x = 0; x < terrain.width; x++) {
                 for (let y = 0; y < terrain.height; y++) {
-                    const emergeValue = emergeMap[y][x]
+                    const emergeValue = levelConf.emergeMap[y][x]
                     if (!emergeValue) continue
                     const surface = terrain.surfaces[x][y]
                     if (emergeValue % 2 === 1) {

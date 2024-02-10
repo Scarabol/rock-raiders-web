@@ -217,7 +217,7 @@ export class Surface {
         // add crumble animation
         const wallNeighbor = this.neighbors.filter((n) => !!n.wallType).random()
         const crumbleAngle = !!wallNeighbor ? Math.atan2(wallNeighbor.x - this.x, wallNeighbor.y - this.y) : 0 // XXX why is x/y swapped here?
-        const rockFallAnimName = GameConfig.instance.rockFallStyles[this.terrain.rockFallStyle][3] // TODO not always pick "tunnel"
+        const rockFallAnimName = GameConfig.instance.rockFallStyles[this.terrain.levelConf.rockFallStyle][3] // TODO not always pick "tunnel"
         this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
         this.playPositionalSample(Sample.SFX_RockBreak)
     }
@@ -355,7 +355,7 @@ export class Surface {
             }
             suffix += this.surfaceType.shaping ? this.surfaceType.matIndex : SurfaceType.SOLID_ROCK.matIndex
         }
-        const textureFilepath = this.terrain.textureSet.textureBasename + suffix + '.bmp'
+        const textureFilepath = this.terrain.levelConf.textureSet.textureBasename + suffix + '.bmp'
         this.mesh.setTexture(textureFilepath, rotation)
     }
 

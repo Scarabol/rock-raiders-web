@@ -9,8 +9,7 @@ import { WorldManager } from '../game/WorldManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
-import { NerpParser } from './NerpParser'
-import { NerpScript } from './NerpScript'
+import { NerpMessage, NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
 import { GameResultEvent, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
@@ -30,14 +29,11 @@ export class NerpRunner {
     static debug = false
     static timeAddedAfterSample = 0
 
-    readonly script: NerpScript
-
     timer: number = 0
     registers = new Array(8).fill(0)
     timers = new Array(4).fill(0)
     halted = false
     programCounter = 0
-    messages: { txt: string, snd: string }[] = []
     // more state variables and switches
     messagePermit: boolean = true
     objectiveSwitch: boolean = true
@@ -46,9 +42,8 @@ export class NerpRunner {
     timeForNoSample: number = 0
     messageTimer: number = 0
 
-    constructor(readonly worldMgr: WorldManager, nerpScriptFile: string) {
+    constructor(readonly worldMgr: WorldManager, readonly script: NerpScript, readonly messages: NerpMessage[]) {
         NerpRunner.timeAddedAfterSample = 0
-        this.script = NerpParser.parse(nerpScriptFile)
         this.checkSyntax()
         if (NerpRunner.debug) console.log(`Executing following script\n${this.script.lines.join('\n')}`)
     }

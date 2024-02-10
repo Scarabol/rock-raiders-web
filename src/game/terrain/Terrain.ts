@@ -1,6 +1,5 @@
 import { AxesHelper, Group, Vector2, Vector3 } from 'three'
-import { LevelEntryCfg } from '../../cfg/LevelsCfg'
-import { TextureEntryCfg } from '../../cfg/TexturesCfg'
+import { LevelConfData } from '../LevelLoader'
 import { DEV_MODE, SURFACE_NUM_CONTAINED_ORE, TILESIZE } from '../../params'
 import { WorldManager } from '../WorldManager'
 import { updateSafe } from '../model/Updateable'
@@ -17,8 +16,6 @@ import { EventBroker } from '../../event/EventBroker'
 
 export class Terrain {
     heightOffset: number[][] = [[]]
-    textureSet: TextureEntryCfg = null
-    rockFallStyle: string = null
     width: number = 0
     height: number = 0
     surfaces: Surface[][] = []
@@ -29,9 +26,11 @@ export class Terrain {
     slugHoles: Surface[] = []
     rechargeSeams: Surface[] = []
 
-    constructor(readonly worldMgr: WorldManager, readonly levelConf: LevelEntryCfg) {
+    constructor(readonly worldMgr: WorldManager, readonly levelConf: LevelConfData) {
         this.floorGroup.scale.setScalar(TILESIZE)
         if (DEV_MODE) this.floorGroup.add(new AxesHelper())
+        this.width = levelConf.mapWidth
+        this.height = levelConf.mapHeight
     }
 
     getSurfaceFromWorld(worldPosition: Vector3): Surface | null {
@@ -138,7 +137,7 @@ export class Terrain {
     createFallIn(source: Surface, target: Surface) {
         const fallInPosition = target.getCenterWorld()
         const heading = Math.atan2(target.y - source.y, source.x - target.x) + Math.PI / 2
-        const rockFallAnimName = GameConfig.instance.rockFallStyles[this.rockFallStyle][3] // TODO not always pick "tunnel"
+        const rockFallAnimName = GameConfig.instance.rockFallStyles[this.levelConf.rockFallStyle][3] // TODO not always pick "tunnel"
         this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading, false)
         source.playPositionalSample(Sample.SFX_RockBreak)
         target.makeRubble()

@@ -20,9 +20,9 @@ export class LavaErosionSystem extends AbstractGameSystem {
     constructor() {
         super()
         EventBroker.subscribe(EventKey.LEVEL_SELECTED, (levelSelectedEvent: LevelSelectedEvent) => {
-            this.erodeTriggerTimeMs = levelSelectedEvent.levelConf.erodeTriggerTime * 1000
-            this.increaseErosionDelayMs = levelSelectedEvent.levelConf.erodeErodeTime * 1000
-            this.erosionStartDelayTimeMs = levelSelectedEvent.levelConf.erodeLockTime * 1000
+            this.erodeTriggerTimeMs = levelSelectedEvent.levelConf.erodeTriggerTimeMs
+            this.increaseErosionDelayMs = levelSelectedEvent.levelConf.erodeErodeTimeMs
+            this.erosionStartDelayTimeMs = levelSelectedEvent.levelConf.erodeLockTimeMs
         })
     }
 

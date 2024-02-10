@@ -1,5 +1,5 @@
 import { Frustum, Mesh, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
-import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { LevelConfData } from './LevelLoader'
 import { BirdViewControls } from '../scene/BirdViewControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
 import { EntityType } from './model/EntityType'
@@ -169,7 +169,7 @@ export class SceneManager implements Updatable {
         return frustum.containsPoint(selectionCenter)
     }
 
-    setupScene(levelConf: LevelEntryCfg) {
+    setupScene(levelConf: LevelConfData) {
         this.scene.clear()
         this.ambientLight = new LeveledAmbientLight()
         this.ambientLight.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
