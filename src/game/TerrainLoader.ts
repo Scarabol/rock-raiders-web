@@ -62,7 +62,7 @@ export class TerrainLoader {
             terrain.heightOffset[x] = []
             for (let y = 0; y < terrain.height + 1; y++) {
                 const offsets = [levelConf.surfaceMap?.[y - 1]?.[x - 1], levelConf.surfaceMap?.[y - 1]?.[x], levelConf.surfaceMap?.[y]?.[x - 1], levelConf.surfaceMap?.[y]?.[x]].filter((n) => !isNaN(n))
-                terrain.heightOffset[x][y] = offsets.reduce((l, r) => l + r, 0) / offsets.length * HEIGHT_MULTIPLIER
+                terrain.heightOffset[x][y] = offsets.reduce((l, r) => l + r, 0) / (offsets.length || 1) * HEIGHT_MULTIPLIER
             }
         }
 
