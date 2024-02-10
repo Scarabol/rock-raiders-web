@@ -99,7 +99,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         this.addTextureFolder('Buildings/E-Fence')
         this.addAnimatedEntity('mini-figures/pilot/pilot.ae')
         Array.from(gameConfig.advisor.values()).forEach((adv) => {
-            this.addLWSFile(`${adv.animFileName}.lws`)
+            this.addLWSFile(adv.animFileName)
             this.addTextureFolder(getPath(adv.animFileName))
         })
         // load monsters
@@ -137,8 +137,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
             falls.forEach((shape) => {
                 const textureFolder = shape.split('/').slice(0, -1).join('/')
                 this.addTextureFolder(textureFolder)
-                const lwsFilename = `${shape}.lws`
-                this.addLWSFile(lwsFilename)
+                this.addLWSFile(shape)
             })
         })
         this.addAsset(this.assetLoader.loadAlphaImageAsset, 'Interface/Dependencies/+.bmp')
@@ -209,11 +208,12 @@ export class AssetRegistry extends Map<string, WadAsset> {
         })
         // TODO add 'FPPoly' (contains usually two cameras)
         animData.animations.forEach((a) => {
-            this.addLWSFile(`${a.file}.lws`)
+            this.addLWSFile(a.file)
         })
     }
 
     addLWSFile(lwsFilepath: string) {
+        if (!lwsFilepath.toLowerCase().endsWith('.lws')) lwsFilepath += '.lws'
         const lwsPath = getPath(lwsFilepath).toLowerCase()
         this.inProgress.push(new Promise((resolve) => {
             try {

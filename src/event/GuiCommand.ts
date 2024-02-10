@@ -98,15 +98,6 @@ export class MakeRubble extends BaseEvent {
     }
 }
 
-export class ChangeRaiderSpawnRequest extends BaseEvent {
-    increase: boolean
-
-    constructor(increase: boolean) {
-        super(EventKey.COMMAND_CHANGE_RAIDER_SPAWN_REQUEST)
-        this.increase = increase
-    }
-}
-
 export class CreateClearRubbleJob extends BaseEvent {
     constructor() {
         super(EventKey.COMMAND_CREATE_CLEAR_RUBBLE_JOB)
@@ -200,17 +191,6 @@ export class TrainRaider extends BaseEvent {
 export class CancelBuilding extends BaseEvent {
     constructor() {
         super(EventKey.COMMAND_CANCEL_CONSTRUCTION)
-    }
-}
-
-export class RequestVehicleSpawn extends BaseEvent {
-    vehicle: EntityType
-    numRequested: number
-
-    constructor(vehicle: EntityType, numRequested: number) {
-        super(EventKey.COMMAND_REQUEST_VEHICLE_SPAWN)
-        this.vehicle = vehicle
-        this.numRequested = numRequested
     }
 }
 

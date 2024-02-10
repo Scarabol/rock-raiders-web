@@ -1,5 +1,5 @@
 import { EventKey } from '../../event/EventKeyEnum'
-import { CameraViewMode, ChangeCameraEvent, ChangeRaiderSpawnRequest } from '../../event/GuiCommand'
+import { CameraViewMode, ChangeCameraEvent } from '../../event/GuiCommand'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { RequestedRaidersChanged } from '../../event/WorldEvents'
 import { EntityType } from '../../game/model/EntityType'
@@ -76,7 +76,7 @@ export class MainPanel extends Panel {
         teleportRaider.addDependencyCheck(EntityType.PILOT)
         teleportRaider.isDisabled = () => this.hasMaxRaiders || this.numRequestedRaiders >= MAX_RAIDER_REQUEST || !this.hasRaiderTeleport
         teleportRaider.updateState()
-        teleportRaider.onClick = () => this.publishEvent(new ChangeRaiderSpawnRequest(true))
+        teleportRaider.onClick = () => this.publishEvent(new RequestedRaidersChanged(this.numRequestedRaiders + 1))
         const requestedRaiderLabel = teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
         requestedRaiderLabel.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
             requestedRaiderLabel.setLabel(event.numRequested)

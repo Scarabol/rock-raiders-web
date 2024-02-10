@@ -355,7 +355,7 @@ export class Surface {
             }
             suffix += this.surfaceType.shaping ? this.surfaceType.matIndex : SurfaceType.SOLID_ROCK.matIndex
         }
-        const textureFilepath = this.terrain.levelConf.textureSet.textureBasename + suffix + '.bmp'
+        const textureFilepath = this.terrain.levelConf.textureBasename + suffix + '.bmp'
         this.mesh.setTexture(textureFilepath, rotation)
     }
 

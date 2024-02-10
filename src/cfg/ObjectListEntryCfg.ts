@@ -3,5 +3,5 @@ export class ObjectListEntryCfg {
     xPos: number
     yPos: number
     heading: number
-    driving: string
+    driving?: string
 }

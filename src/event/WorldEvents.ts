@@ -26,22 +26,14 @@ export class JobCreateEvent extends JobEvent {
 }
 
 export class RequestedRaidersChanged extends BaseEvent {
-    numRequested: number
-
-    constructor(numRequested: number) {
+    constructor(readonly numRequested: number) {
         super(EventKey.REQUESTED_RAIDERS_CHANGED)
-        this.numRequested = numRequested
     }
 }
 
 export class RequestedVehiclesChanged extends BaseEvent {
-    vehicle: EntityType
-    numRequested: number
-
-    constructor(vehicle: EntityType, numRequested: number) {
+    constructor(readonly vehicle: EntityType, readonly numRequested: number) {
         super(EventKey.REQUESTED_VEHICLES_CHANGED)
-        this.vehicle = vehicle
-        this.numRequested = numRequested
     }
 }
 

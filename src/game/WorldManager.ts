@@ -41,7 +41,6 @@ import { EmergeSystem } from './system/EmergeSystem'
 export class WorldManager {
     readonly ecs: ECS = new ECS()
     readonly jobSupervisor: Supervisor = new Supervisor(this)
-    readonly damageSystem: DamageSystem
     sceneMgr: SceneManager
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
@@ -62,7 +61,7 @@ export class WorldManager {
         this.ecs.addSystem(new SceneEntityPositionSystem())
         this.ecs.addSystem(new SceneEntityHeadingSystem())
         this.ecs.addSystem(new RandomMoveBehaviorSystem())
-        this.damageSystem = this.ecs.addSystem(new DamageSystem())
+        this.ecs.addSystem(new DamageSystem())
         this.ecs.addSystem(new BeamUpSystem())
         this.ecs.addSystem(new MapMarkerUpdateSystem())
         this.ecs.addSystem(new RockMonsterBehaviorSystem(this))
@@ -86,6 +85,9 @@ export class WorldManager {
                     if (s.isUnstable()) s.collapse() // crumble unsupported walls
                 })
             }
+        })
+        EventBroker.subscribe(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
+            this.requestedRaiders = event.numRequested
         })
         EventBroker.subscribe(EventKey.REQUESTED_VEHICLES_CHANGED, (event: RequestedVehiclesChanged) => {
             const requestedChange = event.numRequested - this.requestedVehicleTypes.count((e) => e === event.vehicle)

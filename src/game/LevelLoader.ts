@@ -1,6 +1,5 @@
 import { LevelPrioritiesEntryConfig, LevelRewardConfig, ObjectiveImageCfg } from '../cfg/LevelsCfg'
 import { GameConfig } from '../cfg/GameConfig'
-import { TextureEntryCfg } from '../cfg/TexturesCfg'
 import { ResourceManager } from '../resource/ResourceManager'
 import { NerpParser } from '../nerp/NerpParser'
 import { NerpMessage, NerpScript } from '../nerp/NerpScript'
@@ -12,7 +11,7 @@ import { getMonsterEntityTypeByName, MonsterEntityType } from './model/EntityTyp
 export interface LevelConfData {
     levelName: string
     fullName: string
-    textureSet: TextureEntryCfg
+    textureBasename: string
     rockFallStyle: string
     fallinMultiplier: number
     mapWidth: number
@@ -56,7 +55,7 @@ export class LevelLoader {
             fullName: levelConf.fullName,
             mapWidth: terrainMap.width,
             mapHeight: terrainMap.height,
-            textureSet: GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet),
+            textureBasename: GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet).textureBasename,
             rockFallStyle: levelConf.rockFallStyle.toLowerCase(),
             fallinMultiplier: levelConf.fallinMultiplier,
             terrainMap: this.checkMap(levelConf.terrainMap, terrainMap.width, terrainMap.height),

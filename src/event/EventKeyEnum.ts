@@ -48,7 +48,6 @@ export enum EventKey {
     COMMAND_SELECT_BUILD_MODE = 'command-select-build-mode',
     COMMAND_CANCEL_BUILD_MODE = 'command-cancel-build-mode',
     COMMAND_CANCEL_CONSTRUCTION = 'command-cancel-construction',
-    COMMAND_REQUEST_VEHICLE_SPAWN = 'command-request-vehicle-spawn',
     COMMAND_VEHICLE_GET_MAN = 'command-vehicle-get-man',
     COMMAND_VEHICLE_BEAMUP = 'command-vehicle-beamup',
     COMMAND_VEHICLE_DRIVER_GET_OUT = 'command-vehicle-driver-get-out',

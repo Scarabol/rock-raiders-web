@@ -1,4 +1,4 @@
-import { Vector2 } from 'three'
+import { Frustum, Mesh, Vector2, Vector3 } from 'three'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
@@ -24,6 +24,7 @@ import { Rect } from '../../core/Rect'
 import { EventBroker } from '../../event/EventBroker'
 import { TooltipComponent } from '../../game/component/TooltipComponent'
 import { WALL_TYPE } from '../../game/terrain/WallType'
+import { SceneSelectionComponent } from '../../game/component/SceneSelectionComponent'
 
 export class GameLayer extends ScreenLayer {
     private pointerDown: { x: number, y: number } = null
@@ -211,13 +212,39 @@ export class GameLayer extends ScreenLayer {
                 const r1y = -(this.pointerDown.y / this.canvas.height) * 2 + 1
                 const r2x = (event.canvasX / this.canvas.width) * 2 - 1
                 const r2y = -(event.canvasY / this.canvas.height) * 2 + 1
-                const selection = this.worldMgr.sceneMgr.getEntitiesInFrustum(r1x, r1y, r2x, r2y)
+                const selection = this.getEntitiesInFrustum(r1x, r1y, r2x, r2y)
                 this.worldMgr.entityMgr.selection.set(selection)
                 EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
             }
             this.pointerDown = null
             EventBroker.publish(new SelectionFrameChangeEvent(null))
         }
+    }
+
+    getEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number): GameSelection {
+        const frustum = this.worldMgr.sceneMgr.cameraBird.getFrustum(r1x, r1y, r2x, r2y)
+        const selection = new GameSelection()
+        selection.raiders.push(...this.worldMgr.entityMgr.raiders.filter((r) => {
+            const pickSphere = this.worldMgr.ecs.getComponents(r.entity).get(SceneSelectionComponent).pickSphere
+            return r.isInSelection() && GameLayer.isInFrustum(pickSphere, frustum)
+        }))
+        const hasRaiderSelected = selection.raiders.length > 0
+        selection.vehicles.push(...this.worldMgr.entityMgr.vehicles.filter((v) => {
+            const pickSphere = this.worldMgr.ecs.getComponents(v.entity).get(SceneSelectionComponent).pickSphere
+            return v.isInSelection() && (!hasRaiderSelected || v.driver) && GameLayer.isInFrustum(pickSphere, frustum)
+        }))
+        if (selection.isEmpty()) selection.building = this.worldMgr.entityMgr.buildings.find((b) => {
+            const pickSphere = this.worldMgr.ecs.getComponents(b.entity).get(SceneSelectionComponent).pickSphere
+            return GameLayer.isInFrustum(pickSphere, frustum)
+        })
+        return selection
+    }
+
+    private static isInFrustum(pickSphere: Mesh, frustum: Frustum) {
+        if (!pickSphere) return false
+        const selectionCenter = new Vector3()
+        pickSphere.getWorldPosition(selectionCenter)
+        return frustum.containsPoint(selectionCenter)
     }
 
     handleKeyUpEvent(event: GameKeyboardEvent): boolean {

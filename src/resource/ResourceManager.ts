@@ -134,7 +134,7 @@ export class ResourceManager {
         })
         if (!imgData) {
             // ignore known texture issues
-            if (!VERBOSE && !['teofoilreflections.jpg', 'wingbase3.bmp', 'a_side.bmp', 'a_top.bmp', 'sand.bmp'].includes(textureFilename)) {
+            if (!VERBOSE && !['teofoilreflections.jpg', 'wingbase3.bmp', 'a_side.bmp', 'a_top.bmp', 'sand.bmp', 'display.bmp'].includes(textureFilename)) {
                 console.warn(`Could not find texture ${textureFilename}`)
             }
             return null

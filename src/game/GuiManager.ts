@@ -1,7 +1,7 @@
 import { EventKey } from '../event/EventKeyEnum'
-import { CameraControl, CameraViewMode, ChangeBuildingPowerState, ChangeCameraEvent, ChangeRaiderSpawnRequest, PickTool, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
+import { CameraControl, CameraViewMode, ChangeBuildingPowerState, ChangeCameraEvent, PickTool, PlaySoundEvent, SelectBuildMode, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
 import { DeselectAll, SelectionChanged } from '../event/LocalEvents'
-import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
+import { JobCreateEvent } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
 import { EatJob } from './model/job/raider/EatJob'
@@ -65,14 +65,6 @@ export class GuiManager {
             fence.targetSurface.fence = null
             fence.targetSurface.fenceRequested = false
             fence.worldMgr.ecs.addComponent(fence.entity, new BeamUpComponent(fence))
-        })
-        EventBroker.subscribe(EventKey.COMMAND_CHANGE_RAIDER_SPAWN_REQUEST, (event: ChangeRaiderSpawnRequest) => {
-            if (event.increase) {
-                worldMgr.requestedRaiders++
-            } else {
-                worldMgr.requestedRaiders--
-            }
-            EventBroker.publish(new RequestedRaidersChanged(worldMgr.requestedRaiders))
         })
         EventBroker.subscribe(EventKey.COMMAND_CREATE_DRILL_JOB, () => {
             entityMgr.selection.surface?.setupDrillJob()
@@ -147,10 +139,6 @@ export class GuiManager {
         })
         EventBroker.subscribe(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
             entityMgr.selection.surface.site?.cancelSite()
-        })
-        EventBroker.subscribe(EventKey.COMMAND_REQUEST_VEHICLE_SPAWN, (event: RequestVehicleSpawn) => {
-            EventBroker.publish(new RequestedVehiclesChanged(event.vehicle, event.numRequested))
-            EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_VEHICLE_GET_MAN, () => {
             entityMgr.selection.vehicles.forEach((v) => {
