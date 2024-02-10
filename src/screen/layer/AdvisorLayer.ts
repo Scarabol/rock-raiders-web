@@ -1,5 +1,5 @@
 import { ScreenLayer } from './ScreenLayer'
-import { AmbientLight, Camera, DoubleSide, PerspectiveCamera, Scene } from 'three'
+import { AmbientLight, DoubleSide, PerspectiveCamera, Scene } from 'three'
 import { CAMERA_FOV, NATIVE_UPDATE_INTERVAL } from '../../params'
 import { AnimationLoopGroup } from '../../scene/AnimationLoopGroup'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -13,7 +13,6 @@ import { SaveGameManager } from '../../resource/SaveGameManager'
 export class AdvisorLayer extends ScreenLayer {
     readonly renderer: BaseRenderer
     readonly scene: Scene
-    readonly camera: Camera
     readonly group: AnimationLoopGroup
     groupUpdateInterval: NodeJS.Timeout
 
@@ -21,9 +20,13 @@ export class AdvisorLayer extends ScreenLayer {
         super()
         this.ratio = SaveGameManager.currentPreferences.screenRatioFixed
         this.renderer = new BaseRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, {alpha: true})
+        this.renderer.camera = new PerspectiveCamera(CAMERA_FOV, 4 / 3, 0.1, 100)
+        // 510 -> 510 / 640 = 0.80 -> ... => 7.25 // XXX How to derive from numbers in cfg?
+        // 340 -> 340 / 480 = 0.71 -> ... => 3.8 // XXX How to derive from numbers in cfg?
+        this.renderer.camera.position.set(7.25, 3.8, -25)
+        this.renderer.camera.lookAt(7.25, 3.8, 0)
         this.scene = new Scene()
         this.scene.add(new AmbientLight(0xffffff, 1)) // XXX read from LWS file
-        this.camera = new PerspectiveCamera(CAMERA_FOV, 4 / 3, 0.1, 100)
 
         const advisorPosCfg = GameConfig.instance.advisorPositions640x480.get('Advisor_Objective'.toLowerCase())
         if (!advisorPosCfg) {
@@ -35,11 +38,6 @@ export class AdvisorLayer extends ScreenLayer {
             console.warn('Advisor config for mission objective not found', advisorPosCfg)
             return
         }
-
-        // 510 -> 510 / 640 = 0.80 -> ... => 7.25 // XXX How to derive from numbers in cfg?
-        // 340 -> 340 / 480 = 0.71 -> ... => 3.8 // XXX How to derive from numbers in cfg?
-        this.camera.position.set(7.25, 3.8, -25)
-        this.camera.lookAt(7.25, 3.8, 0)
 
         this.group = new AnimationLoopGroup(advisorCfg.animFileName, () => {
             this.renderer.stopRendering()
@@ -66,7 +64,7 @@ export class AdvisorLayer extends ScreenLayer {
         if (!this.group) return
         this.group.play()
         // XXX Play SFX for advisor, which seems always null
-        this.renderer.startRendering(this.scene, this.camera)
+        this.renderer.startRendering(this.scene).then()
         this.groupUpdateInterval = clearIntervalSafe(this.groupUpdateInterval)
         this.groupUpdateInterval = setInterval(() => {
             this.group.update(NATIVE_UPDATE_INTERVAL)

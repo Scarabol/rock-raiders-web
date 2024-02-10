@@ -73,8 +73,8 @@ export class FollowerRenderer extends WebGLRenderer {
         EventBroker.publish(new FollowerSetCanvasEvent(this.canvas))
     }
 
-    stopRendering() {
-        this.dispose()
+    dispose() {
         this.renderInterval = clearIntervalSafe(this.renderInterval)
+        super.dispose()
     }
 }

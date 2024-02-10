@@ -10,19 +10,18 @@ import { BaseRenderer } from '../screen/BaseRenderer'
 export class RockWipeLayer extends ScreenLayer {
     readonly renderer: BaseRenderer
     readonly scene: Scene
-    readonly camera: OrthographicCamera
     readonly group: AnimationGroup
     groupUpdateInterval: NodeJS.Timeout
 
     constructor() {
         super()
         this.renderer = new BaseRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, {alpha: true})
+        this.renderer.camera = new OrthographicCamera(-1, 1, 1, -1, 0.1, 10)
+        this.renderer.camera.position.set(0, 0, 10)
+        this.renderer.camera.lookAt(0, 0, 0)
         this.scene = new Scene()
         this.scene.add(new AmbientLight(0xffffff, 0.25)) // XXX read from LWS file
         this.scene.scale.setScalar(1 / 4)
-        this.camera = new OrthographicCamera(-1, 1, 1, -1, 0.1, 10)
-        this.camera.position.set(0, 0, 10)
-        this.camera.lookAt(0, 0, 0)
         this.group = new AnimationGroup('Interface/FrontEnd/Rock_Wipe/RockWipe.lws', () => {
             this.hide()
         }).setup()
@@ -33,7 +32,7 @@ export class RockWipeLayer extends ScreenLayer {
         super.show()
         this.group.resetAnimation()
         SoundManager.playSample(Sample.SFX_RockWipe, false)
-        this.renderer.startRendering(this.scene, this.camera)
+        this.renderer.startRendering(this.scene).then()
         this.groupUpdateInterval = clearIntervalSafe(this.groupUpdateInterval)
         this.groupUpdateInterval = setInterval(() => {
             this.group.update(NATIVE_UPDATE_INTERVAL)

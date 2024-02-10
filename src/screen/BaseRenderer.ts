@@ -6,23 +6,33 @@ export class BaseRenderer {
     renderer?: WebGLRenderer
     renderInterval: NodeJS.Timeout
     lastAnimationRequest: number
+    scene: Scene
+    camera: Camera
 
     constructor(readonly redrawMs: number, readonly canvas: SpriteImage, readonly parameters: WebGLRendererParameters) {
         this.parameters.canvas = canvas
     }
 
-    startRendering(scene: Scene, camera: Camera) {
+    async startRendering(scene: Scene): Promise<void> {
+        this.scene = scene
         this.renderInterval = clearIntervalSafe(this.renderInterval)
-        this.renderInterval = setInterval(() => {
-            if (!this.renderer) {
-                this.renderer = new WebGLRenderer(this.parameters)
-                this.renderer.setSize(this.canvas.width, this.canvas.height)
-            }
-            this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
-            this.lastAnimationRequest = requestAnimationFrame(() => {
-                this.renderer.render(scene, camera)
-            })
-        }, this.redrawMs)
+        return new Promise<void>((resolve) => {
+            this.renderInterval = setInterval(() => {
+                if (!this.renderer) {
+                    this.renderer = new WebGLRenderer(this.parameters)
+                    this.renderer.setSize(this.canvas.width, this.canvas.height)
+                }
+                this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
+                this.lastAnimationRequest = requestAnimationFrame(() => {
+                    this.render()
+                    resolve()
+                })
+            }, this.redrawMs)
+        })
+    }
+
+    render() {
+        this.renderer.render(this.scene, this.camera)
     }
 
     setSize(width: number, height: number) {

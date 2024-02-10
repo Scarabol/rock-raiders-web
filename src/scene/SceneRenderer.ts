@@ -1,49 +1,41 @@
-import { Camera, Scene, WebGLRenderer } from 'three'
+import { Scene } from 'three'
 import { DebugHelper } from '../screen/DebugHelper'
-import { SpriteImage } from '../core/Sprite'
-import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
 import { cloneContext } from '../core/ImageHelper'
+import { BaseRenderer } from '../screen/BaseRenderer'
+import { SpriteImage } from '../core/Sprite'
 
-export class SceneRenderer extends WebGLRenderer {
+export class SceneRenderer extends BaseRenderer {
+    static readonly MAX_FPS = 30 // animations and videos have 25 fps (PAL)
     readonly debugHelper: DebugHelper
-    readonly maxFps: number = 30 // animations and videos have 25 fps (PAL)
-    camera: Camera
-    renderInterval: NodeJS.Timeout
-    lastAnimationRequest: number
     screenshotCallback: (canvas: HTMLCanvasElement) => any
 
     constructor(canvas: SpriteImage) {
-        super({antialias: true, canvas: canvas, powerPreference: 'high-performance'})
+        super(1000 / SceneRenderer.MAX_FPS, canvas, {antialias: true, powerPreference: 'high-performance'})
         // this.shadowMap.enabled = true // XXX enable shadows here
         // this.shadowMap.type = PCFSoftShadowMap // XXX set shadow quality here
         this.debugHelper = new DebugHelper()
     }
 
     async startRendering(scene: Scene): Promise<void> {
-        return new Promise<void>((resolve) => {
-            this.debugHelper.show()
-            this.renderInterval = clearIntervalSafe(this.renderInterval)
-            this.renderInterval = setInterval(() => {
-                this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
-                this.lastAnimationRequest = requestAnimationFrame(() => {
-                    this.debugHelper.onRenderStart()
-                    this.render(scene, this.camera)
-                    this.debugHelper.onRenderDone()
-                    resolve()
-                    this.checkForScreenshot()
-                })
-            }, 1000 / this.maxFps)
-        })
+        this.debugHelper.show()
+        return super.startRendering(scene)
+    }
+
+    render() {
+        this.debugHelper.onRenderStart()
+        super.render()
+        this.debugHelper.onRenderDone()
+        this.checkForScreenshot()
     }
 
     private checkForScreenshot() {
         if (!this.screenshotCallback) return
         const callback = this.screenshotCallback
         this.screenshotCallback = null
-        this.domElement.toBlob((blob) => {
+        this.renderer?.domElement.toBlob((blob) => {
             const img = document.createElement('img')
             img.onload = () => {
-                const context = cloneContext(this.domElement)
+                const context = cloneContext(this.renderer.domElement)
                 context.drawImage(img, 0, 0)
                 callback(context.canvas)
             }
@@ -52,9 +44,7 @@ export class SceneRenderer extends WebGLRenderer {
     }
 
     stopRendering() {
-        this.dispose()
         this.debugHelper.hide()
-        this.renderInterval = clearIntervalSafe(this.renderInterval)
-        this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
+        super.stopRendering()
     }
 }

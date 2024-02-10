@@ -149,8 +149,8 @@ export class SceneManager implements Updatable {
 
     disposeScene() {
         this.scene.clear()
-        this.renderer.stopRendering()
-        this.followerRenderer?.stopRendering()
+        this.renderer.dispose()
+        this.followerRenderer?.dispose()
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         this.terrain = null
