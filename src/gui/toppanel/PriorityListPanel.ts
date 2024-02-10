@@ -64,7 +64,8 @@ export class PriorityListPanel extends Panel {
             prioButton.relX = this.prioPositions[btnCount].x
             prioButton.relY = this.prioPositions[btnCount].y
             prioButton.updatePosition()
-            prioButton.onClick = () => {
+            prioButton.onClick = (cx: number, cy: number) => {
+                prioButton.hover = this.prioByName.get(priorityList[0].key).isInRect(cx, cy)
                 GameState.priorityList.pushToTop(btnIndex)
             }
             btnCount++
