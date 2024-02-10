@@ -10,4 +10,6 @@ export enum PriorityIdentifier { // This needs to be an actual enum, because it 
     CONSTRUCTION,
     REINFORCE,
     RECHARGE,
+    GET_TOOL, // not shown in original game
+    BUILD_PATH, // not shown in original game
 }

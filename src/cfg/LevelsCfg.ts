@@ -89,9 +89,7 @@ export class LevelEntryCfg extends BaseConfig {
         if (unifiedKey === 'fullName'.toLowerCase()) {
             return cfgValue.replace(/_/g, ' ')
         } else if (unifiedKey === 'priorities') {
-            return Object.entries<boolean>(cfgValue)
-                .filter(([name]) => !name.equalsIgnoreCase('AI_Priority_GetTool')) // not used in the game
-                .map(([name, enabled]) => new LevelPrioritiesEntryConfig(name, enabled))
+            return Object.entries<boolean>(cfgValue).map(([name, enabled]) => new LevelPrioritiesEntryConfig(name, enabled))
         } else if (unifiedKey === 'reward') {
             return new LevelRewardConfig().setFromCfgObj(cfgValue)
         } else if (unifiedKey === 'objectiveimage640x480') {
@@ -138,8 +136,12 @@ export class LevelPrioritiesEntryConfig {
             return PriorityIdentifier.REINFORCE
         } else if (name.equalsIgnoreCase('AI_Priority_Recharge')) {
             return PriorityIdentifier.RECHARGE
-        } else { // TODO What about AI_Priority_BuildPath?
-            console.error(`Unexpected priority identifier ${name}`)
+        } else if (name.equalsIgnoreCase('AI_Priority_GetTool')) {
+            return PriorityIdentifier.GET_TOOL
+        } else if (name.equalsIgnoreCase('AI_Priority_BuildPath')) {
+            return PriorityIdentifier.BUILD_PATH
+        } else {
+            console.warn(`Unexpected priority identifier ${name}`)
             return PriorityIdentifier.NONE
         }
     }

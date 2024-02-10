@@ -9,6 +9,7 @@ import { Panel } from '../base/Panel'
 import { UpdatePriorities } from '../../event/WorldEvents'
 import { GameState } from '../../game/model/GameState'
 import { PriorityEntry } from '../../game/model/job/PriorityEntry'
+import { VERBOSE } from '../../params'
 
 export class PriorityListPanel extends Panel {
     prioPositions: PriorityPositionsEntry[] = []
@@ -49,25 +50,24 @@ export class PriorityListPanel extends Panel {
 
     private updateList(priorityList: PriorityEntry[]) {
         this.prioByName.forEach((btn) => btn.hidden = true)
-        let index = 0
+        let btnCount = 0
         let updated = false
-        priorityList.forEach((prioEntry) => {
+        priorityList.forEach((prioEntry, btnIndex) => {
             const prioButton: Button = this.prioByName.get(prioEntry.key)
             if (!prioButton) {
-                console.error('Could not find button for priority entry', prioEntry.key)
+                if (VERBOSE) console.warn(`Could not find button for priority "${PriorityIdentifier[prioEntry.key]}"`)
                 return
             }
             updated = updated || prioButton.hidden || prioButton.disabled !== !prioEntry.enabled
-            prioButton.hidden = index > 8
+            prioButton.hidden = btnCount >= 9
             prioButton.disabled = !prioEntry.enabled
-            prioButton.relX = this.prioPositions[index].x
-            prioButton.relY = this.prioPositions[index].y
+            prioButton.relX = this.prioPositions[btnCount].x
+            prioButton.relY = this.prioPositions[btnCount].y
             prioButton.updatePosition()
-            const btnIndex = index
             prioButton.onClick = () => {
                 GameState.priorityList.pushToTop(btnIndex)
             }
-            index++
+            btnCount++
         })
         if (updated) this.notifyRedraw()
     }
