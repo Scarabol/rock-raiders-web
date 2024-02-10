@@ -83,6 +83,11 @@ export class Button extends BaseElement {
         return stateChanged
     }
 
+    clicked(event: GuiPointerDownEvent) {
+        super.clicked(event)
+        this.publishEvent(new HideTooltip(this.tooltip))
+    }
+
     onPointerLeave(): boolean {
         const stateChanged = super.onPointerLeave()
         if (stateChanged) this.notifyRedraw()
