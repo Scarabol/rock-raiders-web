@@ -192,7 +192,11 @@ export class GameLayer extends ScreenLayer {
                         this.worldMgr.entityMgr.selection.set(selection)
                         EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
                     } else {
-                        console.warn('Unexpected cursor target given', cursorTarget)
+                        const x = (this.pointerDown.x + event.canvasX) / this.canvas.width - 1
+                        const y = -(this.pointerDown.y + event.canvasY) / this.canvas.height + 1
+                        const selection = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y))
+                        this.worldMgr.entityMgr.selection.set(selection)
+                        EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
                     }
                 } else {
                     const x = (this.pointerDown.x + event.canvasX) / this.canvas.width - 1
