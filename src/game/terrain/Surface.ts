@@ -28,6 +28,7 @@ import { AnimationGroup } from '../../scene/AnimationGroup'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { TooltipComponent } from '../component/TooltipComponent'
+import { EmergeComponent } from '../component/EmergeComponent'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -316,7 +317,8 @@ export class Surface {
         this.mesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
         if (this.wallType !== WALL_TYPE.WALL) {
             this.cancelReinforceJobs()
-            this.terrain.removeEmergeSpawn(this)
+            const emergeComponent = this.worldMgr.ecs.getComponents(this.entity).get(EmergeComponent)
+            if (emergeComponent) emergeComponent.emergeSurface = null
         }
     }
 

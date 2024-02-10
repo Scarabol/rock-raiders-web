@@ -3,7 +3,7 @@ import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnu
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { DeselectAll, SelectionChanged, SelectionFrameChangeEvent } from '../../event/LocalEvents'
-import { JobCreateEvent } from '../../event/WorldEvents'
+import { JobCreateEvent, MonsterEmergeEvent } from '../../event/WorldEvents'
 import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
 import { DEV_MODE } from '../../params'
@@ -23,6 +23,7 @@ import { GameSelection } from '../../game/model/GameSelection'
 import { Rect } from '../../core/Rect'
 import { EventBroker } from '../../event/EventBroker'
 import { TooltipComponent } from '../../game/component/TooltipComponent'
+import { WALL_TYPE } from '../../game/terrain/WallType'
 
 export class GameLayer extends ScreenLayer {
     private pointerDown: { x: number, y: number } = null
@@ -240,6 +241,11 @@ export class GameLayer extends ScreenLayer {
                 }
                 EventBroker.publish(new DeselectAll())
                 return true
+            } else if (event.key === 'm') {
+                const surface = this.worldMgr.entityMgr.selection.surface
+                if (surface.wallType === WALL_TYPE.WALL) {
+                    EventBroker.publish(new MonsterEmergeEvent(surface))
+                }
             }
         }
         return false

@@ -37,6 +37,7 @@ import { LavaErosionSystem } from './system/LavaErosionSystem'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventBroker } from '../event/EventBroker'
 import { PowerGrid } from './terrain/PowerGrid'
+import { EmergeSystem } from './system/EmergeSystem'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -75,6 +76,7 @@ export class WorldManager {
         this.ecs.addSystem(new BulletSystem(this))
         this.ecs.addSystem(new BoulderSystem())
         this.ecs.addSystem(new LavaErosionSystem())
+        this.ecs.addSystem(new EmergeSystem())
         EventBroker.subscribe(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBroker.subscribe(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {

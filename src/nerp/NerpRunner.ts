@@ -12,7 +12,7 @@ import { GameState } from '../game/model/GameState'
 import { NerpParser } from './NerpParser'
 import { NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
-import { GameResultEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
+import { GameResultEvent, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { MonsterSpawner } from '../game/factory/MonsterSpawner'
@@ -330,7 +330,9 @@ export class NerpRunner {
 
     setRockMonsterAtTutorial(tutoBlockId: number) {
         const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        tutoBlocks.forEach((t) => this.worldMgr.sceneMgr.terrain.emergeFromSurface(t))
+        tutoBlocks.forEach((t) => {
+            EventBroker.publish(new MonsterEmergeEvent(t))
+        })
     }
 
     setCongregationAtTutorial(tutoBlockId: number) {

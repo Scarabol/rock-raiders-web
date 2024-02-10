@@ -1,5 +1,5 @@
 import { BuildingsChangedEvent, DeselectAll, FollowerSetCanvasEvent, FollowerSetLookAtEvent, InitRadarMap, RaidersAmountChangedEvent, RaiderTrainingCompleteEvent, SaveScreenshot, SelectionChanged, SelectionFrameChangeEvent, SetSpaceToContinueEvent, ShowGameResultEvent, ShowMissionBriefingEvent, ShowOptionsEvent, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain, VehicleUpgradeCompleteEvent } from './LocalEvents'
-import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, NerpMessageEvent, NerpSuppressArrowEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged } from './WorldEvents'
+import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged } from './WorldEvents'
 import { CameraControl, CancelBuilding, CancelBuildMode, CancelSurfaceJobs, ChangeBuildingPowerState, ChangeCameraEvent, ChangeCursor, ChangePreferences, ChangeRaiderSpawnRequest, ChangeTooltip, CreateClearRubbleJob, CreateDrillJob, CreateDynamiteJob, CreatePowerPath, CreateReinforceJob, DropBirdScarer, HideTooltip, MakeRubble, PickTool, PlaceFence, PlaySoundEvent, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade, RemoveSelection, RepairBuilding, RepairLava, RequestVehicleSpawn, SelectBuildMode, TrainRaider, UpgradeBuilding, UpgradeVehicle, VehicleBeamUp, VehicleCallMan, VehicleDriverGetOut, VehicleUnload } from './GuiCommand'
 import { CrystalFoundEvent, GenericDeathEvent, GenericMonsterEvent, LandslideEvent, PowerDrainEvent, RaiderDiscoveredEvent, SlugEmergeEvent, UnderAttackEvent, WorldLocationEvent } from './WorldLocationEvent'
 
@@ -79,6 +79,7 @@ export interface DefaultEventMap {
     'cavern-discovered': CavernDiscovered
     'ore-found': OreFoundEvent
     'air-level-changed': AirLevelChanged
+    'monster-emerge': MonsterEmergeEvent
     'nerp-message': NerpMessageEvent
     'nerp-message-next': BaseEvent
     'nerp-suppress-arrow': NerpSuppressArrowEvent

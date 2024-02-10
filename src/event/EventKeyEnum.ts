@@ -83,6 +83,7 @@ export enum EventKey {
     CAVERN_DISCOVERED = 'cavern-discovered',
     ORE_FOUND = 'ore-found',
     AIR_LEVEL_CHANGED = 'air-level-changed',
+    MONSTER_EMERGE = 'monster-emerge',
     NERP_MESSAGE = 'nerp-message',
     NERP_MESSAGE_NEXT = 'nerp-message-next',
     NERP_SUPPRESS_ARROW = 'nerp-suppress-arrow',

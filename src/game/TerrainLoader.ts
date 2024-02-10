@@ -5,18 +5,16 @@ import { Surface } from './terrain/Surface'
 import { SurfaceType } from './terrain/SurfaceType'
 import { Terrain } from './terrain/Terrain'
 import { WorldManager } from './WorldManager'
-import { getMonsterEntityTypeByName } from './model/EntityType'
-import { EmergeTrigger } from './terrain/EmergeTrigger'
 import { Vector3 } from 'three'
 import { LavaErosionComponent } from './component/LavaErosionComponent'
 import { GameConfig } from '../cfg/GameConfig'
+import { EmergeComponent } from './component/EmergeComponent'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager): Terrain {
         const terrain = new Terrain(worldMgr, levelConf)
         terrain.textureSet = GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet)
         terrain.rockFallStyle = levelConf.rockFallStyle.toLowerCase()
-        terrain.emergeCreature = getMonsterEntityTypeByName(levelConf.emergeCreature)
 
         const terrainMap = ResourceManager.getResource(levelConf.terrainMap)
         terrain.width = terrainMap.width
@@ -168,10 +166,11 @@ export class TerrainLoader {
                 for (let y = 0; y < terrain.height; y++) {
                     const emergeValue = emergeMap[y][x]
                     if (!emergeValue) continue
+                    const surface = terrain.surfaces[x][y]
                     if (emergeValue % 2 === 1) {
-                        terrain.emergeTrigger.push(new EmergeTrigger(terrain.surfaces[x][y], emergeValue + 1))
+                        worldMgr.ecs.addComponent(surface.entity, new EmergeComponent(emergeValue + 1, surface, null))
                     } else {
-                        terrain.emergeSpawns.getOrUpdate(emergeValue, () => []).add(terrain.surfaces[x][y])
+                        worldMgr.ecs.addComponent(surface.entity, new EmergeComponent(emergeValue, null, surface))
                     }
                 }
             }

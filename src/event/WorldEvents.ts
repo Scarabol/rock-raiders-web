@@ -8,6 +8,7 @@ import { GameResultState } from '../game/model/GameResult'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { BaseEvent } from './EventTypeMap'
 import { PriorityEntry } from '../game/model/job/PriorityEntry'
+import { Surface } from '../game/terrain/Surface'
 
 export abstract class JobEvent extends BaseEvent {
     job: Job
@@ -112,6 +113,12 @@ export class AirLevelChanged extends BaseEvent {
     constructor(airLevel: number) {
         super(EventKey.AIR_LEVEL_CHANGED)
         this.airLevel = airLevel
+    }
+}
+
+export class MonsterEmergeEvent extends BaseEvent {
+    constructor(readonly surface: Surface) {
+        super(EventKey.MONSTER_EMERGE)
     }
 }
 
