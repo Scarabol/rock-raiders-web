@@ -131,10 +131,8 @@ export class AssetRegistry extends Map<string, WadAsset> {
         Object.values<string>(miscObjects).forEach((mType) => {
             this.addMeshObjects(mType)
         })
-        const rockFallStyles = iGet(gameConfig, 'RockFallStyles')
-        Object.values<string[]>(rockFallStyles).forEach((entry) => {
-            const falls = entry.slice(1) // first entry is always "Item_Null"
-            falls.forEach((shape) => {
+        gameConfig.rockFallStyles.forEach((entry) => {
+            ;[entry.threeSides, entry.outsideCorner, entry.tunnel].forEach((shape) => {
                 const textureFolder = shape.split('/').slice(0, -1).join('/')
                 this.addTextureFolder(textureFolder)
                 this.addLWSFile(shape)

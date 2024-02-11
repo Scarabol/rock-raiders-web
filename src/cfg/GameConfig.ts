@@ -16,7 +16,7 @@ import { PrioritiesImagePositionsCfg, PriorityButtonsCfg } from './PriorityButto
 import { RewardCfg } from './RewardCfg'
 import { TexturesCfg } from './TexturesCfg'
 import { MiscObjectsCfg } from './MiscObjectsCfg'
-import { RockFallStylesCfg } from './RockFallStylesCfg'
+import { RockFallStyle } from './RockFallStyle'
 import { EntityType, getEntityTypeByName } from '../game/model/EntityType'
 import { ObjInfoCfg } from './ObjInfoCfg'
 import { WeaponTypeCfg } from './WeaponTypesCfg'
@@ -50,7 +50,7 @@ export class GameConfig extends BaseConfig {
     prioritiesImagePositions: PrioritiesImagePositionsCfg = new PrioritiesImagePositionsCfg()
     miscObjects: MiscObjectsCfg = new MiscObjectsCfg()
     bubbles: BubblesCfg = new BubblesCfg()
-    rockFallStyles: RockFallStylesCfg = new RockFallStylesCfg()
+    rockFallStyles: Map<string, RockFallStyle> = new Map()
     textMessagesWithImages: TextInfoMessageCfg = new TextInfoMessageCfg()
     samples: SamplesCfg = new SamplesCfg()
     textures: TexturesCfg = new TexturesCfg()
@@ -109,7 +109,7 @@ export class GameConfig extends BaseConfig {
         } else if ('Bubbles'.equalsIgnoreCase(unifiedKey)) {
             this.bubbles.setFromCfgObj(cfgValue)
         } else if ('RockFallStyles'.equalsIgnoreCase(unifiedKey)) {
-            this.rockFallStyles.setFromCfgObj(cfgValue)
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.rockFallStyles.set(cfgKey.toLowerCase(), new RockFallStyle(value)))
         } else if ('TextMessagesWithImages'.equalsIgnoreCase(unifiedKey)) {
             this.textMessagesWithImages.setFromCfgObj(cfgValue)
         } else if ('Samples'.equalsIgnoreCase(unifiedKey)) {

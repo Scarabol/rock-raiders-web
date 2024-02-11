@@ -212,13 +212,27 @@ export class Surface {
         if (this.selected) EventBroker.publish(new DeselectAll())
         // drop contained ores and crystals
         this.dropContainedMaterials(droppedOre, droppedCrystals)
-        // update meshes
-        this.terrain.updateSurfaceMeshes()
         // add crumble animation
-        const wallNeighbor = this.neighbors.filter((n) => !!n.wallType).random()
-        const crumbleAngle = !!wallNeighbor ? Math.atan2(wallNeighbor.x - this.x, wallNeighbor.y - this.y) : 0 // XXX why is x/y swapped here?
-        const rockFallAnimName = GameConfig.instance.rockFallStyles[this.terrain.levelConf.rockFallStyle][3] // TODO not always pick "tunnel"
-        this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
+        const wallNeighbors = this.neighbors.filter((n) => !!n.wallType)
+        const randomWallNeighbor = wallNeighbors.random()
+        if (this.wallType === WALL_TYPE.CORNER) { // by default the corner animation goes from this.x+1,this.y+1 to this.x,this.y
+            const neighborToRight = this.terrain.getSurface(this.x - randomWallNeighbor.y + this.y, this.y + randomWallNeighbor.x - this.x)
+            let crumbleAngle = Math.atan2(neighborToRight.x - this.x, neighborToRight.y - this.y)
+            if (!neighborToRight.wallType) crumbleAngle += Math.PI / 2
+            const rockFallAnimName = GameConfig.instance.rockFallStyles.get(this.terrain.levelConf.rockFallStyle).outsideCorner
+            this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
+        } else if (wallNeighbors.length === 3) {
+            const nonWallNeighbor = this.neighbors.filter((n) => !n.wallType)[0]
+            const crumbleAngle = Math.atan2(this.x - nonWallNeighbor.x, this.y - nonWallNeighbor.y)
+            const rockFallAnimName = GameConfig.instance.rockFallStyles.get(this.terrain.levelConf.rockFallStyle).threeSides
+            this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
+        } else {
+            const crumbleAngle = !!randomWallNeighbor ? Math.atan2(randomWallNeighbor.x - this.x, randomWallNeighbor.y - this.y) : 0
+            const rockFallAnimName = GameConfig.instance.rockFallStyles.get(this.terrain.levelConf.rockFallStyle).tunnel
+            this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
+        }
+        // update meshes and wallType
+        this.terrain.updateSurfaceMeshes()
         this.playPositionalSample(Sample.SFX_RockBreak)
     }
 

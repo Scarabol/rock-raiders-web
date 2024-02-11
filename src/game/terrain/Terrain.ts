@@ -137,7 +137,7 @@ export class Terrain {
     createFallIn(source: Surface, target: Surface) {
         const fallInPosition = target.getCenterWorld()
         const heading = Math.atan2(target.y - source.y, source.x - target.x) + Math.PI / 2
-        const rockFallAnimName = GameConfig.instance.rockFallStyles[this.levelConf.rockFallStyle][3] // TODO not always pick "tunnel"
+        const rockFallAnimName = GameConfig.instance.rockFallStyles.get(this.levelConf.rockFallStyle).tunnel // fall-ins always come from (reinforcable) walls
         this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading, false)
         source.playPositionalSample(Sample.SFX_RockBreak)
         target.makeRubble()
