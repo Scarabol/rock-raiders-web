@@ -88,7 +88,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Save complete game state in browser cache to allow reload
 - Hardware cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position
   manipulation
-- Add level reference to URL for easier reloading, check if game is unlocked when not in dev mode
+- Start level from URL for easier reloading, check if game is unlocked when not in dev mode
 - Add option to read savegames from URL
 
 ### Cosmetics
