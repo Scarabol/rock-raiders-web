@@ -31,9 +31,10 @@ export class RockWipeLayer extends ScreenLayer {
 
     show() {
         super.show()
-        this.group.play()
+        this.group.resetAnimation()
         SoundManager.playSample(Sample.SFX_RockWipe, false)
         this.renderer.startRendering(this.scene, this.camera)
+        this.groupUpdateInterval = clearIntervalSafe(this.groupUpdateInterval)
         this.groupUpdateInterval = setInterval(() => {
             this.group.update(NATIVE_UPDATE_INTERVAL)
         }, NATIVE_UPDATE_INTERVAL) // XXX Use FPS from LWS data
