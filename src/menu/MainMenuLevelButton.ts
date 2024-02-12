@@ -8,6 +8,8 @@ import { UiElementCallback } from './UiElementState'
 import { clearTimeoutSafe } from '../core/Util'
 import { DEV_MODE, TOOLTIP_DELAY_SFX_MENU } from '../params'
 import { GameConfig } from '../cfg/GameConfig'
+import { SoundManager } from '../audio/SoundManager'
+import { Sample } from '../audio/Sample'
 
 export class MainMenuLevelButton extends MainMenuBaseItem {
     imgActive: SpriteImage = null
@@ -47,6 +49,13 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
         return Array.from(GameConfig.instance.levels.levelCfgByName.entries()).some(([levelName, levelEntryCfg]) =>
             SaveGameManager.getLevelScoreString(levelName) && levelEntryCfg.levelLinks.some((levelLink) => this.levelConf.levelName.equalsIgnoreCase(levelLink))
         )
+    }
+
+    set onPressed(callback: UiElementCallback) {
+        super.onPressed = () => {
+            SoundManager.playSample(Sample.SFX_ButtonPressed, false)
+            callback()
+        }
     }
 
     set onHoverChange(callback: UiElementCallback) {

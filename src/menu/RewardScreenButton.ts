@@ -6,6 +6,9 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { TOOLTIP_DELAY_TEXT_MENU } from '../params'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
+import { UiElementCallback } from './UiElementState'
+import { SoundManager } from '../audio/SoundManager'
+import { Sample } from '../audio/Sample'
 
 export class RewardScreenButton extends MainMenuBaseItem {
     imgNormal: SpriteImage
@@ -24,6 +27,13 @@ export class RewardScreenButton extends MainMenuBaseItem {
         const tooltipText = GameConfig.instance.getTooltipText(tooltipKey)
         this.state.onShowTooltip = () => EventBroker.publish(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_MENU))
         this.state.onHideTooltip = () => EventBroker.publish(new HideTooltip(tooltipText))
+    }
+
+    set onPressed(callback: UiElementCallback) {
+        super.onPressed = () => {
+            SoundManager.playSample(Sample.SFX_ButtonPressed, false)
+            callback()
+        }
     }
 
     draw(context: SpriteContext) {
