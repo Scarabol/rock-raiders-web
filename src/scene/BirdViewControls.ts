@@ -5,6 +5,8 @@ import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { degToRad } from 'three/src/math/MathUtils'
 import { GameConfig } from '../cfg/GameConfig'
 import { PositionComponent } from '../game/component/PositionComponent'
+import { EventBroker } from '../event/EventBroker'
+import { EventKey } from '../event/EventKeyEnum'
 
 export enum CameraRotation {
     NONE = 0,
@@ -21,6 +23,7 @@ export class BirdViewControls extends MapControls {
     lastPanKey: string = ''
     lockedObject: PositionComponent
     disabled: boolean = false
+    gamePaused: boolean = false
 
     constructor(camera: Camera, readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
@@ -35,6 +38,14 @@ export class BirdViewControls extends MapControls {
             this.maxPolarAngle = Math.PI / 2 - degToRad(GameConfig.instance.main.minTilt)
         }
         if (!USE_KEYBOARD_SHORTCUTS) this.useWASDToPanAndArrowKeysToRotate()
+        EventBroker.subscribe(EventKey.PAUSE_GAME, () => {
+            this.gamePaused = true
+            this.enabled = false
+        })
+        EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {
+            this.gamePaused = false
+            this.updateEnabled()
+        })
     }
 
     private useWASDToPanAndArrowKeysToRotate() {
@@ -94,7 +105,7 @@ export class BirdViewControls extends MapControls {
             if (this.moveTarget) {
                 if (this.target.distanceToSquared(this.moveTarget) < 1) {
                     this.moveTarget = null
-                    this.enabled = !this.lockBuild && !this.lockedObject && !this.disabled
+                    this.updateEnabled()
                 } else {
                     const nextCameraTargetPos = this.target.clone().add(this.moveTarget.clone().sub(this.target)
                         .clampLength(0, GameConfig.instance.main.CameraSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL))
@@ -115,12 +126,12 @@ export class BirdViewControls extends MapControls {
 
     unlockCamera() {
         this.lockedObject = null
-        this.enabled = !this.lockBuild && !this.disabled
+        this.updateEnabled()
     }
 
     setBuildLock(locked: boolean) {
         this.lockBuild = locked
-        this.enabled = !this.lockBuild && !this.moveTarget && !this.lockedObject && !this.disabled
+        this.updateEnabled()
     }
 
     setAutoPan(key: string) {
@@ -138,5 +149,9 @@ export class BirdViewControls extends MapControls {
     lockOnObject(position: PositionComponent) {
         this.lockedObject = position
         this.enabled = false
+    }
+
+    updateEnabled() {
+        this.enabled = !this.lockBuild && !this.moveTarget && !this.lockedObject && !this.disabled && !this.gamePaused
     }
 }
