@@ -6,6 +6,7 @@ import { RaiderJob } from './raider/RaiderJob'
 import { Raider } from '../raider/Raider'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { JobFulfiller } from './Job'
+import { EntityType } from '../EntityType'
 
 export class ManVehicleJob extends RaiderJob {
     vehicle: VehicleEntity
@@ -18,8 +19,8 @@ export class ManVehicleJob extends RaiderJob {
         this.vehicle = vehicle
         this.vehicle.callManJob = this
         const surface = this.vehicle.getSurface()
-        const walkableSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
-        const hopOnSpot = walkableSurface.getRandomPosition() // XXX find spot close to the possibly non-walkable actual surface
+        const walkableSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable() || s.building?.entityType === EntityType.DOCKS) ?? surface
+        const hopOnSpot = walkableSurface.getRandomPosition()
         const getInRadius = this.vehicle.stats.PickSphere / 2
         this.workplace = PathTarget.fromLocation(hopOnSpot, getInRadius * getInRadius)
     }
