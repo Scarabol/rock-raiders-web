@@ -37,6 +37,8 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventBroker } from '../event/EventBroker'
 import { PowerGrid } from './terrain/PowerGrid'
 import { EmergeSystem } from './system/EmergeSystem'
+import { SoundManager } from '../audio/SoundManager'
+import { Sample } from '../audio/Sample'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -99,7 +101,10 @@ export class WorldManager {
             }
         })
         EventBroker.subscribe(EventKey.LOCATION_RAIDER_DISCOVERED, () => GameState.hiddenObjectsFound++)
-        EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => GameState.alarmMode = event.alarmState)
+        EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
+            GameState.alarmMode = event.alarmState
+            if (GameState.alarmMode) SoundManager.playSample(Sample.SFX_Siren, false)
+        })
         EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
             if (!this.nerpRunner) return
             this.nerpRunner.objectiveShowing = event.isShowing ? 1 : 0

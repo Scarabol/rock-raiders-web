@@ -93,7 +93,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Cosmetics
 
-- No sirene sound when alarm mode is enabled
 - Digger vehicles have big offset to wall when drilling
 - Lava rockies texture not using correct UV coordinates
 - Orange smoke column above lava tiles missing
