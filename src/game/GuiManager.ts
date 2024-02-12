@@ -149,7 +149,8 @@ export class GuiManager {
         EventBroker.subscribe(EventKey.COMMAND_VEHICLE_BEAMUP, () => {
             entityMgr.selection.vehicles.forEach((v) => {
                 const surface = v.getSurface()
-                const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
+                const pathSurface = surface.neighbors.find((n) => n.building?.entityType === EntityType.DOCKS)?.building?.primaryPathSurface
+                const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable()) ?? pathSurface
                 if (spawnSurface) {
                     for (let c = 0; c < v.stats.CostOre; c++) MaterialSpawner.spawnMaterial(v.worldMgr, EntityType.ORE, spawnSurface.getRandomPosition())
                     for (let c = 0; c < v.stats.CostCrystal; c++) MaterialSpawner.spawnMaterial(v.worldMgr, EntityType.CRYSTAL, spawnSurface.getRandomPosition())
