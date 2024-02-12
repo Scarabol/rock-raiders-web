@@ -21,7 +21,7 @@ export interface MovableEntityStats extends PickSphereStats {
     PathCoef: number
 }
 
-export class VehicleEntityStats extends BaseConfig implements MovableEntityStats, DoubleSelectStats {
+export class VehicleEntityStats extends BaseConfig implements MovableEntityStats, DoubleSelectStats, PickSphereStats {
     PickSphere: number = 0
     CollRadius: number = 0
     CollHeight: number = 0
@@ -129,7 +129,7 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
     }
 }
 
-export class PilotStats extends BaseConfig implements MovableEntityStats {
+export class PilotStats extends BaseConfig implements MovableEntityStats, PickSphereStats {
     Levels: number = 4
     RouteSpeed: number[] = [1.10, 1.10, 1.10, 1.10]
     SoilDrillTime: number[] = [4.0, 4.0, 4.0, 4.0] // Time in seconds to drill through the rock.

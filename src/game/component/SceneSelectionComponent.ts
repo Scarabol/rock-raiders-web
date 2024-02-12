@@ -11,7 +11,7 @@ export interface SceneSelectionUserData {
 export class SceneSelectionComponent extends AbstractGameComponent {
     readonly pickSphere: Mesh
 
-    constructor(parentObj: Object3D, userData: SceneSelectionUserData, stats: PickSphereStats) {
+    constructor(parentObj: Object3D, userData: SceneSelectionUserData, readonly stats: PickSphereStats) {
         super()
         const pickSphereRadius = stats.PickSphere / 2 // TODO separate pick spheres from collision and use CollRadius
         const geometry = new SphereGeometry(pickSphereRadius, 8, 8)

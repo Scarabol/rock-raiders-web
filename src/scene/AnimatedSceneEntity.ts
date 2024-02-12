@@ -1,4 +1,4 @@
-import { Box3, Group, Object3D, Sphere, Vector2, Vector3 } from 'three'
+import { Group, Object3D, Vector2, Vector3 } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
@@ -282,12 +282,6 @@ export class AnimatedSceneEntity extends Group implements Updatable {
 
     headTowards(location: Vector2) {
         this.lookAt(new Vector3(location.x, this.position.y, location.y))
-    }
-
-    getRadiusSquare(): number {
-        const boundingSphere = new Sphere()
-        new Box3().setFromObject(this).getBoundingSphere(boundingSphere)
-        return boundingSphere.radius * boundingSphere.radius
     }
 
     addToScene(sceneMgr: SceneManager, worldPosition: Vector2, headingRad: number) {

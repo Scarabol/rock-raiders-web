@@ -7,9 +7,10 @@ import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { Sample } from '../../../../audio/Sample'
+import { GameEntity } from '../../../ECS'
 
 export class DrillJob extends ShareableJob {
-    digPositions: PathTarget[] = []
+    digPositionsByFulfiller: Map<GameEntity, PathTarget[]> = new Map()
     progress: number = 0
 
     constructor(readonly surface: Surface) {
@@ -22,14 +23,21 @@ export class DrillJob extends ShareableJob {
 
     getWorkplace(entity: JobFulfiller): PathTarget {
         if (!this.surface.isDigable()) return null
+        let digPositions = this.digPositionsByFulfiller.getOrDefault(entity.entity, [])
         const surfaceDigPositions = this.surface.getDigPositions()
-        if (this.digPositions.length < 1 ||
-            !this.digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
-            !surfaceDigPositions.every((p) => this.digPositions.some((d) => p.equals(d.targetLocation)))
+        if (digPositions.length < 1 ||
+            !digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
+            !surfaceDigPositions.every((p) => digPositions.some((d) => p.equals(d.targetLocation)))
         ) {
-            this.digPositions = surfaceDigPositions.map((p) => PathTarget.fromLocation(p, entity.sceneEntity.getRadiusSquare() / 4))
+            const surfaceCenter = this.surface.getCenterWorld2D()
+            const fulfillerWorkRange = entity.stats.PickSphere / 2
+            digPositions = surfaceDigPositions.map((digPos) => {
+                const workPos = digPos.clone().sub(surfaceCenter).setLength(fulfillerWorkRange).add(digPos)
+                return PathTarget.fromLocation(workPos)
+            })
+            this.digPositionsByFulfiller.set(entity.entity, digPositions)
         }
-        return entity.findShortestPath(this.digPositions)?.target
+        return entity.findShortestPath(digPositions)?.target
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {

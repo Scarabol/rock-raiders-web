@@ -13,10 +13,14 @@ import { Sample } from '../../../audio/Sample'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { EntityType } from '../EntityType'
 import { TerrainPath } from '../../terrain/TerrainPath'
+import { GameEntity } from '../../ECS'
+import { PickSphereStats } from '../../../cfg/GameStatsCfg'
 
 export interface JobFulfiller {
+    entity: GameEntity
     entityType: EntityType
     sceneEntity: AnimatedSceneEntity
+    stats: PickSphereStats
 
     findShortestPath(targets: PathTarget[] | PathTarget): TerrainPath
     stopJob(): void

@@ -20,7 +20,8 @@ export class ManVehicleJob extends RaiderJob {
         const surface = this.vehicle.getSurface()
         const walkableSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
         const hopOnSpot = walkableSurface.getRandomPosition() // XXX find spot close to the possibly non-walkable actual surface
-        this.workplace = PathTarget.fromLocation(hopOnSpot, this.vehicle.sceneEntity.getRadiusSquare() / 4)
+        const getInRadius = this.vehicle.stats.PickSphere / 2
+        this.workplace = PathTarget.fromLocation(hopOnSpot, getInRadius * getInRadius)
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {

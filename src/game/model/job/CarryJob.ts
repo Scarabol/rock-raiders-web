@@ -83,8 +83,9 @@ export class CarryJob extends Job {
                 }
             case EntityType.DYNAMITE:
                 if (carryItem.targetSurface?.isDigable() && carryItem.targetSurface?.dynamiteJob === this) {
+                    const pickupRadius = carryItem.worldMgr.ecs.getComponents(carryItem.entity).get(SceneSelectionComponent)?.stats.PickSphere || 1
                     return carryItem.targetSurface.getDigPositions()
-                        .map((p) => PathTarget.fromLocation(p, carryItem.sceneEntity.getRadiusSquare() / 4))
+                        .map((p) => PathTarget.fromLocation(p, pickupRadius * pickupRadius))
                         .filter((p) => !!entity.findShortestPath(p))
                 } else {
                     return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
