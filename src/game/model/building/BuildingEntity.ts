@@ -15,7 +15,6 @@ import { PathTarget } from '../PathTarget'
 import { RaiderTraining, RaiderTrainings } from '../raider/RaiderTraining'
 import { BuildingSite } from './BuildingSite'
 import { BuildingType } from './BuildingType'
-import { Teleport } from './Teleport'
 import { GameEntity } from '../../ECS'
 import { HealthComponent } from '../../component/HealthComponent'
 import { MaterialEntity } from '../material/MaterialEntity'
@@ -33,6 +32,7 @@ import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
 import { TooltipComponent } from '../../component/TooltipComponent'
 import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
+import { TeleportComponent } from '../../component/TeleportComponent'
 
 export class BuildingEntity {
     readonly carriedItems: MaterialEntity[] = []
@@ -53,7 +53,6 @@ export class BuildingEntity {
     engineSound: PositionalAudio
     surfaces: Surface[] = []
     pathSurfaces: Surface[] = []
-    teleport: Teleport = null
 
     constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType) {
         this.entity = this.worldMgr.ecs.addEntity()
@@ -64,7 +63,6 @@ export class BuildingEntity {
         this.powerOffSprite.visible = this.isPowered()
         this.sceneEntity.add(this.powerOffSprite)
         this.worldMgr.sceneMgr.addSprite(this.powerOffSprite)
-        this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
         const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false, GameConfig.instance.getRockFallDamage(entityType, this.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
@@ -271,7 +269,6 @@ export class BuildingEntity {
         this.surfaces.forEach((s) => s.updateTexture())
         EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
-        if (this.teleport) this.teleport.powered = this.isPowered()
     }
 
     get crystalDrain(): number {
@@ -358,6 +355,7 @@ export class BuildingEntity {
         })
         this.getToolPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())
         this.carryPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())
+        if (this.buildingType.teleportedEntityTypes.length > 0) this.worldMgr.ecs.addComponent(this.entity, new TeleportComponent(this.buildingType.teleportedEntityTypes, this.pathSurfaces, this.sceneEntity.heading, this.primaryPathSurface, this.waterPathSurface))
         EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
@@ -378,10 +376,6 @@ export class BuildingEntity {
         const statsProperty = RaiderTrainings.toStatsProperty(training)
         const stat = this.stats[statsProperty]
         return this.isPowered() && stat?.[this.level]
-    }
-
-    canTeleportIn(entityType: EntityType): boolean {
-        return this.teleport?.canTeleportIn(entityType) && (entityType === EntityType.PILOT || !this.pathSurfaces.some((s) => s.isBlockedByVehicle()))
     }
 
     getMaxCarry(): number {

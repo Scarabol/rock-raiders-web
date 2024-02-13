@@ -119,8 +119,6 @@ export class GameScreen {
     async startEndgameSequence(resultState: GameResultState) {
         const gameTimeSeconds = Math.round(this.worldMgr.elapsedGameTimeMs / 1000)
         const canvas = resultState === GameResultState.COMPLETE ? await this.screenMaster.createScreenshot() : null
-        this.worldMgr.requestedRaiders = 0
-        this.worldMgr.requestedVehicleTypes.length = 0
         let result: GameResult = null
         if (this.levelConf.reward) {
             const numMaxAirRaiders = this.levelConf.oxygenRate ? this.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT : MAX_RAIDER_BASE

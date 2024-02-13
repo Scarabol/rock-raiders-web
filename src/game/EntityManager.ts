@@ -292,10 +292,6 @@ export class EntityManager {
         return this.raiders.length >= MAX_RAIDER_BASE + this.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT
     }
 
-    findTeleportBuilding(entityType: EntityType): BuildingEntity {
-        return this.buildings.find((b) => b.canTeleportIn(entityType))
-    }
-
     hasProfessional(training: RaiderTraining) {
         return this.raiders.some((r) => r.hasTraining(training))
     }

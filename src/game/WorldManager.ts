@@ -1,16 +1,13 @@
-import { Vector2 } from 'three'
 import { LevelConfData } from './LevelLoader'
 import { clearIntervalSafe } from '../core/Util'
 import { EventKey } from '../event/EventKeyEnum'
-import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged, ToggleAlarmEvent } from '../event/WorldEvents'
+import { MaterialAmountChanged, ToggleAlarmEvent } from '../event/WorldEvents'
 import { NerpRunner } from '../nerp/NerpRunner'
-import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, DEV_MODE, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
+import { DEV_MODE, UPDATE_INTERVAL_MS } from '../params'
 import { EntityManager } from './EntityManager'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
-import { Raider } from './model/raider/Raider'
 import { updateSafe } from './model/Updateable'
-import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import { Supervisor } from './Supervisor'
 import { ECS } from './ECS'
@@ -39,6 +36,7 @@ import { PowerGrid } from './terrain/PowerGrid'
 import { EmergeSystem } from './system/EmergeSystem'
 import { SoundManager } from '../audio/SoundManager'
 import { Sample } from '../audio/Sample'
+import { TeleportSystem } from './system/TeleportSystem'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -49,10 +47,6 @@ export class WorldManager {
     powerGrid: PowerGrid
     gameLoopInterval: NodeJS.Timeout = null
     elapsedGameTimeMs: number = 0
-    requestedRaiders: number = 0
-    spawnRaiderTimer: number = 0
-    requestedVehicleTypes: EntityType[] = []
-    spawnVehicleTimer: number = 0
     firstUnpause: boolean = true
     gameSpeedMultiplier: number = 1
 
@@ -77,6 +71,7 @@ export class WorldManager {
         this.ecs.addSystem(new BoulderSystem())
         this.ecs.addSystem(new LavaErosionSystem())
         this.ecs.addSystem(new EmergeSystem())
+        this.ecs.addSystem(new TeleportSystem())
         EventBroker.subscribe(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBroker.subscribe(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {
@@ -86,18 +81,6 @@ export class WorldManager {
                 this.sceneMgr.terrain.forEachSurface((s) => {
                     if (s.isUnstable()) s.collapse() // crumble unsupported walls
                 })
-            }
-        })
-        EventBroker.subscribe(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
-            this.requestedRaiders = event.numRequested
-        })
-        EventBroker.subscribe(EventKey.REQUESTED_VEHICLES_CHANGED, (event: RequestedVehiclesChanged) => {
-            const requestedChange = event.numRequested - this.requestedVehicleTypes.count((e) => e === event.vehicle)
-            for (let c = 0; c < -requestedChange; c++) {
-                this.requestedVehicleTypes.removeLast(event.vehicle)
-            }
-            for (let c = 0; c < requestedChange; c++) {
-                this.requestedVehicleTypes.push(event.vehicle)
             }
         })
         EventBroker.subscribe(EventKey.LOCATION_RAIDER_DISCOVERED, () => GameState.hiddenObjectsFound++)
@@ -121,10 +104,6 @@ export class WorldManager {
         this.ecs.reset()
         this.jobSupervisor.reset()
         this.elapsedGameTimeMs = 0
-        this.requestedRaiders = 0
-        this.spawnRaiderTimer = 0
-        this.requestedVehicleTypes = []
-        this.spawnVehicleTimer = 0
         // load nerp script
         if (levelConf.nerpScript) this.nerpRunner = new NerpRunner(this, levelConf.nerpScript, levelConf.nerpMessages)
         this.firstUnpause = true
@@ -151,62 +130,11 @@ export class WorldManager {
 
     private update(elapsedMs: number) {
         this.elapsedGameTimeMs += elapsedMs
-        this.checkSpawnRaiders(elapsedMs)
-        this.checkSpawnVehicles(elapsedMs)
         this.ecs.update(elapsedMs)
         updateSafe(this.entityMgr, elapsedMs)
         updateSafe(this.sceneMgr, elapsedMs)
         updateSafe(this.jobSupervisor, elapsedMs)
         updateSafe(this.nerpRunner, elapsedMs)
-    }
-
-    private checkSpawnRaiders(elapsedMs: number) {
-        try {
-            for (this.spawnRaiderTimer += elapsedMs; this.spawnRaiderTimer >= CHECK_SPAWN_RAIDER_TIMER; this.spawnRaiderTimer -= CHECK_SPAWN_RAIDER_TIMER) {
-                if (this.requestedRaiders > 0 && !this.entityMgr.hasMaxRaiders()) {
-                    const teleportBuilding = this.entityMgr.findTeleportBuilding(EntityType.PILOT)
-                    if (teleportBuilding) {
-                        this.requestedRaiders--
-                        EventBroker.publish(new RequestedRaidersChanged(this.requestedRaiders))
-                        const raider = new Raider(this)
-                        const heading = teleportBuilding.sceneEntity.heading
-                        const worldPosition = new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(teleportBuilding.getPosition2D())
-                        const walkOutPos = teleportBuilding.primaryPathSurface.getRandomPosition()
-                        teleportBuilding.teleport.teleportIn(raider, this.entityMgr.raiders, this.entityMgr.raidersInBeam, worldPosition, heading, walkOutPos)
-                    }
-                }
-            }
-        } catch (e) {
-            console.error(e)
-        }
-    }
-
-    private checkSpawnVehicles(elapsedMs: number) {
-        try {
-            for (this.spawnVehicleTimer += elapsedMs; this.spawnVehicleTimer >= CHECK_SPAWN_VEHICLE_TIMER; this.spawnVehicleTimer -= CHECK_SPAWN_VEHICLE_TIMER) {
-                if (this.requestedVehicleTypes.length > 0) {
-                    const spawnedVehicleType = this.requestedVehicleTypes.find((vType) => {
-                        const stats = VehicleFactory.getVehicleStatsByType(vType)
-                        if (GameState.numCrystal < stats.CostCrystal) return false
-                        const teleportBuilding = this.entityMgr.findTeleportBuilding(vType)
-                        if (!teleportBuilding) return false
-                        GameState.numCrystal -= stats.CostCrystal
-                        EventBroker.publish(new MaterialAmountChanged())
-                        const vehicle = VehicleFactory.createVehicleFromType(vType, this)
-                        const worldPosition = (teleportBuilding.waterPathSurface ?? teleportBuilding.primaryPathSurface).getCenterWorld2D()
-                        const heading = teleportBuilding.sceneEntity.heading
-                        teleportBuilding.teleport.teleportIn(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam, worldPosition, heading, null)
-                        return true
-                    })
-                    if (spawnedVehicleType) {
-                        this.requestedVehicleTypes.remove(spawnedVehicleType)
-                        EventBroker.publish(new RequestedVehiclesChanged(spawnedVehicleType, this.requestedVehicleTypes.count((e) => e === spawnedVehicleType)))
-                    }
-                }
-            }
-        } catch (e) {
-            console.error(e)
-        }
     }
 
     async teleportEnd(): Promise<void> {

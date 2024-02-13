@@ -100,17 +100,21 @@ export class SaveScreenshot extends BaseEvent {
 }
 
 export class BuildingsChangedEvent extends BaseEvent {
-    discoveredBuildingsMaxLevel: Map<EntityType, number> = new Map()
-    usableBuildingsMaxLevel: Map<EntityType, number> = new Map()
+    readonly placedVisibleBuildings: Set<GameEntity> = new Set()
+    readonly poweredBuildings: Set<GameEntity> = new Set()
+    readonly discoveredBuildingsMaxLevel: Map<EntityType, number> = new Map()
+    readonly usableBuildingsMaxLevel: Map<EntityType, number> = new Map()
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.BUILDINGS_CHANGED)
         entityMgr.buildings.forEach((b) => {
             if (b.isReady()) {
+                this.placedVisibleBuildings.add(b.entity)
                 const current = this.discoveredBuildingsMaxLevel.getOrDefault(b.entityType, 0)
                 this.discoveredBuildingsMaxLevel.set(b.entityType, Math.max(current, b.level))
             }
             if (b.isPowered()) {
+                this.poweredBuildings.add(b.entity)
                 const current = this.usableBuildingsMaxLevel.getOrDefault(b.entityType, 0)
                 this.usableBuildingsMaxLevel.set(b.entityType, Math.max(current, b.level))
             }
