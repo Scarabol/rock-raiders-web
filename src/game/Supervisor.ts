@@ -188,7 +188,7 @@ export class Supervisor {
                 if (blockedSite?.buildingType) {
                     vehicle.setJob(new MoveJob(vehicle, blockedSite.getWalkOutSurface().getRandomPosition()))
                 } else {
-                    vehicle.unblockTeleporter()
+                    vehicle.unblockBuildingPowerPath()
                 }
             } catch (e) {
                 console.error(e)

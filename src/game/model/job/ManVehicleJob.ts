@@ -40,7 +40,7 @@ export class ManVehicleJob extends RaiderJob {
         this.vehicle.addDriver(this.raider)
         this.vehicle.callManJob = null
         super.onJobComplete(fulfiller)
-        this.vehicle.unblockTeleporter()
+        this.vehicle.unblockBuildingPowerPath()
     }
 
     getJobBubble(): keyof BubblesCfg {

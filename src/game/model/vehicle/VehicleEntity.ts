@@ -444,12 +444,10 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         return this.stats.MaxCarry?.[this.level] || 0
     }
 
-    unblockTeleporter() {
+    unblockBuildingPowerPath() {
         const surface = this.getSurface()
-        const blockedTeleporter = surface.building?.primaryPathSurface === surface &&
-            surface.building?.teleport?.teleportedEntityTypes.some((t) => t !== EntityType.PILOT)
-        if (blockedTeleporter) {
-            const walkableNeighbor = surface.neighbors.find((n) => !n.site && n.isWalkable() && !n.building?.teleport)
+        if (surface.building) {
+            const walkableNeighbor = surface.neighbors.find((n) => !n.site && n.isWalkable() && !n.building)
             if (walkableNeighbor) this.setJob(new MoveJob(this, walkableNeighbor.getCenterWorld2D()))
         }
     }
