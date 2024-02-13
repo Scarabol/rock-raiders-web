@@ -107,12 +107,12 @@ export class BuildingsChangedEvent extends BaseEvent {
         super(EventKey.BUILDINGS_CHANGED)
         entityMgr.buildings.forEach((b) => {
             if (b.isReady()) {
-                const level = this.discoveredBuildingsMaxLevel.get(b.entityType) || b.level
-                this.discoveredBuildingsMaxLevel.set(b.entityType, level)
+                const current = this.discoveredBuildingsMaxLevel.getOrDefault(b.entityType, 0)
+                this.discoveredBuildingsMaxLevel.set(b.entityType, Math.max(current, b.level))
             }
             if (b.isPowered()) {
-                const level = this.usableBuildingsMaxLevel.get(b.entityType) || b.level
-                this.usableBuildingsMaxLevel.set(b.entityType, level)
+                const current = this.usableBuildingsMaxLevel.getOrDefault(b.entityType, 0)
+                this.usableBuildingsMaxLevel.set(b.entityType, Math.max(current, b.level))
             }
         })
     }
