@@ -143,7 +143,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
      */
 
     findShortestPath(targets: PathTarget[] | PathTarget): TerrainPath {
-        return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), targets, this.stats, false)
+        return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), targets, this.stats, 1)
     }
 
     private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {

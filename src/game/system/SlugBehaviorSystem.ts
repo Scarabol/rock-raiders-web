@@ -56,7 +56,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                         } else if (!components.has(WorldTargetComponent)) {
                             behaviorComponent.idleTimer += elapsedMs
                             const energizedBuildings = this.worldMgr.entityMgr.buildings.filter((b) => b.energized && b.getPosition2D().distanceToSquared(slugPos) < stats.AttackRadiusSq)
-                            const closestBuilding = pathFinder.findClosestBuilding(slugPos, energizedBuildings, stats, false)
+                            const closestBuilding = pathFinder.findClosestBuilding(slugPos, energizedBuildings, stats, 1)
                             if (closestBuilding) {
                                 behaviorComponent.state = SlugBehaviorState.LEECH
                                 behaviorComponent.targetBuilding = closestBuilding.obj
@@ -101,7 +101,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                     }, SLUG_SUCK_TIME)
                                 } else if (!components.has(WorldTargetComponent)) {
                                     const buildingPathTargets = behaviorComponent.targetBuilding.getTrainingTargets()
-                                    const path = pathFinder.findShortestPath(slugPos, buildingPathTargets, stats, false)
+                                    const path = pathFinder.findShortestPath(slugPos, buildingPathTargets, stats, 1)
                                     if (path && path.locations.length > 0) {
                                         const targetLocation = path.locations[0]
                                         this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation))
@@ -119,7 +119,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                     case SlugBehaviorState.GO_ENTER:
                         if (!behaviorComponent.targetEnter) {
                             const enterTargets = this.worldMgr.sceneMgr.terrain.slugHoles.map((h) => PathTarget.fromLocation(h.getRandomPosition(), SLUG_ENTER_DISTANCE_SQ))
-                            const path = pathFinder.findShortestPath(positionComponent.getPosition2D(), enterTargets, stats, false)
+                            const path = pathFinder.findShortestPath(positionComponent.getPosition2D(), enterTargets, stats, 1)
                             if (path && path.locations.length > 0) {
                                 behaviorComponent.targetEnter = path.target
                             } else {
@@ -136,7 +136,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                 sceneEntity.dispose()
                             })
                         } else if (!components.has(WorldTargetComponent)) {
-                            const path = pathFinder.findShortestPath(slugPos, behaviorComponent.targetEnter, stats, false)
+                            const path = pathFinder.findShortestPath(slugPos, behaviorComponent.targetEnter, stats, 1)
                             if (path && path.locations.length > 0) {
                                 const targetLocation = path.locations[0]
                                 this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, SLUG_ENTER_DISTANCE_SQ))

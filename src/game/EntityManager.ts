@@ -195,7 +195,7 @@ export class EntityManager {
                     e.components.get(SlugBehaviorComponent)?.state !== SlugBehaviorState.EMERGE
             })
             .map((e) => {
-                const pos = e.components.get(PositionComponent).getPosition2D()
+                const pos = e.components.get(PositionComponent).surface.getCenterWorld2D()
                 return PathTarget.fromEntity(e.entity, pos, TILESIZE * TILESIZE * 4)
             })
     }

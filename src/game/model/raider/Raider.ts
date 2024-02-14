@@ -2,7 +2,7 @@ import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
 import { Sample } from '../../../audio/Sample'
 import { RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
-import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ, TILESIZE } from '../../../params'
+import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, RAIDER_PATH_PRECISION, SPIDER_SLIP_RANGE_SQ, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { WorldManager } from '../../WorldManager'
 import { AnimationActivity, AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../anim/AnimationActivity'
@@ -145,7 +145,7 @@ export class Raider implements Updatable, JobFulfiller {
      */
 
     findShortestPath(targets: PathTarget[] | PathTarget): TerrainPath {
-        return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), targets, this.stats, true)
+        return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), targets, this.stats, RAIDER_PATH_PRECISION)
     }
 
     private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {
@@ -196,6 +196,9 @@ export class Raider implements Updatable, JobFulfiller {
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
             const path = this.findShortestPath(target)
             this.currentPath = path && path.locations.length > 0 ? path : null
+            this.currentPath?.locations?.forEach((l, index) => {
+                if (index < this.currentPath.locations.length - 1) l.add(new Vector2().random().subScalar(0.5).multiplyScalar(TILESIZE / RAIDER_PATH_PRECISION))
+            }) // XXX Externalize precision
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
         const step = this.determineStep(elapsedMs)

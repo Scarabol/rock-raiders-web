@@ -50,6 +50,7 @@ export const MAP_MAX_UPDATE_INTERVAL = Math.round(1000 / 15)
 export const SLUG_SUCK_TIME = 20000
 export const SLUG_MAX_IDLE_TIME = 15000
 export const USE_KEYBOARD_SHORTCUTS = false
+export const RAIDER_PATH_PRECISION = 3
 
 // native constants (do not change)
 

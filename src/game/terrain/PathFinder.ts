@@ -44,29 +44,29 @@ export class PathFinder {
         })
     }
 
-    findShortestPath(start: Vector2, targets: PathTarget[] | PathTarget, stats: MovableEntityStats, highPrecision: boolean): TerrainPath {
-        return Array.ensure(targets).map((pathTarget) => this.findTerrainPath(start, pathTarget, stats, highPrecision))
+    findShortestPath(start: Vector2, targets: PathTarget[] | PathTarget, stats: MovableEntityStats, precision: number): TerrainPath {
+        return Array.ensure(targets).map((pathTarget) => this.findTerrainPath(start, pathTarget, stats, precision))
             .filter((terrainPath) => !!terrainPath)
             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
     }
 
-    private findTerrainPath(start: Vector2, target: PathTarget, stats: MovableEntityStats, highPrecision: boolean): TerrainPath {
+    private findTerrainPath(start: Vector2, target: PathTarget, stats: MovableEntityStats, precision: number): TerrainPath {
         if (!target) return null
-        const path = this.findPath(start, target.targetLocation, stats, highPrecision)
+        const path = this.findPath(start, target.targetLocation, stats, precision)
         if (!path) return null
         return new TerrainPath(target, path)
     }
 
     findClosestObj<T extends {
         sceneEntity: AnimatedSceneEntity
-    }>(start: Vector2, objects: T[], stats: MovableEntityStats, highPrecision: boolean): {
+    }>(start: Vector2, objects: T[], stats: MovableEntityStats, precision: number): {
         obj: T,
         locations: Vector2[],
         lengthSq: number
     } {
         return objects.map((obj) => {
             if (!obj) return null
-            const path = this.findPath(start, obj.sceneEntity.position2D, stats, highPrecision)
+            const path = this.findPath(start, obj.sceneEntity.position2D, stats, precision)
             if (!path) return null
             let lengthSq = 0
             for (let c = 0; c < path.length - 1; c++) {
@@ -79,13 +79,13 @@ export class PathFinder {
             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
     }
 
-    findClosestBuilding(start: Vector2, buildings: BuildingEntity[], stats: MovableEntityStats, highPrecision: boolean): {
+    findClosestBuilding(start: Vector2, buildings: BuildingEntity[], stats: MovableEntityStats, precision: number): {
         obj: BuildingEntity,
         locations: Vector2[],
         lengthSq: number
     } {
         return buildings.flatMap((b) => b.getTrainingTargets().flatMap((t) => {
-            const path = this.findPath(start, t.targetLocation, stats, highPrecision)
+            const path = this.findPath(start, t.targetLocation, stats, precision)
             if (!path) return null
             let lengthSq = 0
             for (let c = 0; c < path.length - 1; c++) {
@@ -98,28 +98,46 @@ export class PathFinder {
             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
     }
 
-    private findPath(start: Vector2, targetLocation: Vector2, stats: MovableEntityStats, highPrecision: boolean): Vector2[] {
-        const precision = highPrecision ? 3 : 1
-        const maxRandomOffset = highPrecision ? 0.25 : 0
+    private findPath(start: Vector2, targetLocation: Vector2, stats: MovableEntityStats, precision: number): Vector2[] {
         const gridStart = start.clone().divideScalar(TILESIZE / precision).floor()
         const gridEnd = targetLocation.clone().divideScalar(TILESIZE / precision).floor()
-        if (gridStart.x === gridEnd.x && gridStart.y === gridEnd.y) return [targetLocation]
-        const graphKey = `${highPrecision} ${stats.CrossLand} ${stats.CrossWater} ${stats.CrossLava}`
-        const pathKey = `${graphKey} ${gridStart.x}/${gridStart.y} -> ${gridEnd.x}/${gridEnd.y}`
+        const startTileX = Math.floor(gridStart.x / precision) * precision
+        const startTileY = Math.floor(gridStart.y / precision) * precision
+        const endTileX = Math.floor(gridEnd.x / precision) * precision
+        const endTileY = Math.floor(gridEnd.y / precision) * precision
+        if (startTileX === endTileX && startTileY === endTileY) return [targetLocation]
+        const graphKey = `${precision} ${stats.CrossLand} ${stats.CrossWater} ${stats.CrossLava}`
+        const pathKey = `${graphKey} ${startTileX}/${startTileY} -> ${endTileX}/${endTileY}`
         const resultPath = this.cachedPathsByKey.getOrUpdate(pathKey, () => {
-            const graph = this.graphByCacheKey.getOrUpdate(graphKey, () => {
-                return this.createGraph(stats, precision)
-            })
+            const graph = this.graphByCacheKey.getOrUpdate(graphKey, () => this.createGraph(stats, precision))
             const startNode = graph.grid[gridStart.x][gridStart.y]
             const endNode = graph.grid[gridEnd.x][gridEnd.y]
-            const freshPath = astar.search(graph, startNode, endNode).map((n) =>
-                new Vector2(n.x + 0.5, n.y + 0.5).add(new Vector2().random().multiplyScalar(maxRandomOffset)).multiplyScalar(TILESIZE / precision))
-            if (freshPath.length < 1) return null // no path found
-            freshPath.pop() // last node is replaced with actual target position
-            return freshPath
+            const startWeights: number[][] = []
+            try {
+                for (let x = startTileX; x < startTileX + precision; x++) {
+                    for (let y = startTileY; y < startTileY + precision; y++) {
+                        startWeights[x] = startWeights[x] ?? []
+                        startWeights[x][y] = graph.grid[x][y].weight
+                        graph.grid[x][y].weight = 1
+                    }
+                }
+                startNode.weight = 1
+                const freshPath = astar.search(graph, startNode, endNode)
+                if (freshPath.length < 1) return null // no path found
+                freshPath.pop() // last node is replaced with actual target position
+                return freshPath.map((n) => new Vector2(n.x + 0.5, n.y + 0.5))
+            } finally {
+                for (let x = startTileX; x < startTileX + precision; x++) {
+                    for (let y = startTileY; y < startTileY + precision; y++) {
+                        graph.grid[x][y].weight = startWeights[x][y]
+                    }
+                }
+            }
         })
         if (!resultPath) return null
-        return [...resultPath, targetLocation] // return shallow copy to avoid interference
+        // return shallow copy to avoid interference
+        const pathWithOffsets = resultPath.map((n) => n.clone().multiplyScalar(TILESIZE / precision))
+        return [...pathWithOffsets, targetLocation]
     }
 
     private createGraph(stats: MovableEntityStats, precision: number) {

@@ -74,8 +74,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Level is not marked as failed even if too many crystals are missing
 - Separate UI components to support other screen ratios then 4:3
 - FPS histogram sometimes not rendered on debug layer
-- Mark start and end tile in path finding always as accessible to make entering water vehicles and drilling easier, also
-  frees raider stuck on lava
 - Large Cat not usable to carry vehicles in Level 19
 - Damage and blow up buildings with lava erosion
 - Make idle raider leave lava fields
