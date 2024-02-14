@@ -182,9 +182,9 @@ export class AssetRegistry extends Map<string, WadAsset> {
         const lwsSharedFilepath = `world/shared/${basePath.split('/').last()}.lws`
         if (this.assetLoader.vfs.hasEntry(lwsSharedFilepath)) this.addLWSFile(lwsSharedFilepath)
         const lwoFilepath = `${basePath}.lwo`
-        if (this.assetLoader.vfs.hasEntry(lwoFilepath)) this.addAsset(this.assetLoader.loadLWOFile, lwoFilepath)
+        if (this.assetLoader.vfs.hasEntry(lwoFilepath)) this.addLWOFile(lwoFilepath)
         const lwoSharedFilepath = `world/shared/${basePath.split('/').last()}.lwo`
-        if (this.assetLoader.vfs.hasEntry(lwoSharedFilepath)) this.addAsset(this.assetLoader.loadLWOFile, lwoSharedFilepath)
+        if (this.assetLoader.vfs.hasEntry(lwoSharedFilepath)) this.addLWOFile(lwoSharedFilepath)
     }
 
     addAnimatedEntity(aeFile: string) {
@@ -197,11 +197,11 @@ export class AssetRegistry extends Map<string, WadAsset> {
         ResourceManager.resourceByName.set(aeFile.toLowerCase(), animData)
         const wheelMeshName = animData.wheelMesh
         if (wheelMeshName && !'NULL_OBJECT'.equalsIgnoreCase(wheelMeshName)) {
-            this.addAsset(this.assetLoader.loadLWOFile, `${wheelMeshName}.lwo`)
+            this.addLWOFile(`${wheelMeshName}.lwo`)
         }
         [animData.highPolyBodies, animData.mediumPolyBodies, animData.lowPolyBodies].forEach((polyType) => {
             for (const filename of polyType.values()) {
-                this.addAsset(this.assetLoader.loadLWOFile, path + filename)
+                this.addLWOFile(path + filename)
             }
         })
         // TODO add 'FPPoly' (contains usually two cameras)
@@ -220,14 +220,18 @@ export class AssetRegistry extends Map<string, WadAsset> {
                 ResourceManager.resourceByName.set(lwsFilepath.toLowerCase(), lwscData)
                 lwscData.objects.forEach((obj) => {
                     if (!obj.fileName) return
-                    const lwoFileName = lwsPath + obj.fileName
-                    this.addAsset(this.assetLoader.loadLWOFile, lwoFileName)
+                    this.addLWOFile(lwsPath + obj.fileName)
                 })
             } catch (e) {
                 // XXX do we have to care? files listed in pilot.ae can be found in vehicles/hoverboard/ or not at all...
             }
             resolve()
         }))
+    }
+
+    addLWOFile(lwoFilepath: string) {
+        this.addAsset(this.assetLoader.loadLWOFile, lwoFilepath)
+        this.addAsset(this.assetLoader.loadUVFile, lwoFilepath.replace('.lwo', '.uv'), true)
     }
 
     addAlphaImageFolder(folderPath: string) {
