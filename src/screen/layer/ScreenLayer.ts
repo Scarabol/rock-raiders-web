@@ -28,8 +28,8 @@ export class ScreenLayer {
             event.stopPropagation()
             const consumed = listener(event)
             if (!consumed) this.screenMaster.dispatchEvent(event, this.zIndex)
-            if (eventType === 'pointermove') this.screenMaster.onGlobalPointerMoveEvent(event as PointerEvent)
-            else if (eventType === 'pointerleave') this.screenMaster.onGlobalPointerLeaveEvent(event as PointerEvent)
+            if (eventType === 'mousemove') this.screenMaster.onGlobalMouseMoveEvent(event as PointerEvent)
+            else if (eventType === 'mouseleave') this.screenMaster.onGlobalMouseLeaveEvent(event as PointerEvent)
         })
     }
 

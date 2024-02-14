@@ -35,8 +35,8 @@ export class GameScreen {
     constructor(readonly screenMaster: ScreenMaster) {
         this.worldMgr = new WorldManager()
         this.gameLayer = screenMaster.addLayer(new GameLayer(this.worldMgr), 500)
-        this.screenMaster.onGlobalPointerMoveEvent = this.gameLayer.onGlobalPointerMoveEvent.bind(this.gameLayer)
-        this.screenMaster.onGlobalPointerLeaveEvent = this.gameLayer.onGlobalPointerLeaveEvent.bind(this.gameLayer)
+        this.screenMaster.onGlobalMouseMoveEvent = this.gameLayer.onGlobalMouseMoveEvent.bind(this.gameLayer)
+        this.screenMaster.onGlobalMouseLeaveEvent = this.gameLayer.onGlobalMouseLeaveEvent.bind(this.gameLayer)
         this.selectionFrameLayer = screenMaster.addLayer(new SelectionFrameLayer(), 510)
         this.advisorLayer = screenMaster.addLayer(new AdvisorLayer(), 515)
         this.guiLayer = screenMaster.addLayer(new GuiMainLayer(), 520)

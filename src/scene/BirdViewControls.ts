@@ -41,6 +41,7 @@ export class BirdViewControls extends MapControls {
         EventBroker.subscribe(EventKey.PAUSE_GAME, () => {
             this.gamePaused = true
             this.enabled = false
+            this.lastPanKey = ''
         })
         EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {
             this.gamePaused = false

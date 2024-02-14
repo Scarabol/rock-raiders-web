@@ -61,13 +61,9 @@ export class GameLayer extends ScreenLayer {
             this.handlePointerUpEvent(gameEvent)
             return false
         })
-        this.addEventListener('pointerleave', (): boolean => {
-            // signal to screen master for camera controls listening on canvas for events
-            return false
-        })
-        this.addEventListener('keydown', (): boolean => {
-            // signal to screen master for camera controls listening on canvas for events
-            return false
+        // signal to screen master for camera controls listening on canvas for events
+        ;(['pointerleave', 'keydown', 'mousemove', 'mouseleave'] as (keyof HTMLElementEventMap)[]).forEach((eventType) => {
+            this.addEventListener(eventType, (): boolean => false)
         })
         this.addEventListener('keyup', (event): boolean => {
             const gameEvent = new GameKeyboardEvent(KEY_EVENT.UP, event)
@@ -335,19 +331,19 @@ export class GameLayer extends ScreenLayer {
         return surface.surfaceType.cursor
     }
 
-    onGlobalPointerMoveEvent(e: PointerEvent) {
+    onGlobalMouseMoveEvent(e: PointerEvent) {
         const event = new GamePointerEvent(POINTER_EVENT.MOVE, e)
         ;[event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
-        this.onGlobalPointerEvent(event)
+        this.onGlobalMouseEvent(event)
     }
 
-    onGlobalPointerLeaveEvent(e: PointerEvent) {
+    onGlobalMouseLeaveEvent(e: PointerEvent) {
         const event = new GamePointerEvent(POINTER_EVENT.MOVE, e)
         ;[event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
-        this.onGlobalPointerEvent(event)
+        this.onGlobalMouseEvent(event)
     }
 
-    private onGlobalPointerEvent(event: GamePointerEvent) {
+    private onGlobalMouseEvent(event: GamePointerEvent) {
         if (!this.active || DEV_MODE) return
         const screenPanOffset = 4
         let key: string = ''
