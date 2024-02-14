@@ -12,6 +12,7 @@ html, body {
     height: 100%;
     touch-action: manipulation;
     justify-content: center;
+    gap: 10px;
 }
 
 #game-canvas-container {
@@ -32,22 +33,41 @@ html, body {
     flex-direction: column;
     justify-content: space-around;
     height: 80vh;
+    margin-left: -80px;
 }
 
-@media (aspect-ratio <= 1.333333) {
+@media screen and (aspect-ratio < 1.333333) {
     #game-container {
         flex-direction: column;
     }
 
     .mobile-helper-toolbar {
-        width: 100%;
+        width: 80vw;
         flex-direction: row;
-        margin: -80px 10vw 0;
         height: auto;
     }
 }
 
+@media screen and (aspect-ratio < 1.666666) {
+    .mobile-helper-toolbar {
+        margin-left: 0;
+    }
+}
+
+@media screen and (width < 650px) {
+    .mobile-helper-toolbar {
+        width: 100vw;
+    }
+}
+
+@media screen and (height < 650px) {
+    .mobile-helper-toolbar {
+        height: 100vh;
+    }
+}
+
 .mobile-helper-toolbar button {
+    min-width: 80px;
     width: 80px;
     aspect-ratio: 1;
     /*bootstrap .btn-dark*/
