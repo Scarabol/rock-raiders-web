@@ -179,7 +179,7 @@ export class AssetLoader {
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_Light01.lwo')
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/digbodlight.lwo')
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_PipeL.lwo')) {
-                    console.error(`Could not load LWO file ${lwoFilepath}; Error: ${e}`)
+                    throw new Error(`Could not load LWO file ${lwoFilepath}; Error: ${e}`)
                 }
             }
         }
