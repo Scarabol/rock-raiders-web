@@ -1,6 +1,5 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
-import { SaveScreenshot } from '../../event/LocalEvents'
 import { ScreenLayer } from './ScreenLayer'
 import { CURSOR_MAX_HEIGHT, NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { clearTimeoutSafe } from '../../core/Util'
@@ -54,7 +53,7 @@ export class TooltipLayer extends ScreenLayer {
         })
         this.addEventListener('keyup', (event: KeyboardEvent): boolean => {
             if (event.key === 'p') {
-                EventBroker.publish(new SaveScreenshot())
+                this.screenMaster.saveScreenshot()
                 return true
             }
             return false
@@ -108,5 +107,7 @@ export class TooltipLayer extends ScreenLayer {
         this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
         this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
         this.cursorLeft = false
+        if (this.tooltipCanvas) this.gameCanvasContainer.removeChild(this.tooltipCanvas)
+        this.tooltipCanvas = null
     }
 }

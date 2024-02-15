@@ -37,7 +37,7 @@ export class SceneManager implements Updatable {
     readonly raycaster: Raycaster = new Raycaster()
     ambientLight: LeveledAmbientLight
     terrain: Terrain
-    cursor: TorchLightCursor
+    torchLightCursor: TorchLightCursor
     buildMarker: BuildPlacementMarker
     followerRenderer: FollowerRenderer
     shakeTimeout: number = 0
@@ -69,7 +69,7 @@ export class SceneManager implements Updatable {
 
     setActiveCamera(camera: PerspectiveCamera) {
         const isBirdView = camera === this.cameraBird
-        if (this.cursor) this.cursor.visible = isBirdView
+        if (this.torchLightCursor) this.torchLightCursor.visible = isBirdView
         this.birdViewControls.disabled = !isBirdView
         // TODO Showing/hiding sprites does not work since they blink or their visibility is user controlled by space key
         this.cameraActive = camera
@@ -83,8 +83,8 @@ export class SceneManager implements Updatable {
         this.ambientLight.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
         this.scene.add(this.ambientLight)
 
-        this.cursor = new TorchLightCursor()
-        this.scene.add(this.cursor)
+        this.torchLightCursor = new TorchLightCursor()
+        this.scene.add(this.torchLightCursor)
 
         this.buildMarker = new BuildPlacementMarker(this.worldMgr)
         this.scene.add(this.buildMarker.group)
@@ -114,7 +114,7 @@ export class SceneManager implements Updatable {
         this.entities.forEach((e) => updateSafe(e, elapsedMs))
         this.miscAnims.forEach((a) => updateSafe(a, elapsedMs))
         this.sprites.forEach((s) => updateSafe(s, elapsedMs))
-        updateSafe(this.cursor, elapsedMs)
+        updateSafe(this.torchLightCursor, elapsedMs)
         this.birdViewControls?.updateControlsSafe(elapsedMs)
         this.shakeScene(elapsedMs)
     }
@@ -159,7 +159,7 @@ export class SceneManager implements Updatable {
     }
 
     setCursorFloorPosition(position: Vector2) {
-        this.cursor.position.copy(this.terrain.getFloorPosition(position))
+        this.torchLightCursor.position.copy(this.terrain.getFloorPosition(position))
     }
 
     getFloorPosition(world: Vector2) {

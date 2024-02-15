@@ -27,6 +27,7 @@ export class RewardScreen {
     readonly descriptionTextLayer: ScaledLayer
     readonly btnLayer: ScaledLayer
     readonly saveGameLayer: LoadSaveLayer
+    readonly overwriteLayer: OverwriteLayer
     readonly images: { img: SpriteImage, x: number, y: number }[] = []
     readonly boxes: { img: SpriteImage, x: number, y: number }[] = []
     readonly flics: FlicAnimOverlay[] = []
@@ -42,7 +43,7 @@ export class RewardScreen {
     resultValues: SpriteImage[] = []
     screenshot: HTMLCanvasElement = null
 
-    constructor(screenMaster: ScreenMaster) {
+    constructor(readonly screenMaster: ScreenMaster) {
         this.cfg = GameConfig.instance.reward
         const backgroundImg = ResourceManager.getImage(this.cfg.wallpaper)
         this.backgroundLayer = screenMaster.addLayer(new ScaledLayer('RewardBackgroundLayer'), 600)
@@ -139,19 +140,19 @@ export class RewardScreen {
         BitmapFontWorkerPool.instance.createTextImage(this.cfg.titleFont, 'No level selected')
             .then((textImage) => this.levelFullNameImg = textImage)
         this.saveGameLayer = screenMaster.addLayer(new LoadSaveLayer(GameConfig.instance.menu.mainMenuFull.menus[3], false), 660)
-        const overwriteLayer = screenMaster.addLayer(new OverwriteLayer(), 670)
+        this.overwriteLayer = screenMaster.addLayer(new OverwriteLayer(), 670)
         this.saveGameLayer.onItemAction = (item: MainMenuBaseItem) => {
             if (item.actionName.equalsIgnoreCase('next')) {
                 this.saveGameLayer.hide()
             } else if (item.actionName.toLowerCase().startsWith('save_game_')) {
                 if (SaveGameManager.hasSaveGame(item.targetIndex)) {
-                    overwriteLayer.overwritePanel.setIndex(item.targetIndex)
-                    overwriteLayer.yesBtn.onPressed = () => {
+                    this.overwriteLayer.overwritePanel.setIndex(item.targetIndex)
+                    this.overwriteLayer.yesBtn.onPressed = () => {
                         SaveGameManager.saveGame(item.targetIndex, this.screenshot)
-                        overwriteLayer.hide()
+                        this.overwriteLayer.hide()
                         this.saveGameLayer.hide()
                     }
-                    overwriteLayer.show()
+                    this.overwriteLayer.show()
                 } else {
                     SaveGameManager.saveGame(item.targetIndex, this.screenshot)
                     this.saveGameLayer.hide()
@@ -163,6 +164,15 @@ export class RewardScreen {
         EventBroker.subscribe(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
             if (event.result) this.showGameResult(event.result)
         })
+    }
+
+    dispose() {
+        this.screenMaster.removeLayer(this.backgroundLayer)
+        this.screenMaster.removeLayer(this.resultsLayer)
+        this.screenMaster.removeLayer(this.descriptionTextLayer)
+        this.screenMaster.removeLayer(this.btnLayer)
+        this.screenMaster.removeLayer(this.saveGameLayer)
+        this.screenMaster.removeLayer(this.overwriteLayer)
     }
 
     showGameResult(result: GameResult) {

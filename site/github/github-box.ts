@@ -5,7 +5,7 @@ export class GithubBox {
     rootElement: HTMLDivElement
 
     constructor() {
-        this.rootElement = document.createElement('div')
+        this.rootElement = document.getElementById('game-container').appendChild(document.createElement('div'))
         this.rootElement.classList.add('github-box')
 
         const link = this.rootElement.appendChild(document.createElement('a'))

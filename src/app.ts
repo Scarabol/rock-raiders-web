@@ -18,6 +18,7 @@ import { GameResult } from './game/model/GameResult'
 import { GameConfig } from './cfg/GameConfig'
 import { BitmapFontWorkerPool } from './worker/BitmapFontWorkerPool'
 import { EventBroker } from './event/EventBroker'
+import { CursorManager } from './screen/CursorManager'
 
 export async function start() {
     console.time('Total asset loading time')
@@ -27,9 +28,8 @@ export async function start() {
     if (DEV_MODE) SaveGameManager.loadGame(0)
     const githubBox = new GithubBox()
     const clearCacheButton = new ClearCacheButton()
-    const gameContainer = document.getElementById('game-container')
-    gameContainer.append(githubBox.rootElement, clearCacheButton.rootElement)
     const screenMaster = new ScreenMaster()
+    CursorManager.init()
     const vfs = await new GameFilesLoader(screenMaster.loadingLayer).loadGameFiles()
     const assetLoader = new AssetLoader(vfs)
     await assetLoader.assetRegistry.registerAllAssets(GameConfig.instance) // dynamically register all assets from config
@@ -63,13 +63,16 @@ export async function start() {
             })
         }),
     ])
-    screenMaster.loadingLayer.enableGraphicMode(assetLoader.assetRegistry.size)
+    const imgBackground = ResourceManager.getImage(GameConfig.instance.main.loadScreen)
+    const imgProgress = ResourceManager.getImage(GameConfig.instance.main.progressBar)
     const fontData = ResourceManager.getResource(DEFAULT_FONT_NAME)
     BitmapFontWorkerPool.instance.setupPool(DEFAULT_FONT_NAME, fontData)
+    const imgLabel = await BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, GameConfig.instance.main.loadingText)
+    screenMaster.loadingLayer.enableGraphicMode(imgBackground, imgProgress, imgLabel)
     const cursorImageName = GameConfig.instance.pointers.get(Cursor.STANDARD)
     ResourceManager.loadCursor(cursorImageName, Cursor.STANDARD).then(() => EventBroker.publish(new ChangeCursor(Cursor.STANDARD)))
     console.log('Initial loading done.')
-    await assetLoader.loadRegisteredAssets(() => screenMaster.loadingLayer.increaseLoadingState())
+    await assetLoader.loadRegisteredAssets(() => screenMaster.loadingLayer.increaseLoadingState(assetLoader.assetRegistry.size))
     AssetLoader.bitmapWorkerPool.terminatePool()
     await Promise.all([
         ResourceManager.loadAllCursor(),

@@ -1,12 +1,7 @@
 import { createCanvas } from '../core/ImageHelper'
-import { EventKey } from '../event/EventKeyEnum'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { ScreenLayer } from './layer/ScreenLayer'
-import { CursorManager } from './CursorManager'
-import { ChangeCursor } from '../event/GuiCommand'
-import { SaveScreenshot } from '../event/LocalEvents'
 import { LoadingLayer } from './layer/LoadingLayer'
-import { EventBroker } from '../event/EventBroker'
 
 export class ScreenMaster {
     static readonly ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
@@ -27,11 +22,6 @@ export class ScreenMaster {
         this.gameCanvasContainer.addEventListener('contextmenu', (event: MouseEvent) => event.preventDefault())
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
-        EventBroker.subscribe(EventKey.SAVE_SCREENSHOT, () => this.saveScreenshot())
-        const cursorManager: CursorManager = new CursorManager(this.gameCanvasContainer)
-        EventBroker.subscribe(EventKey.COMMAND_CHANGE_CURSOR, (event: ChangeCursor) => {
-            cursorManager.changeCursor(event.cursor, event.timeout)
-        })
         this.gameCanvasContainer.addEventListener('pointerdown', () => {
             this.getActiveLayersSorted()?.[0]?.canvas?.focus() // always focus topmost
         })
@@ -68,7 +58,7 @@ export class ScreenMaster {
             buttons.forEach((btn) => btn.style.display = btn.style.display === 'none' ? 'block' : 'none')
         })
         this.setupButton('button-screenshot', () => {
-            EventBroker.publish(new SaveScreenshot())
+            this.saveScreenshot()
         })
         this.setupButton('button-fullscreen', () => {
             if (document.fullscreenElement === this.gameContainer) document.exitFullscreen().then()

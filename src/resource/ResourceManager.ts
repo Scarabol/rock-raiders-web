@@ -12,11 +12,10 @@ import { GameConfig } from '../cfg/GameConfig'
 import { Cursor } from './Cursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { CursorManager } from '../screen/CursorManager'
-import { AnimatedCursor } from '../screen/AnimatedCursor'
 
 export class ResourceManager {
-    static readonly imageCache: Map<string, SpriteImage> = new Map()
     static readonly resourceByName: Map<string, any> = new Map()
+    static readonly imageCache: Map<string, SpriteImage> = new Map()
     static readonly lwoCache: Map<string, SceneMesh> = new Map()
 
     static getResource(resourceName: string): any {
@@ -83,7 +82,7 @@ export class ResourceManager {
                     }
                     cachePutData(cursorFileName, animatedCursorData).then()
                 }
-                CursorManager.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls))
+                CursorManager.addCursor(cursor, animatedCursorData.dataUrls)
             }))
         })
         await Promise.all(loadingCursors)
@@ -101,7 +100,7 @@ export class ResourceManager {
                 }
                 cachePutData(cursorImageName, animatedCursorData).then()
             }
-            CursorManager.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls))
+            CursorManager.addCursor(cursor, animatedCursorData.dataUrls)
         })
     }
 
@@ -130,7 +129,7 @@ export class ResourceManager {
         const lTextureFilename = textureFilename?.toLowerCase()
         const lMeshFilepath = meshPath?.toLowerCase() + lTextureFilename
         const imgData = this.resourceByName.getOrUpdate(lMeshFilepath, () => {
-            return this.getTextureImageDataFromSharedPaths(lTextureFilename, textureFilename, lMeshFilepath)
+            return this.getTextureImageDataFromSharedPaths(lTextureFilename)
         })
         if (!imgData) {
             // ignore known texture issues
@@ -146,7 +145,7 @@ export class ResourceManager {
         return texture
     }
 
-    private static getTextureImageDataFromSharedPaths(lTextureFilename: string, textureFilename: string, lMeshFilepath: string): ImageData {
+    private static getTextureImageDataFromSharedPaths(lTextureFilename: string): ImageData {
         const ugSharedFilename = `vehicles/sharedug/${lTextureFilename}`
         return this.resourceByName.getOrUpdate(ugSharedFilename, () => {
             const worldSharedFilename = `world/shared/${lTextureFilename}`

@@ -1,11 +1,10 @@
-import { ResourceManager } from '../../resource/ResourceManager'
 import { ScaledLayer } from './ScreenLayer'
-import { DEFAULT_FONT_NAME } from '../../params'
-import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 import { GameConfig } from '../../cfg/GameConfig'
+import { SpriteImage } from '../../core/Sprite'
 
 export class LoadingLayer extends ScaledLayer {
     assetIndex: number = 0
+    progress: number = 0
 
     constructor() {
         super()
@@ -29,26 +28,22 @@ export class LoadingLayer extends ScaledLayer {
         this.animationFrame.notifyRedraw()
     }
 
-    enableGraphicMode(totalResources: number) {
-        const imgBackground = ResourceManager.getImage(GameConfig.instance.main.loadScreen)
-        const imgProgress = ResourceManager.getImage(GameConfig.instance.main.progressBar)
+    enableGraphicMode(imgBackground: SpriteImage, imgProgress: SpriteImage, imgLabel: SpriteImage) {
         const rectProgress = GameConfig.instance.main.progressWindow
-        BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, GameConfig.instance.main.loadingText)
-            .then((imgLoading) => {
-                const loadX = Math.round(rectProgress.x + (rectProgress.w - imgLoading.width) / 2) + 1
-                const loadY = Math.round(rectProgress.y + (rectProgress.h - imgLoading.height) / 2) + 1
-                this.animationFrame.onRedraw = (context => {
-                    context.drawImage(imgBackground, 0, 0)
-                    const loadingBarWidth = Math.round(rectProgress.w * (this.assetIndex < totalResources ? this.assetIndex / totalResources : 1))
-                    context.drawImage(imgProgress, rectProgress.x, rectProgress.y, loadingBarWidth, rectProgress.h)
-                    context.drawImage(imgLoading, loadX, loadY)
-                })
-                this.animationFrame.notifyRedraw()
-            })
+        const loadX = Math.round(rectProgress.x + (rectProgress.w - imgLabel.width) / 2) + 1
+        const loadY = Math.round(rectProgress.y + (rectProgress.h - imgLabel.height) / 2) + 1
+        this.animationFrame.onRedraw = (context => {
+            context.drawImage(imgBackground, 0, 0)
+            const loadingBarWidth = Math.round(rectProgress.w * this.progress)
+            context.drawImage(imgProgress, rectProgress.x, rectProgress.y, loadingBarWidth, rectProgress.h)
+            context.drawImage(imgLabel, loadX, loadY)
+        })
+        this.animationFrame.notifyRedraw()
     }
 
-    increaseLoadingState() {
+    increaseLoadingState(totalResources: number) {
         this.assetIndex++
+        this.progress = Math.max(0, Math.min(1, this.assetIndex / totalResources))
         this.animationFrame.notifyRedraw()
     }
 }

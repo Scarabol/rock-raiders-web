@@ -5,7 +5,7 @@ export class ClearCacheButton {
     rootElement: HTMLButtonElement
 
     constructor() {
-        this.rootElement = document.createElement('button')
+        this.rootElement = document.getElementById('game-container').appendChild(document.createElement('button'))
         this.rootElement.classList.add('clear-cache-btn')
         this.rootElement.innerText = 'Clear asset cache and restart'
         this.rootElement.onclick = () => {

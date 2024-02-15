@@ -89,7 +89,6 @@ export enum EventKey {
     PAUSE_GAME = 'pause-game',
     UNPAUSE_GAME = 'unpause-game',
     UPDATE_PRIORITIES = 'update-priorities',
-    SAVE_SCREENSHOT = 'save-screenshot',
     TOGGLE_ALARM = 'toggle-alarm',
     DYNAMITE_EXPLOSION = 'dynamite-explosion',
     GAME_RESULT_STATE = 'game-result-state',

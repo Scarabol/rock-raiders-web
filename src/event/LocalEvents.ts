@@ -93,12 +93,6 @@ export class DeselectAll extends BaseEvent {
     }
 }
 
-export class SaveScreenshot extends BaseEvent {
-    constructor() {
-        super(EventKey.SAVE_SCREENSHOT)
-    }
-}
-
 export class BuildingsChangedEvent extends BaseEvent {
     readonly placedVisibleBuildings: Set<GameEntity> = new Set()
     readonly poweredBuildings: Set<GameEntity> = new Set()

@@ -8,14 +8,14 @@ import { ResourceManager } from './ResourceManager'
 import { AnimEntityParser } from './AnimEntityParser'
 import { LWSCParser } from './fileparser/LWSCParser'
 
-interface WadAsset {
+interface GameAsset {
     method: ((name: string, callback: (assetName: string[], assetData: any) => void) => void)
     assetPath: string
     optional: boolean
     sfxKeys: string[]
 }
 
-export class AssetRegistry extends Map<string, WadAsset> {
+export class AssetRegistry extends Map<string, GameAsset> {
     readonly inProgress: Promise<void>[] = []
 
     constructor(readonly assetLoader: AssetLoader) {

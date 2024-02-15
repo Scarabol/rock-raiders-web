@@ -45,7 +45,9 @@ export class SoundManager {
             source.start()
             if (isVoice) {
                 const blockVoiceLinesMs = Math.round(audioBuffer.duration * 1000 + NerpRunner.timeAddedAfterSample)
-                setTimeout(() => this.skipVoiceLines = false, blockVoiceLinesMs)
+                setTimeout(() => {
+                    this.skipVoiceLines = false
+                }, blockVoiceLinesMs)
             }
             return source
         } catch (e) {
