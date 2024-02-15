@@ -1,11 +1,10 @@
 import { WorldManager } from '../WorldManager'
-import { AdditiveBlending, Color, Vector2 } from 'three'
+import { Vector2 } from 'three'
 import { MaterialEntity } from '../model/material/MaterialEntity'
 import { Surface } from '../terrain/Surface'
 import { EntityType, MaterialEntityType } from '../model/EntityType'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SceneSelectionComponent } from '../component/SceneSelectionComponent'
-import { SequenceTextureMaterial } from '../../scene/SequenceTextureMaterial'
 import { BuildingSite } from '../model/building/BuildingSite'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
@@ -48,32 +47,22 @@ export class MaterialSpawner {
                 material.priorityIdentifier = PriorityIdentifier.ORE
                 break
             case EntityType.CRYSTAL:
-                const animGlowMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Crystal)
-                animGlowMesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
-                    mat.blending = AdditiveBlending
-                    mat.depthWrite = false // otherwise, transparent parts "carve out" objects behind
-                    mat.setOpacity(0.5) // XXX read from LWO file?
+                const poweredMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Crystal)
+                poweredMesh.getMaterials().forEach((m) => {
+                    m.color.fromArray(GameConfig.instance.main.powerCrystalRGB)
+                    m.emissive.fromArray(GameConfig.instance.main.powerCrystalRGB)
                 })
-                animGlowMesh.scale.set(1.75, 1.75, 1.75) // XXX derive from texture scale?
-                material.sceneEntity.add(animGlowMesh)
-                const highPolyMesh = ResourceManager.getLwoModel('World/Shared/Crystal') // high poly version
-                highPolyMesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
-                    mat.emissive = new Color(0, 8, 0) // XXX read from LWO file?
-                    mat.color = new Color(0, 0, 0) // XXX read from LWO file?
-                    mat.setOpacity(0.9) // XXX read from LWO file?
-                })
-                material.sceneEntity.add(highPolyMesh)
+                material.sceneEntity.add(poweredMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.powerCrystal))
                 material.priorityIdentifier = PriorityIdentifier.CRYSTAL
                 break
             case EntityType.DEPLETED_CRYSTAL:
-                const depletedHighPolyMesh = ResourceManager.getLwoModel('World/Shared/Crystal') // high poly version
-                depletedHighPolyMesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
-                    mat.emissive = new Color(8, 0, 8) // XXX read from LWO file?
-                    mat.color = new Color(0, 0, 0) // XXX read from LWO file?
-                    mat.setOpacity(0.9) // XXX read from LWO file?
+                const unpoweredMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Crystal)
+                unpoweredMesh.getMaterials().forEach((m) => {
+                    m.color.fromArray(GameConfig.instance.main.unpoweredCrystalRGB)
+                    m.emissive.fromArray(GameConfig.instance.main.unpoweredCrystalRGB)
                 })
-                material.sceneEntity.add(depletedHighPolyMesh)
+                material.sceneEntity.add(unpoweredMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.powerCrystal))
                 material.priorityIdentifier = PriorityIdentifier.RECHARGE
                 break

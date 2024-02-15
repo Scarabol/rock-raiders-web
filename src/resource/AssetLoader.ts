@@ -60,28 +60,12 @@ export class AssetLoader {
         if (alphaIndexMatch) {
             assetNames.push(alphaIndexMatch[1] + alphaIndexMatch[3])
             alphaIndex = parseInt(alphaIndexMatch[2])
-            AssetLoader.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex)
-                .then((imgData) => {
-                    if (name.toLowerCase().startsWith('miscanims/crystal')) { // XXX fix crystal lwo loading
-                        callback(assetNames, this.grayscaleToGreen(imgData))
-                    } else {
-                        callback(assetNames, imgData)
-                    }
-                })
+            AssetLoader.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex).then((imgData) => callback(assetNames, imgData))
         } else if (name.match(/\/a.*\d.*/i)) {
             AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(data).then((imgData) => callback(assetNames, imgData))
         } else {
             AssetLoader.bitmapWorkerPool.decodeBitmap(data).then((imgData) => callback(assetNames, imgData))
         }
-    }
-
-    grayscaleToGreen(imgData: ImageData): ImageData {
-        const arr = imgData.data
-        for (let c = 0; c < arr.length; c += 4) {
-            arr[c] = 0
-            arr[c + 2] = 0
-        }
-        return imgData
     }
 
     loadAlphaImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {

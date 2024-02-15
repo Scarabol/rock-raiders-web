@@ -41,8 +41,8 @@ export class MainCfg extends BaseConfig {
     // TrackSpotRGB = 000:255:000
     ambientRGB: number[] = [10, 10, 10]
     // FPLightRGB = 127:127:127
-    // PowerCrystalRGB = 000:255:000
-    // UnpoweredCrystalRGB = 255:000:255
+    powerCrystalRGB: [r: number, g: number, b: number] = [0, 1, 0]
+    unpoweredCrystalRGB: [r: number, g: number, b: number] = [1, 0, 1]
     // ToolTipRGB = 000:100:000
     minDist = 150.0 // minimum camera distance
     maxDist = 250.0 // maximum camera distance
@@ -87,6 +87,7 @@ export class MainCfg extends BaseConfig {
     missionBriefingText: string = 'Einsatzbesprechung'
     missionCompletedText: string = 'Einsatz erfolgreich!'
     missionFailedText: string = 'Einsatz beendet'
+
     // TutorialIcon = Interface/Tutorial/Arrow01.bmp
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
@@ -96,6 +97,12 @@ export class MainCfg extends BaseConfig {
             return true
         } else if (unifiedKey === 'TextPauseTime'.toLowerCase()) {
             this.textPauseTimeMs = Math.round(cfgValue * 1000)
+        } else if (unifiedKey === 'PowerCrystalRGB'.toLowerCase()) {
+            this.powerCrystalRGB = cfgValue.map((n: number) => n / 255)
+            return true
+        } else if (unifiedKey === 'UnpoweredCrystalRGB'.toLowerCase()) {
+            this.unpoweredCrystalRGB = cfgValue.map((n: number) => n / 255)
+            return true
         }
         return super.assignValue(objKey, unifiedKey, cfgValue)
     }

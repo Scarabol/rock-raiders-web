@@ -11,6 +11,7 @@ export class SequenceTextureMaterial extends MeshPhongMaterial {
         super({
             alphaToCoverage: true,
             shininess: 0,
+            emissiveIntensity: 0,
         })
         this.name = name
     }
@@ -25,6 +26,7 @@ export class SequenceTextureMaterial extends MeshPhongMaterial {
         this.textures = textures
         if (this.textures.length < 1) return
         this.map = this.textures[0]
+        this.emissiveMap = this.map
         this.color.setScalar(1)
     }
 
@@ -35,6 +37,7 @@ export class SequenceTextureMaterial extends MeshPhongMaterial {
         this.timer -= addedSeqNum * SEQUENCE_TEXTURE_INTERVAL_MS
         this.seqNum = (this.seqNum + addedSeqNum) % this.textures.length
         this.map = this.textures[this.seqNum]
+        this.emissiveMap = this.map
     }
 
     setOpacity(opacity: number) {
