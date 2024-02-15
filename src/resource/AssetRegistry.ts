@@ -220,7 +220,11 @@ export class AssetRegistry extends Map<string, WadAsset> {
                 ResourceManager.resourceByName.set(lwsFilepath.toLowerCase(), lwscData)
                 lwscData.objects.forEach((obj) => {
                     if (!obj.fileName) return
-                    this.addLWOFile(lwsPath + obj.fileName)
+                    const lwoFilepath = lwsPath + obj.fileName
+                    this.addLWOFile(lwoFilepath)
+                    this.addLWOFile(lwoFilepath.replace('vlp', 'lp'), true)
+                    this.addLWOFile(lwoFilepath.replace('vlp', 'mp'), true)
+                    this.addLWOFile(lwoFilepath.replace('vlp', 'hp'), true)
                 })
             } catch (e) {
                 // XXX do we have to care? files listed in pilot.ae can be found in vehicles/hoverboard/ or not at all...
@@ -229,8 +233,8 @@ export class AssetRegistry extends Map<string, WadAsset> {
         }))
     }
 
-    addLWOFile(lwoFilepath: string) {
-        this.addAsset(this.assetLoader.loadLWOFile, lwoFilepath)
+    addLWOFile(lwoFilepath: string, optional: boolean = false) {
+        this.addAsset(this.assetLoader.loadLWOFile, lwoFilepath, optional)
         this.addAsset(this.assetLoader.loadUVFile, lwoFilepath.replace('.lwo', '.uv'), true)
     }
 
