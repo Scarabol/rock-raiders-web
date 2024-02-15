@@ -5,7 +5,7 @@ import { JobState } from '../job/JobState'
 import { GameEntity } from '../../ECS'
 import { Surface } from '../../terrain/Surface'
 import { BuildingSite } from '../building/BuildingSite'
-import { EntityType, MaterialEntityType } from '../EntityType'
+import { MaterialEntityType } from '../EntityType'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { RaiderTraining } from '../raider/RaiderTraining'
@@ -14,9 +14,6 @@ import { PositionComponent } from '../../component/PositionComponent'
 import { UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
 import { EventBroker } from '../../../event/EventBroker'
-import { TooltipComponent } from '../../component/TooltipComponent'
-import { GameConfig } from '../../../cfg/GameConfig'
-import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 
 export class MaterialEntity {
     entity: GameEntity
@@ -33,12 +30,6 @@ export class MaterialEntity {
         readonly location: Vector2,
     ) {
         this.entity = this.worldMgr.ecs.addEntity()
-        const objectKey = this.entityType.toLowerCase()
-        const objectName = GameConfig.instance.objectNamesCfg.get(objectKey)
-        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey)
-        if (objectName) this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, sfxKey, () => {
-            return TooltipSpriteBuilder.getTooltipSprite(objectName, entityType === EntityType.ELECTRIC_FENCE ? 100 : 0)
-        }))
     }
 
     setupCarryJob(): CarryJob {
