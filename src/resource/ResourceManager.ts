@@ -186,13 +186,13 @@ export class ResourceManager {
                     }
                     textureLoader.setMeshPath(getPath(sharedLwoFilepath))
                     const uvFilepath = sharedLwoFilepath.replace('.lwo', '.uv')
-                    const uvData = ResourceManager.getResource(uvFilepath) as UVData[]
+                    const uvData = ResourceManager.getResource(uvFilepath) as UVData
                     return new LWOBParser(sharedLwoFilepath, sharedLwoBuffer, textureLoader, uvData).parse()
                 })
             }
             textureLoader.setMeshPath(getPath(lwoFilepath))
             const uvFilepath = lwoFilepath.replace('.lwo', '.uv')
-            const uvData = ResourceManager.getResource(uvFilepath) as UVData[]
+            const uvData = ResourceManager.getResource(uvFilepath) as UVData
             return new LWOBParser(lwoFilepath, lwoBuffer, textureLoader, uvData).parse()
         })?.clone()
     }

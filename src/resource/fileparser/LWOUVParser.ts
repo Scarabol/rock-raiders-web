@@ -2,19 +2,19 @@ import { getFilename } from '../../core/Util'
 import { Vector3 } from 'three'
 import { degToRad } from 'three/src/math/MathUtils'
 
-export interface UVData {
-    name: string;
-    mapName: string;
-    uvs: number[];
-    rotation: Vector3;
+export class UVData {
+    names: string[] = []
+    mapNames: string[] = []
+    uvs: number[] = []
+    rotations: Vector3[] = []
 }
 
 export class LWOUVParser {
     constructor(readonly verbose: boolean = false) {
     }
 
-    parse(content: string): UVData[] {
-        const result: UVData[] = []
+    parse(content: string): UVData {
+        const result: UVData = new UVData()
         if (this.verbose) console.log(content)
         const lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
@@ -32,14 +32,13 @@ export class LWOUVParser {
         for (let c = 0; c < numOfMats; c++) {
             const matName = lines[fileIndex + c]
             if (this.verbose) console.log('Material name is ', matName)
-            result[c] = result[c] ?? {} as UVData // XXX Avoid casting
-            result[c].name = matName
+            result.names.push(matName)
         }
         fileIndex += numOfMats
         for (let c = 0; c < numOfMats; c++) {
             const mapName = lines[fileIndex + c]
             if (this.verbose) console.log('Texture map name is ', mapName)
-            result[c].mapName = getFilename(mapName)
+            result.mapNames.push(getFilename(mapName))
         }
         fileIndex += numOfMats
         const numOfCoords = parseInt(lines[fileIndex])
@@ -56,10 +55,7 @@ export class LWOUVParser {
                 if (this.verbose) console.log(uvLine)
                 const [u, v, w] = uvLine.split(' ').map((n) => parseFloat(n))
                 if (w !== 0) console.warn(`Unexpected non zero third UV value w = ${w} given`)
-                for (let x = 0; x < numOfMats; x++) {
-                    result[x].uvs = result[x].uvs ?? []
-                    result[x].uvs.push(u, v)
-                }
+                result.uvs.push(u, v)
                 fileIndex++
             }
         }
@@ -73,7 +69,7 @@ export class LWOUVParser {
                 continue
             }
             const rotation = lines[fileIndex] // XXX Is it actual rotation? Numbers look like angle in degree
-            result[c].rotation = new Vector3(...rotation.split(' ').map((n) => degToRad(parseFloat(n))))
+            result.rotations.push(new Vector3(...rotation.split(' ').map((n) => degToRad(parseFloat(n)))))
             fileIndex++
             // const unknown0 = lines[fileIndex] // XXX Mostly 0,0,0 maybe translation/center
             fileIndex++

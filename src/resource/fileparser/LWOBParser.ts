@@ -68,7 +68,7 @@ export class LWOBParser {
         readonly lwoFilepath: string,
         buffer: ArrayBuffer,
         readonly textureLoader: LWOBTextureLoader,
-        readonly uvData: UVData[],
+        readonly uvData: UVData,
         readonly verbose: boolean = false,
     ) {
         this.lwoReader = new LWOBFileReader(buffer)
@@ -146,7 +146,7 @@ export class LWOBParser {
 
     parseSurfaceNames(chunkSize: number): void {
         this.materials = this.lwoReader.readStringArray(chunkSize).map((name) => new SequenceTextureMaterial(name))
-        if (this.verbose) console.log(`LWO contains ${this.materials.length} materials with following names: ${this.materials.map((m) => m.name)}`)
+        if (this.verbose) console.log(`LWO contains ${this.materials.length} materials named: ${this.materials.map((m) => m.name).join(', ')}`)
     }
 
     parsePolygons(chunkSize: number): void {
@@ -188,11 +188,12 @@ export class LWOBParser {
                     indices[currentIndex++] = faceIndices[4]
                     break
                 default:
-                    if (VERBOSE) console.warn(`Expected face with 3, 4 or 5 indices but got ${numIndices} instead`)
+                    console.warn(`Expected face with 3, 4 or 5 indices but got ${numIndices} instead`)
             }
             offset += 2 + (numIndices * 2) + 2
         }
         this.indices = new Uint16Array(indices)
+        if (this.verbose) console.log('indices', this.indices)
     }
 
     parseSurface(chunkSize: number): void {
@@ -433,14 +434,11 @@ export class LWOBParser {
             }
         }
 
-        if (this.uvData) {
-            this.uvData.forEach((uv) => {
-                if (materialName.toLowerCase() !== uv.name.toLowerCase()) return
-                this.textureLoader.load(uv.mapName.toLowerCase(), (t) => material.setTextures(t))
-                this.uvs = new Float32Array(uv.uvs)
-            })
+        const textureName = this.uvData?.mapNames[materialIndex]
+        if (textureName && textureName.toLowerCase() !== 'null') {
+            this.textureLoader.load(textureName.toLowerCase(), (t) => material.setTextures(t))
         } else {
-            this.planarMapUVS(materialIndex, textureSize, textureCenter, textureFlags)
+            this.planarMapUVs(materialIndex, textureSize, textureCenter, textureFlags)
         }
 
         if (this.verbose) console.log(`Done parsing surface: "${materialName}"`, material)
@@ -461,7 +459,7 @@ export class LWOBParser {
         }
     }
 
-    planarMapUVS(materialIndex: number, size: Vector3, center: Vector3, flags: number) {
+    planarMapUVs(materialIndex: number, size: Vector3, center: Vector3, flags: number) {
         // Check to ensure that one of the flags is set, if not throw an error.
         const mask = XAXIS_BIT | YAXIS_BIT | ZAXIS_BIT
         if (!(flags & mask)) {
