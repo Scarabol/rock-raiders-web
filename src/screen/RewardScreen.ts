@@ -3,7 +3,6 @@ import { SpriteImage } from '../core/Sprite'
 import { clearTimeoutSafe } from '../core/Util'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { GameResult, GameResultState } from '../game/model/GameResult'
-import { GameState } from '../game/model/GameState'
 import { LoadSaveLayer } from '../menu/LoadSaveLayer'
 import { MainMenuBaseItem } from '../menu/MainMenuBaseItem'
 import { RewardScreenButton } from '../menu/RewardScreenButton'
@@ -91,7 +90,6 @@ export class RewardScreen {
             this.btnLayer.hide()
             this.saveGameLayer.hide()
             this.flics.forEach((f) => f.stop())
-            GameState.reset()
             EventBroker.publish(new ShowGameResultEvent())
         }
         this.btnLayer.addEventListener('pointermove', (event: PointerEvent): boolean => {

@@ -1,5 +1,6 @@
 import { Vector2 } from 'three'
 import { PriorityList } from '../../gui/toppanel/PriorityList'
+import { DEV_MODE } from '../../params'
 
 export class GameState {
     static numCrystal: number = 0
@@ -20,9 +21,9 @@ export class GameState {
     static priorityList: PriorityList = new PriorityList()
 
     static reset() {
-        this.numCrystal = 0
-        this.numOre = 0
-        this.numBrick = 0
+        this.numCrystal = this.getDevParam('numCrystal', 0)
+        this.numOre = this.getDevParam('numOre', 0)
+        this.numBrick = this.getDevParam('numBrick', 0)
         this.usedCrystals = 0
         this.airLevel = 1
         this.totalCrystals = 0
@@ -35,5 +36,11 @@ export class GameState {
         this.objectiveShowing = 1
         this.monsterCongregation = null
         this.priorityList = new PriorityList()
+    }
+
+    static getDevParam(paramName: string, fallback: number): number {
+        if (!DEV_MODE) return fallback
+        const params = new URLSearchParams(window.location.search)
+        return Number(params.get(paramName)) || fallback
     }
 }

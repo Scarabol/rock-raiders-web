@@ -64,12 +64,10 @@ export class GameScreen {
         this.screenMaster.removeLayer(this.advisorLayer)
         this.screenMaster.removeLayer(this.guiLayer)
         this.screenMaster.removeLayer(this.overlayLayer)
-        // TODO remove event listener on hot reload?
     }
 
     restartLevel() {
         this.hide()
-        GameState.reset()
         this.setupAndStartLevel()
     }
 
@@ -79,6 +77,7 @@ export class GameScreen {
         const params = new URLSearchParams(window.location.search)
         params.set('entry', this.levelConf.levelName)
         history.pushState(null, '', `${window.location.pathname}?${params.toString()}`)
+        GameState.reset()
         this.entityMgr.reset()
         this.guiLayer.reset()
         this.worldMgr.setup(this.levelConf)
@@ -129,7 +128,6 @@ export class GameScreen {
         }
         if (!this.levelConf.disableEndTeleport) await this.worldMgr.teleportEnd()
         this.worldMgr.stop()
-        GameState.reset()
         this.overlayLayer.showResultBriefing(result?.state, this.levelConf, () => {
             this.hide()
             EventBroker.publish(new ShowGameResultEvent(result))

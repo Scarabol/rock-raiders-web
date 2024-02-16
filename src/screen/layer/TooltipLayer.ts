@@ -58,6 +58,7 @@ export class TooltipLayer extends ScreenLayer {
             }
             return false
         })
+        this.show()
     }
 
     private removeTooltip() {

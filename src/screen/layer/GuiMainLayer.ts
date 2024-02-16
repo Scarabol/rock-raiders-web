@@ -12,20 +12,17 @@ import { BaseElement } from '../../gui/base/BaseElement'
 import { ChangeCursor, PlaySoundEvent } from '../../event/GuiCommand'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { TOOLTIP_FONT_NAME, USE_KEYBOARD_SHORTCUTS } from '../../params'
+import { USE_KEYBOARD_SHORTCUTS } from '../../params'
 import { Cursor } from '../../resource/Cursor'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../../gui/event/GuiEvent'
 import { CameraControlPanel } from '../../gui/cameracontrol/CameraControlPanel'
 import { ToggleAlarmEvent } from '../../event/WorldEvents'
 import { ShowOptionsEvent } from '../../event/LocalEvents'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { Sample } from '../../audio/Sample'
 import { GameConfig } from '../../cfg/GameConfig'
-import { DependencySpriteWorkerPool } from '../../worker/DependencySpriteWorkerPool'
-import { BitmapFontData } from '../../core/BitmapFont'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 
@@ -45,19 +42,6 @@ export class GuiMainLayer extends ScaledLayer {
 
     constructor() {
         super()
-        const teleportManConfig = GameConfig.instance.interfaceImages.get('Interface_MenuItem_TeleportMan'.toLowerCase())
-        const depInterfaceBuildImageData: Map<string, ImageData[]> = new Map()
-        GameConfig.instance.interfaceBuildImages.forEach((cfg, key) => {
-            depInterfaceBuildImageData.set(key, [ResourceManager.getImageData(cfg.normalFile), ResourceManager.getImageData(cfg.disabledFile)])
-        })
-        DependencySpriteWorkerPool.instance.setupPool({
-            teleportManNormal: ResourceManager.getImageData(teleportManConfig.normalFile),
-            teleportManDisabled: ResourceManager.getImageData(teleportManConfig.disabledFile),
-            tooltipFontData: ResourceManager.getResource(TOOLTIP_FONT_NAME) as BitmapFontData,
-            plusSign: ResourceManager.getImageData('Interface/Dependencies/+.bmp'),
-            equalSign: ResourceManager.getImageData('Interface/Dependencies/=.bmp'),
-            depInterfaceBuildImageData: depInterfaceBuildImageData,
-        })
         const panelsCfg = GameConfig.instance.panels
         const buttonsCfg = GameConfig.instance.buttons
         this.rootElement = new BaseElement(null)

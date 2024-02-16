@@ -13,7 +13,11 @@ export class SoundManager {
     static sfxAudioTarget: GainNode
     static skipVoiceLines: boolean = false
 
-    static {
+    static init() {
+        this.playingAudio.forEach((audio) => {
+            if (audio?.isPlaying) audio?.stop()
+        })
+        this.playingAudio.clear()
         EventBroker.subscribe(EventKey.PAUSE_GAME, () => this.playingAudio.forEach((a) => a.pause())) // XXX What if audio was paused for other reasons
         EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => this.playingAudio.forEach((a) => a.play()))
     }
