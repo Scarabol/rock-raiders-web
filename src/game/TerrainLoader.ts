@@ -8,6 +8,7 @@ import { Vector3 } from 'three'
 import { LavaErosionComponent } from './component/LavaErosionComponent'
 import { GameConfig } from '../cfg/GameConfig'
 import { EmergeComponent } from './component/EmergeComponent'
+import { FallInComponent } from './component/FallInComponent'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelConfData, worldMgr: WorldManager): Terrain {
@@ -111,7 +112,11 @@ export class TerrainLoader {
         if (levelConf.fallinMap) {
             for (let x = 0; x < terrain.width; x++) {
                 for (let y = 0; y < terrain.height; y++) {
-                    terrain.setFallInLevel(x, y, levelConf.fallinMap[y][x] * levelConf.fallinMultiplier) // rows (y) before columns (x) used in maps
+                    const maxTimerMs = levelConf.fallinMap[y][x] * levelConf.fallinMultiplier * 1000
+                    if (maxTimerMs > 0) {
+                        const surface = terrain.surfaces[x][y]
+                        worldMgr.ecs.addComponent(surface.entity, new FallInComponent(surface, maxTimerMs))
+                    }
                 }
             }
         }

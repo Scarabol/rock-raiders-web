@@ -29,6 +29,7 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { TooltipComponent } from '../component/TooltipComponent'
 import { EmergeComponent } from '../component/EmergeComponent'
+import { FallInComponent } from '../component/FallInComponent'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -199,7 +200,7 @@ export class Surface {
             return
         }
         this.cancelJobs()
-        this.terrain.removeFallInOrigin(this)
+        this.worldMgr.ecs.removeComponent(this.entity, FallInComponent)
         this.reinforced = false
         const droppedOre = this.containedOres + (this.surfaceType === SurfaceType.ORE_SEAM ? this.seamLevel : 0)
         const droppedCrystals = this.containedCrystals + (this.surfaceType === SurfaceType.CRYSTAL_SEAM ? this.seamLevel : 0)
@@ -480,7 +481,6 @@ export class Surface {
     reinforce() {
         this.reinforced = true
         this.cancelReinforceJobs()
-        this.terrain.removeFallInOrigin(this)
         this.updateTexture()
         EventBroker.publish(new UpdateRadarSurface(this))
     }

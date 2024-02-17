@@ -2,8 +2,6 @@ import { AxesHelper, Group, Vector2, Vector3 } from 'three'
 import { LevelConfData } from '../LevelLoader'
 import { DEV_MODE, SURFACE_NUM_CONTAINED_ORE, TILESIZE } from '../../params'
 import { WorldManager } from '../WorldManager'
-import { updateSafe } from '../model/Updateable'
-import { FallIn } from './FallIn'
 import { PathFinder } from './PathFinder'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
@@ -21,7 +19,6 @@ export class Terrain {
     surfaces: Surface[][] = []
     floorGroup: Group = new Group()
     pathFinder: PathFinder = new PathFinder(this.surfaces)
-    fallIns: FallIn[] = []
     tutoBlocksById: Map<number, Surface[]> = new Map()
     slugHoles: Surface[] = []
     rechargeSeams: Surface[] = []
@@ -107,34 +104,11 @@ export class Terrain {
         return totalOres
     }
 
-    setFallInLevel(x: number, y: number, maxTimerSeconds: number) {
-        if (maxTimerSeconds < 1) return
-        const surface = this.getSurface(x, y)
-        let originPos: Surface = null
-        let targetPos: Surface = null
-        if (surface.surfaceType.floor) {
-            originPos = this.findFallInOrigin(surface)
-            targetPos = surface
-        } else if (surface.isReinforcable()) {
-            originPos = surface
-            targetPos = this.findFallInTarget(surface)
-        }
-        if (originPos && targetPos) {
-            this.fallIns.push(new FallIn(this, originPos, targetPos, maxTimerSeconds))
-        }
-    }
-
-    findFallInOrigin(target: Surface): Surface {
-        const s = target.neighbors.find((n) => n.isReinforcable())
-        if (!s) return null
-        return s
-    }
-
     findFallInTarget(source: Surface): Surface {
         return source.neighbors.find((n) => n.isWalkable() && !n.surfaceType.hasErosion)
     }
 
-    createFallIn(source: Surface, target: Surface) {
+    createFallIn(source: Surface, target: Surface) { // TODO Move to scene effects generator class and trigger with event
         const fallInPosition = target.getCenterWorld()
         const heading = Math.atan2(target.y - source.y, source.x - target.x) + Math.PI / 2
         const rockFallAnimName = GameConfig.instance.rockFallStyles.get(this.levelConf.rockFallStyle).tunnel // fall-ins always come from (reinforcable) walls
@@ -142,14 +116,6 @@ export class Terrain {
         source.playPositionalSample(Sample.SFX_RockBreak)
         target.makeRubble()
         EventBroker.publish(new LandslideEvent(new PositionComponent(target.getCenterWorld(), target)))
-    }
-
-    removeFallInOrigin(surface: Surface) {
-        this.fallIns = this.fallIns.filter((f) => f.source !== surface)
-    }
-
-    update(elapsedMs: number) {
-        this.fallIns.forEach((f) => updateSafe(f, elapsedMs))
     }
 
     getFloorPosition(world: Vector2) {

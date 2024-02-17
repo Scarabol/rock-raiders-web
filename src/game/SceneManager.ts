@@ -110,7 +110,6 @@ export class SceneManager implements Updatable {
     }
 
     update(elapsedMs: number) {
-        updateSafe(this.terrain, elapsedMs)
         this.entities.forEach((e) => updateSafe(e, elapsedMs))
         this.miscAnims.forEach((a) => updateSafe(a, elapsedMs))
         this.sprites.forEach((s) => updateSafe(s, elapsedMs))
