@@ -10,6 +10,7 @@ import { UpdatePriorities } from '../../event/WorldEvents'
 import { GameState } from '../../game/model/GameState'
 import { PriorityEntry } from '../../game/model/job/PriorityEntry'
 import { VERBOSE } from '../../params'
+import { SpriteContext } from '../../core/Sprite'
 
 export class PriorityListPanel extends Panel {
     prioPositions: PriorityPositionsEntry[] = []
@@ -71,5 +72,14 @@ export class PriorityListPanel extends Panel {
             btnCount++
         })
         if (updated) this.notifyRedraw()
+    }
+
+    isInactive(): boolean {
+        return this.movedIn || super.isInactive()
+    }
+
+    onRedraw(context: SpriteContext) {
+        if (this.movedIn) return
+        super.onRedraw(context)
     }
 }

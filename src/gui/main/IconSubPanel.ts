@@ -5,6 +5,7 @@ import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { GameConfig } from '../../cfg/GameConfig'
+import { SpriteContext } from '../../core/Sprite'
 
 export class IconSubPanel extends Panel {
     backBtn: Button = null
@@ -44,5 +45,10 @@ export class IconSubPanel extends Panel {
 
     isInactive(): boolean {
         return this.movedIn || super.isInactive()
+    }
+
+    onRedraw(context: SpriteContext) {
+        if (this.movedIn) return
+        super.onRedraw(context)
     }
 }

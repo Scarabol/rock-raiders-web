@@ -25,6 +25,7 @@ import { LargeVehiclePanel, SmallVehiclePanel } from './VehiclePanel'
 import { UpgradeVehiclePanel } from './UpgradeVehiclePanel'
 import { ChangeCameraPanel } from './select/ChangeCameraPanel'
 import { GameConfig } from '../../cfg/GameConfig'
+import { SpriteContext } from '../../core/Sprite'
 
 export class MainPanel extends Panel {
     subPanels: IconSubPanel[] = []
@@ -172,5 +173,14 @@ export class MainPanel extends Panel {
         } else {
             this.selectSubPanel(this.selectWallPanel)
         }
+    }
+
+    isInactive(): boolean {
+        return this.movedIn || super.isInactive()
+    }
+
+    onRedraw(context: SpriteContext) {
+        if (this.movedIn) return
+        super.onRedraw(context)
     }
 }
