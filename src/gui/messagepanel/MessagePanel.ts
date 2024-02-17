@@ -134,7 +134,7 @@ export class MessagePanel extends Panel {
             this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
             this.currentMessage = msg
             this.yOut = Math.max(480 - 409, 480 - 26 - this.currentMessage.textImage.height)
-            this.setMovedIn(this.currentMessage.textImage.height <= 480 - 409)
+            this.setMovedIn(this.currentMessage.textImage.height <= 42)
             this.notifyRedraw()
             if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample, true))
             if (timeout > 0) {
