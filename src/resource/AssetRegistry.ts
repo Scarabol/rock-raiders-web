@@ -7,6 +7,7 @@ import { TOOLTIP_FONT_NAME } from '../params'
 import { ResourceManager } from './ResourceManager'
 import { AnimEntityParser } from './AnimEntityParser'
 import { LWSCParser } from './fileparser/LWSCParser'
+import { NerpMsgParser } from './fileparser/NerpMsgParser'
 
 interface GameAsset {
     method: ((name: string, callback: (assetName: string[], assetData: any) => void) => void)
@@ -82,7 +83,12 @@ export class AssetRegistry extends Map<string, GameAsset> {
             if (level.emergeMap) this.addAsset(this.assetLoader.loadMapAsset, level.emergeMap, true)
             this.addAsset(this.assetLoader.loadObjectListAsset, level.oListFile)
             this.addAsset(this.assetLoader.loadNerpAsset, level.nerpFile)
-            this.addAsset(this.assetLoader.loadNerpMsg, level.nerpMessageFile)
+            const content = this.assetLoader.vfs.getFile(level.nerpMessageFile).toText(true)
+            const nerpMessages = NerpMsgParser.parseNerpMessages(content)
+            ResourceManager.resourceByName.set(level.nerpMessageFile.toLowerCase(), nerpMessages)
+            nerpMessages.forEach((msg) => {
+                if (msg.snd) this.addAsset(this.assetLoader.loadWavAsset, msg.snd, true, [msg.snd])
+            })
         })
         // load all shared textures
         this.addTextureFolder('World/Shared/')

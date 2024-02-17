@@ -21,6 +21,8 @@ import { AnimEntityActivity, SlugActivity } from '../game/model/anim/AnimationAc
 import { SlugBehaviorComponent, SlugBehaviorState } from '../game/component/SlugBehaviorComponent'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
+import { SoundManager } from '../audio/SoundManager'
+import { EventKey } from '../event/EventKeyEnum'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -40,17 +42,27 @@ export class NerpRunner {
     objectiveShowing: number = 0
     sampleLengthMultiplier: number = 0
     timeForNoSample: number = 0
-    messageTimer: number = 0
+    currentMessage: number = -1
+    messageTimerMs: number = 0
+    messageSfx: AudioBufferSourceNode = null
 
     constructor(readonly worldMgr: WorldManager, readonly script: NerpScript, readonly messages: NerpMessage[]) {
         NerpRunner.timeAddedAfterSample = 0
         this.checkSyntax()
         if (NerpRunner.debug) console.log(`Executing following script\n${this.script.lines.join('\n')}`)
+        EventBroker.subscribe(EventKey.NERP_MESSAGE_NEXT, () => {
+            this.currentMessage = -1
+            this.messageTimerMs = 0
+            this.messageSfx?.stop()
+            this.messageSfx?.stop()
+            this.messageSfx = null
+            this.execute()
+        })
     }
 
     update(elapsedMs: number) {
         this.timer += elapsedMs
-        this.messageTimer = this.messageTimer > 0 ? this.messageTimer - elapsedMs : 0
+        this.messageTimerMs = this.messageTimerMs > 0 ? this.messageTimerMs - elapsedMs : 0
         while (this.timer >= 0) {
             this.timer -= NERP_EXECUTION_INTERVAL
             this.execute()
@@ -273,8 +285,8 @@ export class NerpRunner {
         this.timeForNoSample = timeForNoSample
     }
 
-    getMessageTimer() { // TODO return remaining amount of time needed to fully play WAV message
-        return this.messageTimer // TODO workaround until sounds from DATA directory are implemented
+    getMessageTimer() {
+        return this.messageTimerMs
     }
 
     cameraUnlock() {
@@ -302,25 +314,24 @@ export class NerpRunner {
             console.warn(`Unexpected message number ${messageNumber} given`)
             return
         }
+        if (messageNumber === this.currentMessage) return
+        this.currentMessage = messageNumber
         const msg = this.messages[messageNumber - 1]
         if (!msg) {
             console.warn(`Message ${messageNumber} not found in [${this.messages.map((m) => m.txt)}]`)
             return
         }
-        const sampleLength = this.timeForNoSample / 1000 // TODO workaround until sounds from DATA directory are implemented
+        let sampleLength = this.timeForNoSample / 1000
+        if (msg.snd) {
+            this.messageSfx = SoundManager.playSound(msg.snd, true)
+            sampleLength = this.messageSfx?.buffer?.duration || sampleLength
+        }
         const sampleTimeoutMs = sampleLength * this.sampleLengthMultiplier + NerpRunner.timeAddedAfterSample
+        this.messageTimerMs = sampleTimeoutMs || GameConfig.instance.main.textPauseTimeMs
         if (msg.txt) {
-            const messageTimeoutMs = sampleTimeoutMs || GameConfig.instance.main.textPauseTimeMs
-            EventBroker.publish(new NerpMessageEvent(msg.txt, messageTimeoutMs, !!arrowDisabled))
+            EventBroker.publish(new NerpMessageEvent(msg.txt, this.messageTimerMs, !!arrowDisabled))
         }
-        if (msg.snd) { // TODO snd files reside in sounds/streamed/ which is not included in WAD files :(
-            console.warn(`Sounds from DATA directory not yet implemented`, msg.snd)
-        }
-        if (arrowDisabled) {
-            this.messageTimer = this.timeForNoSample // TODO workaround until sounds from DATA directory are implemented
-        } else {
-            this.messageTimer = Infinity
-        }
+        if (!arrowDisabled) this.messageTimerMs = Infinity
     }
 
     setRockMonsterAtTutorial(tutoBlockId: number) {

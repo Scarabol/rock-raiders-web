@@ -93,11 +93,6 @@ export class WorldManager {
             this.nerpRunner.objectiveShowing = event.isShowing ? 1 : 0
             this.nerpRunner.objectiveSwitch = this.nerpRunner.objectiveSwitch && event.isShowing
         })
-        EventBroker.subscribe(EventKey.NERP_MESSAGE_NEXT, () => {
-            if (!this.nerpRunner) return
-            this.nerpRunner.messageTimer = 0
-            this.nerpRunner.execute()
-        })
     }
 
     setup(levelConf: LevelConfData) {

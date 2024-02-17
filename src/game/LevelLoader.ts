@@ -68,7 +68,7 @@ export class LevelLoader {
             blockPointersMap: this.checkMap(levelConf.blockPointersMap, terrainMap.width, terrainMap.height),
             emergeMap: this.checkMap(levelConf.emergeMap, terrainMap.width, terrainMap.height),
             nerpScript: NerpParser.parse(levelConf.nerpFile),
-            nerpMessages: ResourceManager.getResource(levelConf.nerpMessageFile),
+            nerpMessages: ResourceManager.getResource(levelConf.nerpMessageFile) ?? [],
             objectiveTextCfg: levelConf.objectiveTextCfg,
             objectiveImage640x480: levelConf.objectiveImage640x480,
             priorities: levelConf.priorities,

@@ -2,7 +2,6 @@ import { BitmapFontData } from '../core/BitmapFont'
 import { getFilename } from '../core/Util'
 import { FlhParser } from './fileparser/FlhParser'
 import { BitmapWorkerPool } from '../worker/BitmapWorkerPool'
-import { NerpMsgParser } from './fileparser/NerpMsgParser'
 import { ObjectiveTextParser } from './fileparser/ObjectiveTextParser'
 import { WadParser } from './fileparser/WadParser'
 import { AssetRegistry } from './AssetRegistry'
@@ -89,12 +88,6 @@ export class AssetLoader {
         const nrnName = name.replace(/\.npl$/, '.nrn')
         const script = this.vfs.getFile(nrnName).toText()
         callback([name, nrnName], script)
-    }
-
-    loadNerpMsg(name: string, callback: (assetNames: string[], obj: any) => any) {
-        const wadData = this.vfs.getFile(name).toText(true)
-        const result = NerpMsgParser.parseNerpMessages(wadData)
-        callback([name], result)
     }
 
     loadObjectiveTexts(name: string, callback: (assetNames: string[], obj: any) => any) {
