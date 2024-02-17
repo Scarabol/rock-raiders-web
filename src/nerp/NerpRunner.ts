@@ -48,7 +48,7 @@ export class NerpRunner {
 
     constructor(readonly worldMgr: WorldManager, readonly script: NerpScript, readonly messages: NerpMessage[]) {
         NerpRunner.timeAddedAfterSample = 0
-        this.checkSyntax()
+        this.script.statements.forEach((statement) => this.checkSyntax(statement))
         if (NerpRunner.debug) console.log(`Executing following script\n${this.script.lines.join('\n')}`)
         EventBroker.subscribe(EventKey.NERP_MESSAGE_NEXT, () => {
             this.currentMessage = -1
@@ -630,12 +630,24 @@ export class NerpRunner {
         }
     }
 
-    checkSyntax() {
-        this.script.statements.forEach((statement) => {
-            const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.equalsIgnoreCase(statement.invoke))
-            if (!statement.label && !statement.jump && !this[memberName] && statement.invoke !== 'Stop' && !statement.invoke?.startsWith('AddR') && !statement.invoke?.startsWith('SubR') && !statement.invoke?.startsWith('SetR') && !statement.invoke?.startsWith('SetTimer')) {
-                console.warn(`Unknown statement ${statement.invoke} found, NERP execution may fail!`)
-            }
-        })
+    private checkSyntax(statement: any) {
+        const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.equalsIgnoreCase(statement.invoke))
+        if (!statement.label &&
+            !statement.jump &&
+            !statement.comparator &&
+            isNaN(statement) &&
+            statement.invoke !== 'Stop' &&
+            !statement.invoke?.startsWith('GetR') &&
+            !statement.invoke?.startsWith('AddR') &&
+            !statement.invoke?.startsWith('SubR') &&
+            !statement.invoke?.startsWith('SetR') &&
+            !statement.invoke?.startsWith('SetTimer') &&
+            !this[memberName]
+        ) {
+            console.warn(`Unexpected invocation "${statement.invoke}" found, NERP execution may fail!`, statement)
+        }
+        if (Array.isArray(statement.args)) {
+            statement.args.forEach((arg: any) => this.checkSyntax(arg))
+        }
     }
 }
