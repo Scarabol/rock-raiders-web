@@ -334,6 +334,11 @@ export class NerpRunner {
         if (!arrowDisabled) this.messageTimerMs = Infinity
     }
 
+    advanceMessage(): void {
+        // TODO Only used in tutorials
+        console.warn('NERP function "advanceMessage" not yet implemented')
+    }
+
     setRockMonsterAtTutorial(tutoBlockId: number) {
         const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((t) => {
@@ -391,6 +396,16 @@ export class NerpRunner {
         return targetBlock.discovered && targetBlock.isPath() ? 1 : 0
     }
 
+    getTutorialBlockClicks(tutoBlockId: number): number {
+        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId}`)
+        return GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0)
+    }
+
+    setTutorialBlockClicks(tutoBlockId: number) {
+        GameState.tutoBlockClicks.set(tutoBlockId, 0)
+    }
+
     getUnitAtBlock(tutoBlockId: number): number {
         const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         return [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles].count((e): boolean => {
@@ -417,8 +432,7 @@ export class NerpRunner {
     }
 
     disallowAll() {
-        // TODO Only used in tutorials, prevent user from clicking anywhere on GUI or in scene
-        if (VERBOSE) console.warn('NERP function "disallowAll" not yet implemented')
+        GameState.priorityList.disallowAll()
     }
 
     getPoweredPowerStationsBuilt() {
@@ -436,6 +450,13 @@ export class NerpRunner {
             const surface = this.worldMgr.ecs.getComponents(entity).get(PositionComponent).surface
             return tutoBlocks.some((tutoBlock) => surface === tutoBlock)
         })
+    }
+
+    getSelectedRecordObject(): number {
+        return this.worldMgr.entityMgr.recordedEntities.find((entity) => {
+            return !![...this.worldMgr.entityMgr.selection.raiders, ...this.worldMgr.entityMgr.selection.vehicles]
+                .find((e) => e.entity === entity)
+        }) ?? 0
     }
 
     getHiddenObjectsFound() {
@@ -485,11 +506,6 @@ export class NerpRunner {
     clickOnlyMap(...args: any[]) {
         // TODO Only used in tutorials
         console.warn('NERP function "clickOnlyMap" not yet implemented', args)
-    }
-
-    setTutorialBlockClicks(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "setTutorialBlockClicks" not yet implemented', args)
     }
 
     setTutorialCrystals(...args: any[]) {

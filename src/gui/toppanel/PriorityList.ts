@@ -48,4 +48,9 @@ export class PriorityList {
         const priority = this.current.find((p) => p.key === priorityIdentifier)
         return !priority || priority.enabled
     }
+
+    disallowAll(): void {
+        this.current.forEach((p) => p.enabled = false)
+        EventBroker.publish(new UpdatePriorities(this.current))
+    }
 }

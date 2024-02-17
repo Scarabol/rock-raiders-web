@@ -142,6 +142,13 @@ export class GameLayer extends ScreenLayer {
                     console.warn('Double selection handling not yet implemented') // TODO Implement laser shooting
                 } else if (this.worldMgr.entityMgr.selection.raiders.length > 0 || this.worldMgr.entityMgr.selection.vehicles.length > 0) {
                     const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
+                    if (cursorTarget.surface) {
+                        this.worldMgr.sceneMgr.terrain.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
+                            if (surfaces.includes(cursorTarget.surface)) {
+                                GameState.tutoBlockClicks.set(tutoBlockId, GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0) + 1)
+                            }
+                        })
+                    }
                     if (cursorTarget.vehicle) {
                         const selectedRaiders = this.worldMgr.entityMgr.selection.raiders
                         if (selectedRaiders.length > 0 && !cursorTarget.vehicle.driver) {
@@ -203,6 +210,13 @@ export class GameLayer extends ScreenLayer {
                     const selection = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y))
                     this.worldMgr.entityMgr.selection.set(selection)
                     EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
+                    if (selection.surface) {
+                        this.worldMgr.sceneMgr.terrain.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
+                            if (surfaces.includes(selection.surface)) {
+                                GameState.tutoBlockClicks.set(tutoBlockId, GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0) + 1)
+                            }
+                        })
+                    }
                 }
             } else if (event.pointerType === 'mouse') {
                 const r1x = (this.pointerDown.x / this.canvas.width) * 2 - 1
