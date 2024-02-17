@@ -46,7 +46,7 @@ export class WorldManager {
     nerpRunner: NerpRunner = null
     powerGrid: PowerGrid
     gameLoopInterval: NodeJS.Timeout = null
-    elapsedGameTimeMs: number = 0
+    gameTimeMs: number = 0
     firstUnpause: boolean = true
     gameSpeedMultiplier: number = 1
 
@@ -103,7 +103,7 @@ export class WorldManager {
     setup(levelConf: LevelConfData) {
         this.ecs.reset()
         this.jobSupervisor.reset()
-        this.elapsedGameTimeMs = 0
+        this.gameTimeMs = 0
         // load nerp script
         if (levelConf.nerpScript) this.nerpRunner = new NerpRunner(this, levelConf.nerpScript, levelConf.nerpMessages)
         this.firstUnpause = true
@@ -125,16 +125,13 @@ export class WorldManager {
     }
 
     private mainLoop() {
-        this.update(UPDATE_INTERVAL_MS * this.gameSpeedMultiplier)
-    }
-
-    private update(elapsedMs: number) {
-        this.elapsedGameTimeMs += elapsedMs
-        this.ecs.update(elapsedMs)
-        updateSafe(this.entityMgr, elapsedMs)
-        updateSafe(this.sceneMgr, elapsedMs)
-        updateSafe(this.jobSupervisor, elapsedMs)
-        updateSafe(this.nerpRunner, elapsedMs)
+        const elapsedGameTimeMs = UPDATE_INTERVAL_MS * this.gameSpeedMultiplier
+        this.gameTimeMs += elapsedGameTimeMs
+        this.ecs.update(elapsedGameTimeMs)
+        updateSafe(this.entityMgr, elapsedGameTimeMs)
+        updateSafe(this.sceneMgr, elapsedGameTimeMs)
+        updateSafe(this.jobSupervisor, elapsedGameTimeMs)
+        updateSafe(this.nerpRunner, UPDATE_INTERVAL_MS)
     }
 
     async teleportEnd(): Promise<void> {
@@ -150,5 +147,9 @@ export class WorldManager {
             else if (item.entityType === EntityType.BRICK) GameState.numBrick++
             EventBroker.publish(new MaterialAmountChanged())
         }
+    }
+
+    get gameTimeSeconds(): number {
+        return Math.round(this.gameTimeMs / 1000)
     }
 }
