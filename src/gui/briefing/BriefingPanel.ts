@@ -4,10 +4,11 @@ import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { BriefingPanelCfg } from './BriefingPanelCfg'
-import { SetSpaceToContinueEvent, ShowMissionBriefingEvent } from '../../event/LocalEvents'
+import { SetSpaceToContinueEvent, ShowMissionAdvisorEvent, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 import { SoundManager } from '../../audio/SoundManager'
+import { EventBroker } from '../../event/EventBroker'
 
 export class BriefingPanel extends Panel {
     cfg: BriefingPanelCfg = null
@@ -89,7 +90,10 @@ export class BriefingPanel extends Panel {
     show() {
         super.show()
         this.setParagraph(0)
-        if (this.objectiveSfxName) this.objectiveSfx = SoundManager.playSound(this.objectiveSfxName, false)
+        if (this.objectiveSfxName) {
+            this.objectiveSfx = SoundManager.playSound(this.objectiveSfxName, false)
+            this.objectiveSfx.addEventListener('ended', () => EventBroker.publish(new ShowMissionAdvisorEvent(false)))
+        }
         this.btnNext.hidden = this.paragraph >= this.objectiveParagraphs.length - 1
         this.btnBack.hidden = this.paragraph < 1
         this.publishEvent(new SetSpaceToContinueEvent(true))
@@ -98,6 +102,7 @@ export class BriefingPanel extends Panel {
 
     hide() {
         super.hide()
+        this.objectiveSfx?.stop()
         this.publishEvent(new SetSpaceToContinueEvent(false))
         this.publishEvent(new ShowMissionBriefingEvent(false))
     }

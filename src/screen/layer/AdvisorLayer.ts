@@ -3,7 +3,7 @@ import { AmbientLight, Camera, DoubleSide, PerspectiveCamera, Scene } from 'thre
 import { CAMERA_FOV, NATIVE_UPDATE_INTERVAL } from '../../params'
 import { AnimationLoopGroup } from '../../scene/AnimationLoopGroup'
 import { EventKey } from '../../event/EventKeyEnum'
-import { ShowMissionBriefingEvent } from '../../event/LocalEvents'
+import { ShowMissionAdvisorEvent, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseRenderer } from '../BaseRenderer'
@@ -46,6 +46,13 @@ export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeL
         this.scene.add(this.group)
         EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
             if (event.isShowing) {
+                this.startRendering()
+            } else {
+                this.group.interruptLoop()
+            }
+        })
+        EventBroker.subscribe(EventKey.SHOW_MISSION_ADVISOR, (event: ShowMissionAdvisorEvent) => {
+            if (event.showAdvisor) {
                 this.startRendering()
             } else {
                 this.group.interruptLoop()

@@ -7,6 +7,7 @@ export enum EventKey {
     RAIDER_TRAINING_COMPLETE = 'raider-training-complete',
     VEHICLE_UPGRADE_COMPLETE = 'vehicle-upgrade-complete',
     SHOW_MISSION_BRIEFING = 'show-mission-briefing',
+    SHOW_MISSION_ADVISOR = 'show-mission-advisor',
     SHOW_GAME_RESULT = 'show-game-result',
     SHOW_OPTIONS = 'show-options',
     SET_SPACE_TO_CONTINUE = 'set-space-to-continue',

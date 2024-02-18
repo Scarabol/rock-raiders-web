@@ -200,6 +200,12 @@ export class ShowMissionBriefingEvent extends BaseEvent {
     }
 }
 
+export class ShowMissionAdvisorEvent extends BaseEvent {
+    constructor(readonly showAdvisor: boolean) {
+        super(EventKey.SHOW_MISSION_ADVISOR)
+    }
+}
+
 export class ShowGameResultEvent extends BaseEvent {
     constructor(readonly result?: GameResult) {
         super(EventKey.SHOW_GAME_RESULT)
