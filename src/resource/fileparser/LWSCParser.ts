@@ -149,7 +149,8 @@ export class LWSCParser {
                 currentObject.lowerName = nameParts[0].toLowerCase()
                 if (currentObject.lowerName === 'sfx') {
                     currentObject.sfxName = nameParts[1] || null
-                    const [sfxFrameStart, sfxFrameEnd] = nameParts.slice(2).map((n) => parseInt(n, 10))
+                    const sfxFrameStart = nameParts[2] ? parseInt(nameParts[2], 10) : 0
+                    const sfxFrameEnd = nameParts[3] ? parseInt(nameParts[3], 10) : this.numOfKeyframes
                     const times = []
                     const sfxNames = []
                     for (let c = 0; c < this.numOfKeyframes; c++) {
