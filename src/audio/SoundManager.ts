@@ -48,10 +48,11 @@ export class SoundManager {
             source.connect(SoundManager.setupSfxAudioTarget())
             source.start()
             if (isVoice) {
-                const blockVoiceLinesMs = Math.round(audioBuffer.duration * 1000 + NerpRunner.timeAddedAfterSample)
-                setTimeout(() => {
-                    this.skipVoiceLines = false
-                }, blockVoiceLinesMs)
+                source.addEventListener('ended', () => {
+                    setTimeout(() => {
+                        this.skipVoiceLines = false
+                    }, NerpRunner.timeAddedAfterSample)
+                })
             }
             return source
         } catch (e) {
