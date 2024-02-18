@@ -12,12 +12,12 @@ export class BaseRenderer {
 
     startRendering(scene: Scene, camera: Camera) {
         this.renderInterval = clearIntervalSafe(this.renderInterval)
-        this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
         this.renderInterval = setInterval(() => {
             if (!this.renderer) {
                 this.renderer = new WebGLRenderer({canvas: this.canvas, alpha: true})
                 this.renderer.setSize(this.canvas.width, this.canvas.height)
             }
+            this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
             this.lastAnimationRequest = requestAnimationFrame(() => {
                 this.renderer.render(scene, camera)
             })

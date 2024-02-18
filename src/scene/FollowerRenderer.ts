@@ -1,5 +1,5 @@
 import { Camera, PerspectiveCamera, Scene, Vector2, WebGLRenderer } from 'three'
-import { clearIntervalSafe } from '../core/Util'
+import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
 import { TILESIZE } from '../params'
 import { EventKey } from '../event/EventKeyEnum'
 import { FollowerSetCanvasEvent, FollowerSetLookAtEvent } from '../event/LocalEvents'
@@ -20,6 +20,7 @@ export class FollowerRenderer extends WebGLRenderer {
     trackEntity: GameEntity
     started: boolean = false
     renderInterval: NodeJS.Timeout
+    lastAnimationRequest: number
     angle: number = 0
 
     constructor(readonly canvas: HTMLCanvasElement, readonly scene: Scene, readonly ecs: ECS) {
@@ -65,7 +66,8 @@ export class FollowerRenderer extends WebGLRenderer {
             const off = new Vector2(TILESIZE, 0).rotateAround(new Vector2(0, 0), this.angle)
             this.camera.position.set(lookAtPosition.x + off.x, lookAtPosition.y + TILESIZE * 1.333, lookAtPosition.z + off.y)
             this.camera.lookAt(lookAtPosition)
-            requestAnimationFrame(() => this.composer.render())
+            this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
+            this.lastAnimationRequest = requestAnimationFrame(() => this.composer.render())
         }, 1000 / FollowerRenderer.MAX_FPS)
         EventBroker.publish(new FollowerSetCanvasEvent(this.canvas))
     }

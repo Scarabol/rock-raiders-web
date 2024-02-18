@@ -1,4 +1,5 @@
 import { SpriteContext } from '../core/Sprite'
+import { cancelAnimationFrameSafe } from '../core/Util'
 
 type AnimationFrameRedrawCallback = (context: SpriteContext) => any
 
@@ -20,7 +21,7 @@ export class AnimationFrame {
     notifyRedraw() {
         const callback = this.redrawCallback
         if (!callback) return
-        if (this.lastAnimationRequest) cancelAnimationFrame(this.lastAnimationRequest)
+        this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
         this.lastAnimationRequest = requestAnimationFrame(() => {
             callback(this.context)
             callback(this.readbackContext)

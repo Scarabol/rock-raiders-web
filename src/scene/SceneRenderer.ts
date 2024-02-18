@@ -23,8 +23,8 @@ export class SceneRenderer extends WebGLRenderer {
         return new Promise<void>((resolve) => {
             this.debugHelper.show()
             this.renderInterval = clearIntervalSafe(this.renderInterval)
-            this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
             this.renderInterval = setInterval(() => {
+                this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
                 this.lastAnimationRequest = requestAnimationFrame(() => {
                     this.debugHelper.onRenderStart()
                     this.render(scene, this.camera)
