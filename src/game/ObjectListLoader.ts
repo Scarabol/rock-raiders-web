@@ -74,7 +74,6 @@ export class ObjectListLoader {
                 this.worldMgr.sceneMgr.cameraBird.position.copy(cameraPos)
                 this.worldMgr.sceneMgr.birdViewControls.target.copy(this.worldMgr.sceneMgr.getFloorPosition(worldPos))
                 this.worldMgr.sceneMgr.birdViewControls.update()
-                this.worldMgr.sceneMgr.setCursorFloorPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
                 break
             case EntityType.PILOT:
                 const raider = this.spawnRaider(worldPos, headingRad)

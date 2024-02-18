@@ -85,6 +85,7 @@ export class SceneManager implements Updatable {
 
         this.torchLightCursor = new TorchLightCursor()
         this.scene.add(this.torchLightCursor)
+        this.birdViewControls.addEventListener('change', this.torchLightCursor.changeListener)
 
         this.buildMarker = new BuildPlacementMarker(this.worldMgr)
         this.scene.add(this.buildMarker.group)
@@ -158,6 +159,7 @@ export class SceneManager implements Updatable {
     }
 
     setCursorFloorPosition(position: Vector2) {
+        this.birdViewControls.removeEventListener('change', this.torchLightCursor.changeListener) // XXX Actually only required once
         this.torchLightCursor.position.copy(this.terrain.getFloorPosition(position))
     }
 

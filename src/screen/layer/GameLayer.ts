@@ -98,8 +98,7 @@ export class GameLayer extends ScreenLayer {
         this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
         const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
         EventBroker.publish(new ChangeCursor(this.determineCursor(cursorTarget)))
-        // TODO Do not move torch light cursor on touch (mobile) events
-        if (cursorTarget.intersectionPoint) this.worldMgr.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
+        if (event.pointerType === 'mouse' && cursorTarget.intersectionPoint) this.worldMgr.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
         this.publishTooltipEvent(cursorTarget)
         this.worldMgr.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
         const doubleSelection = this.worldMgr.entityMgr.selection.doubleSelect

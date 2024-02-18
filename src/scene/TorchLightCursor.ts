@@ -1,10 +1,14 @@
-import { Object3D, PointLight, SpotLight } from 'three'
+import { Object3D, PointLight, SpotLight, Vector3 } from 'three'
 import { EventKey } from '../event/EventKeyEnum'
 import { ToggleAlarmEvent } from '../event/WorldEvents'
 import { TILESIZE } from '../params'
 import { EventBroker } from '../event/EventBroker'
 
 export class TorchLightCursor extends Object3D {
+    readonly changeListener: (event: { target: { target: Vector3 } }) => void = (e) => {
+        this.position.copy(e.target.target)
+    }
+
     alarmLights: SpotLight[] = []
 
     constructor() {
