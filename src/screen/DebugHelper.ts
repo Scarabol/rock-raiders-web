@@ -30,6 +30,16 @@ export class DebugHelper {
         fpsCanvas.style.scale = '1'
         fpsCanvas.style.marginLeft = '-80px'
         this.context = fpsCanvas.getContext('2d')
+        const copyToClipboard = DebugHelper.element.appendChild(document.createElement('button'))
+        copyToClipboard.innerText = 'Copy to clipboard'
+        copyToClipboard.style.width = '120px'
+        copyToClipboard.style.height = '50px'
+        copyToClipboard.style.position = 'absolute'
+        copyToClipboard.style.top = '0'
+        copyToClipboard.style.right = '0'
+        copyToClipboard.onclick = () => {
+            navigator.clipboard.writeText(Array.from(DebugHelper.element.children).map((e) => (e as HTMLElement).innerText).join('\n')).then()
+        }
     }
 
     static intersectConsoleLogging() {
@@ -52,13 +62,13 @@ export class DebugHelper {
 
     static addDebugMessage(message: any, optionalParams: any[], color: string) {
         try {
-            const msg = DebugHelper.element.appendChild(document.createElement('DIV'))
+            if (DebugHelper.element.children.length > 100) DebugHelper.element.removeChild(DebugHelper.element.lastChild)
+            const msg = DebugHelper.element.insertBefore(document.createElement('DIV'), DebugHelper.element.firstChild)
             msg.innerText = message
             optionalParams.forEach((p) => msg.innerText += `\n${JSON.stringify(p)}`)
             msg.style.padding = '0.1em'
             msg.style.color = color
             msg.style.userSelect = 'none'
-            msg.scrollIntoView()
         } catch (e) {
             // do nothing to avoid circular calls
         }
