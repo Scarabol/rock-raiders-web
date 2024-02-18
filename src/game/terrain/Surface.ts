@@ -454,7 +454,7 @@ export class Surface {
     }
 
     isPath(): boolean {
-        return this.surfaceType === SurfaceType.POWER_PATH || (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && !!this.building)
+        return this.surfaceType === SurfaceType.POWER_PATH || this.surfaceType === SurfaceType.POWER_PATH_BUILDING
     }
 
     isWalkable(): boolean {

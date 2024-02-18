@@ -235,7 +235,7 @@ class ResourceManagerTextureLoader extends LWOBTextureLoader {
             return ResourceManager.getTexturesBySequenceName(this.meshPath + match[1])
         } else {
             const texture = ResourceManager.getMeshTexture(textureFilename, this.meshPath)
-            if (!texture && VERBOSE) console.log(`Could not get mesh texture "${textureFilename}" from mesh path '${this.meshPath}'`)
+            if (!texture && VERBOSE) console.warn(`Could not get mesh texture "${textureFilename}" from mesh path '${this.meshPath}'`)
             return texture ? [texture] : []
         }
     }

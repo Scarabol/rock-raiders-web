@@ -54,8 +54,8 @@ export class ScreenMaster {
             setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: ' ', key: ' '})), 69)
         })
         this.setupButton('button-debug', () => {
-            const buttons = Array.from(document.getElementsByClassName('game-debug-layer')) as HTMLElement[]
-            buttons.forEach((btn) => btn.style.display = btn.style.display === 'none' ? 'block' : 'none')
+            const debugLayers = Array.from(document.getElementsByClassName('game-debug-layer')) as HTMLElement[]
+            debugLayers.forEach((elem) => elem.style.display = elem.style.display === 'none' ? 'block' : 'none')
         })
         this.setupButton('button-screenshot', () => {
             this.saveScreenshot()

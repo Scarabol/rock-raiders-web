@@ -58,7 +58,7 @@ export class DebugHelper {
             msg.style.padding = '0.1em'
             msg.style.color = color
             msg.style.userSelect = 'none'
-            DebugHelper.element.scrollTop = DebugHelper.element.scrollHeight
+            msg.scrollIntoView()
         } catch (e) {
             // do nothing to avoid circular calls
         }
