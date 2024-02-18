@@ -6,7 +6,6 @@
 
 import { Euler, KeyframeTrack, NumberKeyframeTrack, Quaternion, QuaternionKeyframeTrack, StringKeyframeTrack, Vector3, VectorKeyframeTrack } from 'three'
 import { degToRad } from 'three/src/math/MathUtils'
-import { Sample } from '../../audio/Sample'
 import { getFilename } from '../../core/Util'
 import { VERBOSE } from '../../params'
 
@@ -147,8 +146,9 @@ export class LWSCParser {
             } else if (key === 'AddNullObject') {
                 const nameParts = value.split(',')
                 currentObject.lowerName = nameParts[0].toLowerCase()
-                if (currentObject.lowerName === 'sfx') {
-                    currentObject.sfxName = nameParts[1] || null
+                if (currentObject.lowerName === 'sfx' || currentObject.lowerName === 'snd') {
+                    currentObject.sfxName = nameParts[1]
+                    if (currentObject.lowerName === 'snd') currentObject.sfxName = currentObject.sfxName.toLowerCase().replace('sfx_', 'snd_')
                     const sfxFrameStart = nameParts[2] ? parseInt(nameParts[2], 10) : 0
                     const sfxFrameEnd = nameParts[3] ? parseInt(nameParts[3], 10) : this.numOfKeyframes
                     const times = []
@@ -158,9 +158,6 @@ export class LWSCParser {
                         sfxNames[c] = (sfxFrameStart <= c && c < sfxFrameEnd) ? currentObject.sfxName : ''
                     }
                     currentObject.keyframeTracks.push(new StringKeyframeTrack('.userData[sfxNameAnimation]', times, sfxNames))
-                } else if (currentObject.lowerName === 'snd' && nameParts[1].equalsIgnoreCase('SFX_LANDSLIDE')) {
-                    currentObject.sfxName = Sample[Sample.SFX_FallIn]
-                    // TODO what about keyframe tracks here for SND?
                 } else if (currentObject.lowerName.startsWith('*') || currentObject.lowerName.startsWith(';')) {
                     if (VERBOSE) console.warn(`Unexpected sfx object name ${currentObject.lowerName}`)
                 }

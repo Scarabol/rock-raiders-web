@@ -1,4 +1,4 @@
-import { PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
+import { Raycaster, Vector2, Vector3 } from 'three'
 import { Sample } from '../../audio/Sample'
 import { SoundManager } from '../../audio/SoundManager'
 import { DeselectAll, SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
@@ -234,7 +234,6 @@ export class Surface {
         }
         // update meshes and wallType
         this.terrain.updateSurfaceMeshes()
-        this.playPositionalSample(Sample.SFX_RockBreak)
     }
 
     private dropContainedMaterials(droppedOre: number, droppedCrystals: number) {
@@ -599,10 +598,6 @@ export class Surface {
         this.updateJobColor()
         EventBroker.publish(new JobCreateEvent(this.clearRubbleJob))
         return this.clearRubbleJob
-    }
-
-    playPositionalSample(sample: Sample): PositionalAudio {
-        return this.worldMgr.sceneMgr.addPositionalAudio(this.mesh, Sample[sample], true, false)
     }
 
     isBlockedByVehicle() {

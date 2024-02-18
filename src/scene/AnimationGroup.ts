@@ -39,7 +39,7 @@ export class AnimationGroup extends Group implements Updatable {
         lwscData.objects.forEach((obj) => {
             let mesh: SceneMesh
             if (obj.isNull) {
-                if (obj.lowerName === 'sfx') {
+                if (obj.lowerName === 'sfx' || obj.lowerName === 'snd') {
                     mesh = new SceneAudioMesh()
                 } else {
                     mesh = new SceneMesh()
