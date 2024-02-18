@@ -10,7 +10,7 @@ import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpMessage, NerpScript } from './NerpScript'
-import { NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
+import { DEV_MODE, NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
 import { GameResultEvent, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
@@ -323,7 +323,7 @@ export class NerpRunner {
             return
         }
         let sampleLength = this.timeForNoSample / 1000
-        if (msg.snd) {
+        if (!DEV_MODE && msg.snd) {
             this.messageSfx = SoundManager.playSound(msg.snd, true)
             sampleLength = this.messageSfx?.buffer?.duration || sampleLength
         }
