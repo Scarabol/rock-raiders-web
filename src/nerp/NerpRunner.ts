@@ -58,6 +58,9 @@ export class NerpRunner {
             this.messageSfx = null
             this.execute()
         })
+        EventBroker.subscribe(EventKey.GAME_RESULT_STATE, () => {
+            this.halted = true
+        })
     }
 
     update(elapsedMs: number) {
@@ -159,7 +162,6 @@ export class NerpRunner {
      */
     setLevelCompleted() {
         console.log('Nerp runner marks level as complete')
-        this.halted = true
         EventBroker.publish(new GameResultEvent(GameResultState.COMPLETE))
     }
 
@@ -168,7 +170,6 @@ export class NerpRunner {
      */
     setLevelFail() {
         console.log(`NerpRunner marks level as failed; at line: ${this.script.lines[this.programCounter]}`)
-        this.halted = true
         EventBroker.publish(new GameResultEvent(GameResultState.FAILED))
     }
 
