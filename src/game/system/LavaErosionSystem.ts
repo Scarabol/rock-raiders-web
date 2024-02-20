@@ -5,11 +5,29 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { LevelSelectedEvent } from '../../event/WorldEvents'
 import { EventBroker } from '../../event/EventBroker'
 
+/**
+ * Only one new surface erodes at a time,
+ * but multiple surfaces with erosion can progress
+ * then their progress appears grouped
+ *
+ * In Level10 (120, 20, 500) a surface with erosion map value 7 progress each 48 seconds, and new took 45 seconds
+ * In Level10 (120, 20, 500) a surface with erosion map value 9 progress each 25 seconds, but new take 45 seconds
+ *
+ * In Level18 (120, 30, 600) a surface with erosion map value 2 progress each 25 seconds
+ * In Level18 (120, 30, 600) a surface with erosion map value 6 progress each 37 seconds
+ *
+ * In Level21 ( 60,  7, 300) a surface with erosion map value 5 progress each 25 seconds
+ *
+ * In Level22 ( 20, 40, 300) a surface with erosion map value 5 progress each 20 seconds
+ *
+ * In Level24 ( 40,  5, 300) a surface with erosion map value 9 progress each  6 seconds, but new take 20 seconds
+ */
 export class LavaErosionSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([LavaErosionComponent])
     erodeTriggerTimeMs: number = 0
     increaseErosionDelayMs: number = 0
-    erosionStartDelayTimeMs: number = 0
+    powerPathLockTimeMs: number = 0
+    triggerNewErosionTimer: number = 0
 
     static readonly erodibleSurfaceTypes: SurfaceType[] = [
         SurfaceType.GROUND, SurfaceType.POWER_PATH, SurfaceType.POWER_PATH_BUILDING_SITE,
@@ -22,29 +40,31 @@ export class LavaErosionSystem extends AbstractGameSystem {
         EventBroker.subscribe(EventKey.LEVEL_SELECTED, (levelSelectedEvent: LevelSelectedEvent) => {
             this.erodeTriggerTimeMs = levelSelectedEvent.levelConf.erodeTriggerTimeMs
             this.increaseErosionDelayMs = levelSelectedEvent.levelConf.erodeErodeTimeMs
-            this.erosionStartDelayTimeMs = levelSelectedEvent.levelConf.erodeLockTimeMs
+            this.powerPathLockTimeMs = levelSelectedEvent.levelConf.erodeLockTimeMs
+            this.triggerNewErosionTimer = 0
         })
     }
 
     update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+        this.triggerNewErosionTimer += elapsedMs
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)
                 const erosionComponent = components.get(LavaErosionComponent)
                 if (erosionComponent.surface.surfaceType === SurfaceType.LAVA5) {
                     this.ecs.removeComponent(entity, LavaErosionComponent)
-                    continue
-                } else if (!erosionComponent.surface.discovered) {
-                    continue
-                } else if (!LavaErosionSystem.erodibleSurfaceTypes.includes(erosionComponent.surface.surfaceType)) {
-                    continue
-                } else if (!erosionComponent.isSelfEroding && !erosionComponent.surface.neighbors.some((s) => s.surfaceType === SurfaceType.LAVA5)) {
-                    continue
-                }
-                erosionComponent.erosionTimer += elapsedMs
-                while (erosionComponent.erosionTimer > this.increaseErosionDelayMs + (erosionComponent.surface.surfaceType.hasErosion ? 0 : this.erosionStartDelayTimeMs)) {
-                    erosionComponent.increaseErosionLevel(true)
-                    erosionComponent.erosionTimer -= this.increaseErosionDelayMs
+                } else if (erosionComponent.surface.discovered && LavaErosionSystem.erodibleSurfaceTypes.includes(erosionComponent.surface.surfaceType)) {
+                    if (erosionComponent.surface.surfaceType.hasErosion) {
+                        erosionComponent.erosionTimer += elapsedMs
+                        const erosionDelayMs = erosionComponent.erosionTimeMultiplier * this.increaseErosionDelayMs
+                        if (erosionComponent.erosionTimer > erosionDelayMs) {
+                            erosionComponent.erosionTimer -= erosionDelayMs
+                            erosionComponent.increaseErosionLevel(true)
+                        }
+                    } else if (this.triggerNewErosionTimer > (this.erodeTriggerTimeMs + (erosionComponent.surface.isPath() ? this.powerPathLockTimeMs : 0)) && erosionComponent.canStartNewErosion()) {
+                        this.triggerNewErosionTimer -= this.erodeTriggerTimeMs
+                        erosionComponent.increaseErosionLevel(true)
+                    }
                 }
             } catch (e) {
                 console.error(e)

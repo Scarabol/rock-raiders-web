@@ -4,18 +4,22 @@ import { SurfaceType } from '../terrain/SurfaceType'
 import { GameConfig } from '../../cfg/GameConfig'
 
 export class LavaErosionComponent extends AbstractGameComponent {
-    readonly isSelfEroding: boolean = false
+    readonly erosionTimeMultiplier: number
+    readonly isSelfEroding: boolean
     erosionTimer: number = 0
 
     constructor(readonly surface: Surface, readonly erosionLevel: number) {
         super()
+        this.erosionTimeMultiplier = 6 - Math.floor((erosionLevel + 1) / 2)
         this.isSelfEroding = this.erosionLevel % 2 === 0
     }
 
+    canStartNewErosion(): boolean {
+        return this.isSelfEroding || this.surface.neighbors.some((s) => s.surfaceType === SurfaceType.LAVA5)
+    }
+
     increaseErosionLevel(addSmokeEffect: boolean) {
-        if (!this.surface.surfaceType.floor ||
-            !this.surface.discovered ||
-            Math.random() * 10 >= this.erosionLevel) return
+        if (!this.surface.surfaceType.floor || !this.surface.discovered) return
         let erosionSurfaceType: SurfaceType = SurfaceType.LAVA1
         if (this.surface.surfaceType === SurfaceType.LAVA1) erosionSurfaceType = SurfaceType.LAVA2
         else if (this.surface.surfaceType === SurfaceType.LAVA2) erosionSurfaceType = SurfaceType.LAVA3

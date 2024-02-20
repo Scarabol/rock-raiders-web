@@ -130,7 +130,7 @@ export class TerrainLoader {
                     const lavaErosionComponent = new LavaErosionComponent(targetSurface, erosionLevel)
                     worldMgr.ecs.addComponent(targetSurface.entity, lavaErosionComponent)
                     if (lavaErosionComponent.isSelfEroding) {
-                        for (let c = 0; c < 5; c++) {
+                        for (let c = 0; c < Math.randomInclusive(1, 5); c++) {
                             lavaErosionComponent.increaseErosionLevel(false)
                         }
                     }
