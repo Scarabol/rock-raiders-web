@@ -33,7 +33,6 @@ export class PriorityListPanel extends Panel {
         }
 
         this.prioPositions = cfgPos.positionByIndex
-        this.prioByName.set(PriorityIdentifier.TRAIN, this.addChild(new Button(this, cfg.aiPriorityTrain)))
         this.prioByName.set(PriorityIdentifier.GET_IN, this.addChild(new Button(this, cfg.aiPriorityGetIn)))
         this.prioByName.set(PriorityIdentifier.CRYSTAL, this.addChild(new Button(this, cfg.aiPriorityCrystal)))
         this.prioByName.set(PriorityIdentifier.ORE, this.addChild(new Button(this, cfg.aiPriorityOre)))
