@@ -43,13 +43,13 @@ export class MaterialSpawner {
                 material.sceneEntity.add(ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Ore))
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.ore))
                 material.priorityIdentifier = PriorityIdentifier.ORE
-                this.addTooltip(worldMgr, material.entity, material.entityType, 0)
+                this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
             case EntityType.BRICK:
                 material.sceneEntity.add(ResourceManager.getLwoModel(GameConfig.instance.miscObjects.ProcessedOre))
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.processedOre))
                 material.priorityIdentifier = PriorityIdentifier.ORE
-                this.addTooltip(worldMgr, material.entity, material.entityType, 0)
+                this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
             case EntityType.CRYSTAL:
                 const poweredMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Crystal)
@@ -60,7 +60,7 @@ export class MaterialSpawner {
                 material.sceneEntity.add(poweredMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.powerCrystal))
                 material.priorityIdentifier = PriorityIdentifier.CRYSTAL
-                this.addTooltip(worldMgr, material.entity, material.entityType, 0)
+                this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
             case EntityType.DEPLETED_CRYSTAL:
                 const unpoweredMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Crystal)
@@ -71,7 +71,7 @@ export class MaterialSpawner {
                 material.sceneEntity.add(unpoweredMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.powerCrystal))
                 material.priorityIdentifier = PriorityIdentifier.RECHARGE
-                this.addTooltip(worldMgr, material.entity, EntityType.CRYSTAL, 0)
+                this.addTooltip(worldMgr, material.entity, EntityType.CRYSTAL, () => 0)
                 break
             case EntityType.BARRIER:
                 material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.Barrier))
@@ -101,7 +101,7 @@ export class MaterialSpawner {
                     material.targetSurface.fenceRequested = false
                     material.worldMgr.ecs.addComponent(material.entity, new BeamUpComponent(material))
                 }))
-                this.addTooltip(worldMgr, material.entity, material.entityType, 100)
+                this.addTooltip(worldMgr, material.entity, material.entityType, () => healthComponent.health)
                 break
         }
         material.sceneEntity.addToScene(worldMgr.sceneMgr, worldPos, headingRad)
@@ -117,12 +117,12 @@ export class MaterialSpawner {
         return material
     }
 
-    static addTooltip(worldMgr: WorldManager, entity: GameEntity, entityType: EntityType, energy: number) {
+    static addTooltip(worldMgr: WorldManager, entity: GameEntity, entityType: EntityType, energyCallback: () => number) {
         const objectKey = entityType.toLowerCase()
         const objectName = GameConfig.instance.objectNamesCfg.get(objectKey)
         const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey)
         if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, sfxKey, () => {
-            return TooltipSpriteBuilder.getTooltipSprite(objectName, energy)
+            return TooltipSpriteBuilder.getTooltipSprite(objectName, energyCallback())
         }))
     }
 }
