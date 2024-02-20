@@ -177,10 +177,10 @@ export class GameLayer extends ScreenLayer {
                     } else if (cursorTarget.surface) {
                         if (this.worldMgr.entityMgr.selection.canDrill(cursorTarget.surface)) {
                             const drillJob = cursorTarget.surface.setupDrillJob()
-                            this.worldMgr.entityMgr.selection.assignSurfaceJob(drillJob)
+                            this.worldMgr.entityMgr.selection.assignDrillJob(drillJob)
                         } else if (this.worldMgr.entityMgr.selection.canClear() && cursorTarget.surface.hasRubble()) {
                             const clearJob = cursorTarget.surface.setupClearRubbleJob()
-                            this.worldMgr.entityMgr.selection.assignSurfaceJob(clearJob)
+                            this.worldMgr.entityMgr.selection.assignClearRubbleJob(clearJob)
                         } else if (this.worldMgr.entityMgr.selection.canMove()) {
                             if (cursorTarget.surface.isWalkable()) {
                                 this.worldMgr.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(r, cursorTarget.surface.getRandomPosition())))

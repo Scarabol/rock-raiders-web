@@ -142,20 +142,33 @@ export class GameSelection {
         return SelectPanelType.NONE
     }
 
-    assignSurfaceJob(job: DrillJob | ClearRubbleJob) {
+    assignDrillJob(job: DrillJob) {
         if (!job) return
         this.raiders.forEach((r) => {
-            if (r.isPrepared(job)) {
-                r.setJob(job)
-            } else {
+            if (!r.hasTool(job.requiredTool)) {
                 const pathToToolstation = r.findShortestPath(r.worldMgr.entityMgr.getGetToolTargets())
                 if (pathToToolstation) r.setJob(new GetToolJob(r.worldMgr.entityMgr, job.requiredTool, pathToToolstation.target.building), job)
+            } else if (r.canDrill(job.surface)) {
+                r.setJob(job)
             }
         })
         this.vehicles.forEach((v) => {
-            if (v.isPrepared(job)) {
-                v.setJob(job)
-            } // do not auto upgrade vehicles
+            if (v.isPrepared(job)) v.setJob(job)
+        })
+    }
+
+    assignClearRubbleJob(job: ClearRubbleJob) {
+        if (!job) return
+        this.raiders.forEach((r) => {
+            if (!r.hasTool(job.requiredTool)) {
+                const pathToToolstation = r.findShortestPath(r.worldMgr.entityMgr.getGetToolTargets())
+                if (pathToToolstation) r.setJob(new GetToolJob(r.worldMgr.entityMgr, job.requiredTool, pathToToolstation.target.building), job)
+            } else {
+                r.setJob(job)
+            }
+        })
+        this.vehicles.forEach((v) => {
+            if (v.isPrepared(job)) v.setJob(job)
         })
     }
 
