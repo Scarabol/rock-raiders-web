@@ -23,6 +23,9 @@ import { PositionComponent } from './component/PositionComponent'
 import { RaiderTool } from './model/raider/RaiderTool'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
+import { AnimatedSceneEntity } from '../scene/AnimatedSceneEntity'
+import { ResourceManager } from '../resource/ResourceManager'
+import { DynamiteActivity } from './model/anim/AnimationActivity'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -211,11 +214,22 @@ export class GuiManager {
                 if (r.selected) EventBroker.publish(new SelectionChanged(entityMgr))
                 const birdScarer = worldMgr.ecs.addEntity()
                 const position = r.getPosition()
-                worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
-                entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
-                sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BirdScarer, position, Math.random() * 2 * Math.PI, false, () => {
-                    entityMgr.removeEntity(birdScarer)
-                    worldMgr.ecs.removeEntity(birdScarer)
+                const heading = Math.random() * 2 * Math.PI
+                const sceneEntity = new AnimatedSceneEntity()
+                sceneEntity.position.copy(position)
+                sceneEntity.rotation.y = heading
+                sceneMgr.addMeshGroup(sceneEntity)
+                sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.OohScary))
+                sceneEntity.setAnimation(DynamiteActivity.Normal, () => {
+                    sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
+                        worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
+                        entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
+                        sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BirdScarer, position, heading, false, () => {
+                            sceneMgr.removeMeshGroup(sceneEntity)
+                            entityMgr.removeEntity(birdScarer)
+                            worldMgr.ecs.removeEntity(birdScarer)
+                        })
+                    })
                 })
             })
         })
