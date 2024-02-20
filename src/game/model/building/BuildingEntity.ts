@@ -69,11 +69,14 @@ export class BuildingEntity {
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => {
             this.worldMgr.entityMgr.removeEntity(this.entity)
-            this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
+            this.primarySurface.pathBlockedByBuilding = false
+            if (this.secondarySurface) this.secondarySurface.pathBlockedByBuilding = false
             this.setEnergized(false)
             this.sceneEntity.setAnimation(BuildingActivity.Explode, () => this.disposeFromWorld())
             this.powerOffSprite.setEnabled(false)
             this.surfaces.forEach((s) => s.setBuilding(null))
+            this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
+            this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
             EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         }))
         const objectName = this.buildingType.getObjectName(this.level)
@@ -169,11 +172,14 @@ export class BuildingEntity {
     beamUp() {
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
-        this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
+        this.primarySurface.pathBlockedByBuilding = false
+        if (this.secondarySurface) this.secondarySurface.pathBlockedByBuilding = false
         this.setEnergized(false)
         this.sceneEntity.setAnimation(BuildingActivity.Stand)
         this.powerOffSprite.setEnabled(false)
         this.surfaces.forEach((s) => s.setBuilding(null))
+        this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
+        this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
         this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
@@ -342,6 +348,7 @@ export class BuildingEntity {
             this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
             this.onPlaceDown()
         }
+        this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
         this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
     }
 
