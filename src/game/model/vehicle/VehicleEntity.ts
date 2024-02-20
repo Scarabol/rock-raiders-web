@@ -157,7 +157,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
                     const positionComponent = components.get(PositionComponent)
                     const rockyPosition2D = positionComponent.getPosition2D()
                     const wakeRadius = components.get(MonsterStatsComponent).stats.WakeRadius
-                    if (vehiclePosition2D.distanceToSquared(rockyPosition2D) < wakeRadius * wakeRadius) {
+                    if (vehiclePosition2D.distanceToSquared(rockyPosition2D) < Math.pow(wakeRadius + this.stats.CollRadius, 2)) {
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                             this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
                             this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
