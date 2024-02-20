@@ -124,7 +124,7 @@ export class ObjectListLoader {
             case EntityType.ICE_MONSTER:
             case EntityType.LAVA_MONSTER:
             case EntityType.ROCK_MONSTER:
-                MonsterSpawner.spawnMonster(this.worldMgr, entityType, worldPos, headingRad - Math.PI / 2)
+                MonsterSpawner.spawnMonster(this.worldMgr, entityType, worldPos, -headingRad + Math.PI)
                 break
             case EntityType.HOVERBOARD:
             case EntityType.SMALL_DIGGER:
