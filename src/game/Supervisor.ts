@@ -210,9 +210,11 @@ export class Supervisor {
                             const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
                             if (!(surface?.hasRubble()) || !surface?.discovered) continue
                             const clearRubbleJob = surface.setupClearRubbleJob()
-                            if (!clearRubbleJob || clearRubbleJob.hasFulfiller() || !raider.findShortestPath(clearRubbleJob.lastRubblePositions)) continue
+                            if (!clearRubbleJob || clearRubbleJob.hasFulfiller()) continue
                             if (raider.hasTool(clearRubbleJob.requiredTool)) {
-                                if (GameState.priorityList.isEnabled(PriorityIdentifier.CLEARING)) raider.setJob(clearRubbleJob)
+                                if (GameState.priorityList.isEnabled(PriorityIdentifier.CLEARING) && raider.findShortestPath(clearRubbleJob.lastRubblePositions)) {
+                                    raider.setJob(clearRubbleJob)
+                                }
                                 return
                             } else {
                                 const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
