@@ -99,9 +99,9 @@ export class NerpRunner {
      * @param register the register to read
      * @return {number} returns the value currently stored in the register
      */
-    getR(register): number {
-        register = this.checkRegister(register)
-        return this.registers[register]
+    getR(register: string): number {
+        const regNum = this.checkRegister(register)
+        return this.registers[regNum]
     }
 
     /**
@@ -109,10 +109,9 @@ export class NerpRunner {
      * @param register the register to set
      * @param value the value to set for the given register
      */
-    setR(register, value): void {
-        register = this.checkRegister(register)
-        value = this.checkRegisterValue(value)
-        this.registers[register] = value
+    setR(register: string, value: string): void {
+        const regNum = this.checkRegister(register)
+        this.registers[regNum] = this.checkRegisterValue(value)
     }
 
     /**
@@ -120,10 +119,9 @@ export class NerpRunner {
      * @param register the register to add to
      * @param value the value to add to the given register
      */
-    addR(register, value): void {
-        register = this.checkRegister(register)
-        value = this.checkRegisterValue(value)
-        this.registers[register] += value
+    addR(register: string, value: string): void {
+        const regNum = this.checkRegister(register)
+        this.registers[regNum] += this.checkRegisterValue(value)
     }
 
     /**
@@ -131,10 +129,9 @@ export class NerpRunner {
      * @param register the register to subtract from
      * @param value the value to subtract from the given register
      */
-    subR(register, value): void {
-        register = this.checkRegister(register)
-        value = this.checkRegisterValue(value)
-        this.registers[register] -= value
+    subR(register: string, value: string): void {
+        const regNum = this.checkRegister(register)
+        this.registers[regNum] -= this.checkRegisterValue(value)
     }
 
     /**
@@ -239,7 +236,7 @@ export class NerpRunner {
     }
 
     /**
-     * Gets the number of minifigures on the level. XXX it is NOT tested if this ignores minifigures in hidden caverns
+     * Gets the number of mini-figures on the level. XXX it is NOT tested if this ignores mini-figures in hidden caverns
      * @return {number}
      */
     getMiniFiguresOnLevel(): number {

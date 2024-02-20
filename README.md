@@ -54,6 +54,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Tutorial levels and helper features
 - Implement laser shooting for turrets and mobile lasers
 
+- Add tiny rockies running around
+- Make walls generate random spiders
+- Show credits on continue after completing Level25
+
 ### v0.9.x - Polishing
 
 - Use same team for all missions and add names to raiders
@@ -94,6 +98,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Lava rockies texture not using correct UV coordinates
 - Orange smoke column above lava tiles missing
 - Water and lava animation missing, might use texture UV coords tearing
+- Dynamite screen shake is seen on other end of map
 - Raider scene entity position/rotation not correct when thrown by rocky
 - Numbers above ticking dynamite are not shown correctly sometimes
 - Two buttons in priority list can be hovered/pressed/released at the same time
