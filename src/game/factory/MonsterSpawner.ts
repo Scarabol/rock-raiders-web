@@ -112,6 +112,7 @@ export class MonsterSpawner {
             worldMgr.ecs.removeComponent(entity, HeadingComponent)
             worldMgr.ecs.removeComponent(entity, EntityPushedComponent)
             worldMgr.ecs.removeComponent(entity, RockMonsterBehaviorComponent)
+            sceneEntity.removeAllCarried()
             sceneEntity.setAnimation(RockMonsterActivity.Crumble, () => {
                 const positionComponent = components.get(PositionComponent)
                 for (let c = 0; c < numCrystalsEaten; c++) {
