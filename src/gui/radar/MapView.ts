@@ -30,7 +30,7 @@ export class MapView extends BaseElement {
     terrainHeight: number = 0
     lastSurface: MapSurfaceRect = null
     lastEntity: GameEntity = null
-    trackedEntity: GameEntity = null
+    entityBelowCursor: GameEntity = null
 
     constructor(parent: BaseElement) {
         super(parent)
@@ -45,10 +45,7 @@ export class MapView extends BaseElement {
         this.relX = 15
         this.relY = 15
         this.onClick = (cx: number, cy: number) => {
-            if (this.trackedEntity) {
-                // TODO Force move camera to location of entity
-                EventBroker.publish(new FollowerSetLookAtEvent(this.trackedEntity))
-            }
+            if (this.entityBelowCursor) EventBroker.publish(new FollowerSetLookAtEvent(this.entityBelowCursor))
             const surfaceScale = this.surfaceRectSizeMin / this.surfaceRectSize
             this.offset.x += (cx - this.x - this.width / 2) * surfaceScale
             this.offset.y += (cy - this.y - this.height / 2) * surfaceScale
@@ -138,7 +135,7 @@ export class MapView extends BaseElement {
 
     isInRect(sx: number, sy: number): boolean {
         const inRect = super.isInRect(sx, sy)
-        this.trackedEntity = null
+        this.entityBelowCursor = null
         if (inRect) {
             this.entitiesByOrder.forEach((entities) => {
                 entities.forEach((pos, entity) => {
@@ -149,7 +146,7 @@ export class MapView extends BaseElement {
                     const dx = tx - ex
                     const dz = ty - ez
                     if (Math.abs(dx) <= 2 && Math.abs(dz) <= 2) { // TODO sync with rect size in MapRendererWorker
-                        this.trackedEntity = entity
+                        this.entityBelowCursor = entity
                         EventBroker.publish(new ChangeCursor(Cursor.TRACK_OBJECT))
                         if (this.lastEntity !== entity) {
                             this.lastEntity = entity

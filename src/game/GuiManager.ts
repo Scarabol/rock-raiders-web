@@ -1,6 +1,6 @@
 import { EventKey } from '../event/EventKeyEnum'
 import { CameraControl, CameraViewMode, ChangeBuildingPowerState, ChangeCameraEvent, PickTool, PlaySoundEvent, SelectBuildMode, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
-import { DeselectAll, SelectionChanged } from '../event/LocalEvents'
+import { DeselectAll, FollowerSetLookAtEvent, SelectionChanged } from '../event/LocalEvents'
 import { JobCreateEvent } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
@@ -26,6 +26,8 @@ import { EventBroker } from '../event/EventBroker'
 import { AnimatedSceneEntity } from '../scene/AnimatedSceneEntity'
 import { ResourceManager } from '../resource/ResourceManager'
 import { DynamiteActivity } from './model/anim/AnimationActivity'
+import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityComponent'
+import { Vector3 } from 'three'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -184,6 +186,10 @@ export class GuiManager {
                 const jumpTo = worldMgr.sceneMgr.terrain.getFloorPosition(event.args.jumpToWorld)
                 cameraControls.jumpTo(jumpTo)
             }
+        })
+        EventBroker.subscribe(EventKey.FOLLOWER_SET_LOOK_AT, (event: FollowerSetLookAtEvent) => {
+            const sceneEntity = worldMgr.ecs.getComponents(event.entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+            if (sceneEntity) cameraControls.jumpTo(sceneEntity.getWorldPosition(new Vector3()))
         })
         EventBroker.subscribe(EventKey.COMMAND_REPAIR_LAVA, () => {
             BuildingSite.createImproveSurfaceSite(worldMgr, entityMgr.selection.surface)
