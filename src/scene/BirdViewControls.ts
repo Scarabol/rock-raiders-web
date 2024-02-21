@@ -127,6 +127,7 @@ export class BirdViewControls extends MapControls {
 
     unlockCamera() {
         this.lockedObject = null
+        this.moveTarget = null
         this.updateEnabled()
     }
 
