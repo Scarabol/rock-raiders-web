@@ -11,7 +11,7 @@ import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpMessage, NerpScript } from './NerpScript'
 import { DEV_MODE, NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
-import { GameResultEvent, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
+import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { MonsterSpawner } from '../game/factory/MonsterSpawner'
@@ -424,9 +424,14 @@ export class NerpRunner {
         return this.objectiveShowing
     }
 
-    addPoweredCrystals(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "addPoweredCrystals" not yet implemented', args)
+    addPoweredCrystals(numCrystals: number) {
+        GameState.numCrystal += numCrystals
+        EventBroker.publish(new MaterialAmountChanged())
+    }
+
+    addStoredOre(numOre: number) {
+        GameState.numOre += numOre
+        EventBroker.publish(new MaterialAmountChanged())
     }
 
     disallowAll() {
@@ -529,6 +534,35 @@ export class NerpRunner {
     makeSomeoneOnThisBlockPickUpSomethingOnThisBlock(...args: any[]) {
         // TODO Only used in tutorials
         console.warn('NERP function "makeSomeoneOnThisBlockPickUpSomethingOnThisBlock" not yet implemented', args)
+    }
+
+    setDigIconClicked(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "setDigIconClicked" not yet implemented', args)
+    }
+
+    setGoBackIconClicked(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "setGoBackIconClicked" not yet implemented', args)
+    }
+
+    flashDigIcon(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "flashDigIcon" not yet implemented', args)
+    }
+
+    flashGoBackIcon(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "flashBackIcon" not yet implemented', args)
+    }
+
+    setBuildingsTeleported(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "setBuildingsTeleported" not yet implemented', args)
+    }
+
+    getMiniFigureSelected(): number {
+        return this.worldMgr.entityMgr.selection.raiders.length
     }
 
     callMethod(methodName: string, methodArgs: any[]) {

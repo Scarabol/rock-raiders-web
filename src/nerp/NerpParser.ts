@@ -13,6 +13,7 @@ export class NerpParser {
             .split(';')[0].trim() // before preprocessor comment starts
             .replace(/_/g, '') // some preprocessor macros use this prefix
             .replace(/\bTRUE \? /, '') // some weird requirement of the original language
+            .replace(/\bFALSE \? .+/, '') // XXX Why did they add NOP statements?
             .replace(/[{}]/g, ''), // duplicate limit for macros using labels too
         )
         for (let c = 0; c < lines.length; c++) {
