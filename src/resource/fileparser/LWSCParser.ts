@@ -119,9 +119,9 @@ export class LWSCParser {
                         const mappedValues = t.values.map((v, c) => {
                             // TODO Remove workaround of doom, otherwise telepthings.lwo which uses pivot point for rotation has offset from model
                             if ((c % 3) === 0) {
-                                v -= 0.4
+                                v += 0.08
                             } else if ((c % 3) === 2) {
-                                v -= 0.2
+                                v += 0.17
                             }
                             v -= currentObject.pivot[(c % 3)]
                             return v
@@ -236,7 +236,8 @@ export class LWSCParser {
                 }
                 currentObject.opacityTracks.push(new NumberKeyframeTrack(`.opacity`, times, opacities))
             } else if (key === 'PivotPoint') {
-                currentObject.pivot = value.split(' ').map((n) => parseInt(n, 10))
+                currentObject.pivot = value.split(' ').map((n) => parseFloat(n))
+                if (currentObject.pivot?.[0]) currentObject.pivot[0] *= -1 // flip x-axis
             } else if (VERBOSE) {
                 console.warn(`Unhandled line in object block: ${line}; key: ${key}; value: ${value}`) // XXX implement all LWS features
             }
