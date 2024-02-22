@@ -16,6 +16,7 @@ import { EntityType } from './model/EntityType'
 import { EatBarracksJob } from './model/job/raider/EatBarracksJob'
 import { EventBroker } from '../event/EventBroker'
 import { GameState } from './model/GameState'
+import { SurfaceType } from './terrain/SurfaceType'
 
 export class Supervisor {
     jobs: Job[] = []
@@ -162,8 +163,13 @@ export class Supervisor {
         })
         unemployedRaider.forEach((raider) => {
             try {
-                const blockedSite = raider.getSurface().site
+                const raiderSurface = raider.getSurface()
+                const blockedSite = raiderSurface.site
                 if (blockedSite?.buildingType) raider.setJob(new MoveJob(raider, blockedSite.getWalkOutSurface().getRandomPosition()))
+                if (raiderSurface.surfaceType === SurfaceType.LAVA5) {
+                    const safeNeighbor = raiderSurface.neighbors.filter((n) => n.isWalkable()).random()
+                    raider.setJob(new MoveJob(raider, safeNeighbor.getRandomPosition()))
+                }
             } catch (e) {
                 console.error(e)
             }

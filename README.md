@@ -69,6 +69,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Unlock levels only after linked levels are completed (see XXX)
 - Start random level picks only unlocked and prefers unranked levels, never picks tuts
+- Separate UI components to support other screen ratios then 4:3
 
 ## Known Issues
 
@@ -76,11 +77,8 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Forbidding collection of ores or crystals stops building projects too
 - Level is not marked as failed even if too many crystals are missing
-- Separate UI components to support other screen ratios then 4:3
-- FPS histogram sometimes not rendered on debug layer
 - Large Cat not usable to carry vehicles in Level 19
 - Damage and blow up buildings with lava erosion
-- Make idle raider leave lava fields
 
 ### Nice to have
 

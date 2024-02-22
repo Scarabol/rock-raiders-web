@@ -42,9 +42,14 @@ export class DamageSystem extends AbstractGameSystem {
                         healthComponent.changeHealth(-this.dynamiteMaxDamage * Math.pow(inRangeSq, 2))
                     }
                 })
-                const movableComponent = components.get(MovableStatsComponent)
-                if (!movableComponent?.crossLava && positionComponent.surface.surfaceType === SurfaceType.LAVA5) {
-                    healthComponent.changeHealth(-50 / 1000 * elapsedMs)
+                if (healthComponent.hitByLavaTimeoutMs > 0) {
+                    healthComponent.hitByLavaTimeoutMs -= elapsedMs
+                } else {
+                    const movableComponent = components.get(MovableStatsComponent)
+                    if (!movableComponent?.crossLava && positionComponent.surface.surfaceType === SurfaceType.LAVA5) {
+                        healthComponent.changeHealth(-Math.randomInclusive(20, 40))
+                        healthComponent.hitByLavaTimeoutMs = 2000
+                    }
                 }
                 this.landslides.forEach((landslide) => {
                     if (positionComponent.surface !== landslide.surface) return

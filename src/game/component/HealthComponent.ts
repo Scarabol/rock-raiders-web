@@ -10,6 +10,7 @@ export class HealthComponent extends AbstractGameComponent {
     readonly healthFontSprite: HealthFontSprite = null
     health: number = 100
     maxHealth: number = 100
+    hitByLavaTimeoutMs: number = 0
 
     constructor(
         readonly triggerAlarm: boolean,
