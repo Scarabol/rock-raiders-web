@@ -55,7 +55,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Implement laser shooting for turrets and mobile lasers
 
 - Add tiny rockies running around
-- Make walls generate random spiders
 - Show credits on continue after completing Level25
 
 ### v0.9.x - Polishing

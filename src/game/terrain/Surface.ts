@@ -31,6 +31,7 @@ import { TooltipComponent } from '../component/TooltipComponent'
 import { EmergeComponent } from '../component/EmergeComponent'
 import { FallInComponent } from '../component/FallInComponent'
 import { FluidSurfaceComponent } from '../component/FluidSurfaceComponent'
+import { MonsterSpawner } from '../factory/MonsterSpawner'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -235,6 +236,7 @@ export class Surface {
         }
         // update meshes and wallType
         this.terrain.updateSurfaceMeshes()
+        this.generateSpiders()
     }
 
     private dropContainedMaterials(droppedOre: number, droppedCrystals: number) {
@@ -246,6 +248,15 @@ export class Surface {
         for (let c = 0; c < droppedCrystals; c++) {
             const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, this.getRandomPosition())
             EventBroker.publish(new CrystalFoundEvent(this.worldMgr.ecs.getComponents(crystal.entity).get(PositionComponent)))
+        }
+    }
+
+    private generateSpiders() {
+        if (!this.terrain.levelConf.generateSpiders) return
+        if (Math.random() > 0.1) return
+        const numSpiders = Math.pow(Math.round(1 + Math.random()), 2) * Math.round(1 + Math.random())
+        for (let c = 0; c < numSpiders; c++) {
+            MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SMALL_SPIDER, this.getRandomPosition(), Math.PI * 2 * Math.random())
         }
     }
 

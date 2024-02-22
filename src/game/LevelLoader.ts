@@ -11,6 +11,7 @@ import { getMonsterEntityTypeByName, MonsterEntityType } from './model/EntityTyp
 export interface LevelConfData {
     levelName: string
     fullName: string
+    generateSpiders: boolean
     textureBasename: string
     rockFallStyle: string
     fallinMultiplier: number
@@ -53,6 +54,7 @@ export class LevelLoader {
         return {
             levelName: levelConf.levelName,
             fullName: levelConf.fullName,
+            generateSpiders: levelConf.generateSpiders,
             mapWidth: terrainMap.width,
             mapHeight: terrainMap.height,
             textureBasename: GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet).textureBasename,
