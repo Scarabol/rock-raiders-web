@@ -30,6 +30,7 @@ import { EventBroker } from '../../event/EventBroker'
 import { TooltipComponent } from '../component/TooltipComponent'
 import { EmergeComponent } from '../component/EmergeComponent'
 import { FallInComponent } from '../component/FallInComponent'
+import { FluidSurfaceComponent } from '../component/FluidSurfaceComponent'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -534,6 +535,11 @@ export class Surface {
         const oldSurfaceType = this.surfaceType
         const wasPath = this.surfaceType === SurfaceType.POWER_PATH || this.surfaceType === SurfaceType.POWER_PATH_BUILDING
         this.surfaceType = surfaceType
+        if (this.surfaceType === SurfaceType.WATER || this.surfaceType === SurfaceType.LAVA5) {
+            this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.geometry.attributes.uv))
+        } else {
+            this.worldMgr.ecs.removeComponent(this.entity, FluidSurfaceComponent)
+        }
         this.updateTexture()
         this.updateObjectName()
         if (oldSurfaceType.connectsPath || this.surfaceType.connectsPath) this.neighbors.forEach((n) => n.updateTexture())

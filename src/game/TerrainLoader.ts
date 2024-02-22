@@ -9,6 +9,7 @@ import { LavaErosionComponent } from './component/LavaErosionComponent'
 import { GameConfig } from '../cfg/GameConfig'
 import { EmergeComponent } from './component/EmergeComponent'
 import { FallInComponent } from './component/FallInComponent'
+import { FluidSurfaceComponent } from './component/FluidSurfaceComponent'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelConfData, worldMgr: WorldManager): Terrain {
@@ -52,6 +53,10 @@ export class TerrainLoader {
                     } else {
                         surface.containedOres = currentCryOre / 2
                     }
+                }
+                if (surfaceType === SurfaceType.WATER || surfaceType === SurfaceType.LAVA5) {
+                    surface.mesh.geometry.computeVertexNormals()
+                    worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.geometry.attributes.uv))
                 }
 
                 terrain.surfaces[c].push(surface)

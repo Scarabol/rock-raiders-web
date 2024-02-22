@@ -38,6 +38,7 @@ import { SoundManager } from '../audio/SoundManager'
 import { Sample } from '../audio/Sample'
 import { TeleportSystem } from './system/TeleportSystem'
 import { FallInSystem } from './system/FallInSystem'
+import { FluidSurfaceSystem } from './system/FluidSurfaceSystem'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -74,6 +75,7 @@ export class WorldManager {
         this.ecs.addSystem(new EmergeSystem())
         this.ecs.addSystem(new TeleportSystem())
         this.ecs.addSystem(new FallInSystem())
+        this.ecs.addSystem(new FluidSurfaceSystem())
         EventBroker.subscribe(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBroker.subscribe(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {

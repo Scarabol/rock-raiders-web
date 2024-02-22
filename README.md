@@ -97,14 +97,12 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Lava rockies texture not using correct UV coordinates
 - Orange smoke column above lava tiles missing
-- Water and lava animation missing, might use texture UV coords tearing
 - Dynamite screen shake is seen on other end of map
 - Raider scene entity position/rotation not correct when thrown by rocky
 - Numbers above ticking dynamite are not shown correctly sometimes
 - Two buttons in priority list can be hovered/pressed/released at the same time
 - Roof mesh is not added as ceiling to scene
 - Use pro-meshes to render high-detail walls in first person and shoulder view
-- Medium raider meshes seem to have wrong UV coordinates and shown with holes
 - Bats don't appear in flocks
 - Camera frustum not shown as wireframe on radar map panel
 
