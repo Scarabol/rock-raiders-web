@@ -183,9 +183,9 @@ export class GameLayer extends ScreenLayer {
                             this.worldMgr.entityMgr.selection.assignClearRubbleJob(clearJob)
                         } else if (this.worldMgr.entityMgr.selection.canMove()) {
                             if (cursorTarget.surface.isWalkable()) {
-                                this.worldMgr.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(r, cursorTarget.surface.getRandomPosition())))
+                                this.worldMgr.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(cursorTarget.surface.getRandomPosition())))
                             }
-                            this.worldMgr.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(v, cursorTarget.surface.getCenterWorld2D())))
+                            this.worldMgr.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(cursorTarget.surface.getCenterWorld2D())))
                         } else {
                             console.warn('Unexpected surface target given', cursorTarget)
                         }

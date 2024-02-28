@@ -448,7 +448,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const surface = this.getSurface()
         if (surface.building) {
             const walkableNeighbor = surface.neighbors.find((n) => !n.site && n.isWalkable() && !n.building)
-            if (walkableNeighbor) this.setJob(new MoveJob(this, walkableNeighbor.getCenterWorld2D()))
+            if (walkableNeighbor) this.setJob(new MoveJob(walkableNeighbor.getCenterWorld2D()))
         }
     }
 
@@ -490,15 +490,12 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     setPosition(position: Vector3) {
-        this.sceneEntity.position.copy(position)
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
-        this.sceneEntity.visible = surface.discovered
         const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
         if (positionComponent) {
             positionComponent.position.copy(position)
             positionComponent.surface = surface
             positionComponent.markDirty()
-            this.sceneEntity.position.y += positionComponent.floorOffset
         }
         this.carriedItems.forEach((carriedItem) => {
             const carriedPositionComponent = this.worldMgr.ecs.getComponents(carriedItem.entity).get(PositionComponent)

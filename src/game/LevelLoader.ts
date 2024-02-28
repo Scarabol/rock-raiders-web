@@ -2,11 +2,12 @@ import { LevelPrioritiesEntryConfig, LevelRewardConfig, ObjectiveImageCfg } from
 import { GameConfig } from '../cfg/GameConfig'
 import { ResourceManager } from '../resource/ResourceManager'
 import { NerpParser } from '../nerp/NerpParser'
-import { NerpMessage, NerpScript } from '../nerp/NerpScript'
+import { NerpScript } from '../nerp/NerpScript'
 import { LevelObjectiveTextEntry } from '../resource/fileparser/ObjectiveTextParser'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 import { DEV_MODE } from '../params'
 import { getMonsterEntityTypeByName, MonsterEntityType } from './model/EntityType'
+import { NerpMessage } from '../resource/fileparser/NerpMsgParser'
 
 export interface LevelConfData {
     levelName: string

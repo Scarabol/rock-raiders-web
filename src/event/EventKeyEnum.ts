@@ -27,7 +27,6 @@ export enum EventKey {
     COMMAND_TOOLTIP_HIDE = 'command-tooltip-hide',
     COMMAND_PLAY_SOUND = 'command-play-sound',
     COMMAND_REMOVE_SELECTION = 'command-remove-selection',
-    COMMAND_CHANGE_RAIDER_SPAWN_REQUEST = 'command-change-raider-spawn-request',
     COMMAND_CREATE_POWER_PATH = 'command-create-power-path',
     COMMAND_PLACE_FENCE = 'command-place-fence',
     COMMAND_FENCE_BEAMUP = 'command-fence-beamup',

@@ -9,7 +9,7 @@ import { WorldManager } from '../game/WorldManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
-import { NerpMessage, NerpScript } from './NerpScript'
+import { NerpScript } from './NerpScript'
 import { DEV_MODE, NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
 import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
@@ -23,6 +23,8 @@ import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { SoundManager } from '../audio/SoundManager'
 import { EventKey } from '../event/EventKeyEnum'
+import { ShowMissionBriefingEvent } from '../event/LocalEvents'
+import { NerpMessage } from '../resource/fileparser/NerpMsgParser'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -31,15 +33,15 @@ export class NerpRunner {
     static debug = false
     static timeAddedAfterSample = 0
 
+    readonly registers = new Array(8).fill(0)
+    readonly timers = new Array(4).fill(0)
     timer: number = 0
-    registers = new Array(8).fill(0)
-    timers = new Array(4).fill(0)
     halted = false
     programCounter = 0
     // more state variables and switches
     messagePermit: boolean = true
     objectiveSwitch: boolean = true
-    objectiveShowing: number = 0
+    objectiveShowing: number = 1
     sampleLengthMultiplier: number = 0
     timeForNoSample: number = 0
     currentMessage: number = -1
@@ -60,6 +62,10 @@ export class NerpRunner {
         })
         EventBroker.subscribe(EventKey.GAME_RESULT_STATE, () => {
             this.halted = true
+        })
+        EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
+            this.objectiveShowing = event.isShowing ? 1 : 0
+            this.objectiveSwitch = this.objectiveSwitch && event.isShowing
         })
     }
 

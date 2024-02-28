@@ -15,7 +15,6 @@ export class GameState {
     static discoveredCaverns: number = 0
     static hiddenObjectsFound: number = 0
     static alarmMode: boolean = false
-    static objectiveShowing: number = 1
     static showObjInfo: boolean = false
     static monsterCongregation: Vector2 = null
     static priorityList: PriorityList = new PriorityList()
@@ -34,7 +33,6 @@ export class GameState {
         this.discoveredCaverns = 0
         this.hiddenObjectsFound = 0
         this.alarmMode = false
-        this.objectiveShowing = 1
         this.monsterCongregation = null
         this.priorityList = new PriorityList()
         this.tutoBlockClicks = new Map()

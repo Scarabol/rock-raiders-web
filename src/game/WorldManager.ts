@@ -17,7 +17,6 @@ import { SceneEntityHeadingSystem } from './system/SceneEntityHeadingSystem'
 import { RandomMoveBehaviorSystem } from './system/RandomMoveBehaviorSystem'
 import { DamageSystem } from './system/DamageSystem'
 import { BeamUpSystem } from './system/BeamUpSystem'
-import { ShowMissionBriefingEvent } from '../event/LocalEvents'
 import { OxygenSystem } from './system/OxygenSystem'
 import { MapMarkerUpdateSystem } from './system/MapMarkerUpdateSystem'
 import { RockMonsterBehaviorSystem } from './system/RockMonsterBehaviorSystem'
@@ -91,11 +90,6 @@ export class WorldManager {
         EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
             GameState.alarmMode = event.alarmState
             if (GameState.alarmMode) SoundManager.playSample(Sample.SFX_Siren, false)
-        })
-        EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
-            if (!this.nerpRunner) return
-            this.nerpRunner.objectiveShowing = event.isShowing ? 1 : 0
-            this.nerpRunner.objectiveSwitch = this.nerpRunner.objectiveSwitch && event.isShowing
         })
     }
 

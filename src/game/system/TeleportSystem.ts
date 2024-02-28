@@ -92,7 +92,7 @@ export class TeleportSystem extends AbstractGameSystem {
                         raider.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
                         const sceneSelectionComponent = raider.worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
                         raider.worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, raider.stats))
-                        if (walkOutPos) raider.setJob(new MoveJob(raider, walkOutPos))
+                        if (walkOutPos) raider.setJob(new MoveJob(walkOutPos))
                         this.ecs.worldMgr.entityMgr.raidersInBeam.remove(raider)
                         this.ecs.worldMgr.entityMgr.raiders.push(raider)
                         EventBroker.publish(new RaidersAmountChangedEvent(raider.worldMgr.entityMgr))

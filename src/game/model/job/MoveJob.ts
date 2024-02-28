@@ -8,7 +8,7 @@ import { BubblesCfg } from '../../../cfg/BubblesCfg'
 export class MoveJob extends Job {
     readonly target: PathTarget
 
-    constructor(readonly fulfiller: JobFulfiller, readonly location: Vector2) {
+    constructor(readonly location: Vector2) {
         super()
         this.target = PathTarget.fromLocation(location)
     }
@@ -22,8 +22,7 @@ export class MoveJob extends Job {
     }
 
     assign(fulfiller: JobFulfiller) {
-        if (this.fulfiller === fulfiller) return
-        throw new Error('Job already assigned')
+        // This job should be always assigned
     }
 
     unAssign(fulfiller: JobFulfiller) {
@@ -31,6 +30,6 @@ export class MoveJob extends Job {
     }
 
     hasFulfiller(): boolean {
-        return !!this.fulfiller
+        return true
     }
 }

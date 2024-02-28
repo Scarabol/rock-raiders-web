@@ -245,25 +245,21 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private getSpeed(): number {
-        return this.stats.RouteSpeed[this.level] * (this.isOnPath() ? this.stats.PathCoef : 1) * (this.isOnRubble() ? this.stats.RubbleCoef : 1) * (!!this.carries ? RAIDER_CARRY_SLOWDOWN : 1)
+        const currentSurface = this.getSurface()
+        const pathMultiplier = currentSurface.isPath() ? this.stats.PathCoef : 1
+        const rubbleMultiplier = currentSurface.hasRubble() ? this.stats.RubbleCoef : 1
+        const carriesMultiplier = !!this.carries ? RAIDER_CARRY_SLOWDOWN : 1
+        return this.stats.RouteSpeed[this.level] * pathMultiplier * rubbleMultiplier * carriesMultiplier
     }
 
     private getRouteActivity(): AnimationActivity {
         if (this.scared) {
             return RaiderActivity.RunPanic
-        } else if (this.isOnRubble()) {
+        } else if (this.getSurface().hasRubble()) {
             return !!this.carries ? RaiderActivity.CarryRubble : RaiderActivity.routeRubble
         } else {
             return !!this.carries ? AnimEntityActivity.Carry : AnimEntityActivity.Route
         }
-    }
-
-    private isOnPath(): boolean {
-        return this.getSurface().isPath()
-    }
-
-    private isOnRubble() {
-        return this.getSurface().hasRubble()
     }
 
     private slip() {
@@ -327,7 +323,7 @@ export class Raider implements Updatable, JobFulfiller {
 
     getDrillTimeSeconds(surface: Surface): number {
         if (!surface || !this.hasTool(RaiderTool.DRILL)) return 0
-        return (this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0)
+        return this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0
     }
 
     stopJob() {
@@ -562,15 +558,12 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     setPosition(position: Vector3) {
-        this.sceneEntity.position.copy(position)
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
-        this.sceneEntity.visible = surface.discovered
         const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
         if (positionComponent) {
             positionComponent.position.copy(position)
             positionComponent.surface = surface
             positionComponent.markDirty()
-            this.sceneEntity.position.y += positionComponent.floorOffset
         }
         if (this.carries) {
             const carriedPositionComponent = this.worldMgr.ecs.getComponents(this.carries.entity).get(PositionComponent)

@@ -165,10 +165,10 @@ export class Supervisor {
             try {
                 const raiderSurface = raider.getSurface()
                 const blockedSite = raiderSurface.site
-                if (blockedSite?.buildingType) raider.setJob(new MoveJob(raider, blockedSite.getWalkOutSurface().getRandomPosition()))
+                if (blockedSite?.buildingType) raider.setJob(new MoveJob(blockedSite.getWalkOutSurface().getRandomPosition()))
                 if (raiderSurface.surfaceType === SurfaceType.LAVA5) {
                     const safeNeighbor = raiderSurface.neighbors.filter((n) => n.isWalkable()).random()
-                    raider.setJob(new MoveJob(raider, safeNeighbor.getRandomPosition()))
+                    raider.setJob(new MoveJob(safeNeighbor.getRandomPosition()))
                 }
             } catch (e) {
                 console.error(e)
@@ -192,7 +192,7 @@ export class Supervisor {
                 }
                 const blockedSite = vehicle.getSurface().site
                 if (blockedSite?.buildingType) {
-                    vehicle.setJob(new MoveJob(vehicle, blockedSite.getWalkOutSurface().getRandomPosition()))
+                    vehicle.setJob(new MoveJob(blockedSite.getWalkOutSurface().getRandomPosition()))
                 } else {
                     vehicle.unblockBuildingPowerPath()
                 }
