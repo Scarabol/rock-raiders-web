@@ -87,7 +87,6 @@ export class TerrainLoader {
                                         break
                                     case SurfaceType.RECHARGE_SEAM:
                                         terrain.rechargeSeams.add(surface)
-                                        // TODO Move sparkles effect to surface mesh (creation)
                                         const position = new Vector3(0.5, 0.5 + surface.terrain.getHeightOffset(surface.x, surface.y), 0.5)
                                         const floorNeighbor = surface.neighbors.find((n) => n.surfaceType.floor)
                                         const angle = Math.atan2(floorNeighbor.y - surface.y, surface.x - floorNeighbor.x) + Math.PI / 2
