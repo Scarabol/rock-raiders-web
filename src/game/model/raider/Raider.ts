@@ -267,8 +267,8 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private slip() {
-        if (Math.randomInclusive(0, 100) < 10) this.stopJob()
         this.dropCarried(true)
+        if (Math.randomInclusive(0, 100) < 10) this.stopJob()
         this.slipped = true
         this.sceneEntity.setAnimation(RaiderActivity.Slip, () => {
             this.slipped = false
