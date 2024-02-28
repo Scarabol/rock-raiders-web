@@ -1,4 +1,4 @@
-import { Camera, PerspectiveCamera, Scene, Vector2, WebGLRenderer } from 'three'
+import { Camera, PerspectiveCamera, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
 import { TILESIZE } from '../params'
 import { EventKey } from '../event/EventKeyEnum'
@@ -9,7 +9,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass'
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass'
 import { GreenScaleShader } from './GreenScaleShader'
 import { ECS, GameEntity } from '../game/ECS'
-import { PositionComponent } from '../game/component/PositionComponent'
+import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEntityComponent'
 import { BeamUpComponent } from '../game/component/BeamUpComponent'
 import { EventBroker } from '../event/EventBroker'
 
@@ -54,7 +54,7 @@ export class FollowerRenderer extends WebGLRenderer {
         if (!this.trackEntity) return
         this.renderInterval = setInterval(() => {
             const components = this.ecs.getComponents(this.trackEntity)
-            const lookAtPosition = components?.get(PositionComponent)?.position
+            const lookAtPosition = components?.get(AnimatedSceneEntityComponent)?.sceneEntity?.getWorldPosition(new Vector3())
             if (components?.has(BeamUpComponent) || !lookAtPosition) {
                 this.trackEntity = null
                 this.clear()

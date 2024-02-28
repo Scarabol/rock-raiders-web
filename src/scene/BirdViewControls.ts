@@ -1,10 +1,9 @@
 import { MapControls } from 'three/examples/jsm/controls/MapControls'
-import { Camera, MOUSE, Vector3 } from 'three'
+import { Camera, MOUSE, Object3D, Vector3 } from 'three'
 import { DEV_MODE, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, USE_KEYBOARD_SHORTCUTS } from '../params'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { degToRad } from 'three/src/math/MathUtils'
 import { GameConfig } from '../cfg/GameConfig'
-import { PositionComponent } from '../game/component/PositionComponent'
 import { EventBroker } from '../event/EventBroker'
 import { EventKey } from '../event/EventKeyEnum'
 
@@ -21,7 +20,7 @@ export class BirdViewControls extends MapControls {
     private lockBuild: boolean = false
     moveTarget: Vector3 = null
     lastPanKey: string = ''
-    lockedObject: PositionComponent
+    lockedObject: Object3D
     disabled: boolean = false
     gamePaused: boolean = false
 
@@ -102,7 +101,7 @@ export class BirdViewControls extends MapControls {
 
     updateControlsSafe(elapsedMs: number) {
         try {
-            if (this.lockedObject) this.moveTarget = this.lockedObject.position
+            if (this.lockedObject) this.moveTarget = this.lockedObject.getWorldPosition(new Vector3())
             if (this.moveTarget) {
                 if (this.target.distanceToSquared(this.moveTarget) < 1) {
                     this.moveTarget = null
@@ -148,8 +147,8 @@ export class BirdViewControls extends MapControls {
         this.keyPanSpeed = panSpeed
     }
 
-    lockOnObject(position: PositionComponent) {
-        this.lockedObject = position
+    lockOnObject(object: Object3D) {
+        this.lockedObject = object
         this.enabled = false
     }
 

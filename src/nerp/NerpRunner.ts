@@ -297,12 +297,12 @@ export class NerpRunner {
             console.warn(`Invalid entity ${recordedEntity} given`)
             return
         }
-        const pos = this.worldMgr.ecs.getComponents(entity)?.get(PositionComponent)
-        if (!pos) {
+        const component = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+        if (!component) {
             console.warn(`Given entity ${entity} has no position to jump to`)
             return
         }
-        this.worldMgr.sceneMgr.birdViewControls.lockOnObject(pos)
+        this.worldMgr.sceneMgr.birdViewControls.lockOnObject(component)
     }
 
     setMessage(messageNumber: number, arrowDisabled: number) {
