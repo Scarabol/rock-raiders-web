@@ -8,6 +8,8 @@ import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorCo
 import { Surface } from '../terrain/Surface'
 import { Vector2, Vector3 } from 'three'
 import { GameConfig } from '../../cfg/GameConfig'
+import { EventBroker } from '../../event/EventBroker'
+import { EventKey } from '../../event/EventKeyEnum'
 
 const FENCE_RANGE_SQ = TILESIZE / 4 * TILESIZE / 4
 
@@ -17,12 +19,19 @@ export class ElectricFenceSystem extends AbstractGameSystem {
 
     constructor(readonly worldMgr: WorldManager) {
         super()
+        EventBroker.subscribe(EventKey.LEVEL_SELECTED, () => {
+            this.beamDelayMs = 0
+        })
     }
 
     update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         const fenceProtectedSurfaces = this.getFenceProtectedSurfaces()
         const studProtectedSurfaces = this.getStudProtectedSurfaces(fenceProtectedSurfaces)
-        this.addBeamEffect(elapsedMs, studProtectedSurfaces)
+        if (this.beamDelayMs > 0) {
+            this.beamDelayMs -= elapsedMs
+        } else {
+            this.addBeamEffect(studProtectedSurfaces)
+        }
         fenceProtectedSurfaces.add(...studProtectedSurfaces)
         for (const entity of entities) {
             try {
@@ -121,11 +130,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         return studPositions
     }
 
-    addBeamEffect(elapsedMs: number, studProtectedSurfaces: Surface[]) {
-        if (this.beamDelayMs > 0) {
-            this.beamDelayMs -= elapsedMs
-            return
-        }
+    addBeamEffect(studProtectedSurfaces: Surface[]) {
         const longBeams = studProtectedSurfaces.map((surface) => {
             const lwsFilename = GameConfig.instance.miscObjects.LongElectricFenceBeam
             const beamPos = surface.getCenterWorld()
@@ -153,7 +158,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         const beamLocations = [...longBeams, ...shortBeams]
         if (beamLocations.length < 1) return
         const nextBeam = beamLocations.random()
-        this.beamDelayMs = Math.randomInclusive(0, 4000)
+        this.beamDelayMs += Math.randomInclusive(0, 4000)
         this.worldMgr.sceneMgr.addMiscAnim(nextBeam.lwsFilename, nextBeam.beamPos, nextBeam.beamHeading, false)
     }
 }

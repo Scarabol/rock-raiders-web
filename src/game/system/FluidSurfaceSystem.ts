@@ -1,11 +1,20 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { FluidSurfaceComponent } from '../component/FluidSurfaceComponent'
+import { EventBroker } from '../../event/EventBroker'
+import { EventKey } from '../../event/EventKeyEnum'
 
 export class FluidSurfaceSystem extends AbstractGameSystem {
     private static readonly firstIndexGroup = [0, 2, 3, 4]
 
     readonly componentsRequired: Set<Function> = new Set([FluidSurfaceComponent])
     progress: number = 0
+
+    constructor() {
+        super()
+        EventBroker.subscribe(EventKey.LEVEL_SELECTED, () => {
+            this.progress = 0
+        })
+    }
 
     update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         this.progress = (this.progress + Math.PI * elapsedMs / 2500) % (2 * Math.PI)

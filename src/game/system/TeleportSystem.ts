@@ -46,7 +46,10 @@ export class TeleportSystem extends AbstractGameSystem {
         })
         EventBroker.subscribe(EventKey.GAME_RESULT_STATE, () => {
             this.requestedRaiders = 0
+            this.spawnRaiderTimer = 0
             this.requestedVehicleTypes.length = 0
+            this.spawnVehicleTimer = 0
+            this.poweredBuildings?.clear()
         })
         EventBroker.subscribe(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
             this.poweredBuildings = event.poweredBuildings
