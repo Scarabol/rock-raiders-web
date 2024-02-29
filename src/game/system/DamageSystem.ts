@@ -10,7 +10,7 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 
 export class DamageSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
+    readonly componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
     readonly landslides: PositionComponent[] = []
     readonly dynamiteExplosions: DynamiteExplosionEvent[] = []
     readonly dynamiteRadiusSq: number = 0
@@ -28,7 +28,7 @@ export class DamageSystem extends AbstractGameSystem {
         })
     }
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)

@@ -7,14 +7,14 @@ import { WorldManager } from '../WorldManager'
 import { EventBroker } from '../../event/EventBroker'
 
 export class DeathSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([HealthComponent, LastWillComponent])
-    dirtyComponents = new Set([HealthComponent])
+    readonly componentsRequired: Set<Function> = new Set([HealthComponent, LastWillComponent])
+    readonly dirtyComponents: Set<Function> = new Set([HealthComponent])
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         for (const entity of dirty) {
             try {
                 const components = this.ecs.getComponents(entity)

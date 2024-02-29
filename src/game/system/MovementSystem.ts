@@ -7,11 +7,16 @@ import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityCo
 import { AnimEntityActivity } from '../model/anim/AnimationActivity'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { HeadingComponent } from '../component/HeadingComponent'
+import { WorldManager } from '../WorldManager'
 
 export class MovementSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([PositionComponent, WorldTargetComponent, MovableStatsComponent])
+    readonly componentsRequired: Set<Function> = new Set([PositionComponent, WorldTargetComponent, MovableStatsComponent])
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number) {
+    constructor(readonly worldMgr: WorldManager) {
+        super()
+    }
+
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)
@@ -19,7 +24,7 @@ export class MovementSystem extends AbstractGameSystem {
                 if (!positionComponent.isDiscovered()) continue
                 const worldTargetComponent = components.get(WorldTargetComponent)
                 const statsComponent = components.get(MovableStatsComponent)
-                const terrain = this.ecs.worldMgr.sceneMgr.terrain
+                const terrain = this.worldMgr.sceneMgr.terrain
                 const targetWorld = terrain.getFloorPosition(worldTargetComponent.position)
                 targetWorld.y += positionComponent.floorOffset
                 const step = targetWorld.clone().sub(positionComponent.position)
@@ -30,10 +35,10 @@ export class MovementSystem extends AbstractGameSystem {
                     this.ecs.removeComponent(entity, HeadingComponent)
                     this.ecs.removeComponent(entity, EntityPushedComponent)
                     if (positionComponent.surface.wallType && statsComponent.enterWall) {
-                        this.ecs.worldMgr.entityMgr.removeEntity(entity)
+                        this.worldMgr.entityMgr.removeEntity(entity)
                         this.ecs.removeEntity(entity)
                         if (sceneEntityComponent) {
-                            this.ecs.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
+                            this.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
                             sceneEntityComponent.sceneEntity.dispose()
                         }
                     } else if (sceneEntityComponent) {

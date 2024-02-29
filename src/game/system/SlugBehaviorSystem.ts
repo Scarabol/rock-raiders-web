@@ -24,13 +24,13 @@ const SLUG_SUCK_DISTANCE_SQ = 25 * 25
 const SLUG_ENTER_DISTANCE_SQ = 5 * 5
 
 export class SlugBehaviorSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([SlugBehaviorComponent, MonsterStatsComponent])
+    readonly componentsRequired: Set<Function> = new Set([SlugBehaviorComponent, MonsterStatsComponent])
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         const pathFinder = this.worldMgr.sceneMgr.terrain?.pathFinder
         const scarerPositions = this.worldMgr.entityMgr.birdScarer.map((b) => this.ecs.getComponents(b).get(PositionComponent))
         for (const entity of entities) {

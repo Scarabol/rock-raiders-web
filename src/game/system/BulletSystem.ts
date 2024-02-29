@@ -14,13 +14,13 @@ import { HeadingComponent } from '../component/HeadingComponent'
 import { GameConfig } from '../../cfg/GameConfig'
 
 export class BulletSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([BulletComponent])
+    readonly componentsRequired: Set<Function> = new Set([BulletComponent])
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         const targets = [...this.worldMgr.entityMgr.rockMonsters, ...this.worldMgr.entityMgr.slugs]
             .map((e) => {
                 const components = this.ecs.getComponents(e)

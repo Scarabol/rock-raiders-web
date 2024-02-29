@@ -1,11 +1,16 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { BeamUpComponent } from '../component/BeamUpComponent'
 import { TILESIZE } from '../../params'
+import { WorldManager } from '../WorldManager'
 
 export class BeamUpSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set<Function>([BeamUpComponent])
+    readonly componentsRequired: Set<Function> = new Set<Function>([BeamUpComponent])
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number) {
+    constructor(readonly worldMgr: WorldManager) {
+        super()
+    }
+
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)
@@ -16,7 +21,7 @@ export class BeamUpSystem extends AbstractGameSystem {
                     beamUpComponent.entity.setPosition(position)
                 } else {
                     beamUpComponent.entity.disposeFromWorld()
-                    this.ecs.worldMgr.entityMgr.removeEntity(entity)
+                    this.worldMgr.entityMgr.removeEntity(entity)
                     this.ecs.removeEntity(entity)
                 }
             } catch (e) {

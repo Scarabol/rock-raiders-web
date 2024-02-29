@@ -52,14 +52,13 @@ export class WorldManager {
     gameSpeedMultiplier: number = 1
 
     constructor() {
-        this.ecs.worldMgr = this
         this.powerGrid = new PowerGrid(this) // TODO Transform into system with components
-        this.ecs.addSystem(new MovementSystem())
+        this.ecs.addSystem(new MovementSystem(this))
         this.ecs.addSystem(new SceneEntityPositionSystem())
         this.ecs.addSystem(new SceneEntityHeadingSystem())
         this.ecs.addSystem(new RandomMoveBehaviorSystem())
         this.ecs.addSystem(new DamageSystem())
-        this.ecs.addSystem(new BeamUpSystem())
+        this.ecs.addSystem(new BeamUpSystem(this))
         this.ecs.addSystem(new MapMarkerUpdateSystem())
         this.ecs.addSystem(new RockMonsterBehaviorSystem(this))
         this.ecs.addSystem(new ElectricFenceSystem(this))
@@ -69,10 +68,10 @@ export class WorldManager {
         this.ecs.addSystem(new SlugBehaviorSystem(this))
         this.ecs.addSystem(new TerrainScannerSystem(this))
         this.ecs.addSystem(new BulletSystem(this))
-        this.ecs.addSystem(new BoulderSystem())
+        this.ecs.addSystem(new BoulderSystem(this))
         this.ecs.addSystem(new LavaErosionSystem())
-        this.ecs.addSystem(new EmergeSystem())
-        this.ecs.addSystem(new TeleportSystem())
+        this.ecs.addSystem(new EmergeSystem(this))
+        this.ecs.addSystem(new TeleportSystem(this))
         this.ecs.addSystem(new FallInSystem())
         this.ecs.addSystem(new FluidSurfaceSystem())
         EventBroker.subscribe(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)

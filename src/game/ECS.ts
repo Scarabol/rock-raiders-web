@@ -5,8 +5,6 @@
  - With start/stop and interval to call systems.update()
  */
 
-import { WorldManager } from './WorldManager'
-
 export type GameEntity = number
 
 export abstract class AbstractGameComponent {
@@ -15,11 +13,11 @@ export abstract class AbstractGameComponent {
 }
 
 export abstract class AbstractGameSystem {
-    abstract componentsRequired: Set<Function>
-    dirtyComponents: Set<Function> = new Set()
+    abstract readonly componentsRequired: Set<Function>
+    readonly dirtyComponents: Set<Function> = new Set()
     ecs: ECS
 
-    abstract update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void
+    abstract update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void
 }
 
 export type ComponentClass<T extends AbstractGameComponent> = new (...args: any[]) => T
@@ -56,7 +54,6 @@ export class ComponentContainer {
 }
 
 export class ECS {
-    worldMgr: WorldManager
     private entities = new Map<GameEntity, ComponentContainer>()
     private systems = new Map<AbstractGameSystem, Set<GameEntity>>()
     private nextEntityID = 1
@@ -132,7 +129,7 @@ export class ECS {
     public update(elapsedMs: number): void {
         for (const [system, entities] of this.systems.entries()) {
             const dirtySystemEntities = this.dirtyEntities.get(system)
-            system.update(entities, dirtySystemEntities, elapsedMs)
+            system.update(elapsedMs, entities, dirtySystemEntities)
             dirtySystemEntities.clear()
         }
         while (this.entitiesToDestroy.length > 0) {

@@ -6,13 +6,13 @@ import { MapMarkerChange, MapMarkerType } from '../component/MapMarkerComponent'
 import { EventBroker } from '../../event/EventBroker'
 
 export class TerrainScannerSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([ScannerComponent])
+    readonly componentsRequired: Set<Function> = new Set([ScannerComponent])
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         let scanned = false
         for (const entity of entities) {
             try {

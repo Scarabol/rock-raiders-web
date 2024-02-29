@@ -1,10 +1,10 @@
-import { AbstractGameSystem } from '../ECS'
+import { AbstractGameSystem, GameEntity } from '../ECS'
 import { FallInComponent } from '../component/FallInComponent'
 
 export class FallInSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([FallInComponent])
+    readonly componentsRequired: Set<Function> = new Set([FallInComponent])
 
-    update(entities: Set<number>, dirty: Set<number>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)

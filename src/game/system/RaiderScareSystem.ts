@@ -5,13 +5,13 @@ import { WorldManager } from '../WorldManager'
 import { RunPanicJob } from '../model/job/raider/RunPanicJob'
 
 export class RaiderScareSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([PositionComponent, RaiderScareComponent])
+    readonly componentsRequired: Set<Function> = new Set([PositionComponent, RaiderScareComponent])
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)

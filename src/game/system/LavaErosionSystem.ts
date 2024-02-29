@@ -23,7 +23,7 @@ import { EventBroker } from '../../event/EventBroker'
  * In Level24 ( 40,  5, 300) a surface with erosion map value 9 progress each  6 seconds, but new take 20 seconds
  */
 export class LavaErosionSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([LavaErosionComponent])
+    readonly componentsRequired: Set<Function> = new Set([LavaErosionComponent])
     erodeTriggerTimeMs: number = 0
     increaseErosionDelayMs: number = 0
     powerPathLockTimeMs: number = 0
@@ -45,7 +45,7 @@ export class LavaErosionSystem extends AbstractGameSystem {
         })
     }
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         this.triggerNewErosionTimer += elapsedMs
         for (const entity of entities) {
             try {

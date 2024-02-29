@@ -3,10 +3,10 @@ import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 
 export class SceneEntityPositionSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([AnimatedSceneEntityComponent, PositionComponent])
-    dirtyComponents: Set<Function> = new Set([PositionComponent])
+    readonly componentsRequired: Set<Function> = new Set([AnimatedSceneEntityComponent, PositionComponent])
+    readonly dirtyComponents: Set<Function> = new Set([PositionComponent])
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number) {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         for (const entity of dirty) {
             try {
                 const components = this.ecs.getComponents(entity)

@@ -39,7 +39,7 @@ const ROCKY_BOULDER_THROW_DISTANCE_SQ = 80 * 80
 const ROCKY_MELEE_ATTACK_DISTANCE_SQ = 30 * 30
 
 export class RockMonsterBehaviorSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([RockMonsterBehaviorComponent, PositionComponent, AnimatedSceneEntityComponent, MonsterStatsComponent])
+    readonly componentsRequired: Set<Function> = new Set([RockMonsterBehaviorComponent, PositionComponent, AnimatedSceneEntityComponent, MonsterStatsComponent])
 
     constructor(readonly worldMgr: WorldManager) {
         super()
@@ -58,7 +58,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         })
     }
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         const pathFinder = this.worldMgr.sceneMgr.terrain?.pathFinder
         const crystals = this.worldMgr.entityMgr.materials.filter((m) => m.entityType === EntityType.CRYSTAL)
         const drivingVehiclePositions = this.worldMgr.entityMgr.vehicles

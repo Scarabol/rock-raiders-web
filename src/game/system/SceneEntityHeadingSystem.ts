@@ -3,10 +3,10 @@ import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityCo
 import { HeadingComponent } from '../component/HeadingComponent'
 
 export class SceneEntityHeadingSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([AnimatedSceneEntityComponent, HeadingComponent])
-    dirtyComponents: Set<Function> = new Set([HeadingComponent])
+    readonly componentsRequired: Set<Function> = new Set([AnimatedSceneEntityComponent, HeadingComponent])
+    readonly dirtyComponents: Set<Function> = new Set([HeadingComponent])
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number) {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         for (const entity of dirty) {
             try {
                 const components = this.ecs.getComponents(entity)

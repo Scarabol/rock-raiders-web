@@ -7,7 +7,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { EventBroker } from '../../event/EventBroker'
 
 export class OxygenSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([OxygenComponent])
+    readonly componentsRequired: Set<Function> = new Set([OxygenComponent])
     levelOxygenRate: number = 0
 
     constructor() {
@@ -17,7 +17,7 @@ export class OxygenSystem extends AbstractGameSystem {
         })
     }
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         let coefSum = 0
         for (const entity of entities) {
             try {

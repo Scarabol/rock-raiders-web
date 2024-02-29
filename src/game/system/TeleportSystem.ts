@@ -20,16 +20,17 @@ import { SelectionFrameComponent } from '../component/SelectionFrameComponent'
 import { MoveJob } from '../model/job/MoveJob'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../event/LocalEvents'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../component/MapMarkerComponent'
+import { WorldManager } from '../WorldManager'
 
 export class TeleportSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([TeleportComponent])
+    readonly componentsRequired: Set<Function> = new Set([TeleportComponent])
     requestedRaiders: number = 0
     spawnRaiderTimer: number = 0
     requestedVehicleTypes: EntityType[] = []
     spawnVehicleTimer: number = 0
     poweredBuildings: Set<GameEntity> = new Set()
 
-    constructor() {
+    constructor(readonly worldMgr: WorldManager) {
         super()
         EventBroker.subscribe(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
             this.requestedRaiders = event.numRequested
@@ -52,19 +53,19 @@ export class TeleportSystem extends AbstractGameSystem {
         })
     }
 
-    update(entities: Set<number>, dirty: Set<number>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         const teleports: TeleportComponent[] = []
         entities.forEach((e) => {
             if (this.poweredBuildings.has(e)) teleports.add(this.ecs.getComponents(e).get(TeleportComponent))
         })
         try {
             for (this.spawnRaiderTimer += elapsedMs; this.spawnRaiderTimer >= CHECK_SPAWN_RAIDER_TIMER; this.spawnRaiderTimer -= CHECK_SPAWN_RAIDER_TIMER) {
-                if (this.requestedRaiders > 0 && !this.ecs.worldMgr.entityMgr.hasMaxRaiders()) {
+                if (this.requestedRaiders > 0 && !this.worldMgr.entityMgr.hasMaxRaiders()) {
                     const teleport = teleports.find((t) => t.canTeleportIn(EntityType.PILOT))
                     if (!teleport) break
                     this.requestedRaiders--
                     EventBroker.publish(new RequestedRaidersChanged(this.requestedRaiders))
-                    const raider = new Raider(this.ecs.worldMgr)
+                    const raider = new Raider(this.worldMgr)
                     const heading = teleport.heading
                     const worldPosition = new Vector2(0, -TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(teleport.primaryPathSurface.getCenterWorld2D())
                     const walkOutPos = teleport.primaryPathSurface.getRandomPosition()
@@ -93,14 +94,14 @@ export class TeleportSystem extends AbstractGameSystem {
                         const sceneSelectionComponent = raider.worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
                         raider.worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, raider.stats))
                         if (walkOutPos) raider.setJob(new MoveJob(walkOutPos))
-                        this.ecs.worldMgr.entityMgr.raidersInBeam.remove(raider)
-                        this.ecs.worldMgr.entityMgr.raiders.push(raider)
+                        this.worldMgr.entityMgr.raidersInBeam.remove(raider)
+                        this.worldMgr.entityMgr.raiders.push(raider)
                         EventBroker.publish(new RaidersAmountChangedEvent(raider.worldMgr.entityMgr))
                         raider.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
                         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, raider.entity, MapMarkerChange.UPDATE, floorPosition))
                         teleport.operating = false
                     })
-                    this.ecs.worldMgr.entityMgr.raidersInBeam.push(raider)
+                    this.worldMgr.entityMgr.raidersInBeam.push(raider)
                 }
             }
         } catch (e) {
@@ -116,7 +117,7 @@ export class TeleportSystem extends AbstractGameSystem {
                         if (!teleportBuilding) return false
                         GameState.numCrystal -= stats.CostCrystal
                         EventBroker.publish(new MaterialAmountChanged())
-                        const vehicle = VehicleFactory.createVehicleFromType(vType, this.ecs.worldMgr)
+                        const vehicle = VehicleFactory.createVehicleFromType(vType, this.worldMgr)
                         const worldPosition = (teleportBuilding.waterPathSurface ?? teleportBuilding.primaryPathSurface).getCenterWorld2D()
                         teleportBuilding.operating = true
                         const floorPosition = vehicle.worldMgr.sceneMgr.getFloorPosition(worldPosition)
@@ -134,14 +135,14 @@ export class TeleportSystem extends AbstractGameSystem {
                             vehicle.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
                             const sceneSelectionComponent = vehicle.worldMgr.ecs.addComponent(vehicle.entity, new SceneSelectionComponent(vehicle.sceneEntity, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats))
                             vehicle.worldMgr.ecs.addComponent(vehicle.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, vehicle.stats))
-                            this.ecs.worldMgr.entityMgr.vehiclesInBeam.remove(vehicle)
-                            this.ecs.worldMgr.entityMgr.vehicles.push(vehicle)
+                            this.worldMgr.entityMgr.vehiclesInBeam.remove(vehicle)
+                            this.worldMgr.entityMgr.vehicles.push(vehicle)
                             EventBroker.publish(new RaidersAmountChangedEvent(vehicle.worldMgr.entityMgr))
                             vehicle.worldMgr.ecs.addComponent(vehicle.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
                             EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, vehicle.entity, MapMarkerChange.UPDATE, floorPosition))
                             teleportBuilding.operating = false
                         })
-                        this.ecs.worldMgr.entityMgr.vehiclesInBeam.push(vehicle)
+                        this.worldMgr.entityMgr.vehiclesInBeam.push(vehicle)
                         return true
                     })
                     if (spawnedVehicleType) {

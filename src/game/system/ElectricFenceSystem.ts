@@ -12,14 +12,14 @@ import { GameConfig } from '../../cfg/GameConfig'
 const FENCE_RANGE_SQ = TILESIZE / 4 * TILESIZE / 4
 
 export class ElectricFenceSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([PositionComponent, HealthComponent, MonsterStatsComponent, RockMonsterBehaviorComponent])
+    readonly componentsRequired: Set<Function> = new Set([PositionComponent, HealthComponent, MonsterStatsComponent, RockMonsterBehaviorComponent])
     beamDelayMs: number = 0
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         const fenceProtectedSurfaces = this.getFenceProtectedSurfaces()
         const studProtectedSurfaces = this.getStudProtectedSurfaces(fenceProtectedSurfaces)
         this.addBeamEffect(elapsedMs, studProtectedSurfaces)

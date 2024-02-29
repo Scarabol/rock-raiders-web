@@ -1,4 +1,4 @@
-import { AbstractGameSystem } from '../ECS'
+import { AbstractGameSystem, GameEntity } from '../ECS'
 import { EmergeComponent } from '../component/EmergeComponent'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -12,14 +12,15 @@ import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/Animation
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { GenericMonsterEvent } from '../../event/WorldLocationEvent'
+import { WorldManager } from '../WorldManager'
 
 export class EmergeSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([EmergeComponent])
+    readonly componentsRequired: Set<Function> = new Set([EmergeComponent])
 
     emergeCreature: MonsterEntityType = EntityType.NONE
     emergeTimeoutMs: number = 0
 
-    constructor() {
+    constructor(readonly worldMgr: WorldManager) {
         super()
         EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
             this.emergeCreature = event.levelConf.emergeCreature
@@ -30,10 +31,10 @@ export class EmergeSystem extends AbstractGameSystem {
         })
     }
 
-    update(entities: Set<number>, dirty: Set<number>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         if (!this.emergeCreature) return
         const busySurfaces = new Set<Surface>()
-        ;[...this.ecs.worldMgr.entityMgr.raiders, ...this.ecs.worldMgr.entityMgr.vehicles]
+        ;[...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles]
             .forEach((e) => busySurfaces.add(this.ecs.getComponents(e.entity).get(PositionComponent).surface))
         const emergeSpawns: Map<number, Surface[]> = new Map()
         const triggeredEmerges: Set<EmergeComponent> = new Set()
@@ -69,7 +70,7 @@ export class EmergeSystem extends AbstractGameSystem {
         const spawnCenter = spawn.getCenterWorld2D()
         const targetCenter = target.getCenterWorld2D()
         const angle = Math.atan2(targetCenter.x - spawnCenter.x, targetCenter.y - spawnCenter.y)
-        const monster = MonsterSpawner.spawnMonster(this.ecs.worldMgr, this.emergeCreature, spawnCenter.clone().add(targetCenter).divideScalar(2), angle)
+        const monster = MonsterSpawner.spawnMonster(this.worldMgr, this.emergeCreature, spawnCenter.clone().add(targetCenter).divideScalar(2), angle)
         const components = this.ecs.getComponents(monster)
         const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
         const positionComponent = components.get(PositionComponent)

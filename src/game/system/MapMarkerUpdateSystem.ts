@@ -5,10 +5,10 @@ import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
 import { EventBroker } from '../../event/EventBroker'
 
 export class MapMarkerUpdateSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([PositionComponent, MapMarkerComponent])
-    dirtyComponents: Set<Function> = new Set([PositionComponent])
+    readonly componentsRequired: Set<Function> = new Set([PositionComponent, MapMarkerComponent])
+    readonly dirtyComponents: Set<Function> = new Set([PositionComponent])
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         for (const entity of dirty) {
             try {
                 const components = this.ecs.getComponents(entity)

@@ -7,12 +7,19 @@ import { PositionComponent } from '../component/PositionComponent'
 import { EntityType } from '../model/EntityType'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
+import { WorldManager } from '../WorldManager'
+import { WeaponTypeCfg } from '../../cfg/WeaponTypesCfg'
 
 export class BoulderSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set([BoulderComponent])
+    readonly componentsRequired: Set<Function> = new Set([BoulderComponent])
+    readonly boulderStats: WeaponTypeCfg
 
-    update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
-        const boulderStats = GameConfig.instance.weaponTypes.get('boulder')
+    constructor(readonly worldMgr: WorldManager) {
+        super()
+        this.boulderStats = GameConfig.instance.weaponTypes.get('boulder')
+    }
+
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)
@@ -24,14 +31,14 @@ export class BoulderSystem extends AbstractGameSystem {
                     boulderComponent.mesh.position.z += step.y
                 } else {
                     const boulderExplode = boulderComponent.entityType === EntityType.BOULDER_ICE ? GameConfig.instance.miscObjects.BoulderExplodeIce : GameConfig.instance.miscObjects.BoulderExplode
-                    this.ecs.worldMgr.sceneMgr.addMiscAnim(boulderExplode, boulderComponent.mesh.position, 0, false)
-                    const boulderDamage = boulderStats.damageByEntityType.get(boulderComponent.targetBuildingType.entityType)?.[boulderComponent.targetLevel] || boulderStats.defaultDamage
+                    this.worldMgr.sceneMgr.addMiscAnim(boulderExplode, boulderComponent.mesh.position, 0, false)
+                    const boulderDamage = this.boulderStats.damageByEntityType.get(boulderComponent.targetBuildingType.entityType)?.[boulderComponent.targetLevel] || this.boulderStats.defaultDamage
                     const buildingComponents = this.ecs.getComponents(boulderComponent.targetEntity)
                     const healthComponent = buildingComponents.get(HealthComponent)
                     healthComponent.changeHealth(-boulderDamage)
                     if (healthComponent.triggerAlarm) EventBroker.publish(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
-                    this.ecs.worldMgr.entityMgr.removeEntity(entity)
-                    this.ecs.worldMgr.sceneMgr.scene.remove(boulderComponent.mesh)
+                    this.worldMgr.entityMgr.removeEntity(entity)
+                    this.worldMgr.sceneMgr.scene.remove(boulderComponent.mesh)
                     this.ecs.removeEntity(entity)
                 }
             } catch (e) {

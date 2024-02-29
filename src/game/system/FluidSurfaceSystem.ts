@@ -1,13 +1,13 @@
-import { AbstractGameSystem } from '../ECS'
+import { AbstractGameSystem, GameEntity } from '../ECS'
 import { FluidSurfaceComponent } from '../component/FluidSurfaceComponent'
 
 export class FluidSurfaceSystem extends AbstractGameSystem {
     private static readonly firstIndexGroup = [0, 2, 3, 4]
 
-    componentsRequired: Set<Function> = new Set([FluidSurfaceComponent])
+    readonly componentsRequired: Set<Function> = new Set([FluidSurfaceComponent])
     progress: number = 0
 
-    update(entities: Set<number>, dirty: Set<number>, elapsedMs: number): void {
+    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         this.progress = (this.progress + Math.PI * elapsedMs / 2500) % (2 * Math.PI)
         const wave = Math.sin(this.progress) * 0.08
         for (const entity of entities) {
