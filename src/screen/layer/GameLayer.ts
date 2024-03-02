@@ -51,7 +51,9 @@ export class GameLayer extends ScreenLayer {
             if (event.button !== MOUSE_BUTTON.MAIN) return false
             const gameEvent = new GamePointerEvent(POINTER_EVENT.DOWN, event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
-            if (!this.worldMgr.sceneMgr.buildMarker.buildingType) this.pointerDown = {x: gameEvent.canvasX, y: gameEvent.canvasY}
+            if (!this.worldMgr.sceneMgr.buildMarker.buildingType && !this.worldMgr.entityMgr.selection.doubleSelect) {
+                this.pointerDown = {x: gameEvent.canvasX, y: gameEvent.canvasY}
+            }
             return false
         })
         this.addEventListener('pointerup', (event): boolean => {
@@ -130,6 +132,8 @@ export class GameLayer extends ScreenLayer {
     private handlePointerUpEvent(event: GamePointerEvent) {
         if (this.worldMgr.sceneMgr.buildMarker.buildingType && this.worldMgr.sceneMgr.buildMarker.lastCheck) {
             this.worldMgr.sceneMgr.buildMarker.createBuildingSite()
+        } else if (this.worldMgr.entityMgr.selection.doubleSelect) {
+            console.warn('Double selection handling not yet implemented') // TODO Implement laser shooting
         } else if (this.pointerDown) {
             const downUpDistance = Math.abs(event.canvasX - this.pointerDown.x) + Math.abs(event.canvasY - this.pointerDown.y)
             if (downUpDistance < 5) {
@@ -137,8 +141,6 @@ export class GameLayer extends ScreenLayer {
                 this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
                 if (this.worldMgr.sceneMgr.hasBuildModeSelection()) {
                     this.worldMgr.sceneMgr.setBuildModeSelection(null)
-                } else if (this.worldMgr.entityMgr.selection.doubleSelect) {
-                    console.warn('Double selection handling not yet implemented') // TODO Implement laser shooting
                 } else if (this.worldMgr.entityMgr.selection.raiders.length > 0 || this.worldMgr.entityMgr.selection.vehicles.length > 0) {
                     const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
                     if (cursorTarget.surface) {
