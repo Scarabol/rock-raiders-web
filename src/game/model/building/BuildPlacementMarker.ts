@@ -1,4 +1,4 @@
-import { Group, Vector2 } from 'three'
+import { Group, Vector2, Vector3 } from 'three'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
@@ -50,12 +50,12 @@ export class BuildPlacementMarker {
         this.markers.push(marker)
     }
 
-    updatePosition(worldPosition: Vector2) {
+    updatePosition(worldPosition: Vector3) {
         if (!worldPosition || !this.buildingType) {
             this.hideAllMarker()
         } else {
             this.worldMgr.sceneMgr.birdViewControls.setBuildLock(true)
-            this.updateAllMarker(worldPosition)
+            this.updateAllMarker(new Vector2(worldPosition.x, worldPosition.z))
             this.buildingMarkerPrimary.setColor(this.buildingMarkerColor)
             this.buildingMarkerSecondary.setColor(this.buildingMarkerColor)
             this.powerPathMarkerPrimary.setColor(this.pathMarkerColor)

@@ -105,8 +105,7 @@ export class GameLayer extends ScreenLayer {
         this.worldMgr.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
         const doubleSelection = this.worldMgr.entityMgr.selection.doubleSelect
         if (cursorTarget.intersectionPoint && doubleSelection) {
-            const worldPos = this.worldMgr.sceneMgr.getFloorPosition(cursorTarget.intersectionPoint)
-            doubleSelection.sceneEntity.pointLaserAt(worldPos)
+            doubleSelection.sceneEntity.pointLaserAt(cursorTarget.intersectionPoint)
         }
         return false
     }

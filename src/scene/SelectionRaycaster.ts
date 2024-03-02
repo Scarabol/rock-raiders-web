@@ -1,4 +1,4 @@
-import { Object3D, Raycaster, Vector2 } from 'three'
+import { Object3D, Raycaster, Vector2, Vector3 } from 'three'
 import { GameSelection } from '../game/model/GameSelection'
 import { VehicleEntity } from '../game/model/vehicle/VehicleEntity'
 import { MaterialEntity } from '../game/model/material/MaterialEntity'
@@ -20,7 +20,7 @@ export interface CursorTarget {
     building?: BuildingEntity
     material?: MaterialEntity
     surface?: Surface
-    intersectionPoint?: Vector2
+    intersectionPoint?: Vector3
     entityType?: EntityType
 }
 
@@ -64,7 +64,7 @@ export class SelectionRaycaster {
                     if (surface.building && surface.pathBlockedByBuilding) {
                         return {building: surface.building, entityType: surface.building.entityType}
                     }
-                    return {surface: surface, intersectionPoint: new Vector2(intersection.point.x, intersection.point.z)}
+                    return {surface: surface, intersectionPoint: intersection.point}
                 }
             }
         }

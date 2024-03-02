@@ -159,9 +159,9 @@ export class SceneManager implements Updatable {
         this.cameraFPV.updateProjectionMatrix()
     }
 
-    setCursorFloorPosition(position: Vector2) {
+    setCursorFloorPosition(position: Vector3) {
         this.birdViewControls.removeEventListener('change', this.torchLightCursor.changeListener) // XXX Actually only required once
-        this.torchLightCursor.position.copy(this.terrain.getFloorPosition(position))
+        this.torchLightCursor.position.copy(position)
     }
 
     getFloorPosition(world: Vector2) {
