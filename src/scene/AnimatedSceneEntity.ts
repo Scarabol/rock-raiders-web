@@ -239,32 +239,25 @@ export class AnimatedSceneEntity extends Group implements Updatable {
     pointLaserAt(worldTarget: Vector3) {
         if (!worldTarget) return
         if (this.xPivotObj) {
-            const pivotWorldPos = new Vector3()
-            this.xPivotObj.getWorldPosition(pivotWorldPos)
+            this.xPivotObj.rotation.order = 'YXZ'
+            this.xPivotObj.rotation.set(0, 0, 0)
+            const pivotWorldPos = this.xPivotObj.getWorldPosition(new Vector3())
             const diff = worldTarget.clone().sub(pivotWorldPos)
-            const angleToTarget = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI
-            const parentAngle = AnimatedSceneEntity.getParentAngle(this.xPivotObj.parent, 'x')
+            const base = diff.clone().setY(0)
+            let angleToTarget = base.angleTo(diff)
+            if (diff.y > 0) angleToTarget *= -1
             // XXX use rotation speed and smooth movement
-            this.xPivotObj.rotation.x = parentAngle + this.limitAngle(angleToTarget)
+            this.xPivotObj.rotateX(this.limitAngle(angleToTarget))
         }
         const yPivot = this.yPivotObj ?? this.xPivotObj
         if (yPivot) {
-            const pivotWorldPos = new Vector3()
-            yPivot.getWorldPosition(pivotWorldPos)
-            const angleToTarget = -Math.atan2(worldTarget.z - pivotWorldPos.z, worldTarget.x - pivotWorldPos.x)
-            const parentAngle = -AnimatedSceneEntity.getParentAngle(yPivot.parent, 'y')
+            const pivotWorldPos = yPivot.getWorldPosition(new Vector3())
+            const angleToTarget = Math.atan2(worldTarget.x - pivotWorldPos.x, worldTarget.z - pivotWorldPos.z)
+            const parentDir = yPivot.parent.getWorldDirection(new Vector3())
+            const parentAngle = new Vector2(parentDir.z, parentDir.x).angle()
             // XXX use rotation speed and smooth movement
-            yPivot.rotation.y = parentAngle + angleToTarget + Math.PI / 2
+            yPivot.rotation.y = angleToTarget - parentAngle
         }
-    }
-
-    private static getParentAngle(parent: Object3D, dim: keyof Vector3): number {
-        let angle = 0
-        while (parent) {
-            angle += parent.rotation[dim]
-            parent = parent.parent
-        }
-        return angle
     }
 
     private limitAngle(angle: number): number {
@@ -293,5 +286,11 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         }
         this.visible = sceneMgr.terrain.getSurfaceFromWorld(this.position).discovered
         sceneMgr.addMeshGroup(this)
+    }
+
+    getFireNullParents(): { worldPos: Vector3, worldDirection: Vector3 }[] {
+        return this.animationData.flatMap((a) => this.meshesByLName.get(a.fireNullName).map((parent) => {
+            return {worldPos: parent.getWorldPosition(new Vector3()), worldDirection: parent.getWorldDirection(new Vector3())}
+        }))
     }
 }
