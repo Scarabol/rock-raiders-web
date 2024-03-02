@@ -187,8 +187,22 @@ export class LWOBParser {
                     indices[currentIndex++] = faceIndices[2]
                     indices[currentIndex++] = faceIndices[4]
                     break
+                case 6:
+                    indices[currentIndex++] = faceIndices[3]
+                    indices[currentIndex++] = faceIndices[1]
+                    indices[currentIndex++] = faceIndices[0]
+                    indices[currentIndex++] = faceIndices[3]
+                    indices[currentIndex++] = faceIndices[2]
+                    indices[currentIndex++] = faceIndices[1]
+                    indices[currentIndex++] = 0 // XXX ??? ok: 0, 3 in [0, 25]
+                    indices[currentIndex++] = faceIndices[3]
+                    indices[currentIndex++] = faceIndices[0]
+                    indices[currentIndex++] = 3 // XXX ??? ok: 0, 3 in [0, 25]
+                    indices[currentIndex++] = faceIndices[3]
+                    indices[currentIndex++] = faceIndices[0]
+                    break
                 default:
-                    console.warn(`Expected face with 3, 4 or 5 indices but got ${numIndices} instead`)
+                    console.warn(`Expected face with 3, 4, 5 or 6 indices but got ${numIndices} instead`)
             }
             offset += 2 + (numIndices * 2) + 2
         }
@@ -355,6 +369,7 @@ export class LWOBParser {
                     break
                 case 'TCTR':
                     textureCenter.set(this.lwoReader.readFloat32(), this.lwoReader.readFloat32(), this.lwoReader.readFloat32())
+                    if (this.verbose) console.log(`Texture center (TCTR): ${textureCenter.toArray().join(' ')}`)
                     // texture center is handled below in planar mapping
                     break
                 case 'TCLR':
@@ -471,7 +486,8 @@ export class LWOBParser {
 
             for (let i = group.start; i < group.start + group.count; i++) {
                 let vertexIndex = this.indices[i] * 3
-                let x = this.vertices[vertexIndex] - center.x
+                // LightWave coordinate system (left-handed) to three.js coordinate system (right-handed)
+                let x = -this.vertices[vertexIndex] - center.x
                 let y = this.vertices[vertexIndex + 1] - center.y
                 let z = this.vertices[vertexIndex + 2] - center.z
 
@@ -480,22 +496,21 @@ export class LWOBParser {
                 let v = 0
 
                 if (flags & XAXIS_BIT) {
-                    u = z / size.z + 0.5
-                    v = y / size.y + 0.5
+                    u = z / size.z
+                    v = y / size.y
                 } else if (flags & YAXIS_BIT) {
+                    u = x / size.x
+                    v = z / size.z
                     // TODO drill_icon.bmp on top of large digger is shown duplicated with 2 rows and 4 columns
-                    u = x / size.x + 0.5
-                    v = z / size.z + 0.5
-                    // u = (x / size.x + 0.5) / 4 + 0.5
-                    // v = (z / size.z + 0.5) / 2 + 0.5
+                    // u = (x / size.x + 0.5) / 4
+                    // v = (z / size.z + 0.5) / 2
                 } else if (flags & ZAXIS_BIT) {
-                    // LightWave coordinate system (left-handed) to three.js coordinate system (right-handed)
-                    u = (-this.vertices[vertexIndex] - center.x) / size.x + 0.5
-                    v = y / size.y + 0.5
+                    u = x / size.x
+                    v = y / size.y
                 }
 
-                this.uvs[uvIndex] = u
-                this.uvs[uvIndex + 1] = v
+                this.uvs[uvIndex] = u + 0.5
+                this.uvs[uvIndex + 1] = v + 0.5
             }
         }
     }
