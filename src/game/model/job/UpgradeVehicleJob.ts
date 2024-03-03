@@ -16,6 +16,10 @@ export class UpgradeVehicleJob extends Job {
     }
 
     getWorkplace(entity: VehicleEntity): PathTarget {
+        if (!this.workplace.building.isPowered()) {
+            this.vehicle.upgrading = false
+            return null
+        }
         return this.workplace
     }
 
@@ -25,6 +29,7 @@ export class UpgradeVehicleJob extends Job {
         const primaryPath = building.primaryPathSurface
         const opposite = building.worldMgr.sceneMgr.terrain.getSurface(2 * primaryPath.x - primary.x, 2 * primaryPath.y - primary.y)
         fulfiller.sceneEntity.headTowards(opposite.getCenterWorld2D())
+        this.vehicle.upgrading = true
         const upgradeAnimationSpeed = building.stats.FunctionCoef[building.level] || 1
         building.sceneEntity.setAnimationSpeed(upgradeAnimationSpeed)
         building.sceneEntity.setAnimation(BuildingActivity.Upgrade, () => {
@@ -33,6 +38,7 @@ export class UpgradeVehicleJob extends Job {
             building.sceneEntity.setAnimation(BuildingActivity.Stand)
             this.vehicle.addUpgrade(this.upgrade)
             EventBroker.publish(new VehicleUpgradeCompleteEvent())
+            this.vehicle.upgrading = false
         })
     }
 

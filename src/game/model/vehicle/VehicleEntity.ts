@@ -62,6 +62,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     carriedItems: Set<MaterialEntity> = new Set()
     upgrades: Set<VehicleUpgrade> = new Set()
     loadItemDelayMs: number = 0
+    upgrading: boolean = false
 
     constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand, readonly driverActivityRoute: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand) {
         this.entityType = entityType
@@ -244,7 +245,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     isSelectable(): boolean {
-        return !this.selected && !this.isInBeam()
+        return !this.selected && !this.isInBeam() && !this.upgrading
     }
 
     isInBeam(): boolean {
