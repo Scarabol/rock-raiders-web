@@ -97,18 +97,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                 })
             }
         })
-        this.reinstallAllUpgrades()
-        this.driverParent = this.animationParent
-        this.animationData.forEach((animEntityData) => {
-            if (animEntityData.carryNullName) this.carryJoints.push(...this.meshesByLName.getOrDefault(animEntityData.carryNullName, []))
-            if (animEntityData.driverNullName) this.driverParent = this.meshesByLName.get(animEntityData.driverNullName)?.last() || this.driverParent
-            if (animEntityData.toolNullName) this.toolParent = this.meshesByLName.get(animEntityData.toolNullName)?.last() || this.toolParent
-            if (animEntityData.depositNullName) this.depositParent = this.meshesByLName.get(animEntityData.depositNullName)?.last() || this.depositParent
-            if (animEntityData.xPivotName) this.xPivotObj = this.meshesByLName.get(animEntityData.xPivotName)?.last() || this.xPivotObj
-            if (animEntityData.yPivotName) this.yPivotObj = this.meshesByLName.get(animEntityData.yPivotName)?.last() || this.yPivotObj
-        })
-        this.addCarriedToJoints()
-        if (this.driver) this.driverParent.add(this.driver)
+        this.finalizeMeshSetup()
     }
 
     setAnimationSpeed(multiplier: number) {
@@ -136,8 +125,22 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.upgradeLevel = upgradeLevel
         this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
         this.installedUpgrades.length = 0
+        this.finalizeMeshSetup()
+    }
+
+    private finalizeMeshSetup() {
         this.reinstallAllUpgrades()
+        this.driverParent = this.animationParent
+        this.animationData.forEach((animEntityData) => {
+            if (animEntityData.carryNullName) this.carryJoints.push(...this.meshesByLName.getOrDefault(animEntityData.carryNullName, []))
+            if (animEntityData.driverNullName) this.driverParent = this.meshesByLName.get(animEntityData.driverNullName)?.last() || this.driverParent
+            if (animEntityData.toolNullName) this.toolParent = this.meshesByLName.get(animEntityData.toolNullName)?.last() || this.toolParent
+            if (animEntityData.depositNullName) this.depositParent = this.meshesByLName.get(animEntityData.depositNullName)?.last() || this.depositParent
+            if (animEntityData.xPivotName) this.xPivotObj = this.meshesByLName.get(animEntityData.xPivotName)?.last() || this.xPivotObj
+            if (animEntityData.yPivotName) this.yPivotObj = this.meshesByLName.get(animEntityData.yPivotName)?.last() || this.yPivotObj
+        })
         this.addCarriedToJoints()
+        if (this.driver) this.driverParent.add(this.driver)
     }
 
     reinstallAllUpgrades() {
