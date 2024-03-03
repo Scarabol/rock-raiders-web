@@ -41,6 +41,8 @@ export class VehicleEntityStats extends BaseConfig implements MovableEntityStats
     CrossWater: boolean = false
     CrossLava: boolean = false
     MaxCarry: number[] = []
+    UpgradeCostOre: number[] = []
+    UpgradeCostStuds: number[] = []
 }
 
 export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats, RaiderTrainingStats {

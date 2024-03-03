@@ -1,11 +1,13 @@
 import { Job, JobFulfiller } from './Job'
-import { VehicleUpgrade } from '../vehicle/VehicleUpgrade'
+import { VehicleUpgrade, VehicleUpgrades } from '../vehicle/VehicleUpgrade'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { PathTarget } from '../PathTarget'
 import { WorldManager } from '../../WorldManager'
 import { BuildingActivity } from '../anim/AnimationActivity'
 import { VehicleUpgradeCompleteEvent } from '../../../event/LocalEvents'
 import { EventBroker } from '../../../event/EventBroker'
+import { GameState } from '../GameState'
+import { MaterialAmountChanged } from '../../../event/WorldEvents'
 
 export class UpgradeVehicleJob extends Job {
     readonly workplace: PathTarget
@@ -24,6 +26,14 @@ export class UpgradeVehicleJob extends Job {
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {
+        const costIndex = VehicleUpgrades.toCostIndex(this.upgrade)
+        const upgradeCostOre = this.vehicle.stats.UpgradeCostOre?.[costIndex] ?? 0
+        const upgradeCostBrick = this.vehicle.stats.UpgradeCostStuds?.[costIndex] ?? 0
+        if (GameState.numBrick < upgradeCostBrick && GameState.numOre < upgradeCostOre) {
+            console.log(`Cannot afford vehicle upgrade! Ore: ${GameState.numOre}/${upgradeCostOre} Bricks: ${GameState.numBrick}/${upgradeCostBrick}`)
+            super.onJobComplete(fulfiller)
+            return
+        }
         const building = this.workplace.building
         const primary = building.primarySurface
         const primaryPath = building.primaryPathSurface
@@ -36,9 +46,17 @@ export class UpgradeVehicleJob extends Job {
             building.sceneEntity.setAnimationSpeed(1)
             super.onJobComplete(fulfiller)
             building.sceneEntity.setAnimation(BuildingActivity.Stand)
+            this.vehicle.upgrading = false
+            if (GameState.numBrick >= upgradeCostBrick) {
+                GameState.numBrick -= upgradeCostBrick
+            } else if (GameState.numOre >= upgradeCostOre) {
+                GameState.numOre -= upgradeCostOre
+            } else {
+                return
+            }
+            EventBroker.publish(new MaterialAmountChanged())
             this.vehicle.addUpgrade(this.upgrade)
             EventBroker.publish(new VehicleUpgradeCompleteEvent())
-            this.vehicle.upgrading = false
         })
     }
 
