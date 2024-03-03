@@ -133,6 +133,9 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addAsset(this.assetLoader.loadLWOFile, 'World/Shared/Crystal.lwo') // high-poly version
         this.addAsset(this.assetLoader.loadWadTexture, 'MiscAnims/Ore/Ore.bmp')
         this.addAsset(this.assetLoader.loadWadTexture, 'MiscAnims/Effects/rockfall.bmp')
+        this.addAsset(this.assetLoader.loadWadTexture, 'MiscAnims/Effects/rd_laserbolt.bmp')
+        this.addAsset(this.assetLoader.loadWadTexture, 'MiscAnims/Effects/rd_laserbolt_x.bmp')
+        this.addAsset(this.assetLoader.loadWadTexture, 'MiscAnims/Effects/rd_newstargreen.bmp')
         const miscObjects = iGet(gameConfig, 'MiscObjects')
         Object.values<string>(miscObjects).forEach((mType) => {
             this.addMeshObjects(mType)
