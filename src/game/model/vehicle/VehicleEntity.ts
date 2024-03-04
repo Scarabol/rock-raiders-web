@@ -71,7 +71,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.stats = stats
         this.entity = this.worldMgr.ecs.addEntity()
         this.sceneEntity = new AnimatedSceneEntity()
-        this.sceneEntity.flipCamera = true // TODO Why is this needed for vehicles and not pilot?
+        this.sceneEntity.flipCamera = true // XXX Why is this needed for vehicles and not pilot?
         aeNames.forEach((aeName) => this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName)))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))

@@ -255,11 +255,11 @@ export class GuiManager {
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraBird)
                 return
             } else if (event.viewMode === CameraViewMode.FPV) {
-                headJoint.rotation.y = entity.sceneEntity.flipCamera ? Math.PI : 0 // TODO Why is this needed for vehicles and not pilot?
+                headJoint.rotation.y = entity.sceneEntity.flipCamera ? Math.PI : 0 // XXX Why is this needed for vehicles and not pilot?
                 headJoint.add(worldMgr.sceneMgr.cameraFPV)
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraFPV)
             } else if (event.viewMode === CameraViewMode.SHOULDER) {
-                shoulderJoint.rotation.y = entity.sceneEntity.flipCamera ? Math.PI : 0 // TODO Why is this needed for vehicles and not pilot?
+                shoulderJoint.rotation.y = entity.sceneEntity.flipCamera ? Math.PI : 0 // XXX Why is this needed for vehicles and not pilot?
                 shoulderJoint.add(worldMgr.sceneMgr.cameraShoulder)
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraShoulder)
             }

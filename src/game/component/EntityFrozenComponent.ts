@@ -16,7 +16,7 @@ export class EntityFrozenComponent extends AbstractGameComponent {
                 this.iceCubeEntity.setAnimation('Melt', () => {
                     worldMgr.ecs.removeComponent(entity, EntityFrozenComponent)
                 })
-            }, freezerTimeMs) // TODO reduce time by start and melt?
+            }, freezerTimeMs) // TODO reduce ice cube time by start and melt?
         })
         this.iceCubeEntity.position.copy(position)
         this.iceCubeEntity.rotation.y = heading

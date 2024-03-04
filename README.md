@@ -48,12 +48,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.x - Late game features
 
-- Implement first person and shoulder camera views
 - Add entity movement controller with arrow keys for fpv/shoulder view
 
-- Tutorial levels and helper features
+- Add helper features for all tutorial levels
 
-- Add tiny rockies running around
 - Show credits on continue after completing Level25
 
 ### v0.9.x - Polishing
@@ -83,17 +81,14 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Geologists do not scan when placed in vehicles
 - Allow raider in alarm mode to be moved by player
 - Add rotation speed to entities and play turnLeft, turnRight animations
-- Save complete game state in browser cache to allow reload
-- Hardware cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position
-  manipulation
-- Start level from URL for easier reloading, check if game is unlocked when not in dev mode
-- Add option to read savegames from URL
+- Add option to read/write savegames from URL
 
 ### Cosmetics
 
 - Lava rockies texture not using correct UV coordinates
 - Orange smoke column above lava tiles missing
 - Dynamite screen shake is seen on other end of map
+- Add tiny rockies running around after crumbling
 - Raider scene entity position/rotation not correct when thrown by rocky
 - Numbers above ticking dynamite are not shown correctly sometimes
 - Two buttons in priority list can be hovered/pressed/released at the same time
@@ -104,10 +99,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Technical Debt
 
-- Improve type safety for job system with separate sets for each fulfiller type
-- Introduce async UI load functions to make sure all assets are ready before showing UI and avoid unnecessary re-renders
-  on start
-- Uplift configuration parsing into loading process for type safety and error resilience
 - Move three.js rendering to separate worker (blocked
   until [worker support for audio](https://github.com/WebAudio/web-audio-api/issues/2423) is solved,
   so [AudioContext](https://github.com/mrdoob/three.js/blob/master/src/audio/AudioContext.js) does not need _window_

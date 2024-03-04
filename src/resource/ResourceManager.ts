@@ -226,7 +226,7 @@ class ResourceManagerTextureLoader extends LWOBTextureLoader {
         return onLoad(this.loadFromResourceManager(textureFilename))
     }
 
-    private loadFromResourceManager(textureFilename: string): Texture[] { // TODO Introduce texture name resolver
+    private loadFromResourceManager(textureFilename: string): Texture[] {
         if (!textureFilename || textureFilename === '(none)') return []
         const hasSequence = textureFilename.endsWith('(sequence)')
         const sequenceBaseFilepath = textureFilename.slice(0, textureFilename.length - '(sequence)'.length).trim()

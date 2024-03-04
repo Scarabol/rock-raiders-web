@@ -21,7 +21,7 @@ export class PausePanel extends MenuBasePanel {
         this.layersByKey.get('menu4').itemsTrigger[0].onClick = () => this.onRestartGame()
         const advOptions = this.layersByKey.get('menu5')
         const wallDetailsToggle = advOptions.itemsCycle[0]
-        wallDetailsToggle.disabled = true // TODO Implement wall details
+        wallDetailsToggle.disabled = true // TODO Implement wall details with pro meshes
         wallDetailsToggle.setState(SaveGameManager.currentPreferences.wallDetails)
         const musicToggle = advOptions.itemsCycle[1]
         musicToggle.disabled = true // TODO Implement background music

@@ -71,7 +71,6 @@ export class SceneManager implements Updatable {
         const isBirdView = camera === this.cameraBird
         if (this.torchLightCursor) this.torchLightCursor.visible = isBirdView
         this.birdViewControls.disabled = !isBirdView
-        // TODO Showing/hiding sprites does not work since they blink or their visibility is user controlled by space key
         this.cameraActive = camera
         this.cameraActive.add(SoundManager.sceneAudioListener)
         this.renderer.camera = camera
@@ -230,7 +229,7 @@ export class SceneManager implements Updatable {
         if (audioBuffer) {
             audio.setBuffer(audioBuffer)
             parent.add(audio)
-            if (autoPlay && sfxVolume > 0) audio.play() // TODO retry playing sound for looped ones, when audio context fails
+            if (autoPlay && sfxVolume > 0) audio.play()
         }
         return audio
     }

@@ -53,7 +53,7 @@ export class DamageSystem extends AbstractGameSystem {
                 }
                 this.landslides.forEach((landslide) => {
                     if (positionComponent.surface !== landslide.surface) return
-                    healthComponent.changeHealth(-healthComponent.rockFallDamage * 50) // TODO balance fallins
+                    healthComponent.changeHealth(-healthComponent.rockFallDamage * 50) // TODO balance fall in damage
                 })
             } catch (e) {
                 console.error(e)

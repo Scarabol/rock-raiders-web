@@ -79,7 +79,7 @@ export class Surface {
                 this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
                 break
         }
-        // TODO Use pro meshes for high wall details?
+        // TODO Use pro meshes for high wall details in FPV
         // const proMesh = ResourceManager.getLwoModel(this.terrain.textureSet.meshBasename + '01b.lwo')
         // proMesh.position.copy(this.mesh.position)
         // proMesh.scale.setScalar(1 / TILESIZE)

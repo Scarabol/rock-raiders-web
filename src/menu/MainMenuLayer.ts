@@ -31,10 +31,10 @@ export class MainMenuLayer extends ScaledLayer {
     constructor(menuCfg: MenuEntryCfg) {
         super()
         this.cfg = menuCfg
-        this.menuImage = menuCfg.menuImage ? ResourceManager.getImage(menuCfg.menuImage) : null // TODO create all the images in loading phase
+        this.menuImage = menuCfg.menuImage ? ResourceManager.getImage(menuCfg.menuImage) : null // TODO create all images in loading phase
         let titleImage: SpriteImage = null
         if (menuCfg.displayTitle && menuCfg.fullName) {
-            BitmapFontWorkerPool.instance.createTextImage(menuCfg.loFont, menuCfg.fullName) // TODO create all the images in loading phase
+            BitmapFontWorkerPool.instance.createTextImage(menuCfg.loFont, menuCfg.fullName) // TODO create all images in loading phase
                 .then((img) => titleImage = img)
         }
         menuCfg.itemsLabel.forEach((item) => {

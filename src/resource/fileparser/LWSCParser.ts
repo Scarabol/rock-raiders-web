@@ -150,7 +150,7 @@ export class LWSCParser {
                     currentObject.sfxName = nameParts[1]
                     if (currentObject.lowerName === 'snd') currentObject.sfxName = currentObject.sfxName.toLowerCase().replace('sfx_', 'snd_')
                     const sfxFrameStart = nameParts[2] ? parseInt(nameParts[2], 10) : 0
-                    const sfxFrameEnd = nameParts[3] ? parseInt(nameParts[3], 10) : Math.min(sfxFrameStart + 3, this.numOfKeyframes) // TODO Use actual length of sample
+                    const sfxFrameEnd = nameParts[3] ? parseInt(nameParts[3], 10) : Math.min(sfxFrameStart + 3, this.numOfKeyframes)
                     const times = []
                     const sfxNames = []
                     for (let c = 0; c < this.numOfKeyframes; c++) {

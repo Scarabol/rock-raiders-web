@@ -67,7 +67,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 behaviorComponent.state = RockMonsterBehaviorState.HIT_BY_LASER
             }
             const healthComponent = components.get(HealthComponent)
-            // TODO How does damage work in original?
+            // TODO How does laser beam shot damage work in original?
             const laserDamage = Math.randomInclusive(4 * event.weaponCfg.defaultDamage, 6 * event.weaponCfg.defaultDamage)
             healthComponent.changeHealth(-laserDamage)
             sceneEntity.setAnimation(RockMonsterActivity.HitHard, () => {

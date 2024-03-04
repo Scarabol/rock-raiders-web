@@ -53,7 +53,7 @@ export class WorldManager {
     gameSpeedMultiplier: number = 1
 
     constructor() {
-        this.powerGrid = new PowerGrid(this) // TODO Transform into system with components
+        this.powerGrid = new PowerGrid(this) // TODO Transform power grid into system with components
         this.ecs.addSystem(new MovementSystem(this))
         this.ecs.addSystem(new SceneEntityPositionSystem())
         this.ecs.addSystem(new SceneEntityHeadingSystem())

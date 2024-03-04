@@ -14,14 +14,14 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
     constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {
         super()
         Promise.all([
-            BitmapFontWorkerPool.instance.createTextImage(layer.cfg.loFont, cfg.label), // TODO create all the images in loading phase
-            BitmapFontWorkerPool.instance.createTextImage(layer.cfg.hiFont, cfg.label), // TODO create all the images in loading phase
+            BitmapFontWorkerPool.instance.createTextImage(layer.cfg.loFont, cfg.label), // TODO create all images in loading phase
+            BitmapFontWorkerPool.instance.createTextImage(layer.cfg.hiFont, cfg.label), // TODO create all images in loading phase
         ]).then((textImages) => {
             [this.labelImgLo, this.labelImgHi] = textImages
             this.width = Math.max(this.labelImgLo.width, this.labelImgHi.width)
             this.height = Math.max(this.labelImgLo.height, this.labelImgHi.height)
             this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x
-            layer.animationFrame.notifyRedraw() // TODO create all the images in loading phase
+            layer.animationFrame.notifyRedraw() // TODO create all images in loading phase
         })
         this.y = layer.cfg.position[1] + cfg.y
         this.actionName = cfg.actionName

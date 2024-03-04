@@ -65,7 +65,6 @@ export class MainMenuScreen {
         this.menuLayers.length = 0
         this.screenMaster.removeLayer(this.rockWipeLayer)
         this.rockWipeLayer.dispose()
-        // TODO remove event listener on hot reload?
     }
 
     private onItemAction(item: MainMenuBaseItem) {
@@ -76,7 +75,7 @@ export class MainMenuScreen {
         } else if (item.actionName.toLowerCase().startsWith('load_game')) {
             SaveGameManager.loadGame(item.targetIndex)
             this.showLevelSelection()
-        } else if (item.actionName.equalsIgnoreCase('selectrandomlevel')) { // TODO make sure that target level is unlocked?
+        } else if (item.actionName.equalsIgnoreCase('selectrandomlevel')) { // TODO make sure that target level is unlocked
             const allLevelNames = Array.from(Array(24).keys()).map((n) => `Level${(n + 1).toPadded()}`)
             const unScoredLevels = allLevelNames.filter((levelName) => !SaveGameManager.getLevelScoreString(levelName))
             if (unScoredLevels.length > 0) {
