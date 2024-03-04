@@ -17,6 +17,7 @@ export enum RockMonsterBehaviorState {
     PUNCH,
     THROW_MAN,
     RESTING,
+    HIT_BY_LASER,
 }
 
 export class RockMonsterBehaviorComponent extends AbstractGameComponent {

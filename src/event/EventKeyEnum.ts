@@ -93,4 +93,6 @@ export enum EventKey {
     DYNAMITE_EXPLOSION = 'dynamite-explosion',
     GAME_RESULT_STATE = 'game-result-state',
     RESTART_GAME = 'restart-game',
+    SHOOT_LASER = 'shoot-laser',
+    MONSTER_LASER_HIT = 'monster-laser-hit',
 }

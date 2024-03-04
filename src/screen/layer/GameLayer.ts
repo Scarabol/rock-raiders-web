@@ -3,7 +3,7 @@ import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnu
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { DeselectAll, SelectionChanged, SelectionFrameChangeEvent } from '../../event/LocalEvents'
-import { JobCreateEvent, MonsterEmergeEvent } from '../../event/WorldEvents'
+import { JobCreateEvent, MonsterEmergeEvent, ShootLaserEvent } from '../../event/WorldEvents'
 import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
 import { DEV_MODE } from '../../params'
@@ -129,10 +129,11 @@ export class GameLayer extends ScreenLayer {
     }
 
     private handlePointerUpEvent(event: GamePointerEvent) {
+        const doubleSelect = this.worldMgr.entityMgr.selection.doubleSelect
         if (this.worldMgr.sceneMgr.buildMarker.buildingType && this.worldMgr.sceneMgr.buildMarker.lastCheck) {
             this.worldMgr.sceneMgr.buildMarker.createBuildingSite()
-        } else if (this.worldMgr.entityMgr.selection.doubleSelect) {
-            console.warn('Double selection handling not yet implemented') // TODO Implement laser shooting
+        } else if (doubleSelect) {
+            EventBroker.publish(new ShootLaserEvent(doubleSelect.entity))
         } else if (this.pointerDown) {
             const downUpDistance = Math.abs(event.canvasX - this.pointerDown.x) + Math.abs(event.canvasY - this.pointerDown.y)
             if (downUpDistance < 5) {

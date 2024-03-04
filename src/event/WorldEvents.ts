@@ -9,6 +9,8 @@ import { LevelConfData } from '../game/LevelLoader'
 import { BaseEvent } from './EventTypeMap'
 import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { Surface } from '../game/terrain/Surface'
+import { GameEntity } from '../game/ECS'
+import { WeaponTypeCfg } from '../cfg/WeaponTypesCfg'
 
 export abstract class JobEvent extends BaseEvent {
     job: Job
@@ -132,5 +134,17 @@ export class UpdatePriorities extends BaseEvent {
 export class NerpSuppressArrowEvent extends BaseEvent {
     constructor(readonly suppressArrow: boolean) {
         super(EventKey.NERP_SUPPRESS_ARROW)
+    }
+}
+
+export class ShootLaserEvent extends BaseEvent {
+    constructor(readonly entity: GameEntity) {
+        super(EventKey.SHOOT_LASER)
+    }
+}
+
+export class MonsterLaserHitEvent extends BaseEvent {
+    constructor(readonly entity: GameEntity, readonly weaponCfg: WeaponTypeCfg) {
+        super(EventKey.MONSTER_LASER_HIT)
     }
 }

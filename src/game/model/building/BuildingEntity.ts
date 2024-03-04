@@ -33,6 +33,8 @@ import { EventBroker } from '../../../event/EventBroker'
 import { TooltipComponent } from '../../component/TooltipComponent'
 import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 import { TeleportComponent } from '../../component/TeleportComponent'
+import { LaserBeamTurretComponent } from '../../component/LaserBeamTurretComponent'
+import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 
 export class BuildingEntity {
     readonly carriedItems: MaterialEntity[] = []
@@ -59,6 +61,7 @@ export class BuildingEntity {
         this.buildingType = BuildingType.from(this.entityType)
         this.sceneEntity = new AnimatedSceneEntity()
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(this.buildingType.aeFilename))
+        this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.powerOffSprite = new BubbleSprite(GameConfig.instance.bubbles.bubblePowerOff)
         this.powerOffSprite.visible = this.isPowered()
         this.sceneEntity.add(this.powerOffSprite)
@@ -84,6 +87,10 @@ export class BuildingEntity {
             const objectName = this.buildingType.getObjectName(this.level)
             return TooltipSpriteBuilder.getTooltipSprite(objectName, healthComponent.health)
         }))
+        if (entityType === EntityType.GUNSTATION) {
+            const weaponCfg = GameConfig.instance.weaponTypes.get('BigLazer'.toLowerCase())
+            this.worldMgr.ecs.addComponent(this.entity, new LaserBeamTurretComponent(weaponCfg))
+        }
     }
 
     get stats(): BuildingEntityStats {

@@ -7,6 +7,7 @@ export class GameState {
     static numOre: number = 0
     static numBrick: number = 0
     static usedCrystals: number = 0
+    static dischargedCrystals: number = 0
     static airLevel: number = 1 // air level in percent from 0 to 1.0
     static totalCrystals: number = 0
     static numTotalOres: number = 0
@@ -25,6 +26,7 @@ export class GameState {
         this.numOre = this.getDevParam('numOre', 0)
         this.numBrick = this.getDevParam('numBrick', 0)
         this.usedCrystals = 0
+        this.dischargedCrystals = 0
         this.airLevel = 1
         this.totalCrystals = 0
         this.numTotalOres = 0

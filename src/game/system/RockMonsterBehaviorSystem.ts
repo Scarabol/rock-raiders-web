@@ -20,7 +20,7 @@ import { Vector2, Vector3 } from 'three'
 import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
 import { MaterialEntity } from '../model/material/MaterialEntity'
 import { TILESIZE } from '../../params'
-import { DynamiteExplosionEvent } from '../../event/WorldEvents'
+import { DynamiteExplosionEvent, MonsterLaserHitEvent } from '../../event/WorldEvents'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Raider } from '../model/raider/Raider'
@@ -54,6 +54,30 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                     })
                 }
+            })
+        })
+        EventBroker.subscribe(EventKey.MONSTER_LASER_HIT, (event: MonsterLaserHitEvent) => {
+            const components = this.ecs.getComponents(event.entity)
+            const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
+            sceneEntity.removeAllCarried()
+            let behaviorComponent = components.get(RockMonsterBehaviorComponent)
+            if (behaviorComponent) {
+                behaviorComponent.boulder = null
+                behaviorComponent.changeToIdle()
+                behaviorComponent.state = RockMonsterBehaviorState.HIT_BY_LASER
+            }
+            const healthComponent = components.get(HealthComponent)
+            // TODO How does damage work in original?
+            const laserDamage = Math.randomInclusive(4 * event.weaponCfg.defaultDamage, 6 * event.weaponCfg.defaultDamage)
+            healthComponent.changeHealth(-laserDamage)
+            sceneEntity.setAnimation(RockMonsterActivity.HitHard, () => {
+                if (!behaviorComponent) {
+                    this.ecs.addComponent(event.entity, new RaiderScareComponent(RaiderScareRange.ROCKY))
+                    behaviorComponent = this.ecs.addComponent(event.entity, new RockMonsterBehaviorComponent())
+                    const positionComponent = components.get(PositionComponent)
+                    EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
+                }
+                behaviorComponent.state = RockMonsterBehaviorState.IDLE
             })
         })
     }

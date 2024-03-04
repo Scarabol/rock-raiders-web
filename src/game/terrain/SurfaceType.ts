@@ -12,6 +12,7 @@ export class SurfaceType {
     hasRubble: boolean = false
     cursor: Cursor = Cursor.STANDARD
     statsDrillName: string = null
+    statsLaserName: 'wallDestroyTimeHard' | 'wallDestroyTimeMedium' | 'wallDestroyTimeLoose' = null
     canHaveFence: boolean = false
     connectsPath: boolean = false
     mapSurfaceColor: string = '#00FFFF'
@@ -56,6 +57,7 @@ export class SurfaceType {
         reinforcable: true,
         cursor: Cursor.SURFACE_TYPE_HARD,
         statsDrillName: 'HardDrillTime',
+        statsLaserName: 'wallDestroyTimeHard',
         mapSurfaceColor: '#7000B0',
     })
     static readonly LOOSE_ROCK = new SurfaceType({
@@ -67,6 +69,7 @@ export class SurfaceType {
         reinforcable: true,
         cursor: Cursor.SURFACE_TYPE_MEDIUM,
         statsDrillName: 'LooseDrillTime',
+        statsLaserName: 'wallDestroyTimeMedium',
         mapSurfaceColor: '#9000D0',
     })
     static readonly DIRT = new SurfaceType({
@@ -78,6 +81,7 @@ export class SurfaceType {
         reinforcable: true,
         cursor: Cursor.SURFACE_TYPE_LOOSE,
         statsDrillName: 'SoilDrillTime',
+        statsLaserName: 'wallDestroyTimeLoose',
         mapSurfaceColor: '#B000F0',
     })
     static readonly SLUG_HOLE = new SurfaceType({

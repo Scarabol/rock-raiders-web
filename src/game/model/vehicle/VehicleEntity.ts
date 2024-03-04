@@ -44,6 +44,7 @@ import { EventBroker } from '../../../event/EventBroker'
 import { GameState } from '../GameState'
 import { TooltipComponent } from '../../component/TooltipComponent'
 import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
+import { LaserBeamTurretComponent } from '../../component/LaserBeamTurretComponent'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -82,6 +83,13 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             return TooltipSpriteBuilder.getTooltipSprite(objectName, health)
         }))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
+        if (entityType === EntityType.SMALL_MLP) {
+            const weaponCfg = GameConfig.instance.weaponTypes.get('SmallLazer'.toLowerCase())
+            this.worldMgr.ecs.addComponent(this.entity, new LaserBeamTurretComponent(weaponCfg))
+        } else if (entityType === EntityType.LARGE_MLP || entityType === EntityType.LARGE_DIGGER) {
+            const weaponCfg = GameConfig.instance.weaponTypes.get('BigLazer'.toLowerCase())
+            this.worldMgr.ecs.addComponent(this.entity, new LaserBeamTurretComponent(weaponCfg))
+        }
     }
 
     update(elapsedMs: number) {
