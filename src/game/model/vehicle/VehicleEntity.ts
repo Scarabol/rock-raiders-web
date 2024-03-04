@@ -372,7 +372,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             positionComponent.position.set(0, 0, 0)
             positionComponent.markDirty()
             this.sceneEntity.addDriver(this.driver.sceneEntity)
-            // TODO sync idle animation of vehicle and driver
+            this.sceneEntity.restartAnimation()
         }
         this.worldMgr.ecs.removeComponent(this.driver.entity, MapMarkerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.REMOVE))

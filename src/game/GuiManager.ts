@@ -245,7 +245,7 @@ export class GuiManager {
                 console.warn('No entity seems selected')
                 return
             }
-            const camJoints = entity.sceneEntity.animationGroups.flatMap((a) => a.meshList.filter((m) => m.name.equalsIgnoreCase(a.animEntityData.cameraNullName)))
+            const camJoints = entity.sceneEntity.getCamJoints()
             if (camJoints.length != 2) {
                 console.warn(`Unexpected number ${camJoints.length} camera joints found in mesh`, entity.sceneEntity, camJoints)
                 return

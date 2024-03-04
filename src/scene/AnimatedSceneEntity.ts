@@ -291,9 +291,17 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         sceneMgr.addMeshGroup(this)
     }
 
+    getCamJoints() {
+        return this.animationGroups.flatMap((a) => a.meshList.filter((m) => m.name.equalsIgnoreCase(a.animEntityData.cameraNullName)))
+    }
+
     getFireNullParents(): { worldPos: Vector3, worldDirection: Vector3 }[] {
         return this.animationData.flatMap((a) => this.meshesByLName.get(a.fireNullName).map((parent) => {
             return {worldPos: parent.getWorldPosition(new Vector3()), worldDirection: parent.getWorldDirection(new Vector3())}
         }))
+    }
+
+    restartAnimation() {
+        this.animationGroups.forEach((a) => a.resetAnimation())
     }
 }
