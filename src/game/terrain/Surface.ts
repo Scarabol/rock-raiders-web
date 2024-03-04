@@ -47,6 +47,7 @@ export class Surface {
     dynamiteJob: CarryJob = null
     clearRubbleJob: ClearRubbleJob = null
     seamLevel: number = 0
+    drillProgress: number = 0
 
     wallType: WALL_TYPE = null
     mesh: SurfaceMesh = null
@@ -169,7 +170,21 @@ export class Surface {
         this.needsMeshUpdate = true
     }
 
+    addDrillTimeProgress(drillTimeSeconds: number, elapsedMs: number, drillPosition: Vector2) {
+        if (this.drillProgress >= 1 || drillTimeSeconds < 1) return
+        const drillProgress = elapsedMs / (drillTimeSeconds * 1000)
+        this.addDrillProgress(drillProgress, drillPosition)
+    }
+
+    addDrillProgress(drillProgress: number, drillPosition: Vector2) {
+        this.drillProgress += drillProgress
+        if (this.drillProgress >= 1) {
+            this.onDrillComplete(drillPosition)
+        }
+    }
+
     onDrillComplete(drillPosition: Vector2): boolean {
+        this.drillProgress = 0
         if (this.seamLevel > 0) {
             this.seamLevel--
             for (let x = -1; x <= 1; x++) {

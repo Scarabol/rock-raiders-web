@@ -11,7 +11,6 @@ import { GameEntity } from '../../../ECS'
 
 export class DrillJob extends ShareableJob {
     digPositionsByFulfiller: Map<GameEntity, PathTarget[]> = new Map()
-    progress: number = 0
 
     constructor(readonly surface: Surface) {
         super()
@@ -40,11 +39,6 @@ export class DrillJob extends ShareableJob {
         return entity.findShortestPath(digPositions)?.target
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
-        if (this.surface.onDrillComplete(this.getWorkplace(fulfiller).targetLocation)) super.onJobComplete(fulfiller)
-        else this.progress = 0
-    }
-
     getWorkActivity(): AnimationActivity {
         return RaiderActivity.Drill
     }
@@ -57,17 +51,6 @@ export class DrillJob extends ShareableJob {
             return 120000
         }
         return 1000 / drillPerSecond
-    }
-
-    addProgress(fulfiller: JobFulfiller, elapsedMs: number) {
-        if (this.progress >= 1) return
-        const drillTimeSeconds = fulfiller.getDrillTimeSeconds(this.surface)
-        if (drillTimeSeconds > 0) {
-            this.progress += elapsedMs / (drillTimeSeconds * 1000)
-            if (this.progress >= 1) {
-                this.onJobComplete(fulfiller)
-            }
-        }
     }
 
     getJobBubble(): keyof BubblesCfg {

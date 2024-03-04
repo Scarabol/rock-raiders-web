@@ -63,9 +63,6 @@ export abstract class Job {
         return null
     }
 
-    addProgress(fulfiller: JobFulfiller, elapsedMs: number) {
-    }
-
     getJobBubble(): keyof BubblesCfg {
         return null
     }

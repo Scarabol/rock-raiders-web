@@ -105,7 +105,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (workActivity === RaiderActivity.Drill) {
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
             this.sceneEntity.setAnimation(workActivity)
-            this.job?.addProgress(this, elapsedMs)
+            this.job.surface.addDrillTimeProgress(this.getDrillTimeSeconds(this.job.surface), elapsedMs, this.job.getWorkplace(this).targetLocation)
         } else if (workActivity === AnimEntityActivity.Stand) {
             this.sceneEntity.setAnimation(workActivity)
             this.completeJob()
