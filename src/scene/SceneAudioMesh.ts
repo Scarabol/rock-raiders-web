@@ -12,9 +12,8 @@ export class SceneAudioMesh extends SceneMesh {
         const sfxVolume = SaveGameManager.getSfxVolume()
         if (sfxVolume <= 0) return
         const sfxName = this.userData.sfxNameAnimation
-        if (this.lastSfxName === sfxName) return
+        if (!sfxName || (this.lastSfxName === sfxName && this.audioNode?.isPlaying)) return
         this.lastSfxName = sfxName
-        if (!this.lastSfxName) return
         const audioBuffer = SoundManager.getSoundBuffer(this.lastSfxName)
         if (!audioBuffer) return
         if (!this.audioNode) {
@@ -22,11 +21,11 @@ export class SceneAudioMesh extends SceneMesh {
             this.audioNode.setRefDistance(TILESIZE * 5)
             this.audioNode.setRolloffFactor(10)
             this.add(this.audioNode)
+            this.audioNode.onEnded = () => {
+                SoundManager.stopAudio(this.audioNode)
+            }
         }
         this.audioNode.setVolume(sfxVolume)
-        this.audioNode.onEnded = () => {
-            SoundManager.stopAudio(this.audioNode)
-        }
         this.audioNode.setBuffer(audioBuffer)
         this.audioNode.play()
         SoundManager.playingAudio.add(this.audioNode)
