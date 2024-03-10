@@ -86,7 +86,7 @@ export class GameConfig extends BaseConfig {
         } else if ('Pointers'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => {
                 const cursorFileName: string = Array.isArray(value) ? value[0] : value
-                this.pointers.set(this.stripKey(cfgKey) as Cursor, cursorFileName)
+                this.pointers.set(this.stripKey(cfgKey) as Cursor, cursorFileName.toLowerCase())
             })
         } else if ('InterfaceImages'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.interfaceImages.set(cfgKey.toLowerCase(), new MenuItemCfg(value)))

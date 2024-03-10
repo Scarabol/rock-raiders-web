@@ -89,7 +89,7 @@ export class SaveGameManager {
         localStorage.setItem('savegames', JSON.stringify(this.saveGames))
         this.screenshots[index] = Promise.resolve(screenshot)
         localStorage.setItem(`screenshot${index}`, this.createSaveGameThumbnail(screenshot))
-        console.log('game progress saved', this.saveGames)
+        if (VERBOSE) console.log('game progress saved', this.saveGames)
     }
 
     private static createSaveGameThumbnail(screenshot: HTMLCanvasElement): string {
@@ -103,7 +103,7 @@ export class SaveGameManager {
 
     static loadGame(index: number): boolean {
         this.currentLevels = this.saveGames[index]?.levels ?? []
-        console.log('game progress loaded', this.currentLevels)
+        if (VERBOSE) console.log('game progress loaded', this.currentLevels)
         return true
     }
 

@@ -15,7 +15,7 @@ export class SoundManager {
 
     static init() {
         this.playingAudio.forEach((audio) => {
-            if (audio?.isPlaying) audio?.stop()
+            if (audio?.isPlaying) audio.stop()
         })
         this.playingAudio.clear()
         EventBroker.subscribe(EventKey.PAUSE_GAME, () => this.playingAudio.forEach((a) => a.pause())) // XXX What if audio was paused for other reasons
@@ -64,7 +64,7 @@ export class SoundManager {
     static getSoundBuffer(sfxName: string): AudioBuffer {
         return this.sfxBuffersByKey.getOrUpdate(sfxName.toLowerCase(), () => {
             // ignore known sound issues
-            if (!VERBOSE && !['SurfaceSFX_Tunnel'].includes(sfxName)) {
+            if (VERBOSE || !['SurfaceSFX_Tunnel'].includes(sfxName)) {
                 console.warn(`Could not find SFX with name '${sfxName}'`)
             }
             return []
@@ -72,7 +72,7 @@ export class SoundManager {
     }
 
     static stopAudio(audio: PositionalAudio): null {
-        if (audio?.isPlaying) audio?.stop()
+        if (audio?.isPlaying) audio.stop()
         this.playingAudio.delete(audio)
         return null
     }

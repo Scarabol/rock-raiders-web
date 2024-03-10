@@ -1,5 +1,5 @@
 import { GameFilesLoader } from './resource/GameFilesLoader'
-import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME } from './params'
+import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME, VERBOSE } from './params'
 import { ScreenMaster } from './screen/ScreenMaster'
 import { GithubBox } from '../site/github/github-box'
 import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
@@ -20,7 +20,6 @@ export async function start() {
     const screenMaster = new ScreenMaster()
     const vfs = await new GameFilesLoader(screenMaster.loadingLayer).loadGameFiles()
     const assetLoader = new AssetLoader(vfs)
-    await assetLoader.assetRegistry.registerAllAssets(GameConfig.instance) // dynamically register all assets from config
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')
     await Promise.all([
         new Promise<void>((resolve) => {
@@ -59,9 +58,9 @@ export async function start() {
     screenMaster.loadingLayer.enableGraphicMode(imgBackground, imgProgress, imgLabel)
     const cursorImageName = GameConfig.instance.pointers.get(Cursor.STANDARD)
     ResourceManager.loadCursor(cursorImageName, Cursor.STANDARD).then(() => CursorManager.changeCursor(Cursor.STANDARD))
-    console.log('Initial loading done.')
-    await assetLoader.loadRegisteredAssets(() => screenMaster.loadingLayer.increaseLoadingState(assetLoader.assetRegistry.size))
-    AssetLoader.bitmapWorkerPool.terminatePool()
+    if (VERBOSE) console.log('Initial loading done.')
+    await assetLoader.assetRegistry.registerAllAssets(GameConfig.instance) // dynamically register all assets from config
+    await assetLoader.loadRegisteredAssets((progress) => screenMaster.loadingLayer.setLoadingProgress(progress))
     await Promise.all([
         ResourceManager.loadAllCursor(),
         ...['Interface/FrontEnd/Menu_Font_Hi.bmp',
@@ -76,6 +75,7 @@ export async function start() {
             BitmapFontWorkerPool.instance.addFont(fontName, ResourceManager.getResource(fontName))
         })
     ])
+    AssetLoader.bitmapWorkerPool.terminatePool()
     console.timeEnd('Total asset loading time')
     console.log(`Loading of about ${(assetLoader.assetRegistry.size)} assets complete!`)
     screenMaster.loadingLayer.hide()

@@ -1,6 +1,14 @@
 import { clearIntervalSafe } from '../core/Util'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
 
+export class AnimatedCursorData { // This gets serialized for caching
+    readonly dataUrls: string[] = []
+
+    constructor(cursorImages: HTMLCanvasElement[]) {
+        this.dataUrls = cursorImages.map((c) => `url(${c.toDataURL()}), auto`)
+    }
+}
+
 export class AnimatedCursor {
     animationInterval: NodeJS.Timeout = null
     animationIndex: number = 0

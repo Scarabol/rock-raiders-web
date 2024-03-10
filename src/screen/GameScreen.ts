@@ -73,7 +73,7 @@ export class GameScreen {
 
     private setupAndStartLevel() {
         console.log(`Starting level ${this.levelConf.levelName} - ${this.levelConf.fullName}`)
-        document.title = `${this.levelConf.levelName} - ${this.levelConf.fullName} - Rock Raiders Web`
+        document.title = `${this.levelConf.fullName} - Rock Raiders Web`
         const params = new URLSearchParams(window.location.search)
         params.set('entry', this.levelConf.levelName)
         history.pushState(null, '', `${window.location.pathname}?${params.toString()}`)

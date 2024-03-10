@@ -12,6 +12,7 @@ import { GameConfig } from '../cfg/GameConfig'
 import { Cursor } from './Cursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { CursorManager } from '../screen/CursorManager'
+import { AnimatedCursorData } from '../screen/AnimatedCursor'
 
 export class ResourceManager {
     static readonly resourceByName: Map<string, any> = new Map()
@@ -64,7 +65,6 @@ export class ResourceManager {
             }
             loadingCursors.push(cacheGetData(cursorFileName).then((animatedCursorData) => {
                 if (!animatedCursorData) {
-                    let maxHeight = 0
                     const cursorImages = (this.getResource(cursorFileName) as ImageData[]).map((imgData) => {
                         const blankCanvas = createCanvas(blankPointerImageData.width, blankPointerImageData.height)
                         const context = blankCanvas.getContext('2d')
@@ -73,13 +73,9 @@ export class ResourceManager {
                         const x = Math.round((blankPointerImageData.width - imgData.width) / 2)
                         const y = Math.round((blankPointerImageData.height - imgData.height) / 2)
                         context.drawImage(cursorCanvas, x, y)
-                        maxHeight = Math.max(maxHeight, context.canvas.height)
                         return context.canvas
                     })
-                    animatedCursorData = {
-                        dataUrls: this.cursorToDataUrl(cursorImages),
-                        maxHeight: maxHeight,
-                    }
+                    animatedCursorData = new AnimatedCursorData(cursorImages)
                     cachePutData(cursorFileName, animatedCursorData).then()
                 }
                 CursorManager.addCursor(cursor, animatedCursorData.dataUrls)
@@ -89,30 +85,22 @@ export class ResourceManager {
     }
 
     static async loadCursor(cursorImageName: string, cursor: Cursor) {
-        return cacheGetData(cursorImageName).then((animatedCursorData) => {
-            if (!animatedCursorData) {
-                const imgData = this.getImageData(cursorImageName)
-                const canvas = createCanvas(imgData.width, imgData.height)
-                canvas.getContext('2d').putImageData(imgData, 0, 0)
-                animatedCursorData = {
-                    dataUrls: this.cursorToDataUrl(canvas),
-                    maxHeight: imgData.height,
-                }
-                cachePutData(cursorImageName, animatedCursorData).then()
-            }
-            CursorManager.addCursor(cursor, animatedCursorData.dataUrls)
-        })
-    }
-
-    private static cursorToDataUrl(cursorImages: HTMLCanvasElement | HTMLCanvasElement[]) {
-        return Array.ensure(cursorImages).map((c) => `url(${c.toDataURL()}), auto`)
+        let animatedCursorData = await cacheGetData(cursorImageName)
+        if (!animatedCursorData) {
+            const imgData = this.getImageData(cursorImageName)
+            const cursorImage = createCanvas(imgData.width, imgData.height)
+            cursorImage.getContext('2d').putImageData(imgData, 0, 0)
+            animatedCursorData = new AnimatedCursorData([cursorImage])
+            cachePutData(cursorImageName, animatedCursorData).then()
+        }
+        CursorManager.addCursor(cursor, animatedCursorData.dataUrls)
     }
 
     static getTexturesBySequenceName(basename: string): Texture[] {
         const lBasename = basename?.toLowerCase()
         const result: string[] = []
         this.resourceByName.forEach((_, name) => {
-            if (name.startsWith(lBasename + '0')) result.push(name)
+            if (name.match(`${lBasename}\\d+`)) result.push(name)
         })
         result.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
         if (result.length > 0) {
@@ -120,29 +108,19 @@ export class ResourceManager {
         } else if (!lBasename.startsWith('world/shared/')) {
             return this.getTexturesBySequenceName(`world/shared/${getFilename(lBasename)}`)
         } else {
-            if (VERBOSE) console.log(`Texture sequence not found: ${lBasename}`)
+            console.log(`Texture sequence not found: ${lBasename}`)
             return []
         }
     }
 
-    static getMeshTexture(textureFilename: string, meshPath: string): Texture {
-        const lTextureFilename = textureFilename?.toLowerCase()
+    static getMeshTexture(textureFilepath: string, meshPath: string): Texture[] {
+        const lTextureFilename = textureFilepath?.toLowerCase()
         const lMeshFilepath = meshPath?.toLowerCase() + lTextureFilename
         const imgData = this.resourceByName.getOrUpdate(lMeshFilepath, () => {
             return this.getTextureImageDataFromSharedPaths(lTextureFilename)
         })
-        if (!imgData) {
-            // ignore known texture issues
-            if (!VERBOSE && !['teofoilreflections.jpg', 'wingbase3.bmp', 'a_side.bmp', 'a_top.bmp', 'sand.bmp', 'display.bmp'].includes(textureFilename)) {
-                console.warn(`Could not find texture ${textureFilename}`)
-            }
-            return null
-        }
-        // without repeat wrapping some entities are not fully textured
-        const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
-        texture.needsUpdate = true // without everything is just dark
-        texture.colorSpace = SRGBColorSpace
-        return texture
+        const texture = this.createTexture(imgData, textureFilepath)
+        return texture ? [texture] : []
     }
 
     private static getTextureImageDataFromSharedPaths(lTextureFilename: string): ImageData {
@@ -160,8 +138,15 @@ export class ResourceManager {
             throw new Error(`textureFilepath must not be undefined, null or empty - was ${textureFilepath}`)
         }
         const imgData = this.resourceByName.get(textureFilepath.toLowerCase())
+        return this.createTexture(imgData, textureFilepath)
+    }
+
+    private static createTexture(imgData: ImageData, textureFilepath: string) {
         if (!imgData) {
-            console.warn(`Could not find texture '${textureFilepath}'`)
+            // ignore known texture issues
+            if (VERBOSE || !['teofoilreflections.jpg', 'wingbase3.bmp', 'a_side.bmp', 'a_top.bmp', 'sand.bmp', 'display.bmp'].includes(textureFilepath)) {
+                console.warn(`Could not find texture ${textureFilepath}`)
+            }
             return null
         }
         // without repeat wrapping some entities are not fully textured
@@ -223,20 +208,18 @@ class ResourceManagerTextureLoader extends LWOBTextureLoader {
     }
 
     load(textureFilename: string, onLoad: (textures: Texture[]) => any): void {
-        return onLoad(this.loadFromResourceManager(textureFilename))
+        onLoad(this.loadFromResourceManager(textureFilename))
     }
 
     private loadFromResourceManager(textureFilename: string): Texture[] {
         if (!textureFilename || textureFilename === '(none)') return []
         const hasSequence = textureFilename.endsWith('(sequence)')
-        const sequenceBaseFilepath = textureFilename.slice(0, textureFilename.length - '(sequence)'.length).trim()
+        if (hasSequence) textureFilename = textureFilename.slice(0, textureFilename.length - '(sequence)'.length).trim()
         if (hasSequence) {
-            const match = sequenceBaseFilepath.match(/(.+\D)0+(\d+)\..+/i)
+            const match = textureFilename.match(/(.+\D)0+(\d+)\..+/i)
             return ResourceManager.getTexturesBySequenceName(this.meshPath + match[1])
         } else {
-            const texture = ResourceManager.getMeshTexture(textureFilename, this.meshPath)
-            if (!texture && VERBOSE) console.warn(`Could not get mesh texture "${textureFilename}" from mesh path '${this.meshPath}'`)
-            return texture ? [texture] : []
+            return ResourceManager.getMeshTexture(textureFilename, this.meshPath)
         }
     }
 }

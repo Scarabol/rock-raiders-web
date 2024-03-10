@@ -22,9 +22,10 @@ export class AssetLoader {
     ) {
     }
 
-    loadRegisteredAssets(onLoad: () => void) {
+    loadRegisteredAssets(onProgress: (progress: number) => void) {
         console.log(`Loading ${this.assetRegistry.size} assets...`)
         const promises: Promise<void>[] = []
+        let assetCount = 0
         this.assetRegistry.forEach((asset) => {
             promises.push(new Promise<void>((resolve) => {
                 setTimeout(() => {
@@ -32,12 +33,14 @@ export class AssetLoader {
                         asset.method(asset.assetPath, (assetNames, assetObj) => {
                             assetNames.forEach((assetName) => ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj))
                             if (assetObj) asset.sfxKeys?.forEach((sfxKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sfxKey, () => []).push(assetObj))
-                            onLoad()
+                            assetCount++
+                            onProgress(assetCount / this.assetRegistry.size)
                             resolve()
                         })
                     } catch (e) {
                         if (!asset.optional) console.error(e)
-                        onLoad()
+                        assetCount++
+                        onProgress(assetCount / this.assetRegistry.size)
                         resolve()
                     }
                 })
@@ -53,17 +56,15 @@ export class AssetLoader {
 
     loadWadTexture(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.vfs.getFile(name).toBuffer()
-        const alphaIndexMatch = name.toLowerCase().match(/(.*a)(\d+)(_.+)/)
-        let alphaIndex = null
-        const assetNames = [name]
+        const alphaIndexMatch = name.match(/(.*a)(\d+)(_.+)/i)
         if (alphaIndexMatch) {
-            assetNames.push(alphaIndexMatch[1] + alphaIndexMatch[3])
-            alphaIndex = parseInt(alphaIndexMatch[2])
+            const assetNames = [name, alphaIndexMatch[1] + alphaIndexMatch[3]]
+            const alphaIndex = parseInt(alphaIndexMatch[2])
             AssetLoader.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex).then((imgData) => callback(assetNames, imgData))
         } else if (name.match(/\/a.*\d.*/i)) {
-            AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(data).then((imgData) => callback(assetNames, imgData))
+            AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(data).then((imgData) => callback([name], imgData))
         } else {
-            AssetLoader.bitmapWorkerPool.decodeBitmap(data).then((imgData) => callback(assetNames, imgData))
+            AssetLoader.bitmapWorkerPool.decodeBitmap(data).then((imgData) => callback([name], imgData))
         }
     }
 
@@ -71,7 +72,7 @@ export class AssetLoader {
         AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(this.vfs.getFile(name).toBuffer())
             .then((imgData) => {
                 const assetNames = [name]
-                const alphaIndexMatch = name.toLowerCase().match(/(.*a)(\d+)(_.+)/)
+                const alphaIndexMatch = name.match(/(.*a)(\d+)(_.+)/i)
                 if (alphaIndexMatch) assetNames.push(alphaIndexMatch[1] + alphaIndexMatch[3])
                 callback(assetNames, imgData)
             })
@@ -85,9 +86,8 @@ export class AssetLoader {
     }
 
     loadNerpAsset(name: string, callback: (assetNames: string[], obj: string) => any) {
-        const nrnName = name.replace(/\.npl$/, '.nrn')
-        const script = this.vfs.getFile(nrnName).toText()
-        callback([name, nrnName], script)
+        const script = this.vfs.getFile(name).toText()
+        callback([name], script)
     }
 
     loadObjectiveTexts(name: string, callback: (assetNames: string[], obj: any) => any) {

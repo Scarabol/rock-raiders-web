@@ -1,7 +1,7 @@
 import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseConfig } from './BaseConfig'
 import { LevelObjectiveTextEntry } from '../resource/fileparser/ObjectiveTextParser'
-import { TILESIZE } from '../params'
+import { TILESIZE, VERBOSE } from '../params'
 
 export class LevelsCfg extends BaseConfig {
     levelCfgByName: Map<string, LevelEntryCfg> = new Map()
@@ -100,6 +100,14 @@ export class LevelEntryCfg extends BaseConfig {
             return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue).toLowerCase()
         } else if (unifiedKey === 'emergecreature') { // value given twice for level20
             return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue).toLowerCase()
+        } else if (unifiedKey === 'nerpfile') {
+            cfgValue = cfgValue?.toLowerCase()
+            if (cfgValue?.endsWith('.npl')) {
+                const nerpFile = cfgValue.replace('.npl', '.nrn')
+                if (VERBOSE) console.warn(`Binary NERP file (.npl) not supported, using NERP text script (.nrn) instead from "${nerpFile}"`)
+                return nerpFile
+            }
+            return cfgValue
         } else {
             return super.parseValue(unifiedKey, cfgValue)
         }

@@ -3,7 +3,6 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { SpriteImage } from '../../core/Sprite'
 
 export class LoadingLayer extends ScaledLayer {
-    assetIndex: number = 0
     progress: number = 0
 
     constructor() {
@@ -13,14 +12,11 @@ export class LoadingLayer extends ScaledLayer {
 
     setLoadingMessage(text: string) {
         this.animationFrame.onRedraw = (context) => {
-            // clear the screen to black
             context.fillStyle = 'black'
             context.fillRect(0, 0, this.fixedWidth, this.fixedHeight)
-            // draw the loading title
             context.font = '24px Arial'
             context.fillStyle = 'white'
             context.fillText('Initializing Rock Raiders Web...', 20, this.fixedHeight - 50)
-            // hard-code the first loading message
             context.font = '18px Arial'
             context.fillStyle = 'white'
             context.fillText(text, 20, this.fixedHeight - 20)
@@ -41,9 +37,8 @@ export class LoadingLayer extends ScaledLayer {
         this.animationFrame.notifyRedraw()
     }
 
-    increaseLoadingState(totalResources: number) {
-        this.assetIndex++
-        this.progress = Math.max(0, Math.min(1, this.assetIndex / totalResources))
+    setLoadingProgress(progress: number) {
+        this.progress = Math.max(0, Math.min(1, progress))
         this.animationFrame.notifyRedraw()
     }
 }
