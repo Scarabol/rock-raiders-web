@@ -215,6 +215,8 @@ class ResourceManagerTextureLoader extends LWOBTextureLoader {
         if (!textureFilename || textureFilename === '(none)') return []
         const hasSequence = textureFilename.endsWith('(sequence)')
         if (hasSequence) textureFilename = textureFilename.slice(0, textureFilename.length - '(sequence)'.length).trim()
+        const alphaIndexMatch = textureFilename.match(/(.*a)(\d+)(_.+)/i)
+        if (alphaIndexMatch) textureFilename = alphaIndexMatch[1] + alphaIndexMatch[3]
         if (hasSequence) {
             const match = textureFilename.match(/(.+\D)0+(\d+)\..+/i)
             return ResourceManager.getTexturesBySequenceName(this.meshPath + match[1])

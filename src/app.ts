@@ -24,28 +24,28 @@ export async function start() {
     await Promise.all([
         new Promise<void>((resolve) => {
             const name = GameConfig.instance.main.loadScreen // loading screen image
-            assetLoader.loadWadImageAsset(name, (assetNames: string[], assetObj) => {
-                assetNames.forEach((assetName) => ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj))
+            assetLoader.loadWadImageAsset(name, (assetName: string, assetObj) => {
+                ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj)
                 resolve()
             })
         }),
         new Promise<void>((resolve) => {
             const name = GameConfig.instance.main.progressBar // loading bar container image
-            assetLoader.loadWadImageAsset(name, (assetNames: string[], assetObj) => {
-                assetNames.forEach((assetName) => ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj))
+            assetLoader.loadWadImageAsset(name, (assetName: string, assetObj) => {
+                ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj)
                 resolve()
             })
         }),
         new Promise<void>((resolve) => {
             const name = GameConfig.instance.pointers.get(Cursor.STANDARD)
-            assetLoader.loadAlphaImageAsset(name, (assetNames: string[], assetObj) => {
-                assetNames.forEach((assetName) => ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj))
+            assetLoader.loadAlphaImageAsset(name, (assetName: string, assetObj) => {
+                ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj)
                 resolve()
             })
         }),
         new Promise<void>((resolve) => {
-            assetLoader.loadFontImageAsset(DEFAULT_FONT_NAME, (assetNames: string[], assetObj) => {
-                assetNames.forEach((assetName) => ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj))
+            assetLoader.loadFontImageAsset(DEFAULT_FONT_NAME, (assetName: string, assetObj) => {
+                ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj)
                 resolve()
             })
         }),

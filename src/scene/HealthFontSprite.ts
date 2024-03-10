@@ -27,9 +27,9 @@ export class HealthFontSprite extends Sprite {
             const letter = numStr.charAt(c)
             let img: SpriteImage
             if (letter.match(/^\d$/)) {
-                img = ResourceManager.getImage(`Interface/Fonts/HealthFont/a000_${letter}.bmp`)
+                img = ResourceManager.getImage(`Interface/Fonts/HealthFont/a_${letter}.bmp`)
             } else if (letter === '-') {
-                img = ResourceManager.getImage('Interface/Fonts/HealthFont/a000_10.bmp')
+                img = ResourceManager.getImage('Interface/Fonts/HealthFont/a_10.bmp')
             } else {
                 console.warn('Ignoring invalid char in health font', letter)
                 continue
