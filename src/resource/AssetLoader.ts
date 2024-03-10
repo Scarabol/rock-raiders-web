@@ -11,6 +11,7 @@ import { AVIParser } from './fileparser/avi/AVIParser'
 import { VirtualFileSystem } from './fileparser/VirtualFileSystem'
 import { ResourceManager } from './ResourceManager'
 import { SoundManager } from '../audio/SoundManager'
+import { BitmapWithPalette } from './fileparser/BitmapWithPalette'
 
 export class AssetLoader {
     static readonly bitmapWorkerPool = new BitmapWorkerPool().startPool(16, null)
@@ -28,15 +29,17 @@ export class AssetLoader {
         let assetCount = 0
         this.assetRegistry.forEach((asset) => {
             promises.push(new Promise<void>((resolve) => {
-                setTimeout(() => {
+                setTimeout(async () => {
                     try {
-                        asset.method(asset.assetPath, (assetName, assetObj) => {
-                            ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj)
-                            if (assetObj) asset.sfxKeys?.forEach((sfxKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sfxKey, () => []).push(assetObj))
-                            assetCount++
-                            onProgress(assetCount / this.assetRegistry.size)
-                            resolve()
-                        })
+                        let assetName = asset.assetPath.toLowerCase()
+                        const assetObj = await asset.method(assetName)
+                        const alphaIndexMatch = assetName.match(/(.*a)(\d+)(_.+)/i)
+                        if (alphaIndexMatch) assetName = alphaIndexMatch[1] + alphaIndexMatch[3]
+                        ResourceManager.resourceByName.set(assetName, assetObj)
+                        if (assetObj) asset.sfxKeys?.forEach((sfxKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sfxKey, () => []).push(assetObj))
+                        assetCount++
+                        onProgress(assetCount / this.assetRegistry.size)
+                        resolve()
                     } catch (e) {
                         if (!asset.optional) console.error(e)
                         assetCount++
@@ -49,69 +52,55 @@ export class AssetLoader {
         return Promise.all(promises)
     }
 
-    loadWadImageAsset(name: string, callback: (assetName: string, obj: ImageData) => any) {
-        AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
-            .then((imgData) => callback(name, imgData))
+    async loadWadImageAsset(name: string): Promise<BitmapWithPalette> {
+        return AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
     }
 
-    loadWadTexture(name: string, callback: (assetName: string, obj: ImageData) => any) {
+    async loadWadTexture(name: string): Promise<BitmapWithPalette> {
         const data = this.vfs.getFile(name).toBuffer()
         const alphaIndexMatch = name.match(/(.*a)(\d+)(_.+)/i)
         if (alphaIndexMatch) {
-            name = alphaIndexMatch[1] + alphaIndexMatch[3]
             const alphaIndex = parseInt(alphaIndexMatch[2])
-            AssetLoader.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex).then((imgData) => callback(name, imgData))
+            return AssetLoader.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex)
         } else if (name.match(/\/a.*\d.*/i)) {
-            AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(data).then((imgData) => callback(name, imgData))
+            return AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(data)
         } else {
-            AssetLoader.bitmapWorkerPool.decodeBitmap(data).then((imgData) => callback(name, imgData))
+            return AssetLoader.bitmapWorkerPool.decodeBitmap(data)
         }
     }
 
-    loadAlphaImageAsset(name: string, callback: (assetName: string, obj: ImageData) => any) {
-        AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(this.vfs.getFile(name).toBuffer())
-            .then((imgData) => {
-                const alphaIndexMatch = name.match(/(.*a)(\d+)(_.+)/i)
-                name = alphaIndexMatch ? alphaIndexMatch[1] + alphaIndexMatch[3] : name
-                callback(name, imgData)
-            })
+    async loadAlphaImageAsset(name: string): Promise<ImageData> {
+        return AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(this.vfs.getFile(name).toBuffer())
     }
 
-    loadFontImageAsset(name: string, callback: (assetName: string, obj: BitmapFontData) => any) {
-        AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
-            .then((imgData) => {
-                callback(name, new BitmapFontData(imgData))
-            })
+    async loadFontImageAsset(name: string): Promise<BitmapFontData> {
+        const imgData = await AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
+        return new BitmapFontData(imgData)
     }
 
-    loadNerpAsset(name: string, callback: (assetName: string, obj: string) => any) {
-        const script = this.vfs.getFile(name).toText()
-        callback(name, script)
+    async loadNerpAsset(name: string): Promise<string> {
+        return this.vfs.getFile(name).toText()
     }
 
-    loadObjectiveTexts(name: string, callback: (assetName: string, obj: any) => any) {
+    async loadObjectiveTexts(name: string) {
         const text = this.vfs.getFile(name).toText(true)
-        const result = new ObjectiveTextParser().parseObjectiveTextFile(text)
-        callback(name, result)
+        return new ObjectiveTextParser().parseObjectiveTextFile(text)
     }
 
-    loadMapAsset(name: string, callback: (assetName: string, obj: any) => any) {
+    async loadMapAsset(name: string) {
         const view = this.vfs.getFile(name).toArray()
         if (view.length < 13 || String.fromCharCode(...view.slice(0, 3)) !== 'MAP') {
-            console.error(`Invalid map data provided for: ${name}`)
-            return
+            throw new Error(`Invalid map data provided for: ${name}`)
         }
-        const map = WadParser.parseMap(view)
-        callback(name, map)
+        return WadParser.parseMap(view)
     }
 
-    loadObjectListAsset(name: string, callback: (assetName: string, obj: any) => any) {
+    async loadObjectListAsset(name: string) {
         const data = this.vfs.getFile(name).toText()
-        const objectList = WadParser.parseObjectList(data)
-        callback(name, objectList)
+        return WadParser.parseObjectList(data)
     }
 
-    async loadWavAsset(path: string, callback: (assetName: string, obj: any) => any) {
+    async loadWavAsset(path: string) {
         let buffer: ArrayBufferLike
         const errors = []
         try {
@@ -132,21 +121,18 @@ export class AssetLoader {
                 ) {
                     console.error(`Could not find sound ${path}:\n` + errors.join('\n'))
                 }
-                callback(path, null)
-                return
+                return null
             }
         }
-        const audioBuffer = await AudioContext.getContext().decodeAudioData(buffer)
-        callback(path, audioBuffer)
+        return AudioContext.getContext().decodeAudioData(buffer)
     }
 
-    loadLWOFile(lwoFilepath: string, callback: (assetName: string, obj: any) => any) {
-        let lwoContent = null
+    async loadLWOFile(lwoFilepath: string) {
         try {
-            lwoContent = this.vfs.getFile(lwoFilepath).toBuffer()
+            return this.vfs.getFile(lwoFilepath).toBuffer()
         } catch (e) {
             try {
-                lwoContent = this.vfs.getFile(`world/shared/${getFilename(lwoFilepath)}`).toBuffer()
+                return this.vfs.getFile(`world/shared/${getFilename(lwoFilepath)}`).toBuffer()
             } catch (e) {
                 if (!lwoFilepath.equalsIgnoreCase('Vehicles/BullDozer/VLBD_light.lwo') // ignore known issues
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_bucket.lwo')
@@ -157,20 +143,20 @@ export class AssetLoader {
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_PipeL.lwo')) {
                     throw new Error(`Could not load LWO file ${lwoFilepath}; Error: ${e}`)
                 }
+                return null
             }
         }
-        callback(lwoFilepath, lwoContent)
     }
 
-    loadFlhAssetDefault(filename: string, callback: (assetName: string, obj: any) => any) {
-        this.loadFlhAssetInternal(filename, false, callback)
+    async loadFlhAssetDefault(filename: string) {
+        return this.loadFlhAssetInternal(filename, false)
     }
 
-    loadFlhAssetInterframe(filename: string, callback: (assetName: string, obj: any) => any) {
-        this.loadFlhAssetInternal(filename, true, callback)
+    async loadFlhAssetInterframe(filename: string) {
+        return this.loadFlhAssetInternal(filename, true)
     }
 
-    private loadFlhAssetInternal(filename: string, interFrameMode: boolean, callback: (assetName: string, obj: any) => any) {
+    private async loadFlhAssetInternal(filename: string, interFrameMode: boolean) {
         let flhContent: DataView
         try {
             flhContent = this.vfs.getFile(filename).toDataView()
@@ -181,24 +167,20 @@ export class AssetLoader {
                 flhContent = this.vfs.getFile(`Data/${filename}`).toDataView()
             }
         }
-        const flhFrames = new FlhParser(flhContent, interFrameMode).parse()
-        callback(filename, flhFrames)
+        return new FlhParser(flhContent, interFrameMode).parse()
     }
 
-    loadUVFile(filename: string, callback: (assetName: string, obj: any) => any) {
+    async loadUVFile(filename: string) {
         const uvContent = this.vfs.getFile(filename).toText()
-        const uvData = new LWOUVParser().parse(uvContent)
-        callback(filename, uvData)
+        return new LWOUVParser().parse(uvContent)
     }
 
-    loadAVI(filename: string, callback: (assetName: string, obj: any) => any) {
+    async loadAVI(filename: string) {
         const dataView = this.vfs.getFile(`Data/${filename}`).toDataView()
-        const decoder = new AVIParser(dataView).parse()
-        callback(filename, decoder)
+        return new AVIParser(dataView).parse()
     }
 
-    loadCreditsFile(filename: string, callback: (assetName: string, obj: any) => any) {
-        const content = this.vfs.getFile(this.vfs.filterEntryNames(filename)[0]).toText(true)
-        callback(filename, content)
+    async loadCreditsFile(filename: string) {
+        return this.vfs.getFile(this.vfs.filterEntryNames(filename)[0]).toText(true)
     }
 }

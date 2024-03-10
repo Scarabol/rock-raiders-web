@@ -22,32 +22,28 @@ export async function start() {
     const assetLoader = new AssetLoader(vfs)
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')
     await Promise.all([
-        new Promise<void>((resolve) => {
+        new Promise<void>(async (resolve) => {
             const name = GameConfig.instance.main.loadScreen // loading screen image
-            assetLoader.loadWadImageAsset(name, (assetName: string, assetObj) => {
-                ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj)
-                resolve()
-            })
+            const data = await assetLoader.loadWadImageAsset(name)
+            ResourceManager.resourceByName.set(name.toLowerCase(), data)
+            resolve()
         }),
-        new Promise<void>((resolve) => {
+        new Promise<void>(async (resolve) => {
             const name = GameConfig.instance.main.progressBar // loading bar container image
-            assetLoader.loadWadImageAsset(name, (assetName: string, assetObj) => {
-                ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj)
-                resolve()
-            })
+            const data = await assetLoader.loadWadImageAsset(name)
+            ResourceManager.resourceByName.set(name.toLowerCase(), data)
+            resolve()
         }),
-        new Promise<void>((resolve) => {
+        new Promise<void>(async (resolve) => {
             const name = GameConfig.instance.pointers.get(Cursor.STANDARD)
-            assetLoader.loadAlphaImageAsset(name, (assetName: string, assetObj) => {
-                ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj)
-                resolve()
-            })
+            const data = await assetLoader.loadAlphaImageAsset(name)
+            ResourceManager.resourceByName.set(name.toLowerCase(), data)
+            resolve()
         }),
-        new Promise<void>((resolve) => {
-            assetLoader.loadFontImageAsset(DEFAULT_FONT_NAME, (assetName: string, assetObj) => {
-                ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj)
-                resolve()
-            })
+        new Promise<void>(async (resolve) => {
+            const data = await assetLoader.loadFontImageAsset(DEFAULT_FONT_NAME)
+            ResourceManager.resourceByName.set(DEFAULT_FONT_NAME.toLowerCase(), data)
+            resolve()
         }),
     ])
     const imgBackground = ResourceManager.getImage(GameConfig.instance.main.loadScreen)

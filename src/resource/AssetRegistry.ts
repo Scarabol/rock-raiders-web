@@ -10,7 +10,7 @@ import { LWSCParser } from './fileparser/LWSCParser'
 import { NerpMsgParser } from './fileparser/NerpMsgParser'
 
 interface GameAsset {
-    method: ((name: string, callback: (assetName: string, assetData: any) => void) => void)
+    method: (name: string) => Promise<any>
     assetPath: string
     optional: boolean
     sfxKeys: string[]
@@ -255,7 +255,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addAssetFolder(this.assetLoader.loadWadTexture, folderPath)
     }
 
-    addAssetFolder(callback: (name: string, callback: (assetName: string, obj: any) => any) => void, folderPath: string) {
+    addAssetFolder<T>(callback: (name: string) => Promise<T>, folderPath: string) {
         this.assetLoader.vfs.filterEntryNames(`${folderPath}.+\\.bmp`).forEach((assetPath) => {
             this.addAsset(callback, assetPath)
         })
@@ -274,7 +274,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         })
     }
 
-    addAsset(method: (name: string, callback: (assetName: string, assetData: any) => void) => void, assetPath: string, optional = false, sfxKeys: string[] = []) {
+    addAsset<T>(method: (name: string) => Promise<T>, assetPath: string, optional = false, sfxKeys: string[] = []) {
         assetPath = assetPath?.toLowerCase()
         if (!assetPath || this.has(assetPath) || assetPath.equalsIgnoreCase('NULL')) {
             return // do not load assets twice
