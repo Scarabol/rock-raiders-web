@@ -3,6 +3,9 @@
 <head>
     <title>Rock Raiders Web</title>
     <link rel="icon" type="image/png" href="site/favicon-32x32.png"/>
+    <link rel="stylesheet" href="site/main.css">
+    <link rel="stylesheet" href="site/clear-cache-button.css">
+    <link rel="stylesheet" href="site/github.css">
     <script type="module" src="src/index.ts"></script>
 </head>
 <body>
@@ -15,6 +18,16 @@
         <button type="button" class="button-fullscreen" style="visibility: hidden">Full screen</button>
     </div>
     <div id="game-canvas-container" tabindex="0">
+    </div>
+    <button class="clear-cache-btn hide-after-loading-assets"
+            onclick="indexedDB.deleteDatabase('RockRaidersWeb'); location.reload()">
+        Clear asset cache and restart
+    </button>
+    <div class="github-box hide-after-loading-assets">
+        <a href="https://github.com/scarabol/rock-raiders-web" target="_blank">
+            <img src="site/github.png" class="github-logo" alt="Fork on GitHub">
+            <span>Fork on GitHub</span>
+        </a>
     </div>
 </div>
 </body>

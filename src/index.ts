@@ -1,4 +1,3 @@
-import '../site/main.css'
 import './core'
 import { DEV_MODE } from './params'
 import { DebugHelper } from './screen/DebugHelper'

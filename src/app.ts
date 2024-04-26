@@ -1,8 +1,6 @@
 import { GameFilesLoader } from './resource/GameFilesLoader'
 import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME, VERBOSE } from './params'
 import { ScreenMaster } from './screen/ScreenMaster'
-import { GithubBox } from '../site/github/github-box'
-import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
 import { AssetLoader } from './resource/AssetLoader'
 import { Cursor } from './resource/Cursor'
 import { ResourceManager } from './resource/ResourceManager'
@@ -16,8 +14,6 @@ import { BitmapWorkerPool } from './worker/BitmapWorkerPool'
 
 export async function start() {
     console.time('Total asset loading time')
-    const githubBox = new GithubBox()
-    const clearCacheButton = new ClearCacheButton()
     const screenMaster = new ScreenMaster()
     const vfs = await new GameFilesLoader(screenMaster.loadingLayer).loadGameFiles()
     const assetLoader = new AssetLoader(vfs)
@@ -76,8 +72,9 @@ export async function start() {
     console.timeEnd('Total asset loading time')
     console.log(`Loading of about ${(assetLoader.assetRegistry.size)} assets complete!`)
     screenMaster.loadingLayer.hide()
-    githubBox.hide()
-    clearCacheButton.hide()
+    Array.from(document.getElementsByClassName('hide-after-loading-assets')).forEach((e) => {
+        (e as HTMLElement).style.visibility = 'hidden'
+    })
 
     const teleportManConfig = GameConfig.instance.interfaceImages.get('Interface_MenuItem_TeleportMan'.toLowerCase())
     const depInterfaceBuildImageData: Map<string, ImageData[]> = new Map()
