@@ -1,6 +1,6 @@
-import { AxesHelper, Group, Vector2, Vector3 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { LevelConfData } from '../LevelLoader'
-import { DEV_MODE, SURFACE_NUM_CONTAINED_ORE, TILESIZE } from '../../params'
+import { SURFACE_NUM_CONTAINED_ORE, TILESIZE } from '../../params'
 import { WorldManager } from '../WorldManager'
 import { PathFinder } from './PathFinder'
 import { Surface } from './Surface'
@@ -16,15 +16,12 @@ export class Terrain {
     width: number = 0
     height: number = 0
     surfaces: Surface[][] = []
-    floorGroup: Group = new Group()
     pathFinder: PathFinder = new PathFinder(this.surfaces)
     tutoBlocksById: Map<number, Surface[]> = new Map()
     slugHoles: Surface[] = []
     rechargeSeams: Surface[] = []
 
     constructor(readonly worldMgr: WorldManager, readonly levelConf: LevelConfData) {
-        this.floorGroup.scale.setScalar(TILESIZE)
-        if (DEV_MODE) this.floorGroup.add(new AxesHelper())
         this.width = levelConf.mapWidth
         this.height = levelConf.mapHeight
     }
@@ -73,7 +70,7 @@ export class Terrain {
 
     updateSurfaceMeshes(force: boolean = false) {
         this.forEachSurface((s) => s.updateMesh(force))
-        this.floorGroup.updateWorldMatrix(true, true) // otherwise, ray intersection is not working before rendering
+        this.worldMgr.sceneMgr.floorGroup.updateWorldMatrix(true, true) // otherwise, ray intersection is not working before rendering
         this.pathFinder.resetGraphsAndCaches()
     }
 
@@ -101,10 +98,6 @@ export class Terrain {
         let totalOres = 0
         this.forEachSurface((s) => totalOres += s.containedOres + (s.surfaceType === SurfaceType.ORE_SEAM ? s.seamLevel : 0) + (s.surfaceType.digable ? SURFACE_NUM_CONTAINED_ORE : 0))
         return totalOres
-    }
-
-    findFallInTarget(source: Surface): Surface {
-        return source.neighbors.find((n) => n.isWalkable() && !n.surfaceType.hasErosion)
     }
 
     createFallIn(source: Surface, target: Surface) { // TODO Move to scene effects generator class and trigger with event

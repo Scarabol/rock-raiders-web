@@ -75,14 +75,8 @@ export class MainMenuScreen {
         } else if (item.actionName.toLowerCase().startsWith('load_game')) {
             SaveGameManager.loadGame(item.targetIndex)
             this.showLevelSelection()
-        } else if (item.actionName.equalsIgnoreCase('selectrandomlevel')) { // TODO make sure that target level is unlocked
-            const allLevelNames = Array.from(Array(24).keys()).map((n) => `Level${(n + 1).toPadded()}`)
-            const unScoredLevels = allLevelNames.filter((levelName) => !SaveGameManager.getLevelScoreString(levelName))
-            if (unScoredLevels.length > 0) {
-                this.selectLevel(unScoredLevels.random())
-            } else {
-                this.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
-            }
+        } else if (item.actionName.equalsIgnoreCase('selectrandomlevel')) {
+            this.selectLevelRandom()
         } else if (item.actionName.equalsIgnoreCase('Trigger') && item.targetIndex === 0) {
             this.showCredits()
         } else if (item.actionName) {
@@ -110,6 +104,17 @@ export class MainMenuScreen {
 
     showCredits() {
         this.menuLayers.forEach((l) => l === this.creditsLayer ? l.show() : l.hide())
+    }
+
+    selectLevelRandom() {
+        // TODO make sure that target level is unlocked
+        const allLevelNames = Array.from(Array(24).keys()).map((n) => `Level${(n + 1).toPadded()}`)
+        const unScoredLevels = allLevelNames.filter((levelName) => !SaveGameManager.getLevelScoreString(levelName))
+        if (unScoredLevels.length > 0) {
+            this.selectLevel(unScoredLevels.random())
+        } else {
+            this.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
+        }
     }
 
     selectLevel(levelName: string) {

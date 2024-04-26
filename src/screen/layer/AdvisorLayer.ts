@@ -9,7 +9,7 @@ import { EventBroker } from '../../event/EventBroker'
 import { BaseRenderer } from '../BaseRenderer'
 import { clearIntervalSafe } from '../../core/Util'
 
-export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeLayer
+export class AdvisorLayer extends ScreenLayer {
     readonly renderer: BaseRenderer
     readonly scene: Scene
     readonly camera: Camera

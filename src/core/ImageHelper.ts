@@ -1,9 +1,3 @@
-/**
- * creates a new context with the specified dimensions.
- * @param width: the desired width of the new context
- * @param height: the desired height of the new context
- * @returns RenderingContext the newly created canvas
- */
 import { SpriteContext, SpriteImage } from './Sprite'
 
 export function createCanvas(width: number, height: number): HTMLCanvasElement {

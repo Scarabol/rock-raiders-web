@@ -42,7 +42,7 @@ export class GameModule {
             if (loadGame !== null) SaveGameManager.loadGame(Number(loadGame))
             if (entry === 'level') this.mainMenuScreen.showLevelSelection()
             else if (entry === 'reward') this.rewardScreen.showGameResult(GameResult.random())
-            else if (entry === 'random') this.mainMenuScreen.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
+            else if (entry === 'random') this.mainMenuScreen.selectLevelRandom()
             else if (entry === 'credits') this.mainMenuScreen.showCredits()
             else if (entry) this.mainMenuScreen.selectLevel(entry)
         } else {

@@ -77,9 +77,7 @@ export class SaveGameManager {
     static getOverallGameProgress(index: number): number {
         const saveGame = this.saveGames[index]
         if (!saveGame) return 0
-        const levelNameList = saveGame.levels
-            .map((l) => l.levelName.toLowerCase())
-            .filter((n) => n.startsWith('level'))
+        const levelNameList = saveGame.levels.filter((l) => l.levelName.toLowerCase().startsWith('level'))
         return new Set(levelNameList).size * 100 / NUM_OF_LEVELS_TO_COMPLETE_GAME
     }
 
@@ -133,7 +131,7 @@ export class SaveGameManager {
     }
 
     static getSfxVolume(): number {
-        return SaveGameManager.currentPreferences.toggleSfx ? SaveGameManager.currentPreferences.volumeSfx : 0
+        return this.currentPreferences.toggleSfx ? this.currentPreferences.volumeSfx : 0
     }
 }
 

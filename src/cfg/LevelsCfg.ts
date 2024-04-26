@@ -1,7 +1,9 @@
 import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseConfig } from './BaseConfig'
 import { LevelObjectiveTextEntry } from '../resource/fileparser/ObjectiveTextParser'
-import { TILESIZE, VERBOSE } from '../params'
+import { DEV_MODE, TILESIZE, VERBOSE } from '../params'
+import { GameConfig } from './GameConfig'
+import { SaveGameManager } from '../resource/SaveGameManager'
 
 export class LevelsCfg extends BaseConfig {
     levelCfgByName: Map<string, LevelEntryCfg> = new Map()
@@ -111,6 +113,22 @@ export class LevelEntryCfg extends BaseConfig {
         } else {
             return super.parseValue(unifiedKey, cfgValue)
         }
+    }
+
+    isLocked(): boolean {
+        return (!DEV_MODE && this.levelName.toLowerCase().includes('tutorial')) || // TODO Remove this line when tutorial helper functions implemented
+            !(() => true) && // TODO Remove this line before release 1.0
+            !this.frontEndOpen &&
+            !this.levelName.equalsIgnoreCase(GameConfig.instance.main.startLevel) &&
+            !this.levelName.equalsIgnoreCase(GameConfig.instance.main.tutorialStartLevel) &&
+            !SaveGameManager.getLevelScoreString(this.levelName) &&
+            !this.isUnlockedByLevelLink()
+    }
+
+    private isUnlockedByLevelLink(): boolean {
+        return Array.from(GameConfig.instance.levels.levelCfgByName.entries()).some(([levelName, levelEntryCfg]) =>
+            SaveGameManager.getLevelScoreString(levelName) && levelEntryCfg.levelLinks.some((levelLink) => this.levelName.equalsIgnoreCase(levelLink))
+        )
     }
 }
 

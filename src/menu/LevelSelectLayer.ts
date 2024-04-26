@@ -20,7 +20,7 @@ export class LevelSelectLayer extends MainMenuLayer {
         GameConfig.instance.levels.levelCfgByName.forEach((level, levelName) => {
             const levelButton = new MainMenuLevelButton(this, level)
             levelButton.onHoverChange = () => {
-                if (levelButton.isLocked()) return
+                if (levelButton.levelConf.isLocked()) return
                 const levelScore = SaveGameManager.getLevelScoreString(levelName)
                 levelTextWindow.setSecondLine(levelButton.hover ? level.fullName + levelScore : ' ')
             }

@@ -116,6 +116,7 @@ export class MessagePanel extends Panel {
         this.nextAirWarning = 1 - AIR_LEVEL_WARNING_STEP
         this.blinkLabel = false
         this.blinkInterval = clearIntervalSafe(this.blinkInterval)
+        this.currentMessage = null
         this.btnNext.hidden = true
         this.btnRepeat.hidden = true
         this.suppressArrow = false

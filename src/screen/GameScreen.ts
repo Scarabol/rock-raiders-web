@@ -82,6 +82,10 @@ export class GameScreen {
         this.guiLayer.reset()
         this.worldMgr.setup(this.levelConf)
         this.sceneMgr.setupScene(this.levelConf)
+        // gather level start details for game result score calculation
+        GameState.totalDiggables = this.sceneMgr.terrain.countDiggables()
+        GameState.totalCrystals = this.sceneMgr.terrain.countCrystals()
+        GameState.numTotalOres = this.sceneMgr.terrain.countOres()
         // setup GUI
         this.guiMgr.buildingCycleIndex = 0
         this.overlayLayer.showBriefing(this.levelConf)

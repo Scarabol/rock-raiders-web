@@ -6,7 +6,7 @@
     "module": "ESNext",
     "strict": true,
     "strictNullChecks": false, // XXX Improve null/undefined handling
-    "noImplicitAny": false, // XXX remove exception for config parsing
+    "noImplicitAny": false, // XXX Improve config parsing to remove this exception from strict mode
     "lib": [
       "ESNext",
       "DOM"

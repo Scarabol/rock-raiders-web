@@ -49,9 +49,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### v0.8.x - Late game features
 
 - Add entity movement controller with arrow keys for fpv/shoulder view
-
 - Add helper features for all tutorial levels
-
 - Show credits on continue after completing Level25
 
 ### v0.9.x - Polishing
@@ -65,7 +63,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Unlock levels only after linked levels are completed (see XXX)
 - Start random level picks only unlocked and prefers unranked levels, never picks tuts
-- Separate UI components to support other screen ratios then 4:3
+- Separate UI components to support other screen ratios than 4:3
 
 ## Known Issues
 
@@ -137,4 +135,5 @@ npm run dev
 
 This project is meant to be work of passion without any commercial intentions.
 
-<a href="https://www.buymeacoffee.com/Scarabol" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+Still want to invite me for coffee? This way
+please <a href="https://ko-fi.com/scarabol" target="_blank">https://ko-fi.com/scarabol</a>

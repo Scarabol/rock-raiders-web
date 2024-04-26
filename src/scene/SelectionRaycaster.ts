@@ -38,7 +38,7 @@ export class SelectionRaycaster {
         if (selection.isEmpty()) selection.vehicles.push(...raycaster.getEntities(this.worldMgr.entityMgr.vehicles, true))
         if (selection.isEmpty()) selection.building = raycaster.getEntities(this.worldMgr.entityMgr.buildings, true)[0]
         if (selection.isEmpty()) selection.fence = raycaster.getEntities(this.worldMgr.entityMgr.placedFences, false)[0]
-        if (selection.isEmpty() && this.terrain) selection.surface = raycaster.getSurfaceIntersection(this.terrain.floorGroup.children)?.surface
+        if (selection.isEmpty() && this.terrain) selection.surface = raycaster.getSurfaceIntersection(this.worldMgr.sceneMgr.floorGroup.children)?.surface
         return selection
     }
 
@@ -57,7 +57,7 @@ export class SelectionRaycaster {
         const building = raycaster.getFirstEntity(this.worldMgr.entityMgr.buildings)
         if (building) return {building: building, entityType: building.entityType}
         if (this.terrain) {
-            const intersection = raycaster.raycaster.intersectObjects(this.terrain.floorGroup.children, false)[0]
+            const intersection = raycaster.raycaster.intersectObjects(this.worldMgr.sceneMgr.floorGroup.children, false)[0]
             if (intersection) {
                 const surface: Surface = intersection?.object?.userData?.selectable
                 if (surface?.discovered) {

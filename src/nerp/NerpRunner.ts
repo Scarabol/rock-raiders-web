@@ -56,7 +56,6 @@ export class NerpRunner {
             this.currentMessage = -1
             this.messageTimerMs = 0
             this.messageSfx?.stop()
-            this.messageSfx?.stop()
             this.messageSfx = null
             this.execute()
         })
@@ -303,12 +302,12 @@ export class NerpRunner {
             console.warn(`Invalid entity ${recordedEntity} given`)
             return
         }
-        const component = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
-        if (!component) {
-            console.warn(`Given entity ${entity} has no position to jump to`)
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+        if (!sceneEntity) {
+            console.warn(`Given entity ${entity} has no scene entity to jump to`)
             return
         }
-        this.worldMgr.sceneMgr.birdViewControls.lockOnObject(component)
+        this.worldMgr.sceneMgr.birdViewControls.lockOnObject(sceneEntity)
     }
 
     setMessage(messageNumber: number, arrowDisabled: number) {

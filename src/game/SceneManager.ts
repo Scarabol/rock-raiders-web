@@ -1,4 +1,4 @@
-import { Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
+import { AxesHelper, Group, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
 import { LevelConfData } from './LevelLoader'
 import { BirdViewControls } from '../scene/BirdViewControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
@@ -37,6 +37,7 @@ export class SceneManager implements Updatable {
     readonly raycaster: Raycaster = new Raycaster()
     ambientLight: LeveledAmbientLight
     terrain: Terrain
+    floorGroup: Group
     torchLightCursor: TorchLightCursor
     buildMarker: BuildPlacementMarker
     followerRenderer: FollowerRenderer
@@ -91,16 +92,14 @@ export class SceneManager implements Updatable {
         this.scene.add(this.buildMarker.group)
         this.setBuildModeSelection(null)
 
+        this.floorGroup = new Group()
+        this.floorGroup.scale.setScalar(TILESIZE)
+        if (DEV_MODE) this.floorGroup.add(new AxesHelper())
         this.terrain = TerrainLoader.loadTerrain(levelConf, this.worldMgr)
         this.terrain.forEachSurface((s) => {
-            this.terrain.floorGroup.add(s.mesh)
+            this.floorGroup.add(s.mesh)
         })
-        this.scene.add(this.terrain.floorGroup)
-
-        // gather level start details for game result score calculation
-        GameState.totalDiggables = this.terrain.countDiggables()
-        GameState.totalCrystals = this.terrain.countCrystals()
-        GameState.numTotalOres = this.terrain.countOres()
+        this.scene.add(this.floorGroup)
 
         const followerCanvas = createCanvas(158, 158)
         this.followerRenderer = new FollowerRenderer(followerCanvas, this.scene, this.worldMgr.ecs)
@@ -238,7 +237,7 @@ export class SceneManager implements Updatable {
         this.cameraBird.getWorldPosition(this.lastCameraWorldPos)
         this.lastCameraWorldPos.y += TILESIZE
         this.raycaster.set(this.lastCameraWorldPos, SceneManager.VEC_DOWN)
-        const terrainIntersectionPoint = this.raycaster.intersectObject(this.terrain.floorGroup, true)?.[0]?.point
+        const terrainIntersectionPoint = this.raycaster.intersectObject(this.floorGroup, true)?.[0]?.point
         if (!terrainIntersectionPoint) return
         const minCameraPosY = terrainIntersectionPoint.y + MIN_CAMERA_HEIGHT_ABOVE_TERRAIN
         const centerPosition = this.birdViewControls.target.clone()

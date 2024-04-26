@@ -276,7 +276,8 @@ export class GameLayer extends ScreenLayer {
             } else if (event.key === 'f') {
                 const surface = this.worldMgr.entityMgr.selection.surface
                 if (!surface.surfaceType.floor) {
-                    this.worldMgr.sceneMgr.terrain.createFallIn(surface, this.worldMgr.sceneMgr.terrain.findFallInTarget(surface))
+                    const fallInTarget = surface.neighbors.find((n) => n.isWalkable() && !n.surfaceType.hasErosion)
+                    if (fallInTarget) this.worldMgr.sceneMgr.terrain.createFallIn(surface, fallInTarget)
                 }
                 EventBroker.publish(new DeselectAll())
                 return true
