@@ -179,9 +179,10 @@ export class SceneManager implements Updatable {
         this.scene.add(meshGroup)
     }
 
-    removeMeshGroup(meshGroup: AnimatedSceneEntity): void {
+    disposeMeshGroup(meshGroup: AnimatedSceneEntity): void {
         this.entities.remove(meshGroup)
         this.scene.remove(meshGroup)
+        meshGroup.dispose()
     }
 
     addMiscAnim(lwsFilename: string, position: Vector3, heading: number, loop: boolean, onRemove?: () => unknown) {

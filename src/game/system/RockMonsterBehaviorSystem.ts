@@ -355,9 +355,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 this.worldMgr.entityMgr.removeEntity(entity)
                                 sceneEntity.setAnimation(RockMonsterActivity.Enter, () => {
                                     EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
-                                    this.worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
+                                    this.worldMgr.sceneMgr.disposeMeshGroup(sceneEntity)
                                     this.ecs.removeEntity(entity)
-                                    sceneEntity.dispose()
                                 })
                             } else {
                                 const wallPathTargets = behaviorComponent.targetWall.getDigPositions().map((p) => PathTarget.fromLocation(p, ROCKY_GATHER_DISTANCE_SQ))

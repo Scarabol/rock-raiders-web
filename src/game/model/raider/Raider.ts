@@ -133,11 +133,10 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     disposeFromWorld() {
-        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
+        this.worldMgr.sceneMgr.disposeMeshGroup(this.sceneEntity)
         this.workAudio = SoundManager.stopAudio(this.workAudio)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
-        this.sceneEntity.dispose()
     }
 
     /*
@@ -160,10 +159,7 @@ export class Raider implements Updatable, JobFulfiller {
                     this.worldMgr.entityMgr.removeEntity(spider)
                     this.worldMgr.ecs.removeEntity(spider)
                     const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
-                    if (sceneEntityComponent) {
-                        this.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
-                        sceneEntityComponent.sceneEntity.dispose()
-                    }
+                    if (sceneEntityComponent) this.worldMgr.sceneMgr.disposeMeshGroup(sceneEntityComponent.sceneEntity)
                     return true
                 }
                 return false

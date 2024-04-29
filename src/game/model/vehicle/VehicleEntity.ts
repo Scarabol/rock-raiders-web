@@ -139,12 +139,11 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     disposeFromWorld() {
-        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
+        this.worldMgr.sceneMgr.disposeMeshGroup(this.sceneEntity)
         this.workAudio = SoundManager.stopAudio(this.workAudio)
         this.engineSound = SoundManager.stopAudio(this.engineSound)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
-        this.sceneEntity.dispose()
     }
 
     /*
@@ -363,10 +362,11 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     addDriver(driver: Raider) {
+        if (this.driver !== driver) this.dropDriver()
         this.driver = driver
         this.driver.vehicle = this
         if (this.stats.InvisibleDriver) {
-            this.worldMgr.sceneMgr.removeMeshGroup(this.driver.sceneEntity)
+            this.driver.sceneEntity.visible = false
         } else {
             const positionComponent = this.worldMgr.ecs.getComponents(this.driver.entity).get(PositionComponent)
             positionComponent.position.set(0, 0, 0)
@@ -405,6 +405,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
                 this.driver.worldMgr.ecs.addComponent(this.driver.entity, new ScannerComponent(positionComponent, scannerRange))
             }
         }
+        this.driver.sceneEntity.visible = true
         // TODO Remove scanner component inherited from driver
         this.driver = null
         this.engineSound = SoundManager.stopAudio(this.engineSound)

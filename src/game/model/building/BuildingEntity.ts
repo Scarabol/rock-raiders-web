@@ -194,9 +194,8 @@ export class BuildingEntity {
     }
 
     disposeFromWorld() {
-        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
+        this.worldMgr.sceneMgr.disposeMeshGroup(this.sceneEntity)
         this.worldMgr.sceneMgr.removeSprite(this.powerOffSprite)
-        this.sceneEntity.dispose()
         this.engineSound = SoundManager.stopAudio(this.engineSound)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)

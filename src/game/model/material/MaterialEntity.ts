@@ -44,8 +44,7 @@ export class MaterialEntity {
         if (this.carryJob) this.carryJob.jobState = JobState.CANCELED
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, this.entity, MapMarkerChange.REMOVE))
-        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
-        this.sceneEntity.dispose()
+        this.worldMgr.sceneMgr.disposeMeshGroup(this.sceneEntity)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }

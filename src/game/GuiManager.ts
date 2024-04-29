@@ -231,7 +231,7 @@ export class GuiManager {
                         worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
                         entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
                         sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BirdScarer, position, heading, false, () => {
-                            sceneMgr.removeMeshGroup(sceneEntity)
+                            sceneMgr.disposeMeshGroup(sceneEntity)
                             entityMgr.removeEntity(birdScarer)
                             worldMgr.ecs.removeEntity(birdScarer)
                         })

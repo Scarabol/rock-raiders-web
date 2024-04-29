@@ -37,10 +37,7 @@ export class MovementSystem extends AbstractGameSystem {
                     if (positionComponent.surface.wallType && statsComponent.enterWall) {
                         this.worldMgr.entityMgr.removeEntity(entity)
                         this.ecs.removeEntity(entity)
-                        if (sceneEntityComponent) {
-                            this.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
-                            sceneEntityComponent.sceneEntity.dispose()
-                        }
+                        if (sceneEntityComponent) this.worldMgr.sceneMgr.disposeMeshGroup(sceneEntityComponent.sceneEntity)
                     } else if (sceneEntityComponent) {
                         sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? AnimEntityActivity.StandCarry : AnimEntityActivity.Stand)
                     }

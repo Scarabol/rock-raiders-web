@@ -43,7 +43,6 @@ export class AnimatedSceneEntity extends Group implements Updatable {
 
     addDriver(driver: Object3D) {
         if (!this.driverParent) return
-        if (this.driver !== driver) this.removeDriver()
         this.driver = driver
         this.driver.position.set(0, 0, 0)
         this.driver.rotation.set(0, 0, 0)
