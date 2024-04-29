@@ -355,7 +355,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 this.worldMgr.entityMgr.removeEntity(entity)
                                 sceneEntity.setAnimation(RockMonsterActivity.Enter, () => {
                                     EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
-                                    this.worldMgr.sceneMgr.disposeMeshGroup(sceneEntity)
+                                    this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntity)
                                     this.ecs.removeEntity(entity)
                                 })
                             } else {
@@ -435,7 +435,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             raiderPositionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(raiderPositionComponent.position)
             raiderPositionComponent.markDirty()
             sceneEntity.depositParent.remove(raider.sceneEntity)
-            this.worldMgr.sceneMgr.addMeshGroup(raider.sceneEntity)
+            this.worldMgr.sceneMgr.addSceneEntity(raider.sceneEntity)
             raider.sceneEntity.scale.copy(prevScale)
             sceneEntity.setAnimation(AnimEntityActivity.Stand)
             behaviorComponent.state = prevState

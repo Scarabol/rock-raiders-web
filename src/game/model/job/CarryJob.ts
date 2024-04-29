@@ -157,7 +157,7 @@ export class CarryJob extends Job {
                 raider.sceneEntity.pickupEntity(material.sceneEntity)
             } else if (droppedItem.entityType === EntityType.ELECTRIC_FENCE) {
                 droppedItem.worldMgr.entityMgr.removeEntity(droppedItem.entity)
-                droppedItem.worldMgr.sceneMgr.addMeshGroup(droppedItem.sceneEntity)
+                droppedItem.worldMgr.sceneMgr.addSceneEntity(droppedItem.sceneEntity)
                 droppedItem.sceneEntity.rotation.set(0, 0, 0)
                 const stats = GameConfig.instance.stats.electricFence
                 const pickSphere = droppedItem.worldMgr.ecs.getComponents(droppedItem.entity).get(SceneSelectionComponent).pickSphere

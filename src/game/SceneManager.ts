@@ -14,7 +14,7 @@ import { Updatable, updateSafe } from './model/Updateable'
 import { CAMERA_FOV, DEV_MODE, MIN_CAMERA_HEIGHT_ABOVE_TERRAIN, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
-import { AnimatedSceneEntity } from '../scene/AnimatedSceneEntity'
+import { SceneEntity } from './SceneEntity'
 import { AnimationGroup } from '../scene/AnimationGroup'
 import { createCanvas } from '../core/ImageHelper'
 import { FollowerRenderer } from '../scene/FollowerRenderer'
@@ -30,8 +30,7 @@ export class SceneManager implements Updatable {
     readonly cameraFPV: PerspectiveCamera
     readonly renderer: SceneRenderer
     readonly birdViewControls: BirdViewControls
-    readonly entities: AnimatedSceneEntity[] = []
-    readonly miscAnims: AnimationGroup[] = []
+    readonly sceneObjects: SceneEntity[] = []
     readonly sprites: (Sprite & Updatable)[] = []
     readonly lastCameraWorldPos: Vector3 = new Vector3()
     readonly raycaster: Raycaster = new Raycaster()
@@ -110,8 +109,7 @@ export class SceneManager implements Updatable {
     }
 
     update(elapsedMs: number) {
-        this.entities.forEach((e) => updateSafe(e, elapsedMs))
-        this.miscAnims.forEach((a) => updateSafe(a, elapsedMs))
+        this.sceneObjects.forEach((e) => updateSafe(e, elapsedMs))
         this.sprites.forEach((s) => updateSafe(s, elapsedMs))
         updateSafe(this.torchLightCursor, elapsedMs)
         this.birdViewControls?.updateControlsSafe(elapsedMs)
@@ -140,10 +138,8 @@ export class SceneManager implements Updatable {
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         this.terrain = null
-        this.entities.forEach((e) => e.dispose())
-        this.entities.length = 0
-        this.miscAnims.forEach((a) => a.dispose())
-        this.miscAnims.length = 0
+        this.sceneObjects.forEach((e) => e.dispose())
+        this.sceneObjects.length = 0
     }
 
     resize(width: number, height: number) {
@@ -174,33 +170,26 @@ export class SceneManager implements Updatable {
         this.buildMarker.setBuildMode(entityType)
     }
 
-    addMeshGroup(meshGroup: AnimatedSceneEntity): void {
-        this.entities.add(meshGroup)
-        this.scene.add(meshGroup)
+    addSceneEntity(sceneEntity: SceneEntity): void {
+        this.sceneObjects.add(sceneEntity)
+        this.scene.add(sceneEntity)
     }
 
-    disposeMeshGroup(meshGroup: AnimatedSceneEntity): void {
-        this.entities.remove(meshGroup)
-        this.scene.remove(meshGroup)
-        meshGroup.dispose()
+    disposeSceneEntity(sceneEntity: SceneEntity): void {
+        this.sceneObjects.remove(sceneEntity)
+        this.scene.remove(sceneEntity)
+        sceneEntity.dispose()
     }
 
     addMiscAnim(lwsFilename: string, position: Vector3, heading: number, loop: boolean, onRemove?: () => unknown) {
         const group = new AnimationGroup(lwsFilename, loop ? null : () => {
-            this.removeMiscAnim(group)
+            this.disposeSceneEntity(group)
             if (onRemove) onRemove()
         }).setup().play()
         group.position.copy(position)
         group.rotateOnAxis(Object3D.DEFAULT_UP, heading)
-        this.miscAnims.add(group)
-        this.scene.add(group)
+        this.addSceneEntity(group)
         return group
-    }
-
-    removeMiscAnim(group: AnimationGroup) {
-        this.miscAnims.remove(group)
-        this.scene.remove(group)
-        group.dispose()
     }
 
     addSprite(sprite: (Sprite & Updatable)) {

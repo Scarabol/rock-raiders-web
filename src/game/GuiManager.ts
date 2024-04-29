@@ -224,14 +224,14 @@ export class GuiManager {
                 const sceneEntity = new AnimatedSceneEntity()
                 sceneEntity.position.copy(position)
                 sceneEntity.rotation.y = heading
-                sceneMgr.addMeshGroup(sceneEntity)
+                sceneMgr.addSceneEntity(sceneEntity)
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.OohScary))
                 sceneEntity.setAnimation(DynamiteActivity.Normal, () => {
                     sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
                         worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
                         entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
                         sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BirdScarer, position, heading, false, () => {
-                            sceneMgr.disposeMeshGroup(sceneEntity)
+                            sceneMgr.disposeSceneEntity(sceneEntity)
                             entityMgr.removeEntity(birdScarer)
                             worldMgr.ecs.removeEntity(birdScarer)
                         })

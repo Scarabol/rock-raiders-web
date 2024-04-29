@@ -1,5 +1,4 @@
 import { Group, Object3D, Vector2, Vector3 } from 'three'
-import { Updatable } from '../game/model/Updateable'
 import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -8,8 +7,9 @@ import { VERBOSE } from '../params'
 import { AnimationQualityGroup } from './AnimationQualityGroup'
 import { SceneManager } from '../game/SceneManager'
 import { GameConfig } from '../cfg/GameConfig'
+import { SceneEntity } from '../game/SceneEntity'
 
-export class AnimatedSceneEntity extends Group implements Updatable {
+export class AnimatedSceneEntity extends SceneEntity {
     readonly animationData: AnimEntityData[] = []
     readonly cacheAnimationGroups: Map<string, AnimationQualityGroup> = new Map()
     readonly animationGroups: AnimationQualityGroup[] = []
@@ -287,7 +287,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             this.rotation.y = headingRad
         }
         this.visible = sceneMgr.terrain.getSurfaceFromWorld(this.position).discovered
-        sceneMgr.addMeshGroup(this)
+        sceneMgr.addSceneEntity(this)
     }
 
     getCamJoints() {

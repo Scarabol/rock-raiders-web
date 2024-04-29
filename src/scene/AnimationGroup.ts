@@ -1,12 +1,12 @@
-import { AnimationAction, AnimationClip, AnimationMixer, Group, LoopOnce, NumberKeyframeTrack } from 'three'
-import { Updatable } from '../game/model/Updateable'
+import { AnimationAction, AnimationClip, AnimationMixer, LoopOnce, NumberKeyframeTrack } from 'three'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from './SceneMesh'
 import { getPath } from '../core/Util'
 import { LWSCData } from '../resource/fileparser/LWSCParser'
 import { SceneAudioMesh } from './SceneAudioMesh'
+import { SceneEntity } from '../game/SceneEntity'
 
-export class AnimationGroup extends Group implements Updatable {
+export class AnimationGroup extends SceneEntity {
     readonly meshList: SceneMesh[] = []
     readonly animationMixers: AnimationMixer[] = []
     readonly animationActions: AnimationAction[] = []

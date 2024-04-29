@@ -167,7 +167,7 @@ export class ObjectListLoader {
         raider.sceneEntity.position.y += positionComponent.floorOffset
         raider.sceneEntity.rotation.y = headingRad - Math.PI / 2
         raider.sceneEntity.visible = surface.discovered
-        this.worldMgr.sceneMgr.addMeshGroup(raider.sceneEntity)
+        this.worldMgr.sceneMgr.addSceneEntity(raider.sceneEntity)
         if (raider.sceneEntity.visible) {
             this.worldMgr.entityMgr.raiders.push(raider)
             this.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
@@ -195,7 +195,7 @@ export class ObjectListLoader {
         vehicle.sceneEntity.position.y += positionComponent.floorOffset
         vehicle.sceneEntity.rotation.y = headingRad + Math.PI
         vehicle.sceneEntity.visible = surface.discovered
-        this.worldMgr.sceneMgr.addMeshGroup(vehicle.sceneEntity)
+        this.worldMgr.sceneMgr.addSceneEntity(vehicle.sceneEntity)
         if (vehicle.sceneEntity.visible) {
             this.worldMgr.entityMgr.vehicles.push(vehicle)
             this.worldMgr.ecs.addComponent(vehicle.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))

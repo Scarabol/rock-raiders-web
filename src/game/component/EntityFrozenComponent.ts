@@ -20,6 +20,6 @@ export class EntityFrozenComponent extends AbstractGameComponent {
         })
         this.iceCubeEntity.position.copy(position)
         this.iceCubeEntity.rotation.y = heading
-        worldMgr.sceneMgr.addMeshGroup(this.iceCubeEntity)
+        worldMgr.sceneMgr.addSceneEntity(this.iceCubeEntity)
     }
 }

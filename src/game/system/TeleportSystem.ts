@@ -80,7 +80,7 @@ export class TeleportSystem extends AbstractGameSystem {
                     raider.sceneEntity.position.y += positionComponent.floorOffset
                     raider.sceneEntity.rotation.y = heading
                     raider.sceneEntity.visible = surface.discovered
-                    raider.worldMgr.sceneMgr.addMeshGroup(raider.sceneEntity)
+                    raider.worldMgr.sceneMgr.addSceneEntity(raider.sceneEntity)
                     raider.sceneEntity.setAnimation(AnimEntityActivity.TeleportIn, () => {
                         raider.sceneEntity.setAnimation(AnimEntityActivity.Stand)
                         let healthComponent: HealthComponent
@@ -130,7 +130,7 @@ export class TeleportSystem extends AbstractGameSystem {
                         vehicle.sceneEntity.position.y += positionComponent.floorOffset
                         vehicle.sceneEntity.rotation.y = teleportBuilding.heading
                         vehicle.sceneEntity.visible = surface.discovered
-                        vehicle.worldMgr.sceneMgr.addMeshGroup(vehicle.sceneEntity)
+                        vehicle.worldMgr.sceneMgr.addSceneEntity(vehicle.sceneEntity)
                         vehicle.sceneEntity.setAnimation(AnimEntityActivity.TeleportIn, () => {
                             vehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             const healthComponent: HealthComponent = vehicle.worldMgr.ecs.addComponent(vehicle.entity, new HealthComponent(false, 24, 14, vehicle.sceneEntity, false, GameConfig.instance.getRockFallDamage(vehicle.entityType, vehicle.level)))

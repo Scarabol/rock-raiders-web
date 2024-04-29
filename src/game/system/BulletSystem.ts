@@ -72,13 +72,13 @@ export class BulletSystem extends AbstractGameSystem {
                             }
                         }
                         this.worldMgr.entityMgr.removeEntity(entity)
-                        this.worldMgr.sceneMgr.removeMiscAnim(bulletComponent.bulletAnim)
+                        this.worldMgr.sceneMgr.disposeSceneEntity(bulletComponent.bulletAnim)
                         this.ecs.removeEntity(entity)
                         return true
                     })
                 } else {
                     this.worldMgr.entityMgr.removeEntity(entity)
-                    this.worldMgr.sceneMgr.removeMiscAnim(bulletComponent.bulletAnim)
+                    this.worldMgr.sceneMgr.disposeSceneEntity(bulletComponent.bulletAnim)
                     this.ecs.removeEntity(entity)
                 }
             } catch (e) {

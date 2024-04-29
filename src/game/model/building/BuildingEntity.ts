@@ -194,7 +194,7 @@ export class BuildingEntity {
     }
 
     disposeFromWorld() {
-        this.worldMgr.sceneMgr.disposeMeshGroup(this.sceneEntity)
+        this.worldMgr.sceneMgr.disposeSceneEntity(this.sceneEntity)
         this.worldMgr.sceneMgr.removeSprite(this.powerOffSprite)
         this.engineSound = SoundManager.stopAudio(this.engineSound)
         this.worldMgr.entityMgr.removeEntity(this.entity)
@@ -336,7 +336,7 @@ export class BuildingEntity {
         this.sceneEntity.position.y += positionComponent.floorOffset
         this.sceneEntity.rotation.y = radHeading
         this.sceneEntity.visible = this.surfaces.some((s) => s.discovered)
-        this.worldMgr.sceneMgr.addMeshGroup(this.sceneEntity)
+        this.worldMgr.sceneMgr.addSceneEntity(this.sceneEntity)
         if (this.sceneEntity.visible) {
             this.worldMgr.entityMgr.buildings.push(this)
         } else {

@@ -139,7 +139,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     disposeFromWorld() {
-        this.worldMgr.sceneMgr.disposeMeshGroup(this.sceneEntity)
+        this.worldMgr.sceneMgr.disposeSceneEntity(this.sceneEntity)
         this.workAudio = SoundManager.stopAudio(this.workAudio)
         this.engineSound = SoundManager.stopAudio(this.engineSound)
         this.worldMgr.entityMgr.removeEntity(this.entity)
@@ -354,7 +354,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.carriedItems.forEach((carried) => {
             const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.getPosition2D())
             carried.setPosition(floorPosition)
-            carried.worldMgr.sceneMgr.addMeshGroup(carried.sceneEntity)
+            carried.worldMgr.sceneMgr.addSceneEntity(carried.sceneEntity)
             carriedEntities.push(carried)
         })
         this.carriedItems.clear()
@@ -394,7 +394,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const floorPosition = this.driver.worldMgr.sceneMgr.getFloorPosition(hopOffSpot)
         this.driver.setPosition(floorPosition)
         this.driver.sceneEntity.rotation.y = this.sceneEntity.heading
-        this.driver.worldMgr.sceneMgr.addMeshGroup(this.driver.sceneEntity)
+        this.driver.worldMgr.sceneMgr.addSceneEntity(this.driver.sceneEntity)
         this.driver.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         this.worldMgr.ecs.addComponent(this.driver.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.UPDATE, floorPosition))

@@ -133,7 +133,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     disposeFromWorld() {
-        this.worldMgr.sceneMgr.disposeMeshGroup(this.sceneEntity)
+        this.worldMgr.sceneMgr.disposeSceneEntity(this.sceneEntity)
         this.workAudio = SoundManager.stopAudio(this.workAudio)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
@@ -159,7 +159,7 @@ export class Raider implements Updatable, JobFulfiller {
                     this.worldMgr.entityMgr.removeEntity(spider)
                     this.worldMgr.ecs.removeEntity(spider)
                     const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
-                    if (sceneEntityComponent) this.worldMgr.sceneMgr.disposeMeshGroup(sceneEntityComponent.sceneEntity)
+                    if (sceneEntityComponent) this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntityComponent.sceneEntity)
                     return true
                 }
                 return false
@@ -340,7 +340,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.sceneEntity.removeAllCarried()
         const floorPosition = this.carries.worldMgr.sceneMgr.getFloorPosition(this.carries.getPosition2D())
         this.carries.setPosition(floorPosition)
-        this.carries.worldMgr.sceneMgr.addMeshGroup(this.carries.sceneEntity)
+        this.carries.worldMgr.sceneMgr.addSceneEntity(this.carries.sceneEntity)
         const carriedEntity = this.carries
         this.carries = null
         return [carriedEntity]

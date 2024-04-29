@@ -131,7 +131,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             this.worldMgr.entityMgr.removeEntity(entity)
                             sceneEntity.setAnimation(SlugActivity.Enter, () => {
                                 EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_SLUG_GONE, positionComponent))
-                                this.worldMgr.sceneMgr.disposeMeshGroup(sceneEntity)
+                                this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntity)
                                 this.ecs.removeEntity(entity)
                             })
                         } else if (!components.has(WorldTargetComponent)) {

@@ -94,7 +94,7 @@ export class MonsterSpawner {
             default:
                 throw new Error(`Unexpected entity type: ${entityType}`)
         }
-        worldMgr.sceneMgr.addMeshGroup(sceneEntity)
+        worldMgr.sceneMgr.addSceneEntity(sceneEntity)
         worldMgr.entityMgr.addEntity(entity, entityType)
         return entity
     }
@@ -121,7 +121,7 @@ export class MonsterSpawner {
                 EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
                 worldMgr.ecs.removeComponent(entity, RaiderScareComponent)
                 EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
-                worldMgr.sceneMgr.disposeMeshGroup(sceneEntity)
+                worldMgr.sceneMgr.disposeSceneEntity(sceneEntity)
                 worldMgr.entityMgr.removeEntity(entity)
                 worldMgr.ecs.removeEntity(entity)
             })
