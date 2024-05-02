@@ -12,6 +12,7 @@ import { GameModule } from './GameModule'
 import { CursorManager } from './screen/CursorManager'
 import { DependencySpriteWorkerPool } from './worker/DependencySpriteWorkerPool'
 import { BitmapFontData } from './core/BitmapFont'
+import { BitmapWorkerPool } from './worker/BitmapWorkerPool'
 
 export async function start() {
     console.time('Total asset loading time')
@@ -71,7 +72,7 @@ export async function start() {
             BitmapFontWorkerPool.instance.addFont(fontName, ResourceManager.getResource(fontName))
         })
     ])
-    AssetLoader.bitmapWorkerPool.terminatePool()
+    BitmapWorkerPool.instance.terminatePool()
     console.timeEnd('Total asset loading time')
     console.log(`Loading of about ${(assetLoader.assetRegistry.size)} assets complete!`)
     screenMaster.loadingLayer.hide()

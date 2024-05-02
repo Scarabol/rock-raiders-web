@@ -4,6 +4,8 @@ import { AbstractWorkerPool } from './AbstractWorkerPool'
 import { TypedWorkerFallback, WorkerRequestMessage, WorkerResponseMessage } from './TypedWorker'
 
 export class BitmapWorkerPool extends AbstractWorkerPool<BitmapWorkerRequest, BitmapWorkerResponse> {
+    static readonly instance = new BitmapWorkerPool().startPool(16, null)
+
     protected createWorker() {
         return new Worker(new URL('./BitmapWorker', import.meta.url), {type: 'module'}) // do not change this line otherwise no worker.js is exported for production
     }

@@ -14,8 +14,6 @@ import { SoundManager } from '../audio/SoundManager'
 import { BitmapWithPalette } from './fileparser/BitmapWithPalette'
 
 export class AssetLoader {
-    static readonly bitmapWorkerPool = new BitmapWorkerPool().startPool(16, null)
-
     readonly assetRegistry: AssetRegistry = new AssetRegistry(this)
 
     constructor(
@@ -53,7 +51,7 @@ export class AssetLoader {
     }
 
     async loadWadImageAsset(name: string): Promise<BitmapWithPalette> {
-        return AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
+        return BitmapWorkerPool.instance.decodeBitmap(this.vfs.getFile(name).toBuffer())
     }
 
     async loadWadTexture(name: string): Promise<BitmapWithPalette> {
@@ -61,20 +59,20 @@ export class AssetLoader {
         const alphaIndexMatch = name.match(/(.*a)(\d+)(_.+)/i)
         if (alphaIndexMatch) {
             const alphaIndex = parseInt(alphaIndexMatch[2])
-            return AssetLoader.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex)
+            return BitmapWorkerPool.instance.decodeBitmapWithAlphaIndex(data, alphaIndex)
         } else if (name.match(/\/a.*\d.*/i)) {
-            return AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(data)
+            return BitmapWorkerPool.instance.decodeBitmapWithAlpha(data)
         } else {
-            return AssetLoader.bitmapWorkerPool.decodeBitmap(data)
+            return BitmapWorkerPool.instance.decodeBitmap(data)
         }
     }
 
     async loadAlphaImageAsset(name: string): Promise<ImageData> {
-        return AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(this.vfs.getFile(name).toBuffer())
+        return BitmapWorkerPool.instance.decodeBitmapWithAlpha(this.vfs.getFile(name).toBuffer())
     }
 
     async loadFontImageAsset(name: string): Promise<BitmapFontData> {
-        const imgData = await AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
+        const imgData = await BitmapWorkerPool.instance.decodeBitmap(this.vfs.getFile(name).toBuffer())
         return new BitmapFontData(imgData)
     }
 
