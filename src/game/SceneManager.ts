@@ -11,7 +11,7 @@ import { BirdViewCamera } from '../scene/BirdViewCamera'
 import { TorchLightCursor } from '../scene/TorchLightCursor'
 import { SceneRenderer } from '../scene/SceneRenderer'
 import { Updatable, updateSafe } from './model/Updateable'
-import { CAMERA_FOV, DEV_MODE, MIN_CAMERA_HEIGHT_ABOVE_TERRAIN, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
+import { CAMERA_FOV, CAMERA_MAX_DYNAMITE_SHAKE_DISTANCE, CAMERA_MIN_HEIGHT_ABOVE_TERRAIN, DEV_MODE, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { SceneEntity } from './SceneEntity'
@@ -121,7 +121,7 @@ export class SceneManager implements Updatable {
         this.shakeTimeout -= elapsedMs
         this.bumpTimeout += elapsedMs
         if (this.bumpTimeout > NATIVE_UPDATE_INTERVAL) {
-            this.scene.position.random().multiplyScalar(2)
+            this.scene.position.random().multiplyScalar(CAMERA_MAX_DYNAMITE_SHAKE_DISTANCE)
             this.bumpTimeout = 0
         }
         if (this.shakeTimeout <= 0) {
@@ -229,7 +229,7 @@ export class SceneManager implements Updatable {
         this.raycaster.set(this.lastCameraWorldPos, SceneManager.VEC_DOWN)
         const terrainIntersectionPoint = this.raycaster.intersectObject(this.floorGroup, true)?.[0]?.point
         if (!terrainIntersectionPoint) return
-        const minCameraPosY = terrainIntersectionPoint.y + MIN_CAMERA_HEIGHT_ABOVE_TERRAIN
+        const minCameraPosY = terrainIntersectionPoint.y + CAMERA_MIN_HEIGHT_ABOVE_TERRAIN + CAMERA_MAX_DYNAMITE_SHAKE_DISTANCE
         const centerPosition = this.birdViewControls.target.clone()
         centerPosition.y = 0
         const groundPosition = this.cameraBird.position.clone()
