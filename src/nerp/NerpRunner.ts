@@ -25,6 +25,7 @@ import { SoundManager } from '../audio/SoundManager'
 import { EventKey } from '../event/EventKeyEnum'
 import { ShowMissionBriefingEvent } from '../event/LocalEvents'
 import { NerpMessage } from '../resource/fileparser/NerpMsgParser'
+import { Surface } from '../game/terrain/Surface'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -47,6 +48,7 @@ export class NerpRunner {
     currentMessage: number = -1
     messageTimerMs: number = 0
     messageSfx: AudioBufferSourceNode = null
+    tutoBlocksById: Map<number, Surface[]> = new Map()
 
     constructor(readonly worldMgr: WorldManager, readonly script: NerpScript, readonly messages: NerpMessage[]) {
         NerpRunner.timeAddedAfterSample = 0
@@ -343,23 +345,23 @@ export class NerpRunner {
     }
 
     setRockMonsterAtTutorial(tutoBlockId: number) {
-        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((t) => {
             EventBroker.publish(new MonsterEmergeEvent(t))
         })
     }
 
     setCongregationAtTutorial(tutoBlockId: number) {
-        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} to move camera to, using first one`)
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} as congregation, using only first one`)
         const targetBlock = tutoBlocks[0]
         if (!targetBlock) return
         GameState.monsterCongregation = targetBlock.getCenterWorld2D()
     }
 
     setCameraGotoTutorial(tutoBlockId: number) {
-        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} to move camera to, using first one`)
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} to move camera to, using only first one`)
         const targetBlock = tutoBlocks[0]
         if (!targetBlock) return
         this.worldMgr.sceneMgr.birdViewControls.forceMoveToTarget(targetBlock.getCenterWorld())
@@ -377,7 +379,7 @@ export class NerpRunner {
     }
 
     private setTutorialBlock(tutoBlockId: number, surfaceType: SurfaceType) {
-        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((s) => {
             s.setSurfaceType(surfaceType)
             s.needsMeshUpdate = true
@@ -387,21 +389,16 @@ export class NerpRunner {
     }
 
     getTutorialBlockIsGround(tutoBlockId: number): number {
-        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        return tutoBlocks.count((s) => s.discovered && s.surfaceType.floor) // TODO must be non-zero at least, but what meaning exactly?
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        return tutoBlocks.count((s) => s.discovered && s.surfaceType.floor)
     }
 
     getTutorialBlockIsPath(tutoBlockId: number): number {
-        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} to move camera to, using first one`)
-        const targetBlock = tutoBlocks[0]
-        if (!targetBlock) return 0
-        return targetBlock.discovered && targetBlock.isPath() ? 1 : 0
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        return tutoBlocks.count((s) => s.discovered && s.isPath())
     }
 
     getTutorialBlockClicks(tutoBlockId: number): number {
-        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId}`)
         return GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0)
     }
 
@@ -410,7 +407,7 @@ export class NerpRunner {
     }
 
     getUnitAtBlock(tutoBlockId: number): number {
-        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         return [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles].count((e): boolean => {
             const surface = this.worldMgr.ecs.getComponents(e.entity).get(PositionComponent).surface
             return tutoBlocks.some((tutoBlock) => tutoBlock.discovered && surface === tutoBlock)
@@ -452,7 +449,7 @@ export class NerpRunner {
     }
 
     getRecordObjectAtTutorial(tutoBlockId: number): number {
-        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         const recordedEntities = this.worldMgr.entityMgr.recordedEntities
         return recordedEntities.count((entity): boolean => {
             const surface = this.worldMgr.ecs.getComponents(entity).get(PositionComponent).surface

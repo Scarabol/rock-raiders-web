@@ -142,17 +142,6 @@ export class TerrainLoader {
             }
         }
 
-        if (levelConf.blockPointersMap) {
-            for (let x = 0; x < terrain.width; x++) {
-                for (let y = 0; y < terrain.height; y++) {
-                    const tutoBlockId = levelConf.blockPointersMap[y][x]
-                    if (tutoBlockId) {
-                        terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(terrain.surfaces[x][y])
-                    }
-                }
-            }
-        }
-
         if (levelConf.emergeMap) {
             for (let x = 0; x < terrain.width; x++) {
                 for (let y = 0; y < terrain.height; y++) {

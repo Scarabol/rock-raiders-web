@@ -86,6 +86,16 @@ export class GameScreen {
         GameState.totalDiggables = this.sceneMgr.terrain.countDiggables()
         GameState.totalCrystals = this.sceneMgr.terrain.countCrystals()
         GameState.numTotalOres = this.sceneMgr.terrain.countOres()
+        if (this.levelConf.blockPointersMap) {
+            for (let x = 0; x < this.levelConf.mapWidth; x++) {
+                for (let y = 0; y < this.levelConf.mapHeight; y++) {
+                    const tutoBlockId = this.levelConf.blockPointersMap[y][x]
+                    if (tutoBlockId) {
+                        this.worldMgr.nerpRunner.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(this.sceneMgr.terrain.surfaces[x][y])
+                    }
+                }
+            }
+        }
         // setup GUI
         this.guiMgr.buildingCycleIndex = 0
         this.overlayLayer.showBriefing(this.levelConf)

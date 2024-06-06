@@ -144,7 +144,7 @@ export class GameLayer extends ScreenLayer {
                 } else if (this.worldMgr.entityMgr.selection.raiders.length > 0 || this.worldMgr.entityMgr.selection.vehicles.length > 0) {
                     const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
                     if (cursorTarget.surface) {
-                        this.worldMgr.sceneMgr.terrain.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
+                        this.worldMgr.nerpRunner.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
                             if (surfaces.includes(cursorTarget.surface)) {
                                 GameState.tutoBlockClicks.set(tutoBlockId, GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0) + 1)
                             }
@@ -212,7 +212,7 @@ export class GameLayer extends ScreenLayer {
                     this.worldMgr.entityMgr.selection.set(selection)
                     EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
                     if (selection.surface) {
-                        this.worldMgr.sceneMgr.terrain.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
+                        this.worldMgr.nerpRunner.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
                             if (surfaces.includes(selection.surface)) {
                                 GameState.tutoBlockClicks.set(tutoBlockId, GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0) + 1)
                             }

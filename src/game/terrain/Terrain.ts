@@ -17,7 +17,6 @@ export class Terrain {
     height: number = 0
     surfaces: Surface[][] = []
     pathFinder: PathFinder = new PathFinder(this.surfaces)
-    tutoBlocksById: Map<number, Surface[]> = new Map()
     slugHoles: Surface[] = []
     rechargeSeams: Surface[] = []
 
