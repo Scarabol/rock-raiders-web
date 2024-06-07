@@ -1,11 +1,12 @@
 import { MapControls } from 'three/examples/jsm/controls/MapControls'
 import { Camera, MOUSE, Object3D, Vector3 } from 'three'
-import { DEV_MODE, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, USE_KEYBOARD_SHORTCUTS } from '../params'
+import { CAMERA_MAX_SHAKE_BUMP, CAMERA_MAX_SHAKE_TILES, DEV_MODE, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE, USE_KEYBOARD_SHORTCUTS } from '../params'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { degToRad } from 'three/src/math/MathUtils'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { EventKey } from '../event/EventKeyEnum'
+import { DynamiteExplosionEvent } from '../event/WorldEvents'
 
 export enum CameraRotation {
     NONE = 0,
@@ -23,6 +24,10 @@ export class BirdViewControls extends MapControls {
     lockedObject: Object3D
     disabled: boolean = false
     gamePaused: boolean = false
+    shakeOffset: Vector3 = new Vector3()
+    shakeOrigin: Vector3 = new Vector3()
+    shakeTimeout: number = 0
+    bumpTimeout: number = 0
 
     constructor(camera: Camera, readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
@@ -45,6 +50,11 @@ export class BirdViewControls extends MapControls {
         EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {
             this.gamePaused = false
             this.updateEnabled()
+        })
+        EventBroker.subscribe(EventKey.DYNAMITE_EXPLOSION, (event: DynamiteExplosionEvent) => {
+            this.shakeOrigin.set(event.position.x, 0, event.position.y)
+            this.shakeTimeout = 1000
+            this.bumpTimeout = 0
         })
     }
 
@@ -114,8 +124,35 @@ export class BirdViewControls extends MapControls {
             } else {
                 this.updateAutoPan() // XXX This should consider elapsed time independent for game speed
             }
+            this.shakeCamera(elapsedMs)
         } catch (e) {
             console.error(e)
+        }
+    }
+
+    private shakeCamera(elapsedMs: number) {
+        if (this.shakeTimeout <= 0) return
+        this.shakeTimeout -= elapsedMs
+        this.bumpTimeout += elapsedMs
+        if (this.bumpTimeout > NATIVE_UPDATE_INTERVAL) {
+            const shakeDistanceTiles = this.object.position.clone().sub(this.shakeOrigin).length() / TILESIZE
+            const shakeMultiplier = (CAMERA_MAX_SHAKE_TILES - shakeDistanceTiles) / CAMERA_MAX_SHAKE_TILES
+            if (shakeMultiplier > 0) {
+                const bump = new Vector3().random().subScalar(0.5).multiplyScalar(2 * shakeMultiplier * CAMERA_MAX_SHAKE_BUMP).sub(this.shakeOffset)
+                this.shakeOffset.add(bump)
+                this.object.position.add(bump)
+                this.target.add(bump)
+                this.update()
+                this.bumpTimeout = 0
+            }
+        }
+        if (this.shakeTimeout <= 0) {
+            this.shakeTimeout = 0
+            this.bumpTimeout = 0
+            this.object.position.sub(this.shakeOffset)
+            this.target.sub(this.shakeOffset)
+            this.update()
+            this.shakeOffset.setScalar(0)
         }
     }
 

@@ -11,7 +11,7 @@ import { BirdViewCamera } from '../scene/BirdViewCamera'
 import { TorchLightCursor } from '../scene/TorchLightCursor'
 import { SceneRenderer } from '../scene/SceneRenderer'
 import { Updatable, updateSafe } from './model/Updateable'
-import { CAMERA_FOV, CAMERA_MAX_DYNAMITE_SHAKE_DISTANCE, CAMERA_MIN_HEIGHT_ABOVE_TERRAIN, DEV_MODE, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
+import { CAMERA_FOV, CAMERA_MAX_SHAKE_BUMP, CAMERA_MIN_HEIGHT_ABOVE_TERRAIN, DEV_MODE, TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { SceneEntity } from './SceneEntity'
@@ -40,8 +40,6 @@ export class SceneManager implements Updatable {
     torchLightCursor: TorchLightCursor
     buildMarker: BuildPlacementMarker
     followerRenderer: FollowerRenderer
-    shakeTimeout: number = 0
-    bumpTimeout: number = 0
     cameraActive: PerspectiveCamera
 
     constructor(readonly worldMgr: WorldManager, canvas: HTMLCanvasElement) {
@@ -55,10 +53,6 @@ export class SceneManager implements Updatable {
         this.birdViewControls = new BirdViewControls(this.cameraBird, canvas)
         if (!DEV_MODE) this.birdViewControls.addEventListener('change', () => this.forceCameraBirdAboveFloor())
         this.setActiveCamera(this.cameraBird)
-        EventBroker.subscribe(EventKey.DYNAMITE_EXPLOSION, () => {
-            this.shakeTimeout = 1000
-            this.bumpTimeout = 0
-        })
         EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
             this.setActiveCamera(this.cameraBird) // TODO Only reset camera, when camera parent is affected
         })
@@ -113,22 +107,6 @@ export class SceneManager implements Updatable {
         this.sprites.forEach((s) => updateSafe(s, elapsedMs))
         updateSafe(this.torchLightCursor, elapsedMs)
         this.birdViewControls?.updateControlsSafe(elapsedMs)
-        this.shakeScene(elapsedMs)
-    }
-
-    private shakeScene(elapsedMs: number) {
-        if (this.shakeTimeout <= 0) return
-        this.shakeTimeout -= elapsedMs
-        this.bumpTimeout += elapsedMs
-        if (this.bumpTimeout > NATIVE_UPDATE_INTERVAL) {
-            this.scene.position.random().multiplyScalar(CAMERA_MAX_DYNAMITE_SHAKE_DISTANCE)
-            this.bumpTimeout = 0
-        }
-        if (this.shakeTimeout <= 0) {
-            this.shakeTimeout = 0
-            this.bumpTimeout = 0
-            this.scene.position.setScalar(0)
-        }
     }
 
     disposeScene() {
@@ -229,7 +207,7 @@ export class SceneManager implements Updatable {
         this.raycaster.set(this.lastCameraWorldPos, SceneManager.VEC_DOWN)
         const terrainIntersectionPoint = this.raycaster.intersectObject(this.floorGroup, true)?.[0]?.point
         if (!terrainIntersectionPoint) return
-        const minCameraPosY = terrainIntersectionPoint.y + CAMERA_MIN_HEIGHT_ABOVE_TERRAIN + CAMERA_MAX_DYNAMITE_SHAKE_DISTANCE
+        const minCameraPosY = terrainIntersectionPoint.y + CAMERA_MIN_HEIGHT_ABOVE_TERRAIN + CAMERA_MAX_SHAKE_BUMP
         const centerPosition = this.birdViewControls.target.clone()
         centerPosition.y = 0
         const groundPosition = this.cameraBird.position.clone()
