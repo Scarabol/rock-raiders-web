@@ -125,6 +125,10 @@ export class SaveGameManager {
         }
     }
 
+    static isGameComplete(): boolean {
+        return this.currentLevels.count((l) => l.levelScore > 0 && l.levelName.toLowerCase().startsWith('level')) >= NUM_OF_LEVELS_TO_COMPLETE_GAME
+    }
+
     static savePreferences() {
         localStorage.setItem('preferences', JSON.stringify(this.currentPreferences))
         console.log('Preferences saved', this.currentPreferences)

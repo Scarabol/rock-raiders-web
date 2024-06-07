@@ -47,7 +47,13 @@ export class MainMenuScreen {
         this.menuLayers.push(this.creditsLayer)
         this.rockWipeLayer = screenMaster.addLayer(new RockWipeLayer(), 200 + this.menuLayers.length * 10)
         EventBroker.subscribe(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
-            if (!event.result) this.showLevelSelection()
+            if (event.result) return
+            if (SaveGameManager.isGameComplete()) {
+                // TODO Show EndGameAVI1 from config, requires Indeo5 video decoder
+                this.showCredits()
+            } else {
+                this.showLevelSelection()
+            }
         })
         if (!this.checkEnv()) throw new Error('Error (0xaex6ieR9one): Visit your grandma')
     }

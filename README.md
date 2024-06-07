@@ -50,7 +50,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Add entity movement controller with arrow keys for fpv/shoulder view
 - Add helper features for all tutorial levels
-- Show credits on continue after completing Level25
 
 ### v0.9.x - Polishing
 
