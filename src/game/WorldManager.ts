@@ -1,7 +1,7 @@
 import { LevelConfData } from './LevelLoader'
 import { clearIntervalSafe } from '../core/Util'
 import { EventKey } from '../event/EventKeyEnum'
-import { MaterialAmountChanged, ToggleAlarmEvent } from '../event/WorldEvents'
+import { GameResultEvent, MaterialAmountChanged, ToggleAlarmEvent } from '../event/WorldEvents'
 import { NerpRunner } from '../nerp/NerpRunner'
 import { DEV_MODE, UPDATE_INTERVAL_MS } from '../params'
 import { EntityManager } from './EntityManager'
@@ -39,6 +39,7 @@ import { TeleportSystem } from './system/TeleportSystem'
 import { FallInSystem } from './system/FallInSystem'
 import { FluidSurfaceSystem } from './system/FluidSurfaceSystem'
 import { LaserShotSystem } from './system/LaserShotSystem'
+import { GameResultState } from './model/GameResult'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -51,6 +52,7 @@ export class WorldManager {
     gameTimeMs: number = 0
     firstUnpause: boolean = true
     gameSpeedMultiplier: number = 1
+    crystalsQuota: number = 0
 
     constructor() {
         this.powerGrid = new PowerGrid(this) // TODO Transform power grid into system with components
@@ -103,6 +105,7 @@ export class WorldManager {
         this.firstUnpause = true
         const gameSpeedIndex = Math.round(SaveGameManager.currentPreferences.gameSpeed * 5)
         this.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
+        this.crystalsQuota = levelConf.reward?.quota?.crystals || 0
     }
 
     stop() {
@@ -126,6 +129,7 @@ export class WorldManager {
         updateSafe(this.sceneMgr, elapsedGameTimeMs)
         updateSafe(this.jobSupervisor, elapsedGameTimeMs)
         updateSafe(this.nerpRunner, UPDATE_INTERVAL_MS)
+        this.checkCrystalFailure()
     }
 
     async teleportEnd(): Promise<void> {
@@ -145,5 +149,14 @@ export class WorldManager {
 
     get gameTimeSeconds(): number {
         return Math.round(this.gameTimeMs / 1000)
+    }
+
+    checkCrystalFailure() {
+        try {
+            if (this.crystalsQuota < 1 || GameState.totalCrystals >= this.crystalsQuota) return
+            EventBroker.publish(new GameResultEvent(GameResultState.CRYSTAL_FAILURE))
+        } catch (e) {
+            console.error(e)
+        }
     }
 }
