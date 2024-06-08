@@ -354,6 +354,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetWall.getCenterWorld2D()))
                                 this.worldMgr.entityMgr.removeEntity(entity)
                                 sceneEntity.setAnimation(RockMonsterActivity.Enter, () => {
+                                    GameState.totalCrystals -= behaviorComponent.numCrystalsEaten
                                     EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
                                     this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntity)
                                     this.ecs.removeEntity(entity)
