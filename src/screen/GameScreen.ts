@@ -82,10 +82,6 @@ export class GameScreen {
         this.guiLayer.reset()
         this.worldMgr.setup(this.levelConf)
         this.sceneMgr.setupScene(this.levelConf)
-        // gather level start details for game result score calculation
-        GameState.totalDiggables = this.sceneMgr.terrain.countDiggables()
-        GameState.totalCrystals = this.sceneMgr.terrain.countCrystals()
-        GameState.numTotalOres = this.sceneMgr.terrain.countOres()
         if (this.levelConf.blockPointersMap) {
             for (let x = 0; x < this.levelConf.mapWidth; x++) {
                 for (let y = 0; y < this.levelConf.mapHeight; y++) {
@@ -103,6 +99,10 @@ export class GameScreen {
         // load in non-space objects next
         new ObjectListLoader(this.worldMgr, this.levelConf.disableStartTeleport).loadObjectList(this.levelConf.objectList)
         EventBroker.publish(new InitRadarMap(this.sceneMgr.birdViewControls.target.clone(), this.sceneMgr.terrain))
+        // gather level start details for game result score calculation
+        GameState.totalDiggables = this.sceneMgr.terrain.countDiggables()
+        GameState.totalCrystals = this.sceneMgr.terrain.countCrystals() + [...this.entityMgr.materials, ...this.entityMgr.materialsUndiscovered].count((m) => m.entityType === EntityType.CRYSTAL || m.entityType === EntityType.DEPLETED_CRYSTAL)
+        GameState.numTotalOres = this.sceneMgr.terrain.countOres()
         this.show()
     }
 
