@@ -376,9 +376,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         }
         this.worldMgr.ecs.removeComponent(this.driver.entity, MapMarkerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.REMOVE))
-        this.worldMgr.ecs.removeComponent(this.driver.entity, ScannerComponent)
-        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.driver.entity, MapMarkerChange.REMOVE))
-        // TODO Transfer scanner component to vehicle
+        const driverScannerComponent = this.worldMgr.ecs.getComponents(this.driver.entity).get(ScannerComponent)
+        driverScannerComponent.origin = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
         if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
@@ -398,15 +397,9 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.driver.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         this.worldMgr.ecs.addComponent(this.driver.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.UPDATE, floorPosition))
-        if (this.driver.hasTraining(RaiderTraining.GEOLOGIST)) {
-            const scannerRange = this.driver.stats.SurveyRadius?.[this.driver.level] ?? 0
-            if (scannerRange) {
-                const positionComponent = this.driver.worldMgr.ecs.getComponents(this.driver.entity).get(PositionComponent)
-                this.driver.worldMgr.ecs.addComponent(this.driver.entity, new ScannerComponent(positionComponent, scannerRange))
-            }
-        }
         this.driver.sceneEntity.visible = true
-        // TODO Remove scanner component inherited from driver
+        const driverComponents = this.worldMgr.ecs.getComponents(this.driver.entity)
+        driverComponents.get(ScannerComponent).origin = driverComponents.get(PositionComponent)
         this.driver = null
         this.engineSound = SoundManager.stopAudio(this.engineSound)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))

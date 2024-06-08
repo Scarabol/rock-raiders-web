@@ -75,7 +75,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Nice to have
 
-- Geologists do not scan when placed in vehicles
 - Allow raider in alarm mode to be moved by player
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Add option to read/write savegames from URL

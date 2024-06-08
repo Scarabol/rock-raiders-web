@@ -7,7 +7,7 @@ export class ScannerComponent extends AbstractGameComponent {
     rangeSQ: number = 0
     scanDelay: number = 0
 
-    constructor(readonly origin: PositionComponent, range: number) {
+    constructor(public origin: PositionComponent, range: number) {
         super()
         this.setRange(range)
     }
