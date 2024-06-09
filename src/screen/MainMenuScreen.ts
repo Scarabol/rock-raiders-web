@@ -113,14 +113,18 @@ export class MainMenuScreen {
     }
 
     selectLevelRandom() {
-        // TODO make sure that target level is unlocked
-        const allLevelNames = Array.from(Array(24).keys()).map((n) => `Level${(n + 1).toPadded()}`)
-        const unScoredLevels = allLevelNames.filter((levelName) => !SaveGameManager.getLevelScoreString(levelName))
-        if (unScoredLevels.length > 0) {
-            this.selectLevel(unScoredLevels.random())
+        const allLevels = Array.from(GameConfig.instance.levels.levelCfgByName.values()).filter((levelConf) => levelConf.levelName.toLowerCase().startsWith('level'))
+        const unlockedLevels = allLevels.filter((levelConf) => !levelConf.isLocked())
+        const unscoredLevels = unlockedLevels.filter((levelConf) => !SaveGameManager.getLevelScoreString(levelConf.levelName))
+        let randomLevelName = ''
+        if (unscoredLevels.length > 0) {
+            randomLevelName = unscoredLevels.random().levelName
+        } else if (unlockedLevels.length > 0) {
+            randomLevelName = unlockedLevels.random().levelName
         } else {
-            this.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
+            randomLevelName = allLevels.random().levelName
         }
+        this.selectLevel(randomLevelName)
     }
 
     selectLevel(levelName: string) {
