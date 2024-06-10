@@ -66,6 +66,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addAssetFolder(this.assetLoader.loadWadImageAsset, 'Interface/FrontEnd/lp_')
         this.addAssetFolder(this.assetLoader.loadAlphaImageAsset, 'Interface/ToolTipIcons/')
         this.addAsset(this.assetLoader.loadAlphaImageAsset, 'Interface/FrontEnd/LowerPanel.bmp')
+        this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.main.tutorialIcon)
         // level files
         this.addAsset(this.assetLoader.loadNerpAsset, 'Levels/nerpnrn.h')
         gameConfig.levels.levelCfgByName.forEach((level) => {

@@ -87,8 +87,7 @@ export class MainCfg extends BaseConfig {
     missionBriefingText: string = 'Einsatzbesprechung'
     missionCompletedText: string = 'Einsatz erfolgreich!'
     missionFailedText: string = 'Einsatz beendet'
-
-    // TutorialIcon = Interface/Tutorial/Arrow01.bmp
+    tutorialIcon: string = 'Interface/Tutorial/Arrow01.bmp'
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if (unifiedKey === 'ProgressWindow'.toLowerCase()) {

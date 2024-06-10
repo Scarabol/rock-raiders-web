@@ -10,7 +10,7 @@ import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpScript } from './NerpScript'
-import { DEV_MODE, NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
+import { DEV_MODE, NERP_EXECUTION_INTERVAL } from '../params'
 import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
@@ -499,8 +499,21 @@ export class NerpRunner {
     }
 
     setRecordObjectPointer(recordedEntity: number) {
-        // TODO Only used in tutorials, show yellow billboard arrow above record object
-        if (VERBOSE) console.warn('NERP function "setRecordObjectPointer" not yet implemented', recordedEntity)
+        if (recordedEntity < 1) {
+            this.worldMgr.sceneMgr.objectPointer.hide()
+            return
+        }
+        const entity = this.worldMgr.entityMgr.recordedEntities[recordedEntity - 1]
+        if (!entity) {
+            console.warn(`Invalid entity ${recordedEntity} given`)
+            return
+        }
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+        if (!sceneEntity) {
+            console.warn(`Given entity ${entity} has no scene entity to point to`)
+            return
+        }
+        this.worldMgr.sceneMgr.objectPointer.setTargetObject(sceneEntity)
     }
 
     clickOnlyObjects(...args: any[]) {

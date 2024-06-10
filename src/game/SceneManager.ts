@@ -21,6 +21,7 @@ import { FollowerRenderer } from '../scene/FollowerRenderer'
 import { EventKey } from '../event/EventKeyEnum'
 import { LeveledAmbientLight } from '../scene/LeveledAmbientLight'
 import { EventBroker } from '../event/EventBroker'
+import { ObjectPointer } from '../scene/ObjectPointer'
 
 export class SceneManager implements Updatable {
     static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
@@ -34,6 +35,7 @@ export class SceneManager implements Updatable {
     readonly sprites: (Sprite & Updatable)[] = []
     readonly lastCameraWorldPos: Vector3 = new Vector3()
     readonly raycaster: Raycaster = new Raycaster()
+    readonly objectPointer: ObjectPointer = new ObjectPointer()
     ambientLight: LeveledAmbientLight
     terrain: Terrain
     floorGroup: Group
@@ -107,6 +109,7 @@ export class SceneManager implements Updatable {
         this.sprites.forEach((s) => updateSafe(s, elapsedMs))
         updateSafe(this.torchLightCursor, elapsedMs)
         this.birdViewControls?.updateControlsSafe(elapsedMs)
+        this.objectPointer.update(elapsedMs)
     }
 
     disposeScene() {
