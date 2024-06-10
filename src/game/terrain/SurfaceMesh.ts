@@ -2,10 +2,12 @@ import { Mesh, MeshPhongMaterial } from 'three'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SurfaceGeometry, SurfaceVertex } from './SurfaceGeometry'
 import { WALL_TYPE } from './WallType'
+import { ObjectPointer } from '../../scene/ObjectPointer'
 
 export class SurfaceMesh extends Mesh {
     readonly geometry: SurfaceGeometry = new SurfaceGeometry()
     readonly material: MeshPhongMaterial = new MeshPhongMaterial({shininess: 0})
+    objectPointer?: ObjectPointer // Only available for surfaces with tuto block id
 
     constructor(x: number, y: number, userData: any) {
         super()

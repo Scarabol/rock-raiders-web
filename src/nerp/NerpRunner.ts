@@ -195,9 +195,15 @@ export class NerpRunner {
         }
     }
 
-    setTutorialPointer(unknown1: number, unknown2: number) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "setTutorialPointer" not yet implemented', unknown1, unknown2)
+    setTutorialPointer(tutoBlockId: number, enabled: number) {
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        tutoBlocks.forEach((t) => {
+            if (enabled) {
+                t.mesh.objectPointer?.setTargetPosition(t.getCenterWorld(), t.mesh)
+            } else {
+                t.mesh.objectPointer?.hide()
+            }
+        })
     }
 
     /**

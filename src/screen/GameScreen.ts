@@ -19,6 +19,7 @@ import { GameResultEvent, LevelSelectedEvent } from '../event/WorldEvents'
 import { EntityType } from '../game/model/EntityType'
 import { AdvisorLayer } from './layer/AdvisorLayer'
 import { EventBroker } from '../event/EventBroker'
+import { ObjectPointer } from '../scene/ObjectPointer'
 
 export class GameScreen {
     readonly worldMgr: WorldManager
@@ -102,7 +103,10 @@ export class GameScreen {
                 for (let y = 0; y < this.levelConf.mapHeight; y++) {
                     const tutoBlockId = this.levelConf.blockPointersMap[y][x]
                     if (tutoBlockId) {
-                        this.worldMgr.nerpRunner?.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(this.sceneMgr.terrain.surfaces[x][y])
+                        const tutoBlock = this.sceneMgr.terrain.surfaces[x][y]
+                        tutoBlock.mesh.objectPointer = new ObjectPointer()
+                        this.sceneMgr.scene.add(tutoBlock.mesh.objectPointer)
+                        this.worldMgr.nerpRunner?.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(tutoBlock)
                     }
                 }
             }

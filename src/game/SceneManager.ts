@@ -110,6 +110,9 @@ export class SceneManager implements Updatable {
         updateSafe(this.torchLightCursor, elapsedMs)
         this.birdViewControls?.updateControlsSafe(elapsedMs)
         this.objectPointer.update(elapsedMs)
+        Array.from(this.worldMgr.nerpRunner.tutoBlocksById.values()).forEach((s) => s.forEach((t) => {
+            t.mesh.objectPointer?.update(elapsedMs)
+        }))
     }
 
     disposeScene() {
