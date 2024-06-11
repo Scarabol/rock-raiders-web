@@ -87,7 +87,7 @@ export class GameScreen {
                 for (let y = 0; y < this.levelConf.mapHeight; y++) {
                     const tutoBlockId = this.levelConf.blockPointersMap[y][x]
                     if (tutoBlockId) {
-                        this.worldMgr.nerpRunner.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(this.sceneMgr.terrain.surfaces[x][y])
+                        this.worldMgr.nerpRunner?.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(this.sceneMgr.terrain.surfaces[x][y])
                     }
                 }
             }

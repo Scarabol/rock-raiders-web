@@ -10,15 +10,12 @@ import { PriorityListPanel } from '../../gui/toppanel/PriorityListPanel'
 import { InfoDockPanel } from '../../gui/infodock/InfoDockPanel'
 import { BaseElement } from '../../gui/base/BaseElement'
 import { ChangeCursor, PlaySoundEvent } from '../../event/GuiCommand'
-import { EventKey } from '../../event/EventKeyEnum'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { USE_KEYBOARD_SHORTCUTS } from '../../params'
 import { Cursor } from '../../resource/Cursor'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../../gui/event/GuiEvent'
 import { CameraControlPanel } from '../../gui/cameracontrol/CameraControlPanel'
-import { ToggleAlarmEvent } from '../../event/WorldEvents'
-import { ShowOptionsEvent } from '../../event/LocalEvents'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { Sample } from '../../audio/Sample'
@@ -64,15 +61,6 @@ export class GuiMainLayer extends ScaledLayer {
         this.panelMessages = this.addPanel(new MessagePanel(this.rootElement, panelsCfg.panelMessages, GameConfig.instance.textMessagesWithImages))
         this.panelRadar = this.addPanel(new RadarPanel(this.rootElement, panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
         // link panels
-        this.panelTopPanel.btnCallToArms.onClick = () => {
-            EventBroker.publish(new ToggleAlarmEvent(this.panelTopPanel.btnCallToArms.toggleState))
-        }
-        EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
-            this.panelTopPanel.btnCallToArms.setToggleState(event.alarmState)
-        })
-        this.panelTopPanel.btnOptions.onClick = () => {
-            EventBroker.publish(new ShowOptionsEvent())
-        }
         this.panelTopPanel.btnPriorities.onClick = () => {
             if (this.panelTopPanel.btnPriorities.toggleState) {
                 this.panelMain.setMovedIn(true, () => this.panelPriorityList.setMovedIn(false))

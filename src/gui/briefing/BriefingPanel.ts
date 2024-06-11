@@ -52,7 +52,7 @@ export class BriefingPanel extends Panel {
         this.width = this.imgBack.width
         this.height = this.imgBack.height
         this.updatePosition()
-        this.objectiveParagraphs = objectiveText.split('\\a')
+        this.objectiveParagraphs = objectiveText?.split('\\a') || []
         this.objectiveSfxName = objectiveSfx
         BitmapFontWorkerPool.instance.createTextImage(this.cfg.titleFontName, dialogTitle).then((textImage) => {
             this.imgTitle = textImage

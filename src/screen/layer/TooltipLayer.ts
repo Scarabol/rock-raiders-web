@@ -1,7 +1,7 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
 import { ScreenLayer } from './ScreenLayer'
-import { CURSOR_MAX_HEIGHT, NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
+import { CURSOR_MAX_HEIGHT, DEV_MODE, NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { clearTimeoutSafe } from '../../core/Util'
 import { SoundManager } from '../../audio/SoundManager'
 import { EventBroker } from '../../event/EventBroker'
@@ -30,7 +30,7 @@ export class TooltipLayer extends ScreenLayer {
             this.tooltipTimeoutText = setTimeout(async () => {
                 this.changeTooltipImage(await event.getTooltipTextImg())
             }, event.timeoutText)
-            if (event.tooltipSfx) {
+            if (!DEV_MODE && event.tooltipSfx) {
                 this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSound(event.tooltipSfx, true), event.timeoutSfx)
             }
         })

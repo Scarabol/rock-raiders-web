@@ -19,7 +19,7 @@ export interface LevelConfData {
     mapWidth: number
     mapHeight: number
     terrainMap: number[][]
-    pathMap: number[][]
+    pathMap?: number[][]
     surfaceMap?: number[][]
     predugMap: number[][]
     cryOreMap?: number[][]

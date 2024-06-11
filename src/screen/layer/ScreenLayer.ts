@@ -1,5 +1,5 @@
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
-import { AnimationFrameScaled } from '../AnimationFrame'
+import { AnimationFrame } from '../AnimationFrame'
 import { ScreenMaster } from '../ScreenMaster'
 
 export class ScreenLayer {
@@ -74,7 +74,7 @@ export class ScreenLayer {
 }
 
 export class ScaledLayer extends ScreenLayer {
-    readonly animationFrame: AnimationFrameScaled
+    readonly animationFrame: AnimationFrame
     fixedWidth: number = NATIVE_SCREEN_WIDTH
     fixedHeight: number = NATIVE_SCREEN_HEIGHT
     scaleX: number
@@ -83,7 +83,7 @@ export class ScaledLayer extends ScreenLayer {
     constructor(layerName?: string) {
         super(layerName)
         this.updateScale()
-        this.animationFrame = new AnimationFrameScaled(this.canvas, this.readbackCanvas)
+        this.animationFrame = new AnimationFrame(this.canvas, this.readbackCanvas)
     }
 
     private updateScale() {

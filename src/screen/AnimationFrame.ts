@@ -8,6 +8,8 @@ export class AnimationFrame {
     readonly readbackContext: SpriteContext = null
     private lastAnimationRequest: number = null
     private redrawCallback: AnimationFrameRedrawCallback = null
+    scaleX: number = 1
+    scaleY: number = 1
 
     constructor(canvas: HTMLCanvasElement | OffscreenCanvas, readbackCanvas: HTMLCanvasElement | OffscreenCanvas) {
         this.context = canvas.getContext('2d') as SpriteContext
@@ -28,15 +30,6 @@ export class AnimationFrame {
         })
     }
 
-    isOpaque(canvasX: number, canvasY: number): boolean {
-        return this.readbackContext.getImageData(canvasX, canvasY, 1, 1).data[3] > 0
-    }
-}
-
-export class AnimationFrameScaled extends AnimationFrame {
-    scaleX: number = 1
-    scaleY: number = 1
-
     scale(scaleX: number, scaleY: number) {
         this.scaleX = scaleX
         this.scaleY = scaleY
@@ -45,6 +38,6 @@ export class AnimationFrameScaled extends AnimationFrame {
     }
 
     isOpaque(canvasX: number, canvasY: number): boolean {
-        return super.isOpaque(canvasX * this.scaleX, canvasY * this.scaleY)
+        return this.readbackContext.getImageData(canvasX * this.scaleX, canvasY * this.scaleY, 1, 1).data[3] > 0
     }
 }
