@@ -26,6 +26,8 @@ import { EventKey } from '../event/EventKeyEnum'
 import { ShowMissionBriefingEvent } from '../event/LocalEvents'
 import { NerpMessage } from '../resource/fileparser/NerpMsgParser'
 import { Surface } from '../game/terrain/Surface'
+import { MaterialSpawner } from '../game/factory/MaterialSpawner'
+import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -532,24 +534,35 @@ export class NerpRunner {
         console.warn('NERP function "clickOnlyMap" not yet implemented', args)
     }
 
-    setTutorialCrystals(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "setTutorialCrystals" not yet implemented', args)
+    setTutorialCrystals(tutoBlockId: number, numOfCrystals: number) {
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        tutoBlocks.forEach((t) => {
+            for (let c = 0; c < numOfCrystals; c++) {
+                MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, t.getRandomPosition(), Math.random() * 2 * Math.PI)
+            }
+        })
     }
 
-    setCrystalPriority(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "setCrystalPriority" not yet implemented', args)
+    setCrystalPriority(targetIndex: number) {
+        GameState.priorityList.setPriorityIndex(PriorityIdentifier.CRYSTAL, 0)
     }
 
-    cameraZoomOut(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "cameraZoomOut" not yet implemented', args)
+    cameraZoomOut(zoomLevel: number) {
+        if (zoomLevel < 0 || zoomLevel > 100) {
+            console.warn(`Invalid camera zoom out level ${zoomLevel}`)
+            return
+        }
+        const targetZoom = Math.round(zoomLevel / 100 * GameConfig.instance.main.maxDist)
+        this.worldMgr.sceneMgr.birdViewControls.setZoom(targetZoom)
     }
 
-    cameraZoomIn(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "cameraZoomIn" not yet implemented', args)
+    cameraZoomIn(zoomLevel: number) {
+        if (zoomLevel < GameConfig.instance.main.minDist || zoomLevel > GameConfig.instance.main.maxDist) {
+            console.warn(`Unexpected camera zoom in level ${zoomLevel}. Must be in range from ${GameConfig.instance.main.minDist} to ${GameConfig.instance.main.maxDist}`)
+            return
+        }
+        // XXX This should be consistent with cameraZoomOut
+        this.worldMgr.sceneMgr.birdViewControls.setZoom(zoomLevel)
     }
 
     makeSomeoneOnThisBlockPickUpSomethingOnThisBlock(...args: any[]) {

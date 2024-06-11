@@ -72,6 +72,16 @@ export class BirdViewControls extends MapControls {
         this.domElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 120 * zoom, deltaMode: 0}))
     }
 
+    setZoom(distance: number) {
+        const minDist = this.minDistance
+        const maxDist = this.maxDistance
+        this.minDistance = distance
+        this.maxDistance = distance
+        this.update()
+        this.minDistance = minDist
+        this.maxDistance = maxDist
+    }
+
     rotate(rotationIndex: CameraRotation) {
         if (rotationIndex === CameraRotation.NONE || !this.enabled) return
         const dx = rotationIndex === CameraRotation.LEFT ? 1 : (rotationIndex === CameraRotation.RIGHT ? -1 : 0)

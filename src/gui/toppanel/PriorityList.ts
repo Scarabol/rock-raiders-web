@@ -40,6 +40,19 @@ export class PriorityList {
         EventBroker.publish(new UpdatePriorities(this.current))
     }
 
+    setPriorityIndex(priorityIdentifier: PriorityIdentifier, targetIndex: number): void {
+        if (targetIndex < 0 || targetIndex > 1) {
+            console.warn('Unexpected target index for priority. Pushing to top anyway') // XXX Support other target indexes
+        }
+        const currentIndex = this.current.findIndex((p) => p.key === priorityIdentifier)
+        if (currentIndex < 0) {
+            console.warn(`Cannot change priority index for ${priorityIdentifier}. Index not found`)
+            return
+        }
+        this.pushToTop(currentIndex)
+        EventBroker.publish(new UpdatePriorities(this.current))
+    }
+
     getPriority(priorityIdentifier: PriorityIdentifier): number {
         return this.current.findIndex((p) => p.key === priorityIdentifier)
     }
