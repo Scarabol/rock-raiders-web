@@ -79,7 +79,7 @@ export class MessagePanel extends Panel {
         })
         this.registerEventListener(EventKey.NERP_SUPPRESS_ARROW, (event: NerpSuppressArrowEvent) => {
             this.suppressArrow = event.suppressArrow
-            if (this.currentMessage) this.btnNext.hidden = event.suppressArrow
+            this.btnNext.hidden = event.suppressArrow
         })
         this.registerEventListener(EventKey.SET_SPACE_TO_CONTINUE, (event: SetSpaceToContinueEvent) => {
             if (event.state) {
