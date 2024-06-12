@@ -11,7 +11,7 @@ import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpScript } from './NerpScript'
 import { DEV_MODE, NERP_EXECUTION_INTERVAL } from '../params'
-import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
+import { GameResultEvent, JobCreateEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { MonsterSpawner } from '../game/factory/MonsterSpawner'
@@ -23,11 +23,12 @@ import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { SoundManager } from '../audio/SoundManager'
 import { EventKey } from '../event/EventKeyEnum'
-import { ShowMissionBriefingEvent } from '../event/LocalEvents'
+import { GuiButtonBlinkEvent, ShowMissionBriefingEvent } from '../event/LocalEvents'
 import { NerpMessage } from '../resource/fileparser/NerpMsgParser'
 import { Surface } from '../game/terrain/Surface'
 import { MaterialSpawner } from '../game/factory/MaterialSpawner'
 import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
+import { RaiderTool } from '../game/model/raider/RaiderTool'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -51,6 +52,8 @@ export class NerpRunner {
     messageTimerMs: number = 0
     messageSfx: AudioBufferSourceNode = null
     tutoBlocksById: Map<number, Surface[]> = new Map()
+    digIconClicked: number = 0
+    goBackIconClicked: number = 0
 
     constructor(readonly worldMgr: WorldManager, readonly script: NerpScript, readonly messages: NerpMessage[]) {
         NerpRunner.timeAddedAfterSample = 0
@@ -69,6 +72,14 @@ export class NerpRunner {
         EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
             this.objectiveShowing = event.isShowing ? 1 : 0
             this.objectiveSwitch = this.objectiveSwitch && event.isShowing
+        })
+        EventBroker.subscribe(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
+            if (event.job.requiredTool === RaiderTool.DRILL) { // XXX Find better way to identify drill jobs
+                this.digIconClicked++
+            }
+        })
+        EventBroker.subscribe(EventKey.GUI_GO_BACK_BUTTON_CLICKED, () => {
+            this.goBackIconClicked++
         })
     }
 
@@ -599,24 +610,32 @@ export class NerpRunner {
         })
     }
 
-    setDigIconClicked(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "setDigIconClicked" not yet implemented', args)
+    setDigIconClicked(num: number) {
+        this.digIconClicked = num
     }
 
-    setGoBackIconClicked(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "setGoBackIconClicked" not yet implemented', args)
+    /**
+     * Tutorial02
+     * - Return 1, when surface drill icon was clicked
+     */
+    getDigIconClicked(): number {
+        return this.digIconClicked
     }
 
-    flashDigIcon(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "flashDigIcon" not yet implemented', args)
+    flashDigIcon(flash: number) {
+        EventBroker.publish(new GuiButtonBlinkEvent('Interface_MenuItem_Dig', flash === 1))
     }
 
-    flashGoBackIcon(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "flashBackIcon" not yet implemented', args)
+    setGoBackIconClicked(num: number) {
+        this.goBackIconClicked = num
+    }
+
+    getGoBackIconClicked(): number {
+        return this.goBackIconClicked
+    }
+
+    flashGoBackIcon(flash: number) {
+        EventBroker.publish(new GuiButtonBlinkEvent('InterfaceBackButton', flash === 1))
     }
 
     setBuildingsTeleported(...args: any[]) {

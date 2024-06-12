@@ -5,6 +5,8 @@ import { IconPanelButton } from './IconPanelButton'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { GameConfig } from '../../cfg/GameConfig'
 import { SpriteContext } from '../../core/Sprite'
+import { EventBroker } from '../../event/EventBroker'
+import { GuiGoBackButtonClicked } from '../../event/LocalEvents'
 
 export class IconSubPanel extends Panel {
     backBtn: Button = null
@@ -14,7 +16,10 @@ export class IconSubPanel extends Panel {
         super()
         if (onBackPanel) {
             this.backBtn = this.addChild(new Button(GameConfig.instance.interfaceBackButton))
-            this.backBtn.onClick = () => this.toggleState(() => onBackPanel.toggleState())
+            this.backBtn.onClick = () => {
+                this.toggleState(() => onBackPanel.toggleState())
+                EventBroker.publish(new GuiGoBackButtonClicked())
+            }
         }
         const frameImgCfg = GameConfig.instance.interfaceSurroundImages.cfgByNumItems[numOfItems]
         this.img = onBackPanel ? ResourceManager.getImage(frameImgCfg.imgName) : ResourceManager.getImage(frameImgCfg.imgNameWoBackName)

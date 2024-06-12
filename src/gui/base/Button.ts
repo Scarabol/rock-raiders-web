@@ -6,6 +6,10 @@ import { BaseElement } from './BaseElement'
 import { TOOLTIP_DELAY_SFX } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { GameConfig } from '../../cfg/GameConfig'
+import { clearIntervalSafe } from '../../core/Util'
+import { EventBroker } from '../../event/EventBroker'
+import { EventKey } from '../../event/EventKeyEnum'
+import { GuiButtonBlinkEvent } from '../../event/LocalEvents'
 
 export class Button extends BaseElement {
     buttonType: string = null
@@ -17,6 +21,7 @@ export class Button extends BaseElement {
     tooltipSfx: string = null
     hoverFrame: boolean = false
     render: boolean = true
+    blinkInterval: NodeJS.Timeout = null
 
     constructor(btnCfg: BaseButtonCfg, blinking: boolean = false) {
         super()
@@ -33,12 +38,29 @@ export class Button extends BaseElement {
         this.tooltipSfx = btnCfg.tooltipSfx
         this.updatePosition()
         this.onClick = () => console.log(`button pressed: ${this.buttonType}`)
-        if (blinking) {
-            setInterval(() => {
-                this.render = !this.render
-                this.notifyRedraw()
-            }, 500)
-        }
+        if (blinking) this.startBlinking()
+        EventBroker.subscribe(EventKey.GUI_BUTTON_BLINK, (event: GuiButtonBlinkEvent) => {
+            if (this.buttonType !== event.buttonType) return
+            if (event.blinking) {
+                if (!this.blinkInterval) this.startBlinking()
+            } else {
+                if (this.blinkInterval) this.stopBlinking()
+            }
+        })
+    }
+
+    private startBlinking() {
+        this.stopBlinking()
+        this.blinkInterval = setInterval(() => {
+            this.render = !this.render
+            this.notifyRedraw()
+        }, 500)
+    }
+
+    private stopBlinking() {
+        this.blinkInterval = clearIntervalSafe(this.blinkInterval)
+        this.render = true
+        this.notifyRedraw()
     }
 
     private static ignoreUndefinedMax(...numbers: number[]): number {

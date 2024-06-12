@@ -20,6 +20,8 @@ export enum EventKey {
     UPDATE_RADAR_ENTITY = 'update-radar-entity',
     UPDATE_RADAR_TERRAIN = 'update-radar-terrain',
     UPDATE_RADAR_SURFACE = 'update-radar-surface',
+    GUI_BUTTON_BLINK = 'gui-button-blink',
+    GUI_GO_BACK_BUTTON_CLICKED = 'gui-go-back-button-clicked',
 
     // GUI command events
     COMMAND_CHANGE_CURSOR = 'command-change-cursor',

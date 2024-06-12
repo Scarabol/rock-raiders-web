@@ -243,3 +243,15 @@ export class SelectionFrameChangeEvent extends BaseEvent {
         super(EventKey.SELECTION_FRAME_CHANGE)
     }
 }
+
+export class GuiButtonBlinkEvent extends BaseEvent {
+    constructor(readonly buttonType: string, readonly blinking: boolean) {
+        super(EventKey.GUI_BUTTON_BLINK)
+    }
+}
+
+export class GuiGoBackButtonClicked extends BaseEvent {
+    constructor() {
+        super(EventKey.GUI_GO_BACK_BUTTON_CLICKED)
+    }
+}
