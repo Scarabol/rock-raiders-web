@@ -539,14 +539,22 @@ export class NerpRunner {
         this.worldMgr.sceneMgr.objectPointer.setTargetObject(sceneEntity)
     }
 
-    clickOnlyObjects(...args: any[]) {
+    /**
+     * Tutorial01
+     * - Allow to select only raiders
+     */
+    clickOnlyObjects() {
         // TODO Only used in tutorials
-        console.warn('NERP function "clickOnlyObjects" not yet implemented', args)
+        console.warn('NERP function "clickOnlyObjects" not yet implemented')
     }
 
-    clickOnlyMap(...args: any[]) {
+    /**
+     * Tutorial01
+     * - Allow to select only surfaces
+     */
+    clickOnlyMap() {
         // TODO Only used in tutorials
-        console.warn('NERP function "clickOnlyMap" not yet implemented', args)
+        console.warn('NERP function "clickOnlyMap" not yet implemented')
     }
 
     setTutorialCrystals(tutoBlockId: number, numOfCrystals: number) {
@@ -580,9 +588,15 @@ export class NerpRunner {
         this.worldMgr.sceneMgr.birdViewControls.setZoom(zoomLevel)
     }
 
-    makeSomeoneOnThisBlockPickUpSomethingOnThisBlock(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "makeSomeoneOnThisBlockPickUpSomethingOnThisBlock" not yet implemented', args)
+    makeSomeoneOnThisBlockPickUpSomethingOnThisBlock(tutoBlockId: number) {
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        tutoBlocks.forEach((t) => {
+            const raider = this.worldMgr.entityMgr.raiders.filter((r) => r.getSurface() === t && r.isReadyToTakeAJob()).random()
+            if (!raider) return
+            const material = this.worldMgr.entityMgr.materials.filter((m) => m.getSurface() === t && !m.carryJob?.hasFulfiller()).random()
+            if (!material) return
+            raider.setJob(material.setupCarryJob())
+        })
     }
 
     setDigIconClicked(...args: any[]) {
