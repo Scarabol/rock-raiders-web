@@ -349,7 +349,9 @@ export class NerpRunner {
 
     advanceMessage(): void {
         // TODO Only used in tutorials
-        console.warn('NERP function "advanceMessage" not yet implemented')
+        if (this.currentMessage < 0) return
+        console.warn('NERP function "advanceMessage" not yet implemented', this.messagePermit, this.currentMessage, this.messageTimerMs)
+        EventBroker.publish(new NerpSuppressArrowEvent(false))
     }
 
     setRockMonsterAtTutorial(tutoBlockId: number) {
