@@ -444,8 +444,15 @@ export class NerpRunner {
         EventBroker.publish(new MaterialAmountChanged())
     }
 
+    /**
+     * Tutorial01
+     * - Raider should pick up shovel to clear rubble, but not automatically start clearing it
+     * - Once job assigned by player, raider should continue and clear rubble
+     * Tutorial02
+     * - Raider should start drilling when drill job created
+     */
     disallowAll() {
-        GameState.priorityList.disallowAll()
+        GameState.disallowAll = true
     }
 
     getPoweredPowerStationsBuilt() {
