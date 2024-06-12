@@ -472,11 +472,17 @@ export class NerpRunner {
         })
     }
 
+    /**
+     * Tutorial01
+     * - If no unit is selected, 0 should be returned
+     * - The return value is stored in register 1 and later compared to the list of recorded objects
+     */
     getSelectedRecordObject(): number {
-        return this.worldMgr.entityMgr.recordedEntities.find((entity) => {
+        const recordedIndex = this.worldMgr.entityMgr.recordedEntities.findIndex((entity) => {
             return !![...this.worldMgr.entityMgr.selection.raiders, ...this.worldMgr.entityMgr.selection.vehicles]
                 .find((e) => e.entity === entity)
-        }) ?? 0
+        })
+        return recordedIndex >= 0 ? recordedIndex + 1 : 0
     }
 
     getHiddenObjectsFound() {
