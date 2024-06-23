@@ -4,7 +4,6 @@ import { clearIntervalSafe, clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
 import { RaiderTrainingCompleteEvent, SetSpaceToContinueEvent } from '../../event/LocalEvents'
 import { PlaySoundEvent } from '../../event/GuiCommand'
-import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { TextInfoMessage } from './TextInfoMessage'
 import { TextInfoMessageCfg } from './TextInfoMessageCfg'
@@ -36,14 +35,14 @@ export class MessagePanel extends Panel {
     btnRepeat: Button
     suppressArrow: boolean = false
 
-    constructor(parent: BaseElement, panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageCfg) {
-        super(parent, panelCfg)
+    constructor(panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageCfg) {
+        super(panelCfg)
         this.relX = this.xOut = this.xIn = 42
         this.relY = this.yOut = this.yIn = 409
         this.imgAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')
         this.imgNoAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_noair.bmp')
 
-        this.btnNext = this.addChild(new Button(this, {
+        this.btnNext = this.addChild(new Button({
             normalFile: GameConfig.instance.main.nextButton640x480,
             relX: GameConfig.instance.main.nextButtonPos640x480[0] - this.relX,
             relY: GameConfig.instance.main.nextButtonPos640x480[1] - this.relY,
@@ -53,7 +52,7 @@ export class MessagePanel extends Panel {
             this.removeMessage()
             EventBroker.publish(new BaseEvent(EventKey.NERP_MESSAGE_NEXT))
         }
-        this.btnRepeat = this.addChild(new Button(this, {
+        this.btnRepeat = this.addChild(new Button({
             normalFile: GameConfig.instance.main.backButton640x480,
             relX: GameConfig.instance.main.backButtonPos640x480[0] - this.relX,
             relY: GameConfig.instance.main.backButtonPos640x480[1] - this.relY,

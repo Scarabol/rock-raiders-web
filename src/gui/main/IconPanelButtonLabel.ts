@@ -4,8 +4,8 @@ import { BaseElement } from '../base/BaseElement'
 export class IconPanelButtonLabel extends BaseElement {
     label: string = ''
 
-    constructor(parent: BaseElement) {
-        super(parent)
+    constructor() {
+        super()
         this.relX = 4
         this.relY = 11
     }

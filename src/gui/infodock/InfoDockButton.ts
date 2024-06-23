@@ -15,7 +15,7 @@ export class InfoDockButton extends Button {
     animationSpeedY = 1
 
     constructor(parent: InfoDockPanel, infoMessagesEntryConfig: InfoMessagesEntryConfig) {
-        super(parent, new InfoButtonCfg(infoMessagesEntryConfig.buttonImageFilename))
+        super(new InfoButtonCfg(infoMessagesEntryConfig.buttonImageFilename))
         this.text = infoMessagesEntryConfig.message
         this.hidden = true
 

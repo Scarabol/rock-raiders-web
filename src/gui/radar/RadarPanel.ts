@@ -19,14 +19,14 @@ export class RadarPanel extends Panel {
     readonly btnZoomOut: Button
     lastView: BaseElement
 
-    constructor(parent: BaseElement, panelCfg: PanelCfg, panelFillCfg: PanelCfg, panelOverlayCfg: PanelCfg, buttonsCfg: ButtonRadarCfg) {
-        super(parent, panelCfg)
+    constructor(panelCfg: PanelCfg, panelFillCfg: PanelCfg, panelOverlayCfg: PanelCfg, buttonsCfg: ButtonRadarCfg) {
+        super(panelCfg)
         this.fill = ResourceManager.getImage(panelFillCfg.filename)
-        this.map = this.addChild(new MapView(this))
-        this.follower = this.addChild(new FollowerView(this, panelOverlayCfg))
-        this.btnToggle = this.addChild(new Button(this, buttonsCfg.panelButtonRadarToggle))
+        this.map = this.addChild(new MapView())
+        this.follower = this.addChild(new FollowerView(panelOverlayCfg))
+        this.btnToggle = this.addChild(new Button(buttonsCfg.panelButtonRadarToggle))
         this.btnToggle.onClick = () => this.toggleState()
-        this.btnMap = this.addChild(new Button(this, buttonsCfg.panelButtonRadarMapView))
+        this.btnMap = this.addChild(new Button(buttonsCfg.panelButtonRadarMapView))
         this.btnMap.onClick = () => {
             this.map.show()
             this.follower.hide()
@@ -34,7 +34,7 @@ export class RadarPanel extends Panel {
             this.btnZoomIn.hidden = this.map.hidden
             this.btnZoomOut.hidden = this.map.hidden
         }
-        this.btnTagged = this.addChild(new Button(this, buttonsCfg.panelButtonRadarTaggedObjectView))
+        this.btnTagged = this.addChild(new Button(buttonsCfg.panelButtonRadarTaggedObjectView))
         this.btnTagged.onClick = () => {
             this.map.hide()
             this.follower.show()
@@ -42,10 +42,10 @@ export class RadarPanel extends Panel {
             this.btnZoomIn.hidden = this.map.hidden
             this.btnZoomOut.hidden = this.map.hidden
         }
-        this.btnZoomIn = this.addChild(new Button(this, buttonsCfg.panelButtonRadarZoomIn))
+        this.btnZoomIn = this.addChild(new Button(buttonsCfg.panelButtonRadarZoomIn))
         this.btnZoomIn.onClick = () => this.map.zoomIn()
         this.btnZoomIn.hidden = this.map.hidden
-        this.btnZoomOut = this.addChild(new Button(this, buttonsCfg.panelButtonRadarZoomOut))
+        this.btnZoomOut = this.addChild(new Button(buttonsCfg.panelButtonRadarZoomOut))
         this.btnZoomOut.onClick = () => this.map.zoomOut()
         this.btnZoomOut.hidden = this.map.hidden
     }

@@ -13,8 +13,8 @@ export class FollowerView extends BaseElement {
     renderInterval: NodeJS.Timeout
     followerCanvas: HTMLCanvasElement
 
-    constructor(parent: BaseElement, panelCfg: PanelCfg) {
-        super(parent)
+    constructor(panelCfg: PanelCfg) {
+        super()
         this.relX = panelCfg.xIn
         this.relY = panelCfg.yIn
         this.overlay = ResourceManager.getImage(panelCfg.filename)

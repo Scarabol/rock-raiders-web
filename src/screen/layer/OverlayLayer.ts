@@ -27,7 +27,7 @@ export class OverlayLayer extends ScaledLayer {
 
     constructor() {
         super()
-        this.rootElement = new BaseElement(null)
+        this.rootElement = new BaseElement()
         this.rootElement.notifyRedraw = () => this.animationFrame.notifyRedraw()
         this.rootElement.publishEvent = (event: BaseEvent) => {
             EventBroker.publish(event)
@@ -35,9 +35,9 @@ export class OverlayLayer extends ScaledLayer {
         this.rootElement.registerEventListener = <Type extends keyof EventTypeMap>(eventType: Type, callback: (event: EventTypeMap[Type]) => void) => {
             EventBroker.subscribe(eventType, callback)
         }
-        this.panelPause = this.addPanel(new PausePanel(this.rootElement, GameConfig.instance.menu.pausedMenu, this.canvas.width, this.canvas.height))
-        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, GameConfig.instance.menu.optionsMenu, this.canvas.width, this.canvas.height))
-        this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
+        this.panelPause = this.addPanel(new PausePanel(GameConfig.instance.menu.pausedMenu, this.canvas.width, this.canvas.height))
+        this.panelOptions = this.addPanel(new OptionsPanel(GameConfig.instance.menu.optionsMenu, this.canvas.width, this.canvas.height))
+        this.panelBriefing = this.addPanel(new BriefingPanel())
         // link items
         this.panelPause.onContinueGame = () => this.setActivePanel(null)
         this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)

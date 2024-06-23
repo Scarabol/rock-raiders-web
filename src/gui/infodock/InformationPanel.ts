@@ -1,16 +1,10 @@
-import { PanelCfg } from '../../cfg/PanelCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
-import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { DEFAULT_FONT_NAME } from '../../params'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class InformationPanel extends Panel {
     textImage: SpriteImage = null
-
-    constructor(parent: BaseElement, panelCfg: PanelCfg) {
-        super(parent, panelCfg)
-    }
 
     setText(text?: string) {
         BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, text, this.img.width - 80)

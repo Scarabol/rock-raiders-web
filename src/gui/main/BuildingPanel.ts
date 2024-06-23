@@ -1,13 +1,12 @@
 import { CancelBuildMode, SelectBuildMode } from '../../event/GuiCommand'
 import { EntityType } from '../../game/model/EntityType'
-import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconSubPanel } from './IconSubPanel'
 import { GameConfig } from '../../cfg/GameConfig'
 
 export class BuildingPanel extends IconSubPanel {
-    constructor(parent: BaseElement, onBackPanel: Panel) {
-        super(parent, 10, onBackPanel)
+    constructor(onBackPanel: Panel) {
+        super(10, onBackPanel)
         this.backBtn.onClick = () => {
             this.publishEvent(new CancelBuildMode())
             this.toggleState(() => onBackPanel.toggleState())

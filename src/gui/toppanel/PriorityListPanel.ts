@@ -3,7 +3,6 @@ import { PanelCfg } from '../../cfg/PanelCfg'
 import { PrioritiesImagePositionsCfg, PriorityButtonsCfg, PriorityPositionsEntry } from '../../cfg/PriorityButtonsCfg'
 import { EventKey } from '../../event/EventKeyEnum'
 import { PriorityIdentifier } from '../../game/model/job/PriorityIdentifier'
-import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { UpdatePriorities } from '../../event/WorldEvents'
@@ -16,32 +15,32 @@ export class PriorityListPanel extends Panel {
     prioPositions: PriorityPositionsEntry[] = []
     prioByName: Map<PriorityIdentifier, Button> = new Map()
 
-    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonPriorityListCfg, cfgPos: PrioritiesImagePositionsCfg, cfg: PriorityButtonsCfg) {
-        super(parent, panelCfg)
+    constructor(panelCfg: PanelCfg, buttonsCfg: ButtonPriorityListCfg, cfgPos: PrioritiesImagePositionsCfg, cfg: PriorityButtonsCfg) {
+        super(panelCfg)
         buttonsCfg.panelButtonPriorityListDisable.forEach((buttonCfg, index) => {
-            this.addChild(new Button(this, buttonCfg)).onClick = () => {
+            this.addChild(new Button(buttonCfg)).onClick = () => {
                 GameState.priorityList.toggle(index)
             }
         })
         buttonsCfg.panelButtonPriorityListUpOne.forEach((buttonCfg, index) => {
-            this.addChild(new Button(this, buttonCfg)).onClick = () => {
+            this.addChild(new Button(buttonCfg)).onClick = () => {
                 GameState.priorityList.upOne(index)
             }
         })
-        this.addChild(new Button(this, buttonsCfg.panelButtonPriorityListReset)).onClick = () => {
+        this.addChild(new Button(buttonsCfg.panelButtonPriorityListReset)).onClick = () => {
             GameState.priorityList.reset()
         }
 
         this.prioPositions = cfgPos.positionByIndex
-        this.prioByName.set(PriorityIdentifier.GET_IN, this.addChild(new Button(this, cfg.aiPriorityGetIn)))
-        this.prioByName.set(PriorityIdentifier.CRYSTAL, this.addChild(new Button(this, cfg.aiPriorityCrystal)))
-        this.prioByName.set(PriorityIdentifier.ORE, this.addChild(new Button(this, cfg.aiPriorityOre)))
-        this.prioByName.set(PriorityIdentifier.REPAIR, this.addChild(new Button(this, cfg.aiPriorityRepair)))
-        this.prioByName.set(PriorityIdentifier.CLEARING, this.addChild(new Button(this, cfg.aiPriorityClearing)))
-        this.prioByName.set(PriorityIdentifier.DESTRUCTION, this.addChild(new Button(this, cfg.aiPriorityDestruction)))
-        this.prioByName.set(PriorityIdentifier.CONSTRUCTION, this.addChild(new Button(this, cfg.aiPriorityConstruction)))
-        this.prioByName.set(PriorityIdentifier.REINFORCE, this.addChild(new Button(this, cfg.aiPriorityReinforce)))
-        this.prioByName.set(PriorityIdentifier.RECHARGE, this.addChild(new Button(this, cfg.aiPriorityRecharge)))
+        this.prioByName.set(PriorityIdentifier.GET_IN, this.addChild(new Button(cfg.aiPriorityGetIn)))
+        this.prioByName.set(PriorityIdentifier.CRYSTAL, this.addChild(new Button(cfg.aiPriorityCrystal)))
+        this.prioByName.set(PriorityIdentifier.ORE, this.addChild(new Button(cfg.aiPriorityOre)))
+        this.prioByName.set(PriorityIdentifier.REPAIR, this.addChild(new Button(cfg.aiPriorityRepair)))
+        this.prioByName.set(PriorityIdentifier.CLEARING, this.addChild(new Button(cfg.aiPriorityClearing)))
+        this.prioByName.set(PriorityIdentifier.DESTRUCTION, this.addChild(new Button(cfg.aiPriorityDestruction)))
+        this.prioByName.set(PriorityIdentifier.CONSTRUCTION, this.addChild(new Button(cfg.aiPriorityConstruction)))
+        this.prioByName.set(PriorityIdentifier.REINFORCE, this.addChild(new Button(cfg.aiPriorityReinforce)))
+        this.prioByName.set(PriorityIdentifier.RECHARGE, this.addChild(new Button(cfg.aiPriorityRecharge)))
         this.prioByName.forEach((btn) => btn.hoverFrame = true)
         this.registerEventListener(EventKey.UPDATE_PRIORITIES, (event: UpdatePriorities) => {
             this.updateList(event.priorityList)

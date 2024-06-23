@@ -1,14 +1,8 @@
-import { ButtonCfg } from '../../cfg/ButtonCfg'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../event/GuiEvent'
-import { BaseElement } from './BaseElement'
 import { Button } from './Button'
 
 export class ToggleButton extends Button {
     toggleState: boolean = false
-
-    constructor(parent: BaseElement, btnCfg: ButtonCfg) {
-        super(parent, btnCfg)
-    }
 
     reset() {
         super.reset()

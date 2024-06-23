@@ -2,7 +2,6 @@ import { ButtonInfoDockCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventKey } from '../../event/EventKeyEnum'
 import { WorldLocationEvent } from '../../event/WorldLocationEvent'
-import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { InfoDockButton } from './InfoDockButton'
@@ -18,11 +17,11 @@ export class InfoDockPanel extends Panel {
     readonly stackButtons: InfoDockButton[] = []
     informationPanel: InformationPanel = null
 
-    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonInfoDockCfg, infoMessagesConfig: InfoMessagesCfg, informationPanel: InformationPanel) {
-        super(parent, panelCfg)
+    constructor(panelCfg: PanelCfg, buttonsCfg: ButtonInfoDockCfg, infoMessagesConfig: InfoMessagesCfg, informationPanel: InformationPanel) {
+        super(panelCfg)
         this.informationPanel = informationPanel
-        this.addChild(new Button(this, buttonsCfg.panelButtonInfoDockGoto)).onClick = () => this.gotoLatestMessage()
-        this.addChild(new Button(this, buttonsCfg.panelButtonInfoDockClose)).onClick = () => this.dropLatestMessage()
+        this.addChild(new Button(buttonsCfg.panelButtonInfoDockGoto)).onClick = () => this.gotoLatestMessage()
+        this.addChild(new Button(buttonsCfg.panelButtonInfoDockClose)).onClick = () => this.dropLatestMessage()
 
         this.addInfoDockButton(infoMessagesConfig.infoGenericDeath, EventKey.LOCATION_DEATH)
         this.addInfoDockButton(infoMessagesConfig.infoGenericMonster, EventKey.LOCATION_MONSTER, EventKey.LOCATION_MONSTER_GONE)

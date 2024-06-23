@@ -4,7 +4,6 @@ import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged, Sel
 import { RequestedRaidersChanged } from '../../event/WorldEvents'
 import { EntityType } from '../../game/model/EntityType'
 import { MAX_RAIDER_REQUEST } from '../../params'
-import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { BuildingPanel } from './BuildingPanel'
 import { GetToolPanel } from './GetToolPanel'
@@ -41,44 +40,44 @@ export class MainPanel extends Panel {
     hasMaxRaiders: boolean = false
     lastSelectionEvent: SelectionChanged = null
 
-    constructor(parent: BaseElement) {
-        super(parent)
+    constructor() {
+        super()
         this.relX = this.xOut = 640 - 16
         this.xIn = 640 + 95
         this.relY = this.yOut = this.yIn = 9
         this.movedIn = false
-        this.mainPanel = this.addSubPanel(new IconSubPanel(this, 4))
+        this.mainPanel = this.addSubPanel(new IconSubPanel(4))
         this.mainPanel.relX = this.mainPanel.xOut
         this.mainPanel.relY = this.mainPanel.yOut
         this.mainPanel.movedIn = false
 
-        const buildingPanel = this.addSubPanel(new BuildingPanel(this, this.mainPanel))
-        const smallVehiclePanel = this.addSubPanel(new SmallVehiclePanel(this, this.mainPanel))
-        const largeVehiclePanel = this.addSubPanel(new LargeVehiclePanel(this, this.mainPanel))
-        this.selectWallPanel = this.addSubPanel(new SelectWallPanel(this, this.mainPanel))
-        this.selectFloorPanel = this.addSubPanel(new SelectFloorPanel(this, this.mainPanel))
-        this.selectRubblePanel = this.addSubPanel(new SelectRubblePanel(this, this.mainPanel))
-        this.selectSitePanel = this.addSubPanel(new SelectSitePanel(this, this.mainPanel))
-        this.selectLavaErosionPanel = this.addSubPanel(new SelectLavaErosionPanel(this, this.mainPanel))
-        const selectBuildingPanel = this.addSubPanel(new SelectBuildingPanel(this, this.mainPanel))
-        const selectRaiderPanel = this.addSubPanel(new SelectRaiderPanel(this, this.mainPanel))
-        const trainRaiderPanel = this.addSubPanel(new TrainRaiderPanel(this, selectRaiderPanel))
+        const buildingPanel = this.addSubPanel(new BuildingPanel(this.mainPanel))
+        const smallVehiclePanel = this.addSubPanel(new SmallVehiclePanel(this.mainPanel))
+        const largeVehiclePanel = this.addSubPanel(new LargeVehiclePanel(this.mainPanel))
+        this.selectWallPanel = this.addSubPanel(new SelectWallPanel(this.mainPanel))
+        this.selectFloorPanel = this.addSubPanel(new SelectFloorPanel(this.mainPanel))
+        this.selectRubblePanel = this.addSubPanel(new SelectRubblePanel(this.mainPanel))
+        this.selectSitePanel = this.addSubPanel(new SelectSitePanel(this.mainPanel))
+        this.selectLavaErosionPanel = this.addSubPanel(new SelectLavaErosionPanel(this.mainPanel))
+        const selectBuildingPanel = this.addSubPanel(new SelectBuildingPanel(this.mainPanel))
+        const selectRaiderPanel = this.addSubPanel(new SelectRaiderPanel(this.mainPanel))
+        const trainRaiderPanel = this.addSubPanel(new TrainRaiderPanel(selectRaiderPanel))
         selectRaiderPanel.trainItem.onClick = () => selectRaiderPanel.toggleState(() => trainRaiderPanel.toggleState())
-        const getToolPanel = this.addSubPanel(new GetToolPanel(this, selectRaiderPanel))
+        const getToolPanel = this.addSubPanel(new GetToolPanel(selectRaiderPanel))
         selectRaiderPanel.getToolItem.onClick = () => selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
-        const selectVehicleEmptyPanel = this.addSubPanel(new SelectVehicleEmptyPanel(this, this.mainPanel))
-        const selectVehicleManedPanel = this.addSubPanel(new SelectVehicleManedPanel(this, this.mainPanel))
-        const upgradeVehiclePanel = this.addSubPanel(new UpgradeVehiclePanel(this, selectVehicleManedPanel))
+        const selectVehicleEmptyPanel = this.addSubPanel(new SelectVehicleEmptyPanel(this.mainPanel))
+        const selectVehicleManedPanel = this.addSubPanel(new SelectVehicleManedPanel(this.mainPanel))
+        const upgradeVehiclePanel = this.addSubPanel(new UpgradeVehiclePanel(selectVehicleManedPanel))
         selectVehicleManedPanel.upgradeItem.onClick = () => selectVehicleManedPanel.toggleState(() => upgradeVehiclePanel.toggleState())
-        const selectFencePanel = this.addSubPanel(new SelectFencePanel(this, this.mainPanel))
-        const cameraViewPanel = this.addSubPanel(new ChangeCameraPanel(this))
+        const selectFencePanel = this.addSubPanel(new SelectFencePanel(this.mainPanel))
+        const cameraViewPanel = this.addSubPanel(new ChangeCameraPanel())
 
         const teleportRaider = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_TeleportMan')
         teleportRaider.addDependencyCheck(EntityType.PILOT)
         teleportRaider.isDisabled = () => this.hasMaxRaiders || this.numRequestedRaiders >= MAX_RAIDER_REQUEST || !this.hasRaiderTeleport
         teleportRaider.updateState()
         teleportRaider.onClick = () => this.publishEvent(new RequestedRaidersChanged(this.numRequestedRaiders + 1))
-        const requestedRaiderLabel = teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
+        const requestedRaiderLabel = teleportRaider.addChild(new IconPanelButtonLabel())
         requestedRaiderLabel.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
             requestedRaiderLabel.setLabel(event.numRequested)
         })

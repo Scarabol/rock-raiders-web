@@ -7,8 +7,8 @@ export class SideBarLabel extends BaseElement {
     tooltip: string
     label: string
 
-    constructor(parent: BaseElement, btnCfg: ButtonCfg) {
-        super(parent)
+    constructor(btnCfg: ButtonCfg) {
+        super()
         this.relX = btnCfg.relX
         this.relY = btnCfg.relY
         this.width = btnCfg.width

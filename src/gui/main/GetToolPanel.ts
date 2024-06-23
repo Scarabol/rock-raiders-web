@@ -3,7 +3,6 @@ import { PickTool } from '../../event/GuiCommand'
 import { BuildingsChangedEvent, SelectionChanged } from '../../event/LocalEvents'
 import { EntityType } from '../../game/model/EntityType'
 import { RaiderTool } from '../../game/model/raider/RaiderTool'
-import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 import { IconSubPanel } from './IconSubPanel'
@@ -13,8 +12,8 @@ export class GetToolPanel extends IconSubPanel {
     hasToolstation: boolean = false
     everyHasTool: Map<RaiderTool, boolean> = new Map()
 
-    constructor(parent: BaseElement, onBackPanel: Panel) {
-        super(parent, 8, onBackPanel)
+    constructor(onBackPanel: Panel) {
+        super(8, onBackPanel)
         this.addGetToolItem('Interface_MenuItem_GetDrill', RaiderTool.DRILL)
         this.addGetToolItem('Interface_MenuItem_GetSpade', RaiderTool.SHOVEL)
         this.addGetToolItem('Interface_MenuItem_GetHammer', RaiderTool.HAMMER)

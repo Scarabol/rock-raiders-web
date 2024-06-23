@@ -1,7 +1,6 @@
 import { EventKey } from '../../../event/EventKeyEnum'
 import { BeamUpBuilding, ChangeBuildingPowerState, ChangeTooltip, RepairBuilding, UpgradeBuilding } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
-import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { IconPanelToggleButton } from '../IconPanelToggleButton'
 import { SelectBasePanel } from './SelectBasePanel'
@@ -16,14 +15,14 @@ export class SelectBuildingPanel extends SelectBasePanel {
     buildingCanUpgrade: boolean = false
     buildingMissingOreForUpgrade: number = 0
 
-    constructor(parent: BaseElement, onBackPanel: Panel) {
-        super(parent, 4, onBackPanel)
+    constructor(onBackPanel: Panel) {
+        super(4, onBackPanel)
         const repairBuildingItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_Repair')
         repairBuildingItem.isDisabled = () => !this.buildingNeedsRepair
         repairBuildingItem.onClick = () => this.publishEvent(new RepairBuilding())
         const menuItemOffCfg = GameConfig.instance.interfaceImages.get('Interface_MenuItem_PowerOff'.toLowerCase())
         const menuItemOnCfg = GameConfig.instance.interfaceImages.get('Interface_MenuItem_PowerOn'.toLowerCase())
-        const powerSwitchItem = this.addChild(new IconPanelToggleButton(this, menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
+        const powerSwitchItem = this.addChild(new IconPanelToggleButton(menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(powerSwitchItem)
         powerSwitchItem.isDisabled = () => !this.buildingCanSwitchPower
         powerSwitchItem.isToggled = () => !this.buildingPowerSwitchState

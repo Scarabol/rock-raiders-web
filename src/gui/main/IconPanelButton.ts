@@ -1,5 +1,4 @@
 import { MenuItemCfg } from '../../cfg/ButtonCfg'
-import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { ChangeTooltip } from '../../event/GuiCommand'
 import { DEV_MODE, TOOLTIP_DELAY_SFX } from '../../params'
@@ -21,8 +20,8 @@ export class IconPanelButton extends Button {
     showDependencies: boolean = false
     hasUnfulfilledDependency: boolean = false
 
-    constructor(parent: BaseElement, menuItemCfg: MenuItemCfg, itemKey: string, parentWidth: number, menuIndex: number) {
-        super(parent, menuItemCfg)
+    constructor(menuItemCfg: MenuItemCfg, itemKey: string, parentWidth: number, menuIndex: number) {
+        super(menuItemCfg)
         this.buttonType = itemKey
         this.relX = parentWidth - 59
         this.relY = 9 + this.height * menuIndex

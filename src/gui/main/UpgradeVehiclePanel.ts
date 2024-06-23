@@ -1,6 +1,5 @@
 import { IconSubPanel } from './IconSubPanel'
 import { VehicleUpgrade } from '../../game/model/vehicle/VehicleUpgrade'
-import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { EventKey } from '../../event/EventKeyEnum'
 import { SelectionChanged } from '../../event/LocalEvents'
@@ -10,8 +9,8 @@ import { GameConfig } from '../../cfg/GameConfig'
 export class UpgradeVehiclePanel extends IconSubPanel {
     canInstallUpgrade: Map<VehicleUpgrade, boolean> = new Map()
 
-    constructor(parent: BaseElement, onBackPanel: Panel) {
-        super(parent, 4, onBackPanel)
+    constructor(onBackPanel: Panel) {
+        super(4, onBackPanel)
         this.addUpgradeItem('Interface_MenuItem_UpgardeCarry', VehicleUpgrade.CARRY)
         this.addUpgradeItem('Interface_MenuItem_UpgardeScan', VehicleUpgrade.SCAN)
         this.addUpgradeItem('Interface_MenuItem_UpgradeEngine', VehicleUpgrade.SPEED)

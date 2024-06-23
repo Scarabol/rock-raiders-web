@@ -1,7 +1,6 @@
 import { EventKey } from '../../../event/EventKeyEnum'
 import { CreatePowerPath, MakeRubble, PlaceFence } from '../../../event/GuiCommand'
 import { RaidersAmountChangedEvent, SelectionChanged } from '../../../event/LocalEvents'
-import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 import { EntityType } from '../../../game/model/EntityType'
@@ -13,8 +12,8 @@ export class SelectFloorPanel extends SelectBasePanel {
     isPowerPath: boolean = false
     canPlaceFence: boolean = false
 
-    constructor(parent: BaseElement, onBackPanel: Panel) {
-        super(parent, 3, onBackPanel)
+    constructor(onBackPanel: Panel) {
+        super(3, onBackPanel)
         const pathItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_LayPath')
         pathItem.addDependencyCheck(EntityType.POWER_PATH)
         pathItem.onClick = () => this.publishEvent(new CreatePowerPath())

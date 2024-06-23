@@ -21,7 +21,6 @@ import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { Sample } from '../../audio/Sample'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
-import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 
 export class GuiMainLayer extends ScaledLayer {
     rootElement: BaseElement
@@ -41,25 +40,19 @@ export class GuiMainLayer extends ScaledLayer {
         super()
         const panelsCfg = GameConfig.instance.panels
         const buttonsCfg = GameConfig.instance.buttons
-        this.rootElement = new BaseElement(null)
+        this.rootElement = new BaseElement()
         this.rootElement.notifyRedraw = () => this.animationFrame.notifyRedraw()
-        this.rootElement.publishEvent = (event: BaseEvent) => {
-            EventBroker.publish(event)
-        }
-        this.rootElement.registerEventListener = <Type extends keyof EventTypeMap>(eventType: Type, callback: (event: EventTypeMap[Type]) => void) => {
-            EventBroker.subscribe(eventType, callback)
-        }
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
-        this.panelInformation = this.addPanel(new InformationPanel(this.rootElement, panelsCfg.panelInformation))
-        this.panelInfoDock = this.addPanel(new InfoDockPanel(this.rootElement, panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, GameConfig.instance.infoMessages, this.panelInformation))
-        this.panelCameraControl = this.addPanel(new CameraControlPanel(this.rootElement, panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl, GameConfig.instance.panelRotationControl))
-        this.panelPriorityList = this.addPanel(new PriorityListPanel(this.rootElement, panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, GameConfig.instance.prioritiesImagePositions, GameConfig.instance.priorityImages))
-        this.panelTopPanel = this.addPanel(new TopPanel(this.rootElement, panelsCfg.panelTopPanel, buttonsCfg.panelTopPanel))
-        this.panelMain = this.addPanel(new MainPanel(this.rootElement))
-        this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar(this.rootElement, panelsCfg.panelCrystalSideBar, buttonsCfg.panelCrystalSideBar))
-        this.panelMessagesSide = this.addPanel(new Panel(this.rootElement, panelsCfg.panelMessagesSide))
-        this.panelMessages = this.addPanel(new MessagePanel(this.rootElement, panelsCfg.panelMessages, GameConfig.instance.textMessagesWithImages))
-        this.panelRadar = this.addPanel(new RadarPanel(this.rootElement, panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
+        this.panelInformation = this.addPanel(new InformationPanel(panelsCfg.panelInformation))
+        this.panelInfoDock = this.addPanel(new InfoDockPanel(panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, GameConfig.instance.infoMessages, this.panelInformation))
+        this.panelCameraControl = this.addPanel(new CameraControlPanel(panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl, GameConfig.instance.panelRotationControl))
+        this.panelPriorityList = this.addPanel(new PriorityListPanel(panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, GameConfig.instance.prioritiesImagePositions, GameConfig.instance.priorityImages))
+        this.panelTopPanel = this.addPanel(new TopPanel(panelsCfg.panelTopPanel, buttonsCfg.panelTopPanel))
+        this.panelMain = this.addPanel(new MainPanel())
+        this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar(panelsCfg.panelCrystalSideBar, buttonsCfg.panelCrystalSideBar))
+        this.panelMessagesSide = this.addPanel(new Panel(panelsCfg.panelMessagesSide))
+        this.panelMessages = this.addPanel(new MessagePanel(panelsCfg.panelMessages, GameConfig.instance.textMessagesWithImages))
+        this.panelRadar = this.addPanel(new RadarPanel(panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
         // link panels
         this.panelTopPanel.btnPriorities.onClick = () => {
             if (this.panelTopPanel.btnPriorities.toggleState) {

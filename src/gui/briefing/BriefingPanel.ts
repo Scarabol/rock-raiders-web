@@ -1,6 +1,5 @@
 import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
-import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { BriefingPanelCfg } from './BriefingPanelCfg'
@@ -25,15 +24,15 @@ export class BriefingPanel extends Panel {
     objectiveSfx: AudioBufferSourceNode = null
     onContinueMission: () => any = () => console.log('Start mission')
 
-    constructor(parent: BaseElement) {
-        super(parent)
+    constructor() {
+        super()
         this.cfg = new BriefingPanelCfg()
         this.onClick = () => this.nextParagraph() // fallback for touch displays without keyboard like mobile browsers
         this.titleRelX = this.cfg.titleWindow.x + this.cfg.titleWindow.w / 2
         this.titleRelY = this.cfg.titleWindow.y
-        this.btnNext = this.addChild(new Button(this, this.cfg.nextButtonCfg))
+        this.btnNext = this.addChild(new Button(this.cfg.nextButtonCfg))
         this.btnNext.onClick = () => this.nextParagraph()
-        this.btnBack = this.addChild(new Button(this, this.cfg.backButtonCfg))
+        this.btnBack = this.addChild(new Button(this.cfg.backButtonCfg))
         this.btnBack.onClick = () => this.prevParagraph()
         this.hidden = true
     }

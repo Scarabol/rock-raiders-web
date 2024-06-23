@@ -1,6 +1,5 @@
 import { ButtonTopCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
-import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { ToggleButton } from '../base/ToggleButton'
@@ -13,19 +12,19 @@ export class TopPanel extends Panel {
     btnOptions: Button
     btnPriorities: ToggleButton
 
-    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonTopCfg) {
-        super(parent, panelCfg)
-        this.btnCallToArms = this.addChild(new ToggleButton(this, buttonsCfg.panelButtonTopPanelCallToArms))
+    constructor(panelCfg: PanelCfg, buttonsCfg: ButtonTopCfg) {
+        super(panelCfg)
+        this.btnCallToArms = this.addChild(new ToggleButton(buttonsCfg.panelButtonTopPanelCallToArms))
         this.btnCallToArms.onClick = () => {
             this.publishEvent(new ToggleAlarmEvent(this.btnCallToArms.toggleState))
         }
         this.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
             this.btnCallToArms.setToggleState(event.alarmState)
         })
-        this.btnOptions = this.addChild(new Button(this, buttonsCfg.panelButtonTopPanelOptions))
+        this.btnOptions = this.addChild(new Button(buttonsCfg.panelButtonTopPanelOptions))
         this.btnOptions.onClick = () => {
             this.publishEvent(new ShowOptionsEvent())
         }
-        this.btnPriorities = this.addChild(new ToggleButton(this, buttonsCfg.panelButtonTopPanelPriorities))
+        this.btnPriorities = this.addChild(new ToggleButton(buttonsCfg.panelButtonTopPanelPriorities))
     }
 }

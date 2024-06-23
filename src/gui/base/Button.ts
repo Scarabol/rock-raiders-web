@@ -18,8 +18,8 @@ export class Button extends BaseElement {
     hoverFrame: boolean = false
     render: boolean = true
 
-    constructor(parent: BaseElement, btnCfg: BaseButtonCfg, blinking: boolean = false) {
-        super(parent)
+    constructor(btnCfg: BaseButtonCfg, blinking: boolean = false) {
+        super()
         this.buttonType = btnCfg.buttonType
         this.imgNormal = ResourceManager.getImageOrNull(btnCfg.normalFile)
         this.imgHover = ResourceManager.getImageOrNull(btnCfg.highlightFile)

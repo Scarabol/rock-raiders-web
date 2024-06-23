@@ -2,7 +2,6 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { TrainRaider } from '../../event/GuiCommand'
 import { SelectionChanged } from '../../event/LocalEvents'
 import { RaiderTraining } from '../../game/model/raider/RaiderTraining'
-import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconSubPanel } from './IconSubPanel'
 import { GameConfig } from '../../cfg/GameConfig'
@@ -10,8 +9,8 @@ import { GameConfig } from '../../cfg/GameConfig'
 export class TrainRaiderPanel extends IconSubPanel {
     canDoTraining: Map<RaiderTraining, boolean> = new Map()
 
-    constructor(parent: BaseElement, onBackPanel: Panel) {
-        super(parent, 6, onBackPanel)
+    constructor(onBackPanel: Panel) {
+        super(6, onBackPanel)
         this.addTrainingItem('Interface_MenuItem_TrainDriver', RaiderTraining.DRIVER)
         this.addTrainingItem('Interface_MenuItem_TrainEngineer', RaiderTraining.ENGINEER)
         this.addTrainingItem('Interface_MenuItem_TrainGeologist', RaiderTraining.GEOLOGIST)

@@ -32,8 +32,8 @@ export class MapView extends BaseElement {
     lastEntity: GameEntity = null
     entityBelowCursor: GameEntity = null
 
-    constructor(parent: BaseElement) {
-        super(parent)
+    constructor() {
+        super()
         this.width = 152
         this.height = 149
         this.surfaceSprite = createCanvas(this.width, this.height)

@@ -2,7 +2,7 @@ import { MenuLabelItemCfg } from '../../cfg/MenuLabelItemCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../event/GuiEvent'
-import { MenuLayer } from './MenuLayer'
+import { MenuEntryCfg } from '../../cfg/MenuEntryCfg'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class MenuLabelItem extends BaseElement {
@@ -10,17 +10,17 @@ export class MenuLabelItem extends BaseElement {
     loImg: SpriteImage
     hiImg: SpriteImage
 
-    constructor(parent: MenuLayer, itemCfg: MenuLabelItemCfg, autoCenter: boolean) {
-        super(parent)
+    constructor(menuCfg: MenuEntryCfg, itemCfg: MenuLabelItemCfg, parentCenterX: number) {
+        super()
         this.target = itemCfg.target
         Promise.all([
-            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.loFont, itemCfg.label),
-            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.hiFont, itemCfg.label),
+            BitmapFontWorkerPool.instance.createTextImage(menuCfg.loFont, itemCfg.label),
+            BitmapFontWorkerPool.instance.createTextImage(menuCfg.hiFont, itemCfg.label),
         ]).then((textImages) => {
             [this.loImg, this.hiImg] = textImages
             this.width = this.loImg.width
             this.height = this.loImg.height
-            this.relX = autoCenter ? -parent.relX + (parent.menuImage.width - this.width) / 2 : itemCfg.x
+            this.relX = menuCfg.autoCenter ? parentCenterX - this.width / 2 : itemCfg.x
             this.updatePosition()
         })
         this.relY = itemCfg.y

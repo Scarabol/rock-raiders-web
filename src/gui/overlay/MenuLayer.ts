@@ -16,23 +16,23 @@ export class MenuLayer extends BaseElement {
     itemsCycle: MenuCycleItem[] = []
     itemsSlider: MenuSliderItem[] = []
 
-    constructor(parent: BaseElement, readonly menuCfg: MenuEntryCfg) {
-        super(parent)
+    constructor(menuCfg: MenuEntryCfg) {
+        super()
         this.relX = menuCfg.position[0]
         this.relY = menuCfg.position[1]
         this.menuImage = ResourceManager.getImageOrNull(menuCfg.menuImage)
         BitmapFontWorkerPool.instance.createTextImage(menuCfg.menuFont, menuCfg.fullName)
             .then((textImage) => this.titleImage = textImage)
         menuCfg.itemsLabel.forEach((itemCfg) => {
-            const item = this.addChild(new MenuLabelItem(this, itemCfg, menuCfg.autoCenter))
+            const item = this.addChild(new MenuLabelItem(menuCfg, itemCfg, -this.relX + this.menuImage.width / 2))
             if (itemCfg.actionName.toLowerCase() === 'trigger') {
                 this.itemsTrigger.push(item)
             } else {
                 this.itemsNext.push(item)
             }
         })
-        this.itemsCycle = menuCfg.itemsCycle.map((itemCfg) => this.addChild(new MenuCycleItem(this, itemCfg)))
-        this.itemsSlider = menuCfg.itemsSlider.map((itemCfg) => this.addChild(new MenuSliderItem(this, itemCfg)))
+        this.itemsCycle = menuCfg.itemsCycle.map((itemCfg) => this.addChild(new MenuCycleItem(menuCfg, itemCfg)))
+        this.itemsSlider = menuCfg.itemsSlider.map((itemCfg) => this.addChild(new MenuSliderItem(menuCfg, itemCfg)))
         this.hidden = true
     }
 

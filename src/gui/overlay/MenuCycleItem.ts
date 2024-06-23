@@ -2,7 +2,7 @@ import { MenuCycleItemCfg } from '../../cfg/MenuCycleItemCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../event/GuiEvent'
-import { MenuLayer } from './MenuLayer'
+import { MenuEntryCfg } from '../../cfg/MenuEntryCfg'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class MenuCycleItem extends BaseElement {
@@ -17,18 +17,18 @@ export class MenuCycleItem extends BaseElement {
     state: boolean = false
     onStateChanged: (state: boolean) => any = (state) => console.log(`TODO: cycle item clicked; state: ${state}`)
 
-    constructor(parent: MenuLayer, itemCfg: MenuCycleItemCfg) {
-        super(parent)
+    constructor(menuCfg: MenuEntryCfg, itemCfg: MenuCycleItemCfg) {
+        super()
         this.relX = itemCfg.x
         this.relY = itemCfg.y
         this.labelX = itemCfg.width
         Promise.all([
-            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.loFont, itemCfg.description),
-            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.hiFont, itemCfg.description),
-            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.loFont, itemCfg.labelOff),
-            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.hiFont, itemCfg.labelOff),
-            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.loFont, itemCfg.labelOn),
-            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.hiFont, itemCfg.labelOn),
+            BitmapFontWorkerPool.instance.createTextImage(menuCfg.loFont, itemCfg.description),
+            BitmapFontWorkerPool.instance.createTextImage(menuCfg.hiFont, itemCfg.description),
+            BitmapFontWorkerPool.instance.createTextImage(menuCfg.loFont, itemCfg.labelOff),
+            BitmapFontWorkerPool.instance.createTextImage(menuCfg.hiFont, itemCfg.labelOff),
+            BitmapFontWorkerPool.instance.createTextImage(menuCfg.loFont, itemCfg.labelOn),
+            BitmapFontWorkerPool.instance.createTextImage(menuCfg.hiFont, itemCfg.labelOn),
         ]).then((textImages) => {
             [this.imgTextNormal, this.imgTextHover, this.imgLabelOffNormal, this.imgLabelOffHover, this.imgLabelOnNormal, this.imgLabelOnHover] = textImages
             this.width = itemCfg.width + Math.max(this.imgLabelOnHover.width, this.imgLabelOffHover.width)

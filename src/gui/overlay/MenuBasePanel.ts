@@ -1,15 +1,14 @@
 import { MenuCfg } from '../../cfg/MenuCfg'
-import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { MenuLayer } from './MenuLayer'
 
 export class MenuBasePanel extends Panel {
     layersByKey: Map<string, MenuLayer> = new Map()
 
-    constructor(parent: BaseElement, cfg: MenuCfg) {
-        super(parent)
+    constructor(cfg: MenuCfg) {
+        super()
         this.hidden = true
-        cfg.menus.forEach((menuCfg, index) => this.layersByKey.set(`menu${index + 1}`, this.addChild(new MenuLayer(this, menuCfg))))
+        cfg.menus.forEach((menuCfg, index) => this.layersByKey.set(`menu${index + 1}`, this.addChild(new MenuLayer(menuCfg))))
         this.layersByKey.forEach((layer) => layer.itemsNext.forEach((item) => item.onClick = () => this.selectLayer(item.target)))
     }
 

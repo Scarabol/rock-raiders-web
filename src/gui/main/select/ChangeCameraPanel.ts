@@ -1,13 +1,12 @@
 import { IconSubPanel } from '../IconSubPanel'
-import { BaseElement } from '../../base/BaseElement'
 import { CameraViewMode, ChangeCameraEvent } from '../../../event/GuiCommand'
 import { GameConfig } from '../../../cfg/GameConfig'
 
 export class ChangeCameraPanel extends IconSubPanel {
     cameraViewMode: CameraViewMode = null
 
-    constructor(parent: BaseElement) {
-        super(parent, 3)
+    constructor() {
+        super(3)
         const birdViewItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoTopView')
         birdViewItem.isDisabled = () => this.cameraViewMode === CameraViewMode.BIRD
         birdViewItem.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.BIRD))

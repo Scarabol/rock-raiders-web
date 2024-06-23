@@ -3,7 +3,6 @@ import { CancelSurfaceJobs, CreateDrillJob, CreateDynamiteJob, CreateReinforceJo
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, RaiderTrainingCompleteEvent, SelectionChanged } from '../../../event/LocalEvents'
 import { EntityType } from '../../../game/model/EntityType'
 import { RaiderTraining } from '../../../game/model/raider/RaiderTraining'
-import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 import { GameConfig } from '../../../cfg/GameConfig'
@@ -15,8 +14,8 @@ export class SelectWallPanel extends SelectBasePanel {
     hasToolstation: boolean = false
     hasToolstationLevel2: boolean = false
 
-    constructor(parent: BaseElement, onBackPanel: Panel) {
-        super(parent, 4, onBackPanel)
+    constructor(onBackPanel: Panel) {
+        super(4, onBackPanel)
         const itemDrill = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_Dig')
         itemDrill.isDisabled = () => !this.isDrillable
         itemDrill.onClick = () => this.publishEvent(new CreateDrillJob())

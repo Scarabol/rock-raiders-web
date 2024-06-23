@@ -1,7 +1,6 @@
 import { EventKey } from '../../../event/EventKeyEnum'
 import { CreateClearRubbleJob, PlaceFence } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
-import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 import { EntityType } from '../../../game/model/EntityType'
@@ -11,8 +10,8 @@ export class SelectRubblePanel extends SelectBasePanel {
     hasRubble: boolean = false
     canPlaceFence: boolean = false
 
-    constructor(parent: BaseElement, onBackPanel: Panel) {
-        super(parent, 2, onBackPanel)
+    constructor(onBackPanel: Panel) {
+        super(2, onBackPanel)
         const clearRubbleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_ClearRubble')
         clearRubbleItem.isDisabled = () => !this.hasRubble
         clearRubbleItem.onClick = () => this.publishEvent(new CreateClearRubbleJob())

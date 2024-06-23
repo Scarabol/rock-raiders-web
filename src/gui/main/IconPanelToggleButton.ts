@@ -1,6 +1,5 @@
 import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
-import { BaseElement } from '../base/BaseElement'
 import { GuiPointerDownEvent } from '../event/GuiEvent'
 import { IconPanelButton } from './IconPanelButton'
 import { ResourceManager } from '../../resource/ResourceManager'
@@ -13,8 +12,8 @@ export class IconPanelToggleButton extends IconPanelButton {
     imgOnDisabled: SpriteImage
     isToggled: () => boolean = () => false
 
-    constructor(parent: BaseElement, menuItemOffCfg: MenuItemCfg, menuItemOnCfg: MenuItemCfg, parentWidth: number, menuIndex: number) {
-        super(parent, menuItemOffCfg, null, parentWidth, menuIndex)
+    constructor(menuItemOffCfg: MenuItemCfg, menuItemOnCfg: MenuItemCfg, parentWidth: number, menuIndex: number) {
+        super(menuItemOffCfg, null, parentWidth, menuIndex)
         this.imgOnNormal = ResourceManager.getImageOrNull(menuItemOnCfg.normalFile)
         this.imgOnHover = ResourceManager.getImageOrNull(menuItemOnCfg.highlightFile)
         this.imgOnPressed = ResourceManager.getImageOrNull(menuItemOnCfg.pressedFile)

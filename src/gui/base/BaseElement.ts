@@ -4,6 +4,7 @@ import { ChangeCursor, PlaySoundEvent } from '../../event/GuiCommand'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../event/GuiEvent'
 import { Cursor } from '../../resource/Cursor'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
+import { EventBroker } from '../../event/EventBroker'
 
 export class BaseElement {
     parent: BaseElement = null
@@ -20,11 +21,6 @@ export class BaseElement {
     pressed: boolean = false
     pointerDown: { x: number, y: number } = null
     onClick: (cx: number, cy: number) => void = null
-    onPublishEvent: (event: BaseEvent) => void = (event) => console.log(`TODO publish event: ${event.type}`)
-
-    constructor(parent: BaseElement) {
-        this.parent = parent
-    }
 
     reset() {
         this.hidden = false
@@ -153,11 +149,12 @@ export class BaseElement {
     }
 
     publishEvent(event: BaseEvent) {
-        if (this.parent) this.parent.publishEvent(event)
-        else this.onPublishEvent(event)
+        // TODO This should not be inlined, but replaced with some GUI specific event bus or merged with GuiManager
+        EventBroker.publish(event)
     }
 
     registerEventListener<Type extends keyof EventTypeMap>(eventType: Type, callback: (event: EventTypeMap[Type]) => void) {
-        this.parent?.registerEventListener(eventType, callback)
+        // TODO This should not be inlined, but replaced with some GUI specific event bus or merged with GuiManager
+        EventBroker.subscribe(eventType, callback)
     }
 }

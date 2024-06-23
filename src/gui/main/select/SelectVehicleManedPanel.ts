@@ -1,7 +1,6 @@
 import { EventKey } from '../../../event/EventKeyEnum'
 import { CameraViewMode, ChangeCameraEvent, VehicleBeamUp, VehicleDriverGetOut, VehicleUnload } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
-import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 import { IconPanelButton } from '../IconPanelButton'
@@ -13,8 +12,8 @@ export class SelectVehicleManedPanel extends SelectBasePanel {
     noVehicleWithCarriedItems: boolean = false
     hasUpgradeSite: boolean = false
 
-    constructor(parent: BaseElement, onBackPanel: Panel) {
-        super(parent, 7, onBackPanel)
+    constructor(onBackPanel: Panel) {
+        super(7, onBackPanel)
         const unloadVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UnLoadVehicle')
         unloadVehicleItem.isDisabled = () => this.noVehicleWithCarriedItems
         unloadVehicleItem.onClick = () => this.publishEvent(new VehicleUnload())

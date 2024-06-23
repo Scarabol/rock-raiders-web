@@ -2,7 +2,6 @@ import { EventKey } from '../../../event/EventKeyEnum'
 import { CameraViewMode, ChangeCameraEvent, DropBirdScarer, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade } from '../../../event/GuiCommand'
 import { BuildingsChangedEvent, SelectionChanged } from '../../../event/LocalEvents'
 import { EntityType } from '../../../game/model/EntityType'
-import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { IconPanelButton } from '../IconPanelButton'
 import { SelectBasePanel } from './SelectBasePanel'
@@ -17,8 +16,8 @@ export class SelectRaiderPanel extends SelectBasePanel {
     hasToolstation: boolean = false
     hasBirdScarer: boolean = false
 
-    constructor(parent: BaseElement, onBackPanel: Panel) {
-        super(parent, 10, onBackPanel)
+    constructor(onBackPanel: Panel) {
+        super(10, onBackPanel)
         const feedItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GoFeed')
         feedItem.isDisabled = () => false
         feedItem.onClick = () => this.publishEvent(new RaiderEat())

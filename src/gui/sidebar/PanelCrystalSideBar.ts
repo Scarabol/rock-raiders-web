@@ -3,7 +3,6 @@ import { PanelCfg } from '../../cfg/PanelCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
 import { LevelSelectedEvent, MaterialAmountChanged, UsedCrystalsChanged } from '../../event/WorldEvents'
-import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { SideBarLabel } from './SideBarLabel'
 import { ResourceManager } from '../../resource/ResourceManager'
@@ -21,10 +20,10 @@ export class PanelCrystalSideBar extends Panel {
     neededCrystals: number = 0
     totalOre: number = 0
 
-    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonCrystalSideBarCfg) {
-        super(parent, panelCfg)
-        this.labelOre = this.addChild(new SideBarLabel(this, buttonsCfg.panelButtonCrystalSideBarOre))
-        this.labelCrystal = this.addChild(new SideBarLabel(this, buttonsCfg.panelButtonCrystalSideBarCrystals))
+    constructor(panelCfg: PanelCfg, buttonsCfg: ButtonCrystalSideBarCfg) {
+        super(panelCfg)
+        this.labelOre = this.addChild(new SideBarLabel(buttonsCfg.panelButtonCrystalSideBarOre))
+        this.labelCrystal = this.addChild(new SideBarLabel(buttonsCfg.panelButtonCrystalSideBarCrystals))
         this.imgNoCrystal = ResourceManager.getImage('Interface/RightPanel/NoSmallCrystal.bmp')
         this.imgSmallCrystal = ResourceManager.getImage('Interface/RightPanel/SmallCrystal.bmp')
         this.imgUsedCrystal = ResourceManager.getImage('Interface/RightPanel/UsedCrystal.bmp')

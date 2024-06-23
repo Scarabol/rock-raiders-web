@@ -116,7 +116,7 @@ export class MainMenuScreen {
         const allLevels = Array.from(GameConfig.instance.levels.levelCfgByName.values()).filter((levelConf) => levelConf.levelName.toLowerCase().startsWith('level'))
         const unlockedLevels = allLevels.filter((levelConf) => !levelConf.isLocked())
         const unscoredLevels = unlockedLevels.filter((levelConf) => !SaveGameManager.getLevelScoreString(levelConf.levelName))
-        let randomLevelName = ''
+        let randomLevelName: string
         if (unscoredLevels.length > 0) {
             randomLevelName = unscoredLevels.random().levelName
         } else if (unlockedLevels.length > 0) {
