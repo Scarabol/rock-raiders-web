@@ -16,8 +16,10 @@ html, body {
 }
 
 #game-canvas-container {
+    background: #000000;
     display: grid;
-    justify-content: center;
+    justify-items: center;
+    align-items: center;
     outline: 0;
     position: relative;
 }
