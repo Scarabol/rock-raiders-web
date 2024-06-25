@@ -146,7 +146,7 @@ export class GameLayer extends ScreenLayer {
                 } else if (this.worldMgr.entityMgr.selection.raiders.length > 0 || this.worldMgr.entityMgr.selection.vehicles.length > 0) {
                     const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
                     if (cursorTarget.surface) {
-                        this.worldMgr.nerpRunner.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
+                        this.worldMgr.nerpRunner?.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
                             if (surfaces.includes(cursorTarget.surface)) {
                                 GameState.tutoBlockClicks.set(tutoBlockId, GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0) + 1)
                             }

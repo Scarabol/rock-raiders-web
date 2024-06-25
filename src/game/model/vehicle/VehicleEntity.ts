@@ -377,7 +377,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.worldMgr.ecs.removeComponent(this.driver.entity, MapMarkerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.REMOVE))
         const driverScannerComponent = this.worldMgr.ecs.getComponents(this.driver.entity).get(ScannerComponent)
-        driverScannerComponent.origin = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+        if (driverScannerComponent) driverScannerComponent.origin = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
         if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
@@ -399,7 +399,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.UPDATE, floorPosition))
         this.driver.sceneEntity.visible = true
         const driverComponents = this.worldMgr.ecs.getComponents(this.driver.entity)
-        driverComponents.get(ScannerComponent).origin = driverComponents.get(PositionComponent)
+        const driverScannerComponent = driverComponents.get(ScannerComponent)
+        if (driverScannerComponent) driverScannerComponent.origin = driverComponents.get(PositionComponent)
         this.driver = null
         this.engineSound = SoundManager.stopAudio(this.engineSound)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
