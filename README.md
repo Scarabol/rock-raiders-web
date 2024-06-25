@@ -67,7 +67,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Important
 
 - Forbidding collection of ores or crystals stops building projects too
-- Large Cat not usable to carry vehicles in Level 19
 - Damage and blow up buildings with lava erosion
 
 ### Nice to have

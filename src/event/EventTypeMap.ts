@@ -1,6 +1,6 @@
 import { BuildingsChangedEvent, DeselectAll, FollowerSetCanvasEvent, FollowerSetLookAtEvent, InitRadarMap, RaidersAmountChangedEvent, RaiderTrainingCompleteEvent, SelectionChanged, SelectionFrameChangeEvent, SetSpaceToContinueEvent, ShowGameResultEvent, ShowMissionAdvisorEvent, ShowMissionBriefingEvent, ShowOptionsEvent, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain, VehicleUpgradeCompleteEvent } from './LocalEvents'
 import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, MonsterEmergeEvent, MonsterLaserHitEvent, NerpMessageEvent, NerpSuppressArrowEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, ShootLaserEvent, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged } from './WorldEvents'
-import { CameraControl, CancelBuilding, CancelBuildMode, CancelSurfaceJobs, ChangeBuildingPowerState, ChangeCameraEvent, ChangeCursor, ChangePreferences, ChangeTooltip, CreateClearRubbleJob, CreateDrillJob, CreateDynamiteJob, CreatePowerPath, CreateReinforceJob, DropBirdScarer, HideTooltip, MakeRubble, PickTool, PlaceFence, PlaySoundEvent, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade, RemoveSelection, RepairBuilding, RepairLava, SelectBuildMode, TrainRaider, UpgradeBuilding, UpgradeVehicle, VehicleBeamUp, VehicleCallMan, VehicleDriverGetOut, VehicleUnload } from './GuiCommand'
+import { CameraControl, CancelBuilding, CancelBuildMode, CancelSurfaceJobs, ChangeBuildingPowerState, ChangeCameraEvent, ChangeCursor, ChangePreferences, ChangeTooltip, CreateClearRubbleJob, CreateDrillJob, CreateDynamiteJob, CreatePowerPath, CreateReinforceJob, DropBirdScarer, HideTooltip, MakeRubble, PickTool, PlaceFence, PlaySoundEvent, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade, RemoveSelection, RepairBuilding, RepairLava, SelectBuildMode, TrainRaider, UpgradeBuilding, UpgradeVehicle, VehicleBeamUp, VehicleCallMan, VehicleDriverGetOut, VehicleLoad, VehicleUnload } from './GuiCommand'
 import { CrystalFoundEvent, GenericDeathEvent, GenericMonsterEvent, LandslideEvent, PowerDrainEvent, RaiderDiscoveredEvent, SlugEmergeEvent, UnderAttackEvent, WorldLocationEvent } from './WorldLocationEvent'
 
 export class BaseEvent {
@@ -60,6 +60,7 @@ export interface DefaultEventMap {
     'command-vehicle-beamup': VehicleBeamUp
     'command-vehicle-driver-get-out': VehicleDriverGetOut
     'command-vehicle-unload': VehicleUnload
+    'command-vehicle-load': VehicleLoad
     'command-camera-control': CameraControl
     'command-repair-lava': RepairLava
     'command-change-preferences': ChangePreferences

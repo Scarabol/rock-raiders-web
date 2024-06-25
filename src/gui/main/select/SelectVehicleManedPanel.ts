@@ -1,5 +1,5 @@
 import { EventKey } from '../../../event/EventKeyEnum'
-import { CameraViewMode, ChangeCameraEvent, VehicleBeamUp, VehicleDriverGetOut, VehicleUnload } from '../../../event/GuiCommand'
+import { CameraViewMode, ChangeCameraEvent, VehicleBeamUp, VehicleDriverGetOut, VehicleLoad, VehicleUnload } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
@@ -8,16 +8,19 @@ import { GameConfig } from '../../../cfg/GameConfig'
 
 export class SelectVehicleManedPanel extends SelectBasePanel {
     readonly upgradeItem: IconPanelButton
-    noVehicleWithDriver: boolean = false
-    noVehicleWithCarriedItems: boolean = false
+    noVehicleWithCarried: boolean = false
+    someVehicleCanLoad: boolean = false
     hasUpgradeSite: boolean = false
+    noVehicleWithDriver: boolean = false
 
     constructor(onBackPanel: Panel) {
         super(7, onBackPanel)
         const unloadVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UnLoadVehicle')
-        unloadVehicleItem.isDisabled = () => this.noVehicleWithCarriedItems
+        unloadVehicleItem.isDisabled = () => this.noVehicleWithCarried
         unloadVehicleItem.onClick = () => this.publishEvent(new VehicleUnload())
-        this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_VehiclePickUp')
+        const loadVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_VehiclePickUp')
+        loadVehicleItem.isDisabled = () => !this.someVehicleCanLoad
+        loadVehicleItem.onClick = () => this.publishEvent(new VehicleLoad())
         this.upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UpgradeVehicle')
         this.upgradeItem.isDisabled = () => !this.hasUpgradeSite
         const leaveVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GetOut')
@@ -33,17 +36,21 @@ export class SelectVehicleManedPanel extends SelectBasePanel {
         deleteVehicleItem.isDisabled = () => false
         deleteVehicleItem.onClick = () => this.publishEvent(new VehicleBeamUp())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
-            this.noVehicleWithDriver = event.noVehicleWithDriver
-            this.noVehicleWithCarriedItems = !event.vehicleWithCarriedItems
-            leaveVehicleItem.updateState()
+            this.noVehicleWithCarried = !event.vehicleWithCarried
+            this.someVehicleCanLoad = event.someVehicleCanLoad
             this.hasUpgradeSite = event.hasUpgradeSite
+            this.noVehicleWithDriver = event.noVehicleWithDriver
+            unloadVehicleItem.updateState()
+            loadVehicleItem.updateState()
+            leaveVehicleItem.updateState()
         })
     }
 
     reset() {
         super.reset()
-        this.noVehicleWithCarriedItems = false
-        this.noVehicleWithCarriedItems = false
+        this.noVehicleWithCarried = false
+        this.someVehicleCanLoad = false
         this.hasUpgradeSite = false
+        this.noVehicleWithDriver = false
     }
 }

@@ -218,6 +218,12 @@ export class VehicleUnload extends BaseEvent {
     }
 }
 
+export class VehicleLoad extends BaseEvent {
+    constructor() {
+        super(EventKey.COMMAND_VEHICLE_LOAD)
+    }
+}
+
 export class CameraControl extends BaseEvent {
     constructor(
         readonly args: {

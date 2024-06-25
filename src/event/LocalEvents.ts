@@ -51,8 +51,9 @@ export class SelectionChanged extends BaseEvent {
     buildingPowerSwitchState: boolean
     vehicleHasCallManJob: boolean
     noVehicleWithDriver: boolean
-    vehicleWithCarriedItems: boolean
+    vehicleWithCarried: boolean
     someHasBirdScarer: boolean
+    someVehicleCanLoad: boolean
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.SELECTION_CHANGED)
@@ -82,8 +83,9 @@ export class SelectionChanged extends BaseEvent {
         this.buildingPowerSwitchState = entityMgr.selection.building?.powerSwitch
         this.vehicleHasCallManJob = entityMgr.selection.vehicles.every((v) => !!v.callManJob)
         this.noVehicleWithDriver = entityMgr.selection.vehicles.every((v) => !v.driver)
-        this.vehicleWithCarriedItems = entityMgr.selection.vehicles.some((v) => v.carriedItems.size > 0)
+        this.vehicleWithCarried = entityMgr.selection.vehicles.some((v) => v.carriedItems.size > 0 || (!v.portering && !!v.carriedVehicle))
         this.someHasBirdScarer = entityMgr.selection.raiders.some((r) => r.hasTool(RaiderTool.BIRDSCARER))
+        this.someVehicleCanLoad = entityMgr.selection.vehicles.some((v) => v.canLoad())
     }
 }
 

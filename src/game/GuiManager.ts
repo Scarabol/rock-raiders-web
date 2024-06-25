@@ -153,15 +153,7 @@ export class GuiManager {
         })
         EventBroker.subscribe(EventKey.COMMAND_VEHICLE_BEAMUP, () => {
             entityMgr.selection.vehicles.forEach((v) => {
-                const surface = v.getSurface()
-                const pathSurface = surface.neighbors.find((n) => n.building?.entityType === EntityType.DOCKS)?.building?.primaryPathSurface
-                const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable()) ?? pathSurface
-                if (spawnSurface) {
-                    for (let c = 0; c < v.stats.CostOre; c++) MaterialSpawner.spawnMaterial(v.worldMgr, EntityType.ORE, spawnSurface.getRandomPosition())
-                    for (let c = 0; c < v.stats.CostCrystal; c++) MaterialSpawner.spawnMaterial(v.worldMgr, EntityType.CRYSTAL, spawnSurface.getRandomPosition())
-                }
-                v.dropDriver()
-                v.beamUp()
+                v.beamUp(true)
             })
             EventBroker.publish(new DeselectAll())
         })
@@ -170,7 +162,13 @@ export class GuiManager {
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_VEHICLE_UNLOAD, () => {
-            entityMgr.selection.vehicles.forEach((v) => v.stopJob())
+            entityMgr.selection.vehicles.forEach((v) => {
+                v.stopJob()
+                v.unloadVehicle()
+            })
+        })
+        EventBroker.subscribe(EventKey.COMMAND_VEHICLE_LOAD, () => {
+            entityMgr.selection.vehicles.forEach((v) => v.pickupNearbyEntity())
         })
         EventBroker.subscribe(EventKey.COMMAND_CAMERA_CONTROL, (event: CameraControl) => {
             if (event.args.zoom) {

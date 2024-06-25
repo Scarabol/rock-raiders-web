@@ -41,6 +41,8 @@ export class VehicleEntityStats extends BaseConfig implements MovableEntityStats
     CrossWater: boolean = false
     CrossLava: boolean = false
     MaxCarry: number[] = []
+    CarryVehicles: boolean = false
+    VehicleCanBeCarried: boolean = false
     UpgradeCostOre: number[] = []
     UpgradeCostStuds: number[] = []
 }

@@ -2,7 +2,7 @@ import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
 import { Sample } from '../../../audio/Sample'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
-import { SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
+import { DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { DEV_MODE, ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../anim/AnimationActivity'
@@ -45,6 +45,7 @@ import { GameState } from '../GameState'
 import { TooltipComponent } from '../../component/TooltipComponent'
 import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 import { LaserBeamTurretComponent } from '../../component/LaserBeamTurretComponent'
+import { MaterialSpawner } from '../../factory/MaterialSpawner'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -61,9 +62,12 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     callManJob: ManVehicleJob = null
     engineSound: PositionalAudio = null
     carriedItems: Set<MaterialEntity> = new Set()
+    carriedVehicle: VehicleEntity = null
     upgrades: Set<VehicleUpgrade> = new Set()
     loadItemDelayMs: number = 0
     upgrading: boolean = false
+    portering: boolean = false
+    carriedBy: GameEntity = null
 
     constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand, readonly driverActivityRoute: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand) {
         this.entityType = entityType
@@ -124,7 +128,19 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         }
     }
 
-    beamUp() {
+    beamUp(dropCarried: boolean = false) {
+        this.carriedVehicle?.beamUp(dropCarried)
+        this.carriedVehicle = null
+        if (dropCarried) {
+            const surface = this.getSurface()
+            const pathSurface = surface.neighbors.find((n) => n.building?.entityType === EntityType.DOCKS)?.building?.primaryPathSurface
+            const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable()) ?? pathSurface
+            if (spawnSurface) {
+                for (let c = 0; c < this.stats.CostOre; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, spawnSurface.getRandomPosition())
+                for (let c = 0; c < this.stats.CostCrystal; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, spawnSurface.getRandomPosition())
+            }
+            this.dropDriver()
+        }
         const components = this.worldMgr.ecs.getComponents(this.entity)
         EventBroker.publish(new GenericDeathEvent(components.get(PositionComponent)))
         components.get(SelectionFrameComponent)?.deselect()
@@ -252,7 +268,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     isSelectable(): boolean {
-        return !this.selected && !this.isInBeam() && !this.upgrading
+        return !this.selected && !this.isInBeam() && !this.upgrading && !this.portering && !this.carriedBy
     }
 
     isInBeam(): boolean {
@@ -294,7 +310,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     setJob(job: Job, followUpJob: Job = null) {
-        if (!this.driver) return
+        if (!this.driver || this.portering) return
         if (this.job !== job) this.stopJob()
         this.job = job
         if (this.job) this.job.assign(this)
@@ -513,5 +529,88 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     getSurface(): Surface {
         return this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).surface
+    }
+
+    private getNearbySurfaces(): Surface[] {
+        const surface = this.getSurface()
+        return [surface, ...surface.neighbors]
+    }
+
+    canLoad(): boolean {
+        const surfsToCheck = this.getNearbySurfaces()
+        const canPickupVehicle = this.stats.CarryVehicles && !this.carriedVehicle && !this.portering && this.worldMgr.entityMgr.vehicles.some((v) => v.stats.VehicleCanBeCarried && surfsToCheck.includes(v.getSurface()))
+        const vehicleSurface = this.getSurface()
+        const canPickupMaterial = this.worldMgr.entityMgr.materials.some((m) => m.getSurface() === vehicleSurface)
+        return canPickupVehicle || canPickupMaterial
+    }
+
+    pickupNearbyEntity(): void {
+        const surfsToCheck = this.getNearbySurfaces()
+        if (this.stats.CarryVehicles && !this.carriedVehicle) {
+            this.carriedVehicle = this.worldMgr.entityMgr.vehicles.filter((v) => v.stats.VehicleCanBeCarried && surfsToCheck.includes(v.getSurface())).random()
+            if (this.carriedVehicle) {
+                this.loadCarriedVehicle()
+                return
+            }
+        }
+        // TODO Find closest material to pick up
+        console.warn('Picking up nearby material not yet implemented')
+    }
+
+    private loadCarriedVehicle() {
+        this.portering = true
+        this.carriedVehicle.carriedBy = this.entity
+        if (this.carriedVehicle.selected) EventBroker.publish(new DeselectAll()) // XXX Only remove carried vehicle from selection
+        if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
+        this.sceneEntity.headTowards(this.carriedVehicle.getPosition2D())
+        this.sceneEntity.setAnimation('Activity_Opening', () => {
+            if (!this.carriedVehicle) return // happens for beamup during load/unload
+            this.carriedVehicle.sceneEntity.rotation.set(0, Math.PI, 0) // XXX Why is rotation needed for float on animation?
+            this.sceneEntity.pickupEntity(this.carriedVehicle.sceneEntity)
+            this.carriedVehicle.sceneEntity.position.y = -8 // XXX Calculate offset from world positions?
+            this.carriedVehicle.sceneEntity.setAnimation('Activity_FloatOn', () => {
+                if (!this.carriedVehicle) return // happens for beamup during load/unload
+                this.carriedVehicle.sceneEntity.rotation.set(0, 0, 0)
+                this.carriedVehicle.sceneEntity.position.setScalar(0)
+                this.carriedVehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                this.sceneEntity.setAnimation('Activity_Closing', () => {
+                    this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    this.portering = false
+                    if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
+                })
+            })
+        })
+    }
+
+    unloadVehicle() {
+        const accessibleNeighbors = this.getSurface().neighbors.filter((n) => n.isWalkable()) // XXX Use accessible surface for the carried type
+        const direction = this.sceneEntity.getWorldDirection(new Vector3())
+        const targetedPosition = this.getSurface().getCenterWorld2D().add(new Vector2(direction.x, direction.z).setLength(TILESIZE))
+        const targetedSurface = this.getSurface().terrain.getSurfaceFromWorld2D(targetedPosition)
+        const unloadSurface = accessibleNeighbors.includes(targetedSurface) ? targetedSurface : accessibleNeighbors.random()
+        if (!this.carriedVehicle || !unloadSurface) return
+        this.portering = true
+        const dropOffVehicle = this.carriedVehicle
+        this.carriedVehicle = null
+        if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
+        this.sceneEntity.headTowards(unloadSurface.getCenterWorld2D())
+        this.sceneEntity.setAnimation('Activity_Opening', () => {
+            this.sceneEntity.removeAllCarried()
+            this.worldMgr.sceneMgr.addSceneEntity(dropOffVehicle.sceneEntity)
+            dropOffVehicle.sceneEntity.position.y -= 8 // XXX Calculate offset from world positions?
+            dropOffVehicle.sceneEntity.setAnimation('Activity_FloatOff', () => {
+                dropOffVehicle.sceneEntity.rotation.y += Math.PI // XXX Why is rotation needed for float off animation?
+                const unloadPosition = unloadSurface.getCenterWorld()
+                dropOffVehicle.sceneEntity.position.copy(unloadPosition)
+                dropOffVehicle.setPosition(unloadPosition)
+                dropOffVehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                dropOffVehicle.carriedBy = null
+                this.sceneEntity.setAnimation('Activity_Closing', () => {
+                    this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    this.portering = false
+                    if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
+                })
+            })
+        })
     }
 }

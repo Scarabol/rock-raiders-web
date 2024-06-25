@@ -52,6 +52,7 @@ export enum EventKey {
     COMMAND_VEHICLE_BEAMUP = 'command-vehicle-beamup',
     COMMAND_VEHICLE_DRIVER_GET_OUT = 'command-vehicle-driver-get-out',
     COMMAND_VEHICLE_UNLOAD = 'command-vehicle-unload',
+    COMMAND_VEHICLE_LOAD = 'command-vehicle-load',
     COMMAND_CAMERA_CONTROL = 'command-camera-control',
     COMMAND_REPAIR_LAVA = 'command-repair-lava',
     COMMAND_CHANGE_PREFERENCES = 'command-change-preferences',
