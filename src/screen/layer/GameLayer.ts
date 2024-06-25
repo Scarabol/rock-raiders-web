@@ -25,6 +25,7 @@ import { EventBroker } from '../../event/EventBroker'
 import { TooltipComponent } from '../../game/component/TooltipComponent'
 import { WALL_TYPE } from '../../game/terrain/WallType'
 import { SceneSelectionComponent } from '../../game/component/SceneSelectionComponent'
+import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class GameLayer extends ScreenLayer {
     private pointerDown: { x: number, y: number } = null
@@ -38,6 +39,7 @@ export class GameLayer extends ScreenLayer {
 
     constructor(readonly worldMgr: WorldManager) {
         super()
+        this.ratio = SaveGameManager.currentPreferences.screenRatioFixed
         EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
             const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
             EventBroker.publish(new ChangeCursor(this.determineCursor(cursorTarget)))

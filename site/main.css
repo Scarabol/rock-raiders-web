@@ -35,7 +35,7 @@ html, body {
     flex-direction: column;
     justify-content: space-around;
     height: 80vh;
-    margin-left: -80px;
+    margin-left: 10px;
 }
 
 @media screen and (aspect-ratio < 1.333333) {
@@ -47,12 +47,6 @@ html, body {
         width: 80vw;
         flex-direction: row;
         height: auto;
-    }
-}
-
-@media screen and (aspect-ratio < 1.666666) {
-    .mobile-helper-toolbar {
-        margin-left: 0;
     }
 }
 

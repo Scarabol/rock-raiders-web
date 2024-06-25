@@ -5,6 +5,7 @@ import { CURSOR_MAX_HEIGHT, DEV_MODE, NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH 
 import { clearTimeoutSafe } from '../../core/Util'
 import { SoundManager } from '../../audio/SoundManager'
 import { EventBroker } from '../../event/EventBroker'
+import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class TooltipLayer extends ScreenLayer {
     readonly gameCanvasContainer: HTMLElement
@@ -17,6 +18,7 @@ export class TooltipLayer extends ScreenLayer {
 
     constructor() {
         super()
+        this.ratio = SaveGameManager.currentPreferences.screenRatioFixed
         this.gameCanvasContainer = document.getElementById('game-canvas-container')
         EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_CHANGE, (event: ChangeTooltip) => {
             if (this.cursorLeft || !this.active || event.tooltipKey === this.lastTooltipKey) return

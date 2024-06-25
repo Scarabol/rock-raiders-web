@@ -2,9 +2,9 @@ import { createCanvas } from '../core/ImageHelper'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { ScreenLayer } from './layer/ScreenLayer'
 import { LoadingLayer } from './layer/LoadingLayer'
+import { SaveGameManager } from '../resource/SaveGameManager'
 
 export class ScreenMaster {
-    static readonly ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
     readonly gameContainer: HTMLElement
     readonly gameCanvasContainer: HTMLElement
     readonly layers: ScreenLayer[] = []
@@ -106,22 +106,18 @@ export class ScreenMaster {
         }
     }
 
-    private onWindowResize() {
-        const maxWidth = this.gameContainer.offsetWidth
-        const maxHeight = this.gameContainer.offsetHeight
-        const idealHeight = Math.round(maxWidth / ScreenMaster.ratio)
-        if (idealHeight > maxHeight) {
-            const width = Math.round(maxHeight * ScreenMaster.ratio)
-            this.resize(width, maxHeight)
-        } else {
-            this.resize(maxWidth, idealHeight)
+    onWindowResize() {
+        this.width = this.gameContainer.offsetWidth - 100
+        this.height = this.gameContainer.offsetHeight - 1
+        if (SaveGameManager.currentPreferences.screenRatioFixed > 0) {
+            const idealHeight = Math.round(this.width / SaveGameManager.currentPreferences.screenRatioFixed)
+            if (idealHeight > this.height) {
+                this.width = Math.round(this.height * SaveGameManager.currentPreferences.screenRatioFixed)
+            } else {
+                this.height = idealHeight
+            }
         }
-    }
-
-    private resize(width: number, height: number) {
-        this.width = width
-        this.height = height
-        this.layers.forEach((layer) => layer.resize(width, height))
+        this.layers.forEach((layer) => layer.resize(this.width, this.height))
     }
 
     getActiveLayersSorted(): ScreenLayer[] {

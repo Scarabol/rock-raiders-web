@@ -61,7 +61,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### v1.0.0 - Final Release
 
 - Unlock levels only after linked levels are completed
-- Separate UI components to support other screen ratios than 4:3
 
 ## Known Issues
 

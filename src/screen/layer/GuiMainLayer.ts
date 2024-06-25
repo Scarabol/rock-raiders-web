@@ -21,51 +21,27 @@ import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { Sample } from '../../audio/Sample'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
+import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 
-export class GuiMainLayer extends ScaledLayer {
-    rootElement: BaseElement
-    panels: Panel[] = []
-    panelRadar: RadarPanel
-    panelMessages: MessagePanel
-    panelMessagesSide: Panel
-    panelCrystalSideBar: PanelCrystalSideBar
-    panelMain: MainPanel
-    panelTopPanel: TopPanel
-    panelInformation: InformationPanel
-    panelPriorityList: PriorityListPanel
-    panelCameraControl: Panel
-    panelInfoDock: InfoDockPanel
+export class GuiBaseLayer extends ScaledLayer {
+    readonly rootElement: BaseElement
+    readonly panels: Panel[] = []
+    layerScale = 1 // XXX Scaled panel crystal side bar does not fit
 
     constructor() {
         super()
-        const panelsCfg = GameConfig.instance.panels
-        const buttonsCfg = GameConfig.instance.buttons
         this.rootElement = new BaseElement()
         this.rootElement.notifyRedraw = () => this.animationFrame.notifyRedraw()
-        // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
-        this.panelInformation = this.addPanel(new InformationPanel(panelsCfg.panelInformation))
-        this.panelInfoDock = this.addPanel(new InfoDockPanel(panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, GameConfig.instance.infoMessages, this.panelInformation))
-        this.panelCameraControl = this.addPanel(new CameraControlPanel(panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl, GameConfig.instance.panelRotationControl))
-        this.panelPriorityList = this.addPanel(new PriorityListPanel(panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, GameConfig.instance.prioritiesImagePositions, GameConfig.instance.priorityImages))
-        this.panelTopPanel = this.addPanel(new TopPanel(panelsCfg.panelTopPanel, buttonsCfg.panelTopPanel))
-        this.panelMain = this.addPanel(new MainPanel())
-        this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar(panelsCfg.panelCrystalSideBar, buttonsCfg.panelCrystalSideBar))
-        this.panelMessagesSide = this.addPanel(new Panel(panelsCfg.panelMessagesSide))
-        this.panelMessages = this.addPanel(new MessagePanel(panelsCfg.panelMessages, GameConfig.instance.textMessagesWithImages))
-        this.panelRadar = this.addPanel(new RadarPanel(panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
-        // link panels
-        this.panelTopPanel.btnPriorities.onClick = () => {
-            if (this.panelTopPanel.btnPriorities.toggleState) {
-                this.panelMain.setMovedIn(true, () => this.panelPriorityList.setMovedIn(false))
-            } else {
-                this.panelPriorityList.setMovedIn(true, () => this.panelMain.setMovedIn(false))
-            }
+        this.rootElement.publishEvent = (event: BaseEvent) => {
+            EventBroker.publish(event)
+        }
+        this.rootElement.registerEventListener = <Type extends keyof EventTypeMap>(eventType: Type, callback: (event: EventTypeMap[Type]) => void) => {
+            EventBroker.subscribe(eventType, callback)
         }
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)
             this.rootElement.onRedraw(context)
         }
-        this.animationFrame.notifyRedraw()
         new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
             ['pointermove', POINTER_EVENT.MOVE],
             ['pointerdown', POINTER_EVENT.DOWN],
@@ -76,15 +52,6 @@ export class GuiMainLayer extends ScaledLayer {
                 const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent)
                 ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
                 return this.handlePointerEvent(gameEvent)
-            })
-        })
-        new Map<keyof HTMLElementEventMap, KEY_EVENT>([
-            ['keydown', KEY_EVENT.DOWN],
-            ['keyup', KEY_EVENT.UP],
-        ]).forEach((eventEnum, eventType) => {
-            this.addEventListener(eventType, (event): boolean => {
-                const gameEvent = new GameKeyboardEvent(eventEnum, event as KeyboardEvent)
-                return this.handleKeyEvent(gameEvent)
             })
         })
         this.addEventListener('wheel', (event: WheelEvent): boolean => {
@@ -98,6 +65,10 @@ export class GuiMainLayer extends ScaledLayer {
         super.reset()
         this.rootElement.reset()
         this.panels.forEach((p) => p.reset())
+    }
+
+    resize(width: number, height: number) {
+        super.resize(width * this.layerScale, height * this.layerScale)
     }
 
     addPanel<T extends Panel>(panel: T): T {
@@ -130,22 +101,97 @@ export class GuiMainLayer extends ScaledLayer {
         }
         return hit
     }
+}
 
-    handleKeyEvent(event: GameKeyboardEvent): boolean {
-        if (this.panelMain.movedIn) return false
-        const activeSubPanels = this.panelMain.subPanels.filter((p) => !p.movedIn)
-        const activeIconPanelButtons = activeSubPanels.flatMap((p) => p.iconPanelButtons)
-        if (USE_KEYBOARD_SHORTCUTS) {
-            const buttonWithKey = activeIconPanelButtons.find((b) => b.hotkey === event.key)
-            if (buttonWithKey && !buttonWithKey.isInactive()) {
-                if (event.eventEnum === KEY_EVENT.UP) {
-                    const bx = buttonWithKey.x + buttonWithKey.width / 2
-                    const by = buttonWithKey.y + buttonWithKey.height / 2
-                    buttonWithKey.onClick(bx, by)
-                }
-                return true
+export class GuiTopLeftLayer extends GuiBaseLayer {
+    readonly panelRadar: RadarPanel
+
+    constructor() {
+        super()
+        this.canvas.style.justifySelf = 'start'
+        this.canvas.style.alignSelf = 'start'
+        this.panelRadar = this.addPanel(new RadarPanel(GameConfig.instance.panels.panelRadar, GameConfig.instance.panels.panelRadarFill, GameConfig.instance.panels.panelRadarOverlay, GameConfig.instance.buttons.panelRadar))
+        this.animationFrame.notifyRedraw()
+    }
+}
+
+export class GuiTopRightLayer extends GuiBaseLayer {
+    readonly panelMain: MainPanel
+    readonly panelTopPanel: TopPanel
+    readonly panelPriorityList: PriorityListPanel
+
+    constructor() {
+        super()
+        this.canvas.style.justifySelf = 'end'
+        this.canvas.style.alignSelf = 'start'
+        this.panelPriorityList = this.addPanel(new PriorityListPanel(GameConfig.instance.panels.panelPriorityList, GameConfig.instance.buttons.panelPriorityList, GameConfig.instance.prioritiesImagePositions, GameConfig.instance.priorityImages))
+        this.panelTopPanel = this.addPanel(new TopPanel(GameConfig.instance.panels.panelTopPanel, GameConfig.instance.buttons.panelTopPanel))
+        this.panelMain = this.addPanel(new MainPanel())
+        this.animationFrame.notifyRedraw()
+        // link panels
+        this.panelTopPanel.btnPriorities.onClick = () => {
+            if (this.panelTopPanel.btnPriorities.toggleState) {
+                this.panelMain.setMovedIn(true, () => this.panelPriorityList.setMovedIn(false))
+            } else {
+                this.panelPriorityList.setMovedIn(true, () => this.panelMain.setMovedIn(false))
             }
         }
+        new Map<keyof HTMLElementEventMap, KEY_EVENT>([
+            ['keydown', KEY_EVENT.DOWN],
+            ['keyup', KEY_EVENT.UP],
+        ]).forEach((eventEnum, eventType) => {
+            this.addEventListener(eventType, (event): boolean => {
+                const gameEvent = new GameKeyboardEvent(eventEnum, event as KeyboardEvent)
+                return this.handleKeyEvent(gameEvent)
+            })
+        })
+    }
+
+    handleKeyEvent(event: GameKeyboardEvent): boolean {
+        if (this.panelMain.movedIn || !USE_KEYBOARD_SHORTCUTS) return false
+        const activeSubPanels = this.panelMain.subPanels.filter((p) => !p.movedIn)
+        const activeIconPanelButtons = activeSubPanels.flatMap((p) => p.iconPanelButtons)
+        const buttonWithKey = activeIconPanelButtons.find((b) => b.hotkey === event.key)
+        if (buttonWithKey && !buttonWithKey.isInactive()) {
+            if (event.eventEnum === KEY_EVENT.UP) {
+                const bx = buttonWithKey.x + buttonWithKey.width / 2
+                const by = buttonWithKey.y + buttonWithKey.height / 2
+                buttonWithKey.onClick(bx, by)
+            }
+            return true
+        }
         return false
+    }
+}
+
+export class GuiBottomRightLayer extends GuiBaseLayer {
+    readonly panelCrystalSideBar: PanelCrystalSideBar
+    readonly panelCameraControl: Panel
+
+    constructor() {
+        super()
+        this.canvas.style.justifySelf = 'end'
+        this.canvas.style.alignSelf = 'end'
+        this.panelCameraControl = this.addPanel(new CameraControlPanel(GameConfig.instance.panels.panelCameraControl, GameConfig.instance.buttons.panelCameraControl, GameConfig.instance.panelRotationControl))
+        this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar(GameConfig.instance.panels.panelCrystalSideBar, GameConfig.instance.buttons.panelCrystalSideBar))
+        this.animationFrame.notifyRedraw()
+    }
+}
+
+export class GuiBottomLeftLayer extends GuiBaseLayer {
+    readonly panelMessages: MessagePanel
+    readonly panelMessagesSide: Panel
+    readonly panelInformation: InformationPanel
+    readonly panelInfoDock: InfoDockPanel
+
+    constructor() {
+        super()
+        this.canvas.style.justifySelf = 'start'
+        this.canvas.style.alignSelf = 'end'
+        this.panelInformation = this.addPanel(new InformationPanel(GameConfig.instance.panels.panelInformation))
+        this.panelInfoDock = this.addPanel(new InfoDockPanel(GameConfig.instance.panels.panelInfoDock, GameConfig.instance.buttons.panelInfoDock, GameConfig.instance.infoMessages, this.panelInformation))
+        this.panelMessagesSide = this.addPanel(new Panel(GameConfig.instance.panels.panelMessagesSide))
+        this.panelMessages = this.addPanel(new MessagePanel(GameConfig.instance.panels.panelMessages, GameConfig.instance.textMessagesWithImages))
+        this.animationFrame.notifyRedraw()
     }
 }

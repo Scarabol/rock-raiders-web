@@ -4,6 +4,7 @@ import { AnimationFrame } from '../AnimationFrame'
 import { ScreenLayer } from './ScreenLayer'
 import { EventKey } from '../../event/EventKeyEnum'
 import { EventBroker } from '../../event/EventBroker'
+import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class SelectionFrameLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrame
@@ -11,6 +12,7 @@ export class SelectionFrameLayer extends ScreenLayer {
 
     constructor() {
         super()
+        this.ratio = SaveGameManager.currentPreferences.screenRatioFixed
         this.animationFrame = new AnimationFrame(this.canvas, this.readbackCanvas)
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)

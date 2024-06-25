@@ -8,6 +8,7 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseRenderer } from '../BaseRenderer'
 import { clearIntervalSafe } from '../../core/Util'
+import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class AdvisorLayer extends ScreenLayer {
     readonly renderer: BaseRenderer
@@ -18,6 +19,7 @@ export class AdvisorLayer extends ScreenLayer {
 
     constructor() {
         super()
+        this.ratio = SaveGameManager.currentPreferences.screenRatioFixed
         this.renderer = new BaseRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, {alpha: true})
         this.scene = new Scene()
         this.scene.add(new AmbientLight(0xffffff, 1)) // XXX read from LWS file

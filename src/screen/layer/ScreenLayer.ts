@@ -9,6 +9,7 @@ export class ScreenLayer {
     readbackCanvas: HTMLCanvasElement
     zIndex: number = 0
     active: boolean = false
+    ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
 
     constructor(layerName?: string) {
         this.canvas = this.createCanvas(layerName || this.constructor.name)
@@ -43,6 +44,14 @@ export class ScreenLayer {
     }
 
     resize(width: number, height: number) {
+        if (this.ratio > 0) {
+            const idealHeight = Math.round(width / this.ratio)
+            if (idealHeight > height) {
+                width = Math.round(height * this.ratio)
+            } else {
+                height = idealHeight
+            }
+        }
         this.canvas.width = width
         this.canvas.height = height
         this.readbackCanvas.width = this.canvas.width

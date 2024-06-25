@@ -24,6 +24,9 @@ export class GameModule {
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_CURSOR, (event: ChangeCursor) => {
             CursorManager.changeCursor(event.cursor, event.timeout)
         })
+        EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
+            screenMaster.onWindowResize()
+        })
         SoundManager.init()
         SaveGameManager.loadPreferences()
         SaveGameManager.loadSaveGames()

@@ -9,7 +9,7 @@ import { SceneManager } from '../game/SceneManager'
 import { WorldManager } from '../game/WorldManager'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE } from '../params'
 import { GameLayer } from './layer/GameLayer'
-import { GuiMainLayer } from './layer/GuiMainLayer'
+import { GuiBottomLeftLayer, GuiBottomRightLayer, GuiTopLeftLayer, GuiTopRightLayer } from './layer/GuiMainLayer'
 import { OverlayLayer } from './layer/OverlayLayer'
 import { SelectionFrameLayer } from './layer/SelectionFrameLayer'
 import { ScreenMaster } from './ScreenMaster'
@@ -25,7 +25,10 @@ export class GameScreen {
     readonly gameLayer: GameLayer
     readonly selectionFrameLayer: SelectionFrameLayer
     readonly advisorLayer: AdvisorLayer
-    readonly guiLayer: GuiMainLayer
+    readonly guiTopLeftLayer: GuiTopLeftLayer
+    readonly guiTopRightLayer: GuiTopRightLayer
+    readonly guiBottomRightLayer: GuiBottomRightLayer
+    readonly guiBottomLeftLayer: GuiBottomLeftLayer
     readonly overlayLayer: OverlayLayer
     readonly sceneMgr: SceneManager
     readonly entityMgr: EntityManager
@@ -39,14 +42,20 @@ export class GameScreen {
         this.screenMaster.onGlobalMouseLeaveEvent = this.gameLayer.onGlobalMouseLeaveEvent.bind(this.gameLayer)
         this.selectionFrameLayer = screenMaster.addLayer(new SelectionFrameLayer(), 510)
         this.advisorLayer = screenMaster.addLayer(new AdvisorLayer(), 515)
-        this.guiLayer = screenMaster.addLayer(new GuiMainLayer(), 520)
+        this.guiTopLeftLayer = screenMaster.addLayer(new GuiTopLeftLayer(), 520)
+        this.guiTopRightLayer = screenMaster.addLayer(new GuiTopRightLayer(), 521)
+        this.guiBottomRightLayer = screenMaster.addLayer(new GuiBottomRightLayer(), 522)
+        this.guiBottomLeftLayer = screenMaster.addLayer(new GuiBottomLeftLayer(), 523)
         this.overlayLayer = screenMaster.addLayer(new OverlayLayer(), 530)
         this.sceneMgr = new SceneManager(this.worldMgr, this.gameLayer.canvas)
         this.entityMgr = new EntityManager(this.worldMgr)
         this.guiMgr = new GuiManager(this.worldMgr)
         EventBroker.subscribe(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
             this.selectionFrameLayer.active = false
-            this.guiLayer.active = false
+            this.guiTopLeftLayer.active = false
+            this.guiTopRightLayer.active = false
+            this.guiBottomRightLayer.active = false
+            this.guiBottomLeftLayer.active = false
             this.overlayLayer.active = false
             this.startEndgameSequence(event.result).then()
         })
@@ -62,7 +71,10 @@ export class GameScreen {
         this.screenMaster.removeLayer(this.gameLayer)
         this.screenMaster.removeLayer(this.selectionFrameLayer)
         this.screenMaster.removeLayer(this.advisorLayer)
-        this.screenMaster.removeLayer(this.guiLayer)
+        this.screenMaster.removeLayer(this.guiTopLeftLayer)
+        this.screenMaster.removeLayer(this.guiTopRightLayer)
+        this.screenMaster.removeLayer(this.guiBottomRightLayer)
+        this.screenMaster.removeLayer(this.guiBottomLeftLayer)
         this.screenMaster.removeLayer(this.overlayLayer)
     }
 
@@ -79,7 +91,10 @@ export class GameScreen {
         history.pushState(null, '', `${window.location.pathname}?${params.toString()}`)
         GameState.reset()
         this.entityMgr.reset()
-        this.guiLayer.reset()
+        this.guiTopLeftLayer.reset()
+        this.guiTopRightLayer.reset()
+        this.guiBottomRightLayer.reset()
+        this.guiBottomLeftLayer.reset()
         this.worldMgr.setup(this.levelConf)
         this.sceneMgr.setupScene(this.levelConf)
         if (this.levelConf.blockPointersMap) {
@@ -110,7 +125,10 @@ export class GameScreen {
         this.gameLayer.show()
         this.selectionFrameLayer.show()
         this.advisorLayer.show()
-        this.guiLayer.show()
+        this.guiTopLeftLayer.show()
+        this.guiTopRightLayer.show()
+        this.guiBottomRightLayer.show()
+        this.guiBottomLeftLayer.show()
         this.overlayLayer.show()
         this.sceneMgr.startScene().then(() => {
             this.screenMaster.loadingLayer.hide()
@@ -122,7 +140,10 @@ export class GameScreen {
         this.worldMgr.stop()
         this.sceneMgr.disposeScene()
         this.overlayLayer.hide()
-        this.guiLayer.hide()
+        this.guiTopLeftLayer.hide()
+        this.guiTopRightLayer.hide()
+        this.guiBottomRightLayer.hide()
+        this.guiBottomLeftLayer.hide()
         this.advisorLayer.hide()
         this.selectionFrameLayer.hide()
         this.gameLayer.hide()
