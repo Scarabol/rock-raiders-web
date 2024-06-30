@@ -243,21 +243,13 @@ export class GuiManager {
                 console.warn('No entity seems selected')
                 return
             }
-            const camJoints = entity.sceneEntity.getCamJoints()
-            if (camJoints.length != 2) {
-                console.warn(`Unexpected number ${camJoints.length} camera joints found in mesh`, entity.sceneEntity, camJoints)
-                return
-            }
-            const [headJoint, shoulderJoint] = camJoints
             if (event.viewMode === CameraViewMode.BIRD) {
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraBird)
             } else if (event.viewMode === CameraViewMode.FPV) {
-                headJoint.rotation.y = entity.sceneEntity.flipCamera ? Math.PI : 0 // XXX Why is this needed for vehicles and not pilot?
-                headJoint.add(worldMgr.sceneMgr.cameraFPV)
+                entity.sceneEntity.camFPVJoint.add(worldMgr.sceneMgr.cameraFPV)
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraFPV)
             } else if (event.viewMode === CameraViewMode.SHOULDER) {
-                shoulderJoint.rotation.y = entity.sceneEntity.flipCamera ? Math.PI : 0 // XXX Why is this needed for vehicles and not pilot?
-                shoulderJoint.add(worldMgr.sceneMgr.cameraShoulder)
+                entity.sceneEntity.camShoulderJoint.add(worldMgr.sceneMgr.cameraShoulder)
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraShoulder)
             }
         })

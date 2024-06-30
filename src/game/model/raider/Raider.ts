@@ -150,41 +150,45 @@ export class Raider implements Updatable, JobFulfiller {
     private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
         if (result === MoveState.MOVED) {
-            const raiderPosition2D = this.getPosition2D()
-            this.worldMgr.entityMgr.spiders.some((spider) => {
-                const components = this.worldMgr.ecs.getComponents(spider)
-                const spiderPosition2D = components.get(PositionComponent).getPosition2D()
-                if (raiderPosition2D.distanceToSquared(spiderPosition2D) < SPIDER_SLIP_RANGE_SQ) {
-                    this.slip()
-                    this.worldMgr.entityMgr.removeEntity(spider)
-                    this.worldMgr.ecs.removeEntity(spider)
-                    const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
-                    if (sceneEntityComponent) this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntityComponent.sceneEntity)
-                    return true
-                }
-                return false
-            })
-            this.worldMgr.entityMgr.rockMonsters.forEach((rocky) => {
-                const components = this.worldMgr.ecs.getComponents(rocky)
-                const rockySceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
-                if (rockySceneEntity.currentAnimation === RockMonsterActivity.Unpowered) {
-                    const positionComponent = components.get(PositionComponent)
-                    const rockyPosition2D = positionComponent.getPosition2D()
-                    const wakeRadius = components.get(MonsterStatsComponent).stats.WakeRadius
-                    if (raiderPosition2D.distanceToSquared(rockyPosition2D) < Math.pow(wakeRadius + this.stats.CollRadius, 2)) {
-                        rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
-                            this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
-                            this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
-                            EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
-                        })
-                    }
-                }
-            })
+            this.onEntityMoved()
         } else if (result === MoveState.TARGET_UNREACHABLE) {
             console.warn('Raider could not move to job target, stopping job', this.job, target)
             this.stopJob()
         }
         return result
+    }
+
+    onEntityMoved() {
+        const raiderPosition2D = this.getPosition2D()
+        this.worldMgr.entityMgr.spiders.some((spider) => {
+            const components = this.worldMgr.ecs.getComponents(spider)
+            const spiderPosition2D = components.get(PositionComponent).getPosition2D()
+            if (raiderPosition2D.distanceToSquared(spiderPosition2D) < SPIDER_SLIP_RANGE_SQ) {
+                this.slip()
+                this.worldMgr.entityMgr.removeEntity(spider)
+                this.worldMgr.ecs.removeEntity(spider)
+                const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
+                if (sceneEntityComponent) this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntityComponent.sceneEntity)
+                return true
+            }
+            return false
+        })
+        this.worldMgr.entityMgr.rockMonsters.forEach((rocky) => {
+            const components = this.worldMgr.ecs.getComponents(rocky)
+            const rockySceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
+            if (rockySceneEntity.currentAnimation === RockMonsterActivity.Unpowered) {
+                const positionComponent = components.get(PositionComponent)
+                const rockyPosition2D = positionComponent.getPosition2D()
+                const wakeRadius = components.get(MonsterStatsComponent).stats.WakeRadius
+                if (raiderPosition2D.distanceToSquared(rockyPosition2D) < Math.pow(wakeRadius + this.stats.CollRadius, 2)) {
+                    rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
+                        this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
+                        this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
+                        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
+                    })
+                }
+            }
+        })
     }
 
     private moveToClosestTargetInternal(target: PathTarget, elapsedMs: number): MoveState {
@@ -240,7 +244,7 @@ export class Raider implements Updatable, JobFulfiller {
         return step
     }
 
-    private getSpeed(): number {
+    getSpeed(): number {
         const currentSurface = this.getSurface()
         const pathMultiplier = currentSurface.isPath() ? this.stats.PathCoef : 1
         const rubbleMultiplier = currentSurface.hasRubble() ? this.stats.RubbleCoef : 1
@@ -248,7 +252,7 @@ export class Raider implements Updatable, JobFulfiller {
         return this.stats.RouteSpeed[this.level] * pathMultiplier * rubbleMultiplier * carriesMultiplier
     }
 
-    private getRouteActivity(): AnimationActivity {
+    getRouteActivity(): AnimationActivity {
         if (this.scared) {
             return RaiderActivity.RunPanic
         } else if (this.getSurface().hasRubble()) {
@@ -288,7 +292,7 @@ export class Raider implements Updatable, JobFulfiller {
         return true
     }
 
-    private getDefaultAnimationName(): AnimationActivity {
+    getDefaultAnimationName(): AnimationActivity {
         return this.carries ? AnimEntityActivity.StandCarry : AnimEntityActivity.Stand
     }
 

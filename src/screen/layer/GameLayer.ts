@@ -6,7 +6,7 @@ import { DeselectAll, SelectionChanged, SelectionFrameChangeEvent } from '../../
 import { JobCreateEvent, MonsterEmergeEvent, ShootLaserEvent } from '../../event/WorldEvents'
 import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
-import { DEV_MODE } from '../../params'
+import { DEV_MODE, FPV_ENTITY_TURN_SPEED } from '../../params'
 import { ScreenLayer } from './ScreenLayer'
 import { Cursor } from '../../resource/Cursor'
 import { EntityType } from '../../game/model/EntityType'
@@ -66,8 +66,12 @@ export class GameLayer extends ScreenLayer {
             return false
         })
         // signal to screen master for camera controls listening on canvas for events
-        ;(['pointerleave', 'keydown', 'mousemove', 'mouseleave'] as (keyof HTMLElementEventMap)[]).forEach((eventType) => {
+        ;(['pointerleave', 'mousemove', 'mouseleave'] as (keyof HTMLElementEventMap)[]).forEach((eventType) => {
             this.addEventListener(eventType, (): boolean => false)
+        })
+        this.addEventListener('keydown', (event): boolean => {
+            const gameEvent = new GameKeyboardEvent(KEY_EVENT.DOWN, event)
+            return this.handleKeyDownEvent(gameEvent)
         })
         this.addEventListener('keyup', (event): boolean => {
             const gameEvent = new GameKeyboardEvent(KEY_EVENT.UP, event)
@@ -264,6 +268,27 @@ export class GameLayer extends ScreenLayer {
         return frustum.containsPoint(selectionCenter)
     }
 
+    handleKeyDownEvent(event: GameKeyboardEvent): boolean {
+        const cameraActive = this.worldMgr.sceneMgr.cameraActive
+        const selectedEntity = this.worldMgr.entityMgr.selection.getPrimarySelected()
+        if ((cameraActive === this.worldMgr.sceneMgr.cameraShoulder || cameraActive === this.worldMgr.sceneMgr.cameraFPV) && !!selectedEntity) {
+            if (event.key === 'ArrowLeft' || event.key === 'a') {
+                this.worldMgr.sceneMgr.entityTurnSpeed = FPV_ENTITY_TURN_SPEED
+                return true
+            } else if (event.key === 'ArrowUp' || event.key === 'w') {
+                this.worldMgr.sceneMgr.entityMoveMultiplier = 1
+                return true
+            } else if (event.key === 'ArrowRight' || event.key === 'd') {
+                this.worldMgr.sceneMgr.entityTurnSpeed = -FPV_ENTITY_TURN_SPEED
+                return true
+            } else if (event.key === 'ArrowDown' || event.key === 's') {
+                this.worldMgr.sceneMgr.entityMoveMultiplier = -1
+                return true
+            }
+        }
+        return false
+    }
+
     handleKeyUpEvent(event: GameKeyboardEvent): boolean {
         if (event.key === ' ') {
             GameState.showObjInfo = !GameState.showObjInfo
@@ -273,6 +298,10 @@ export class GameLayer extends ScreenLayer {
                 infoComponent.hungerSprite.visible = GameState.showObjInfo
             })
             return true
+        } else if (['ArrowLeft', 'a', 'ArrowRight', 'd'].some((k) => event.key === k)) {
+            this.worldMgr.sceneMgr.entityTurnSpeed = 0
+        } else if (['ArrowUp', 'w', 'ArrowDown', 's'].some((k) => event.key === k)) {
+            this.worldMgr.sceneMgr.entityMoveMultiplier = 0
         } else if (DEV_MODE && this.worldMgr.entityMgr.selection.surface) {
             if (event.key === 'c') {
                 this.worldMgr.entityMgr.selection.surface.collapse()

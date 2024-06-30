@@ -173,28 +173,32 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
         if (result === MoveState.MOVED) {
-            const vehiclePosition2D = this.sceneEntity.position2D
-            this.worldMgr.entityMgr.rockMonsters.forEach((rocky) => {
-                const components = this.worldMgr.ecs.getComponents(rocky)
-                const rockySceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
-                if (rockySceneEntity.currentAnimation === RockMonsterActivity.Unpowered) {
-                    const positionComponent = components.get(PositionComponent)
-                    const rockyPosition2D = positionComponent.getPosition2D()
-                    const wakeRadius = components.get(MonsterStatsComponent).stats.WakeRadius
-                    if (vehiclePosition2D.distanceToSquared(rockyPosition2D) < Math.pow(wakeRadius + this.stats.CollRadius, 2)) {
-                        rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
-                            this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
-                            this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
-                            EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
-                        })
-                    }
-                }
-            })
+            this.onEntityMoved()
         } else if (result === MoveState.TARGET_UNREACHABLE) {
             console.warn('Vehicle could not move to job target, stopping job', this.job, target)
             this.stopJob()
         }
         return result
+    }
+
+    onEntityMoved() {
+        const vehiclePosition2D = this.sceneEntity.position2D
+        this.worldMgr.entityMgr.rockMonsters.forEach((rocky) => {
+            const components = this.worldMgr.ecs.getComponents(rocky)
+            const rockySceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
+            if (rockySceneEntity.currentAnimation === RockMonsterActivity.Unpowered) {
+                const positionComponent = components.get(PositionComponent)
+                const rockyPosition2D = positionComponent.getPosition2D()
+                const wakeRadius = components.get(MonsterStatsComponent).stats.WakeRadius
+                if (vehiclePosition2D.distanceToSquared(rockyPosition2D) < Math.pow(wakeRadius + this.stats.CollRadius, 2)) {
+                    rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
+                        this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
+                        this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
+                        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
+                    })
+                }
+            }
+        })
     }
 
     private moveToClosestTargetInternal(target: PathTarget, elapsedMs: number): MoveState {
@@ -211,7 +215,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.setPosition(this.getPosition().add(step.vec))
-            this.sceneEntity.setAnimation(AnimEntityActivity.Route)
+            this.sceneEntity.setAnimation(this.getRouteActivity())
             const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
             this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
             return MoveState.MOVED
@@ -238,8 +242,16 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         return step
     }
 
-    private getSpeed(): number {
+    getSpeed(): number {
         return this.stats.RouteSpeed[this.level]
+    }
+
+    getRouteActivity(): AnimEntityActivity {
+        return AnimEntityActivity.Route
+    }
+
+    getDefaultAnimationName(): AnimEntityActivity {
+        return AnimEntityActivity.Stand
     }
 
     /*

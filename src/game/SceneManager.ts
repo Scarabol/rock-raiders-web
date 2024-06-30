@@ -11,7 +11,7 @@ import { BirdViewCamera } from '../scene/BirdViewCamera'
 import { TorchLightCursor } from '../scene/TorchLightCursor'
 import { SceneRenderer } from '../scene/SceneRenderer'
 import { Updatable, updateSafe } from './model/Updateable'
-import { CAMERA_FOV, CAMERA_MAX_SHAKE_BUMP, CAMERA_MIN_HEIGHT_ABOVE_TERRAIN, DEV_MODE, TILESIZE } from '../params'
+import { CAMERA_FOV, CAMERA_MAX_SHAKE_BUMP, CAMERA_MIN_HEIGHT_ABOVE_TERRAIN, DEV_MODE, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { SceneEntity } from './SceneEntity'
@@ -22,6 +22,10 @@ import { EventKey } from '../event/EventKeyEnum'
 import { LeveledAmbientLight } from '../scene/LeveledAmbientLight'
 import { EventBroker } from '../event/EventBroker'
 import { ObjectPointer } from '../scene/ObjectPointer'
+import { PathFinder } from './terrain/PathFinder'
+import { AnimEntityActivity, RaiderActivity } from './model/anim/AnimationActivity'
+import { Raider } from './model/raider/Raider'
+import { VehicleEntity } from './model/vehicle/VehicleEntity'
 
 export class SceneManager implements Updatable {
     static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
@@ -43,6 +47,8 @@ export class SceneManager implements Updatable {
     buildMarker: BuildPlacementMarker
     followerRenderer: FollowerRenderer
     cameraActive: PerspectiveCamera
+    entityTurnSpeed: number = 0
+    entityMoveMultiplier: number = 0
 
     constructor(readonly worldMgr: WorldManager, canvas: HTMLCanvasElement) {
         this.worldMgr.sceneMgr = this
@@ -113,6 +119,32 @@ export class SceneManager implements Updatable {
         Array.from(this.worldMgr.nerpRunner.tutoBlocksById.values()).forEach((s) => s.forEach((t) => {
             t.mesh.objectPointer?.update(elapsedMs)
         }))
+        const selectedEntity = this.worldMgr.entityMgr.selection.getPrimarySelected()
+        if (selectedEntity && (this.cameraActive === this.cameraShoulder || this.cameraActive === this.cameraFPV)) {
+            this.updateEgoMovement(selectedEntity, elapsedMs)
+        }
+    }
+
+    private updateEgoMovement(selectedEntity: Raider | VehicleEntity, elapsedMs: number) {
+        if (this.entityTurnSpeed) selectedEntity.sceneEntity.rotation.y += this.entityTurnSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL
+        let animationName = selectedEntity.getDefaultAnimationName()
+        if (this.entityMoveMultiplier) {
+            const step = selectedEntity.sceneEntity.getWorldDirection(new Vector3()).setLength(selectedEntity.getSpeed()).multiplyScalar(this.entityMoveMultiplier)
+            const targetPosition = selectedEntity.getPosition().add(step)
+            const targetSurface = this.terrain.getSurfaceFromWorld(targetPosition)
+            if (selectedEntity.getSurface() === targetSurface || PathFinder.getWeight(targetSurface, selectedEntity.stats) > 0) {
+                selectedEntity.setPosition(targetPosition)
+                animationName = !!((selectedEntity as Raider).carries) ? AnimEntityActivity.Carry : AnimEntityActivity.Route
+                selectedEntity.onEntityMoved()
+            } else {
+                const drillTimeSeconds = selectedEntity.getDrillTimeSeconds(targetSurface)
+                if (drillTimeSeconds > 0) {
+                    animationName = RaiderActivity.Drill
+                    targetSurface.addDrillTimeProgress(drillTimeSeconds, elapsedMs, selectedEntity.getPosition2D())
+                }
+            }
+        }
+        selectedEntity.sceneEntity.setAnimation(animationName)
     }
 
     disposeScene() {

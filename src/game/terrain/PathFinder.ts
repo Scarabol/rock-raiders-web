@@ -35,7 +35,7 @@ export class PathFinder {
 
     updateSurface(surface: PathFindingSurfaceData) {
         this.graphByCacheKey.forEach((graph) => {
-            const weight = this.getWeight(surface, graph.stats)
+            const weight = PathFinder.getWeight(surface, graph.stats)
             for (let x = 0; x < graph.precision; x++) {
                 for (let y = 0; y < graph.precision; y++) {
                     graph.grid[surface.x * graph.precision + x][surface.y * graph.precision + y].weight = weight
@@ -146,7 +146,7 @@ export class PathFinder {
             const col: number[] = []
             for (let y = 0; y < this.surfaces[0].length; y++) {
                 const surface = this.surfaces[x][y]
-                const w = this.getWeight(surface, stats)
+                const w = PathFinder.getWeight(surface, stats)
                 for (let c = 0; c < precision; c++) {
                     col.push(w)
                 }
@@ -158,7 +158,7 @@ export class PathFinder {
         return new ConfiguredGraph(weights, precision, stats)
     }
 
-    private getWeight(surface: PathFindingSurfaceData, stats: MovableEntityStats): number {
+    static getWeight(surface: PathFindingSurfaceData, stats: MovableEntityStats): number {
         if (!surface.surfaceType.floor || !surface.discovered) return 0 // TODO consider EnterWall
         else if (surface.pathBlockedByBuilding) return 0 // TODO consider EnterToolstore
         else if (surface.surfaceType.hasRubble) return 1 / (stats.RubbleCoef || 1)

@@ -30,6 +30,10 @@ export class AnimatedSceneEntity extends SceneEntity {
     pivotMaxZ: number = null
     yPivotObj: Object3D = null
     flipCamera: boolean = false
+    camFPVJoint: Object3D = null
+    camShoulderJoint: Object3D = null
+    camFPVChildren: Object3D[] = []
+    camShoulderChildren: Object3D[] = []
 
     constructor() {
         super()
@@ -61,6 +65,8 @@ export class AnimatedSceneEntity extends SceneEntity {
         if (this.currentAnimation === animationName) return
         this.currentAnimation = animationName
         if (this.animationData.length > 0) this.removeAll()
+        this.camFPVChildren = this.camFPVJoint?.children || this.camFPVChildren
+        this.camShoulderChildren = this.camShoulderJoint?.children || this.camShoulderChildren
         this.animationData.forEach((animEntityData) => {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
@@ -97,6 +103,17 @@ export class AnimatedSceneEntity extends SceneEntity {
             }
         })
         this.finalizeMeshSetup()
+        const camJoints = this.animationGroups.flatMap((a) => a.meshList.filter((m) => m.name.equalsIgnoreCase(a.animEntityData.cameraNullName)))
+        this.camFPVJoint = camJoints[0]
+        if (this.camFPVJoint) {
+            this.camFPVJoint.rotation.y = this.flipCamera ? Math.PI : 0 // XXX Why is this needed for vehicles and not pilot?
+            this.camFPVChildren.forEach((c) => this.camFPVJoint.add(c))
+        }
+        this.camShoulderJoint = camJoints[1]
+        if (this.camShoulderJoint) {
+            this.camShoulderJoint.rotation.y = this.flipCamera ? Math.PI : 0 // XXX Why is this needed for vehicles and not pilot?
+            this.camShoulderChildren.forEach((c) => this.camShoulderJoint.add(c))
+        }
     }
 
     setAnimationSpeed(multiplier: number) {
@@ -288,10 +305,6 @@ export class AnimatedSceneEntity extends SceneEntity {
         }
         this.visible = sceneMgr.terrain.getSurfaceFromWorld(this.position).discovered
         sceneMgr.addSceneEntity(this)
-    }
-
-    getCamJoints() {
-        return this.animationGroups.flatMap((a) => a.meshList.filter((m) => m.name.equalsIgnoreCase(a.animEntityData.cameraNullName)))
     }
 
     getFireNullParents(): { worldPos: Vector3, worldDirection: Vector3 }[] {

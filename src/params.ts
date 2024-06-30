@@ -54,6 +54,7 @@ export const SLUG_MAX_IDLE_TIME = 15000
 export const USE_KEYBOARD_SHORTCUTS = false
 export const RAIDER_PATH_PRECISION = 3
 export const DEFAULT_SCREEN_RATIO_FIXED = 4 / 3
+export const FPV_ENTITY_TURN_SPEED = 0.05
 
 // native constants (do not change)
 
