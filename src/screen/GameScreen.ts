@@ -116,7 +116,11 @@ export class GameScreen {
         EventBroker.publish(new InitRadarMap(this.sceneMgr.birdViewControls.target.clone(), this.sceneMgr.terrain))
         // gather level start details for game result score calculation
         GameState.totalDiggables = this.sceneMgr.terrain.countDiggables()
-        GameState.totalCrystals = this.sceneMgr.terrain.countCrystals() + [...this.entityMgr.materials, ...this.entityMgr.materialsUndiscovered].count((m) => m.entityType === EntityType.CRYSTAL || m.entityType === EntityType.DEPLETED_CRYSTAL)
+        const crystalsInVehicles = [...this.entityMgr.vehicles, ...this.entityMgr.vehiclesUndiscovered].reduce((prev, v) => prev + v.stats.CostCrystal, 0)
+        const crystalsInBuildings = [...this.entityMgr.buildings, ...this.entityMgr.buildingsUndiscovered].reduce((prev, v) => prev + v.stats.CostCrystal, 0)
+        const crystalsDropped = [...this.entityMgr.materials, ...this.entityMgr.materialsUndiscovered].count((m) => m.entityType === EntityType.CRYSTAL || m.entityType === EntityType.DEPLETED_CRYSTAL)
+        const crystalsInLevel = this.sceneMgr.terrain.countCrystals() + crystalsInVehicles + crystalsInBuildings + crystalsDropped
+        GameState.totalCrystals = Math.max(this.levelConf?.reward?.quota?.crystals || 0, crystalsInLevel) // Level 20 has only 17 crystals but quota of 20
         GameState.numTotalOres = this.sceneMgr.terrain.countOres()
         this.show()
     }
