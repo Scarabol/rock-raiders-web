@@ -251,7 +251,6 @@ export class GuiManager {
             const [headJoint, shoulderJoint] = camJoints
             if (event.viewMode === CameraViewMode.BIRD) {
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraBird)
-                return
             } else if (event.viewMode === CameraViewMode.FPV) {
                 headJoint.rotation.y = entity.sceneEntity.flipCamera ? Math.PI : 0 // XXX Why is this needed for vehicles and not pilot?
                 headJoint.add(worldMgr.sceneMgr.cameraFPV)
