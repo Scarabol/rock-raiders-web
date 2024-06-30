@@ -64,7 +64,7 @@ export class ObjectListLoader {
         const entityType = getEntityTypeByName(olEntry.type ? olEntry.type.toLowerCase() : olEntry.type)
         // all object positions are off by one tile, because they start at 1 not 0
         const worldPos = new Vector2(olEntry.xPos, olEntry.yPos).addScalar(-1).multiplyScalar(TILESIZE)
-        const headingRad = degToRad(olEntry.heading)
+        const headingRad = olEntry.heading ? degToRad(olEntry.heading) : 0
         switch (entityType) {
             case EntityType.TV_CAMERA:
                 const cameraOffset = new Vector2(5, 0).rotateAround(new Vector2(0, 0), headingRad + Math.PI / 2)
