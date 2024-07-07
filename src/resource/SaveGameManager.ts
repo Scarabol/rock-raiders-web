@@ -118,12 +118,10 @@ export class SaveGameManager {
     }
 
     static getLevelScoreString(levelName: string) {
+        if (!levelName.toLowerCase().startsWith('level')) return ''
         const levelScore = this.currentLevels.find((l) => l.levelName.equalsIgnoreCase(levelName))?.levelScore
-        if (levelScore) {
-            return ` (${levelScore})`
-        } else {
-            return ''
-        }
+        if (!levelScore) return ''
+        return ` (${levelScore})`
     }
 
     static getLevelCompleted(levelName: string): boolean {
