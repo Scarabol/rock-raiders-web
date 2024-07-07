@@ -57,6 +57,8 @@ export class GameResult {
             this.scoreOxygen = GameState.airLevel * importance.oxygen
             this.scoreFigures = this.numRaiders / ADDITIONAL_RAIDER_PER_SUPPORT * importance.figures
             this.score = Math.max(0, Math.min(100, Math.round(this.scoreCrystals + this.scoreTimer + this.scoreCaverns + this.scoreConstructions + this.scoreOxygen + this.scoreFigures)))
+        } else if (this.state === GameResultState.COMPLETE) {
+            this.score = 100 // Tutorial levels get score 100 by default
         }
     }
 

@@ -159,18 +159,13 @@ export class GameScreen {
     }
 
     async startEndgameSequence(resultState: GameResultState) {
-        let result: GameResult = null
-        if (this.levelConf.reward) {
-            const numMaxAirRaiders = this.levelConf.oxygenRate ? this.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT : MAX_RAIDER_BASE
-            const canvas = resultState === GameResultState.COMPLETE ? await this.screenMaster.createScreenshot() : null
-            result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, numMaxAirRaiders, this.worldMgr.gameTimeSeconds, canvas)
-            if (result.state === GameResultState.COMPLETE) {
-                SaveGameManager.setLevelScore(this.levelConf.levelName, result.score)
-            }
-        }
+        const numMaxAirRaiders = this.levelConf.oxygenRate ? this.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT : MAX_RAIDER_BASE
+        const canvas = resultState === GameResultState.COMPLETE ? await this.screenMaster.createScreenshot() : null
+        const result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, numMaxAirRaiders, this.worldMgr.gameTimeSeconds, canvas)
+        if (resultState === GameResultState.COMPLETE) SaveGameManager.setLevelScore(this.levelConf.levelName, result.score)
         if (!this.levelConf.disableEndTeleport) await this.worldMgr.teleportEnd()
         this.worldMgr.stop()
-        this.overlayLayer.showResultBriefing(result?.state, this.levelConf, () => {
+        this.overlayLayer.showResultBriefing(resultState, this.levelConf, () => {
             this.hide()
             EventBroker.publish(new ShowGameResultEvent(result))
         })

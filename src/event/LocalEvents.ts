@@ -209,7 +209,7 @@ export class ShowMissionAdvisorEvent extends BaseEvent {
 }
 
 export class ShowGameResultEvent extends BaseEvent {
-    constructor(readonly result?: GameResult) {
+    constructor(readonly result: GameResult) {
         super(EventKey.SHOW_GAME_RESULT)
     }
 }
@@ -253,5 +253,11 @@ export class GuiButtonBlinkEvent extends BaseEvent {
 export class GuiGoBackButtonClicked extends BaseEvent {
     constructor() {
         super(EventKey.GUI_GO_BACK_BUTTON_CLICKED)
+    }
+}
+
+export class AdvanceAfterRewardsEvent extends BaseEvent {
+    constructor() {
+        super(EventKey.ADVANCE_AFTER_REWARDS)
     }
 }

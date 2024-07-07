@@ -6,7 +6,6 @@ import { MainMenuLevelButton } from '../menu/MainMenuLevelButton'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { ScreenMaster } from './ScreenMaster'
 import { EventKey } from '../event/EventKeyEnum'
-import { ShowGameResultEvent } from '../event/LocalEvents'
 import { LevelSelectedEvent, MaterialAmountChanged } from '../event/WorldEvents'
 import { MainMenuCreditsLayer } from '../menu/MainMenuCreditsLayer'
 import { ScaledLayer } from './layer/ScreenLayer'
@@ -49,12 +48,12 @@ export class MainMenuScreen {
         this.creditsLayer.onExitCredits = () => this.showMainMenu()
         this.menuLayers.push(this.creditsLayer)
         this.rockWipeLayer = screenMaster.addLayer(new RockWipeLayer(), 200 + this.menuLayers.length * 10)
-        EventBroker.subscribe(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
-            if (event.result) return
+        EventBroker.subscribe(EventKey.ADVANCE_AFTER_REWARDS, () => {
             if (GameConfig.instance.getAllLevels().every((l) => SaveGameManager.getLevelCompleted(l.levelName))) {
                 // TODO Show EndGameAVI1 from config, requires Indeo5 video decoder
                 this.showCredits()
             } else {
+                // TODO If tutorial was started from tutorial screen go back there
                 this.showLevelSelection()
             }
         })

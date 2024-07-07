@@ -11,7 +11,7 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { ScaledLayer } from './layer/ScreenLayer'
 import { ScreenMaster } from './ScreenMaster'
 import { EventKey } from '../event/EventKeyEnum'
-import { ShowGameResultEvent } from '../event/LocalEvents'
+import { AdvanceAfterRewardsEvent, ShowGameResultEvent } from '../event/LocalEvents'
 import { OverwriteLayer } from '../menu/OverwriteLayer'
 import { FlicAnimOverlay } from '../menu/FlicAnimOverlay'
 import { imgDataToCanvas } from '../core/ImageHelper'
@@ -83,15 +83,7 @@ export class RewardScreen {
         this.btnSave = new RewardScreenButton(this.cfg.saveButton, 'ToolTip_Reward_Save')
         this.btnSave.onPressed = () => this.saveGameLayer.show()
         this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton, 'ToolTip_Reward_Advance')
-        this.btnAdvance.onPressed = () => {
-            this.backgroundLayer.hide()
-            this.resultsLayer.hide()
-            this.descriptionTextLayer.hide()
-            this.btnLayer.hide()
-            this.saveGameLayer.hide()
-            this.flics.forEach((f) => f.stop())
-            EventBroker.publish(new ShowGameResultEvent())
-        }
+        this.btnAdvance.onPressed = () => this.onAdvancePressed()
         this.btnLayer.addEventListener('pointermove', (event: PointerEvent): boolean => {
             const [canvasX, canvasY] = this.btnLayer.transformCoords(event.clientX, event.clientY)
             this.btnSave.setHovered(this.btnSave.isHovered(canvasX, canvasY))
@@ -160,7 +152,11 @@ export class RewardScreen {
             }
         }
         EventBroker.subscribe(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
-            if (event.result) this.showGameResult(event.result)
+            if (event.result.rewardConfig) {
+                this.showGameResult(event.result)
+            } else {
+                this.onAdvancePressed()
+            }
         })
     }
 
@@ -171,6 +167,16 @@ export class RewardScreen {
         this.screenMaster.removeLayer(this.btnLayer)
         this.screenMaster.removeLayer(this.saveGameLayer)
         this.screenMaster.removeLayer(this.overwriteLayer)
+    }
+
+    onAdvancePressed() {
+        this.backgroundLayer.hide()
+        this.resultsLayer.hide()
+        this.descriptionTextLayer.hide()
+        this.btnLayer.hide()
+        this.saveGameLayer.hide()
+        this.flics.forEach((f) => f.stop())
+        EventBroker.publish(new AdvanceAfterRewardsEvent())
     }
 
     showGameResult(result: GameResult) {
