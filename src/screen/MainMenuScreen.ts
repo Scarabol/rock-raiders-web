@@ -39,7 +39,10 @@ export class MainMenuScreen {
                 console.warn('Unexpected menu title in cfg', menuCfg)
                 layer = new MainMenuLayer(menuCfg)
             }
-            layer.onItemAction = (item: MainMenuBaseItem) => this.onItemAction(item)
+            layer.onItemAction = (item: MainMenuBaseItem) => {
+                if (menuCfg.title.equalsIgnoreCase('Levels') && item.actionName?.equalsIgnoreCase('Next') && item.targetIndex === 0) SaveGameManager.startNewGame()
+                this.onItemAction(item)
+            }
             this.menuLayers.push(screenMaster.addLayer(layer, 200 + this.menuLayers.length * 10))
         })
         this.creditsLayer = screenMaster.addLayer(new MainMenuCreditsLayer(), 200 + this.menuLayers.length * 10)

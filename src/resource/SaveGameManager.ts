@@ -82,6 +82,11 @@ export class SaveGameManager {
         return new Set(levelNameList).size * 100 / NUM_OF_LEVELS_TO_COMPLETE_GAME
     }
 
+    static startNewGame() {
+        console.log('Resetting game progress and starting new game')
+        this.currentLevels = []
+    }
+
     static saveGame(index: number, screenshot: HTMLCanvasElement) {
         this.saveGames[index] = this.saveGames[index] || new SaveGame()
         this.saveGames[index].levels = this.currentLevels.map((l) => SaveGameLevel.copy(l)) // deep copy required, otherwise changes are reflected
