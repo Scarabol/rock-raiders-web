@@ -48,7 +48,7 @@ export class MainMenuScreen {
         this.rockWipeLayer = screenMaster.addLayer(new RockWipeLayer(), 200 + this.menuLayers.length * 10)
         EventBroker.subscribe(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
             if (event.result) return
-            if (SaveGameManager.isGameComplete()) {
+            if (GameConfig.instance.getAllLevels().every((l) => SaveGameManager.getLevelCompleted(l.levelName))) {
                 // TODO Show EndGameAVI1 from config, requires Indeo5 video decoder
                 this.showCredits()
             } else {
@@ -113,12 +113,12 @@ export class MainMenuScreen {
     }
 
     selectLevelRandom() {
-        const allLevels = Array.from(GameConfig.instance.levels.levelCfgByName.values()).filter((levelConf) => levelConf.levelName.toLowerCase().startsWith('level'))
+        const allLevels = GameConfig.instance.getAllLevels()
         const unlockedLevels = allLevels.filter((levelConf) => !levelConf.isLocked())
-        const unscoredLevels = unlockedLevels.filter((levelConf) => !SaveGameManager.getLevelScoreString(levelConf.levelName))
+        const incompleteLevels = unlockedLevels.filter((levelConf) => !SaveGameManager.getLevelCompleted(levelConf.levelName))
         let randomLevelName: string
-        if (unscoredLevels.length > 0) {
-            randomLevelName = unscoredLevels.random().levelName
+        if (incompleteLevels.length > 0) {
+            randomLevelName = incompleteLevels.random().levelName
         } else if (unlockedLevels.length > 0) {
             randomLevelName = unlockedLevels.random().levelName
         } else {

@@ -340,9 +340,9 @@ export class NerpRunner {
         }
         if (messageNumber === this.currentMessage) return
         this.currentMessage = messageNumber
-        const msg = this.messages[messageNumber - 1]
+        const msg = this.messages[this.currentMessage - 1]
         if (!msg) {
-            console.warn(`Message ${messageNumber} not found in [${this.messages.map((m) => m.txt)}]`)
+            console.warn(`Message ${this.currentMessage} not found in [${this.messages.map((m) => m.txt)}]`)
             return
         }
         let sampleLength = this.timeForNoSample / 1000

@@ -33,7 +33,7 @@ export class LevelSelectLayer extends MainMenuLayer {
             }
             this.items.push(levelButton)
         })
-        this.items.push(new MainMenuBaseItem(517, 11, 36, 36, 'selectrandomlevel'))
+        this.items.push(new MainMenuBaseItem(517, 11, 36, 36, 'selectrandomlevel')) // New easter egg to start random level
     }
 
     show() {

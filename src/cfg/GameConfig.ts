@@ -7,7 +7,7 @@ import { ButtonsCfg } from './ButtonsCfg'
 import { parseLabel } from './CfgHelper'
 import { DialogCfg } from './DialogCfg'
 import { GameStatsCfg } from './GameStatsCfg'
-import { LevelsCfg } from './LevelsCfg'
+import { LevelEntryCfg, LevelsCfg } from './LevelsCfg'
 import { MainCfg } from './MainCfg'
 import { GameMenuCfg } from './MenuCfg'
 import { PanelsCfg } from './PanelCfg'
@@ -176,5 +176,9 @@ export class GameConfig extends BaseConfig {
 
     getRockFallDamage(entityType: EntityType, level: number = 0): number {
         return this.weaponTypes.get('rockfallin').damageByEntityType.get(entityType)?.[level] || 0
+    }
+
+    getAllLevels(): LevelEntryCfg[] {
+        return Array.from(this.levels.levelCfgByName.values()).filter((l) => l.levelName.toLowerCase().startsWith('level'))
     }
 }

@@ -126,8 +126,8 @@ export class SaveGameManager {
         }
     }
 
-    static isGameComplete(): boolean {
-        return this.currentLevels.count((l) => l.levelScore > 0 && l.levelName.toLowerCase().startsWith('level')) >= NUM_OF_LEVELS_TO_COMPLETE_GAME
+    static getLevelCompleted(levelName: string): boolean {
+        return !!this.currentLevels.find((l) => l.levelName.equalsIgnoreCase(levelName))
     }
 
     static savePreferences() {

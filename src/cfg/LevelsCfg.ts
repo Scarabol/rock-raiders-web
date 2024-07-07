@@ -10,7 +10,7 @@ export class LevelsCfg extends BaseConfig {
 
     setFromCfgObj(cfgObj: any): this {
         Object.keys(cfgObj).forEach((levelName) => {
-            if (!levelName.startsWith('Tutorial') && !levelName.startsWith('Level')) return // ignore incomplete test levels and duplicates
+            if (!levelName.toLowerCase().startsWith('tutorial') && !levelName.toLowerCase().startsWith('level')) return // ignore incomplete test levels and duplicates
             const levelConf = new LevelEntryCfg(levelName).setFromCfgObj(cfgObj[levelName])
             const tileSize = levelConf.blockSize
             if (tileSize !== TILESIZE) console.warn(`Unexpected tile size in level configuration: ${tileSize}`)
@@ -121,13 +121,13 @@ export class LevelEntryCfg extends BaseConfig {
             !this.frontEndOpen &&
             !this.levelName.equalsIgnoreCase(GameConfig.instance.main.startLevel) &&
             !this.levelName.equalsIgnoreCase(GameConfig.instance.main.tutorialStartLevel) &&
-            !SaveGameManager.getLevelScoreString(this.levelName) &&
+            !SaveGameManager.getLevelCompleted(this.levelName) &&
             !this.isUnlockedByLevelLink()
     }
 
     private isUnlockedByLevelLink(): boolean {
         return Array.from(GameConfig.instance.levels.levelCfgByName.entries()).some(([levelName, levelEntryCfg]) =>
-            SaveGameManager.getLevelScoreString(levelName) && levelEntryCfg.levelLinks.some((levelLink) => this.levelName.equalsIgnoreCase(levelLink))
+            SaveGameManager.getLevelCompleted(levelName) && levelEntryCfg.levelLinks.some((levelLink) => this.levelName.equalsIgnoreCase(levelLink))
         )
     }
 }

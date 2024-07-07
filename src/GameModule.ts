@@ -44,6 +44,7 @@ export class GameModule {
             const loadGame = params.get('loadGame')
             if (loadGame !== null) SaveGameManager.loadGame(Number(loadGame))
             if (entry === 'level') this.mainMenuScreen.showLevelSelection()
+            else if (entry === 'tutorial') this.mainMenuScreen.showMainMenu(2)
             else if (entry === 'reward') this.rewardScreen.showGameResult(GameResult.random())
             else if (entry === 'random') this.mainMenuScreen.selectLevelRandom()
             else if (entry === 'credits') this.mainMenuScreen.showCredits()
