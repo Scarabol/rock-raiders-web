@@ -19,6 +19,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
     constructor(
         readonly layer: MainMenuLayer,
         readonly levelConf: LevelEntryCfg,
+        readonly allLevels: boolean,
     ) {
         super(levelConf.frontEndX, levelConf.frontEndY)
         this.actionName = 'selectlevel'
@@ -30,7 +31,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
         this.imgCross = ResourceManager.getImage(imgCross)
         this.width = Math.max(this.imgActive.width, this.imgInactive.width, this.imgCross.width)
         this.height = Math.max(this.imgActive.height, this.imgInactive.height, this.imgCross.height)
-        this.disabled = this.levelConf.isLocked()
+        this.disabled = this.allLevels && this.levelConf.isLocked()
     }
 
     set onPressed(callback: UiElementCallback) {
@@ -57,14 +58,14 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
 
     reset() {
         super.reset()
-        this.disabled = this.levelConf.isLocked()
+        this.disabled = this.allLevels && this.levelConf.isLocked()
         this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
     }
 
     draw(context: SpriteContext) {
         super.draw(context)
         let img = this.imgCross
-        if (!this.levelConf.isLocked()) img = this.state.hover ? this.imgActive : this.imgInactive
+        if (!this.state.disabled) img = this.state.hover ? this.imgActive : this.imgInactive
         context.drawImage(img, this.x, this.y - this.layer.scrollY)
     }
 }
