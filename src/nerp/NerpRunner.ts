@@ -338,22 +338,21 @@ export class NerpRunner {
             console.warn(`Unexpected message number ${messageNumber} given`)
             return
         }
-        if (messageNumber === this.currentMessage) return
-        this.currentMessage = messageNumber
-        const msg = this.messages[this.currentMessage - 1]
+        const msg = this.messages[messageNumber - 1]
         if (!msg) {
-            console.warn(`Message ${this.currentMessage} not found in [${this.messages.map((m) => m.txt)}]`)
+            console.warn(`Message ${messageNumber} not found in [${this.messages.map((m) => m.txt)}]`)
             return
         }
         let sampleLength = this.timeForNoSample / 1000
         if (!DEV_MODE && msg.snd) {
-            this.messageSfx = SoundManager.playSound(msg.snd, true)
+            this.messageSfx = SoundManager.playSound(msg.snd, true) || this.messageSfx
             sampleLength = this.messageSfx?.buffer?.duration || sampleLength
         }
         const sampleTimeoutMs = sampleLength * this.sampleLengthMultiplier + NerpRunner.timeAddedAfterSample
         this.messageTimerMs = sampleTimeoutMs || GameConfig.instance.main.textPauseTimeMs
-        if (msg.txt) {
-            EventBroker.publish(new NerpMessageEvent(msg.txt, this.messageTimerMs, !!arrowDisabled))
+        if (messageNumber !== this.currentMessage) {
+            this.currentMessage = messageNumber
+            if (msg.txt) EventBroker.publish(new NerpMessageEvent(msg.txt, this.messageTimerMs, !!arrowDisabled))
         }
         if (!arrowDisabled) this.messageTimerMs = Infinity
     }
