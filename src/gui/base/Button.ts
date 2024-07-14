@@ -20,7 +20,7 @@ export class Button extends BaseElement {
     tooltip: string = null
     tooltipSfx: string = null
     hoverFrame: boolean = false
-    render: boolean = true
+    blink: boolean = false
     blinkInterval: NodeJS.Timeout = null
 
     constructor(btnCfg: BaseButtonCfg, blinking: boolean = false) {
@@ -52,14 +52,14 @@ export class Button extends BaseElement {
     private startBlinking() {
         this.stopBlinking()
         this.blinkInterval = setInterval(() => {
-            this.render = !this.render
+            this.blink = !this.blink
             this.notifyRedraw()
         }, 500)
     }
 
     private stopBlinking() {
         this.blinkInterval = clearIntervalSafe(this.blinkInterval)
-        this.render = true
+        this.blink = false
         this.notifyRedraw()
     }
 
@@ -123,10 +123,10 @@ export class Button extends BaseElement {
             img = this.imgDisabled || this.imgPressed || this.imgNormal
         } else if (this.pressed) {
             img = this.imgPressed || this.imgNormal
-        } else if (this.hover) {
+        } else if (this.hover || this.blinkInterval) {
             img = this.imgHover || this.imgNormal
         }
-        if (img && this.render) context.drawImage(img, this.x, this.y)
+        if (img && !this.blink) context.drawImage(img, this.x, this.y)
         super.onRedraw(context)
     }
 
