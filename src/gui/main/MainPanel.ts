@@ -1,6 +1,6 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { CameraViewMode, ChangeCameraEvent } from '../../event/GuiCommand'
-import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType, ShowMissionBriefingEvent } from '../../event/LocalEvents'
+import { BuildingsChangedEvent, GuiButtonClicked, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { RequestedRaidersChanged } from '../../event/WorldEvents'
 import { EntityType } from '../../game/model/EntityType'
 import { MAX_RAIDER_REQUEST } from '../../params'
@@ -25,6 +25,7 @@ import { UpgradeVehiclePanel } from './UpgradeVehiclePanel'
 import { ChangeCameraPanel } from './select/ChangeCameraPanel'
 import { GameConfig } from '../../cfg/GameConfig'
 import { SpriteContext } from '../../core/Sprite'
+import { EventBroker } from '../../event/EventBroker'
 
 export class MainPanel extends Panel {
     subPanels: IconSubPanel[] = []
@@ -62,7 +63,10 @@ export class MainPanel extends Panel {
         const selectBuildingPanel = this.addSubPanel(new SelectBuildingPanel(this.mainPanel))
         const selectRaiderPanel = this.addSubPanel(new SelectRaiderPanel(this.mainPanel))
         const trainRaiderPanel = this.addSubPanel(new TrainRaiderPanel(selectRaiderPanel))
-        selectRaiderPanel.trainItem.onClick = () => selectRaiderPanel.toggleState(() => trainRaiderPanel.toggleState())
+        selectRaiderPanel.trainItem.onClick = () => {
+            selectRaiderPanel.toggleState(() => trainRaiderPanel.toggleState())
+            this.publishEvent(new GuiButtonClicked(EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED))
+        }
         const getToolPanel = this.addSubPanel(new GetToolPanel(selectRaiderPanel))
         selectRaiderPanel.getToolItem.onClick = () => selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
         const selectVehicleEmptyPanel = this.addSubPanel(new SelectVehicleEmptyPanel(this.mainPanel))
@@ -87,7 +91,10 @@ export class MainPanel extends Panel {
         })
         const buildingItem = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_BuildBuilding')
         buildingItem.isDisabled = () => false
-        buildingItem.onClick = () => this.mainPanel.toggleState(() => buildingPanel.toggleState())
+        buildingItem.onClick = () => {
+            this.mainPanel.toggleState(() => buildingPanel.toggleState())
+            EventBroker.publish(new GuiButtonClicked(EventKey.GUI_BUILD_BUILDING_BUTTON_CLICKED))
+        }
         const smallVehicleItem = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_BuildSmallVehicle')
         smallVehicleItem.isDisabled = () => false
         smallVehicleItem.onClick = () => this.mainPanel.toggleState(() => smallVehiclePanel.toggleState())

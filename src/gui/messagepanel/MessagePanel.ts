@@ -49,7 +49,6 @@ export class MessagePanel extends Panel {
             tooltipText: GameConfig.instance.getTooltipText('ToolTip_NextMessage'),
         }, true))
         this.btnNext.onClick = () => {
-            this.removeMessage()
             EventBroker.publish(new BaseEvent(EventKey.NERP_MESSAGE_NEXT))
         }
         this.btnRepeat = this.addChild(new Button({
@@ -76,6 +75,9 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(textInfoMessageConfig.textUnitUpgraded))
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessageEvent) => {
             this.setTimedMessage({text: event.text}, event.arrowDisabled ? event.messageTimeoutMs : 0, event.arrowDisabled)
+        })
+        this.registerEventListener(EventKey.NERP_MESSAGE_NEXT, () => {
+            this.removeMessage()
         })
         this.registerEventListener(EventKey.NERP_SUPPRESS_ARROW, (event: NerpSuppressArrowEvent) => {
             this.suppressArrow = event.suppressArrow

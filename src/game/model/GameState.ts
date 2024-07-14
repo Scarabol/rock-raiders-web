@@ -1,6 +1,6 @@
 import { Vector2 } from 'three'
 import { PriorityList } from '../../gui/toppanel/PriorityList'
-import { DEV_MODE } from '../../params'
+import { BRICK_ORE_VALUE, DEV_MODE } from '../../params'
 
 export class GameState {
     static numCrystal: number = 0
@@ -46,5 +46,9 @@ export class GameState {
         if (!DEV_MODE) return fallback
         const params = new URLSearchParams(window.location.search)
         return Number(params.get(paramName)) || fallback
+    }
+
+    static get numOreValue(): number {
+        return this.numOre + this.numBrick * BRICK_ORE_VALUE
     }
 }

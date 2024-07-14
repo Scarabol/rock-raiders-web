@@ -4,7 +4,8 @@ import { Panel } from '../base/Panel'
 import { IconSubPanel } from './IconSubPanel'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
-import { GuiGoBackButtonClicked } from '../../event/LocalEvents'
+import { GuiButtonClicked } from '../../event/LocalEvents'
+import { EventKey } from '../../event/EventKeyEnum'
 
 export class BuildingPanel extends IconSubPanel {
     constructor(onBackPanel: Panel) {
@@ -12,7 +13,7 @@ export class BuildingPanel extends IconSubPanel {
         this.backBtn.onClick = () => {
             this.publishEvent(new CancelBuildMode())
             this.toggleState(() => onBackPanel.toggleState())
-            EventBroker.publish(new GuiGoBackButtonClicked())
+            EventBroker.publish(new GuiButtonClicked(EventKey.GUI_GO_BACK_BUTTON_CLICKED))
         }
         this.addBuildMenuItem(EntityType.TOOLSTATION)
         this.addBuildMenuItem(EntityType.TELEPORT_PAD)

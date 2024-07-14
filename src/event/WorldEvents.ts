@@ -1,7 +1,6 @@
 import { EntityType } from '../game/model/EntityType'
 import { GameState } from '../game/model/GameState'
 import { Job } from '../game/model/job/Job'
-import { BRICK_ORE_VALUE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { Vector2 } from 'three'
 import { GameResultState } from '../game/model/GameResult'
@@ -46,7 +45,7 @@ export class MaterialAmountChanged extends BaseEvent {
     constructor() {
         super(EventKey.MATERIAL_AMOUNT_CHANGED)
         this.numCrystal = GameState.numCrystal
-        this.totalOre = GameState.numOre + GameState.numBrick * BRICK_ORE_VALUE
+        this.totalOre = GameState.numOreValue
     }
 }
 

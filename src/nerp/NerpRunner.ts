@@ -11,7 +11,7 @@ import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpScript } from './NerpScript'
 import { DEV_MODE, NERP_EXECUTION_INTERVAL } from '../params'
-import { GameResultEvent, JobCreateEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
+import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, RequestedRaidersChanged } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { MonsterSpawner } from '../game/factory/MonsterSpawner'
@@ -28,12 +28,43 @@ import { NerpMessage } from '../resource/fileparser/NerpMsgParser'
 import { Surface } from '../game/terrain/Surface'
 import { MaterialSpawner } from '../game/factory/MaterialSpawner'
 import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
-import { RaiderTool } from '../game/model/raider/RaiderTool'
+import { BaseEvent } from '../event/EventTypeMap'
+import { RaiderTrainings } from '../game/model/raider/RaiderTraining'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
+interface IconClickedEntry {
+    iconName: string
+    buttonType: string
+    eventKey?: EventKey
+}
+
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
+    static readonly iconClickedConfig: IconClickedEntry[] = [
+        {iconName: 'dig', buttonType: 'Interface_MenuItem_Dig', eventKey: EventKey.COMMAND_CREATE_DRILL_JOB},
+        {iconName: 'dynamite', buttonType: 'Interface_MenuItem_Dynamite', eventKey: EventKey.COMMAND_CREATE_DYNAMITE_JOB},
+        {iconName: 'goBack', buttonType: 'InterfaceBackButton', eventKey: EventKey.GUI_GO_BACK_BUTTON_CLICKED},
+        {iconName: 'teleport', buttonType: 'Interface_MenuItem_TeleportMan'},
+        {iconName: 'layPath', buttonType: 'Interface_MenuItem_LayPath', eventKey: EventKey.COMMAND_CREATE_POWER_PATH},
+        {iconName: 'mount', buttonType: 'Interface_MenuItem_GetIn', eventKey: EventKey.COMMAND_VEHICLE_GET_MAN},
+        {iconName: 'dismount', buttonType: 'Interface_MenuItem_GetOut', eventKey: EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT},
+        {iconName: 'upgradeBuilding', buttonType: 'Interface_MenuItem_UpgradeBuilding', eventKey: EventKey.COMMAND_UPGRADE_BUILDING},
+        {iconName: 'build', buttonType: 'Interface_MenuItem_BuildBuilding', eventKey: EventKey.GUI_BUILD_BUILDING_BUTTON_CLICKED},
+        {iconName: 'teleportPad', buttonType: EntityType.TELEPORT_PAD.toLowerCase()},
+        {iconName: 'powerStation', buttonType: EntityType.POWER_STATION.toLowerCase()},
+        {iconName: 'barracks', buttonType: EntityType.BARRACKS.toLowerCase()},
+        {iconName: 'geodome', buttonType: EntityType.GEODOME.toLowerCase()},
+        {iconName: 'dynamite', buttonType: 'Interface_MenuItem_Dynamite'},
+        {iconName: 'getTool', buttonType: 'Interface_MenuItem_GetTool'},
+        {iconName: 'getPusher', buttonType: 'Interface_MenuItem_GetPusherGun'}, // XXX Complete list and track all tool types here
+        {iconName: 'getSonicBlaster', buttonType: 'Interface_MenuItem_GetBirdScarer'},
+        {iconName: 'train', buttonType: 'Interface_MenuItem_TrainSkill', eventKey: EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED},
+        {iconName: 'trainDriver', buttonType: 'Interface_MenuItem_TrainDriver'}, // XXX Complete list and track all raider trainings here
+        {iconName: 'trainSailor', buttonType: 'Interface_MenuItem_TrainSailor'},
+        {iconName: 'trainPilot', buttonType: 'Interface_MenuItem_TrainPilot'},
+    ]
+
     static debug = false
     static timeAddedAfterSample = 0
 
@@ -52,8 +83,9 @@ export class NerpRunner {
     messageTimerMs: number = 0
     messageSfx: AudioBufferSourceNode = null
     tutoBlocksById: Map<number, Surface[]> = new Map()
-    digIconClicked: number = 0
-    goBackIconClicked: number = 0
+    iconClicked: Map<string, number> = new Map()
+    buildingsTeleported: number = 0
+    numRequestedRaiders: number = 0
 
     constructor(readonly worldMgr: WorldManager, readonly script: NerpScript, readonly messages: NerpMessage[]) {
         NerpRunner.timeAddedAfterSample = 0
@@ -64,7 +96,7 @@ export class NerpRunner {
             this.messageTimerMs = 0
             this.messageSfx?.stop()
             this.messageSfx = null
-            this.execute()
+            this.timer += NERP_EXECUTION_INTERVAL
         })
         EventBroker.subscribe(EventKey.GAME_RESULT_STATE, () => {
             this.halted = true
@@ -73,13 +105,26 @@ export class NerpRunner {
             this.objectiveShowing = event.isShowing ? 1 : 0
             this.objectiveSwitch = this.objectiveSwitch && event.isShowing
         })
-        EventBroker.subscribe(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
-            if (event.job.requiredTool === RaiderTool.DRILL) { // XXX Find better way to identify drill jobs
-                this.digIconClicked++
-            }
+        NerpRunner.iconClickedConfig.forEach((iconCLickedEntry: IconClickedEntry) => {
+            if (!iconCLickedEntry.eventKey) return
+            EventBroker.subscribe(iconCLickedEntry.eventKey, () => {
+                const iconName = iconCLickedEntry.iconName.toLowerCase()
+                this.iconClicked.set(iconName, this.iconClicked.getOrDefault(iconName, 0) + 1)
+            })
         })
-        EventBroker.subscribe(EventKey.GUI_GO_BACK_BUTTON_CLICKED, () => {
-            this.goBackIconClicked++
+        EventBroker.subscribe(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
+            const increased = event.numRequested <= this.numRequestedRaiders
+            this.numRequestedRaiders = event.numRequested
+            if (!increased) return
+            this.iconClicked.set('teleport', this.iconClicked.getOrDefault('teleport', 0) + 1)
+        })
+        EventBroker.subscribe(EventKey.COMMAND_SELECT_BUILD_MODE, (event) => {
+            const iconName = event.entityType.toLowerCase()
+            this.iconClicked.set(iconName, this.iconClicked.getOrDefault(iconName, 0) + 1)
+        })
+        EventBroker.subscribe(EventKey.COMMAND_TRAIN_RAIDER, (event) => {
+            const iconName = RaiderTrainings.toStatsProperty(event.training).toLowerCase()
+            this.iconClicked.set(iconName, this.iconClicked.getOrDefault(iconName, 0) + 1)
         })
     }
 
@@ -303,6 +348,10 @@ export class NerpRunner {
         return GameState.numCrystal
     }
 
+    getOreCurrentlyStored(): number {
+        return GameState.numOreValue
+    }
+
     setMessageTimerValues(sampleLengthMultiplier: number, timeAddedAfterSample: number, timeForNoSample: number) {
         this.sampleLengthMultiplier = sampleLengthMultiplier
         NerpRunner.timeAddedAfterSample = timeAddedAfterSample
@@ -329,6 +378,11 @@ export class NerpRunner {
             return
         }
         this.worldMgr.sceneMgr.birdViewControls.lockOnObject(sceneEntity)
+    }
+
+    cameraLockOnMonster(args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "cameraLockOnMonster" not yet implemented', args)
     }
 
     setMessage(messageNumber: number, arrowDisabled: number) {
@@ -358,10 +412,7 @@ export class NerpRunner {
     }
 
     advanceMessage(): void {
-        // TODO Only used in tutorials
-        if (this.currentMessage < 0) return
-        console.warn('NERP function "advanceMessage" not yet implemented', this.messagePermit, this.currentMessage, this.messageTimerMs)
-        EventBroker.publish(new NerpSuppressArrowEvent(false))
+        EventBroker.publish(new BaseEvent(EventKey.NERP_MESSAGE_NEXT))
     }
 
     setRockMonsterAtTutorial(tutoBlockId: number) {
@@ -462,9 +513,11 @@ export class NerpRunner {
      * - Once job assigned by player, raider should continue and clear rubble
      * Tutorial02
      * - Raider should start drilling when drill job created
+     * Tutorial03
+     * - Raider should pick shovel and start clearing rubble
      */
     disallowAll() {
-        GameState.disallowAll = true
+        // GameState.disallowAll = true
     }
 
     getPoweredPowerStationsBuilt() {
@@ -484,6 +537,10 @@ export class NerpRunner {
         })
     }
 
+    getRecordObjectAmountAtTutorial(tutoBlockId: number): number {
+        return this.getRecordObjectAtTutorial(tutoBlockId) // XXX Just an alias?
+    }
+
     /**
      * Tutorial01
      * - If no unit is selected, 0 should be returned
@@ -497,24 +554,40 @@ export class NerpRunner {
         return recordedIndex >= 0 ? recordedIndex + 1 : 0
     }
 
-    getHiddenObjectsFound() {
+    getHiddenObjectsFound(): number {
         return GameState.hiddenObjectsFound
     }
 
-    getLevel1TeleportsBuilt() {
+    getTeleportsBuilt(): number {
+        return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.TELEPORT_PAD)
+    }
+
+    getLevel1TeleportsBuilt(): number {
         return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.TELEPORT_PAD && b.level >= 1)
     }
 
-    getLevel2TeleportsBuilt() {
+    getLevel2TeleportsBuilt(): number {
         return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.TELEPORT_PAD && b.level >= 2)
     }
 
-    getLevel1PowerStationsBuilt() {
+    getLevel1PowerStationsBuilt(): number {
         return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.POWER_STATION && b.level >= 1)
     }
 
-    getLevel1BarracksBuilt() {
+    getBarracksBuilt(): number {
+        return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS)
+    }
+
+    getLevel1BarracksBuilt(): number {
         return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS && b.level >= 1)
+    }
+
+    getVehicleTeleportsBuilt(): number {
+        return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.TELEPORT_BIG)
+    }
+
+    getGunStationsBuilt(): number {
+        return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.GUNSTATION)
     }
 
     getRandom100(): number {
@@ -567,6 +640,19 @@ export class NerpRunner {
         console.warn('NERP function "clickOnlyMap" not yet implemented')
     }
 
+    /**
+     * Tutorial08
+     */
+    clickOnlyCallToArms() {
+        // TODO Only used in tutorials
+        console.warn('NERP function "clickOnlyMap" not yet implemented')
+    }
+
+    setCallToArms(args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "setCallToArms" not yet implemented', args)
+    }
+
     setTutorialCrystals(tutoBlockId: number, numOfCrystals: number) {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((t) => {
@@ -609,41 +695,86 @@ export class NerpRunner {
         })
     }
 
-    setDigIconClicked(num: number) {
-        this.digIconClicked = num
+    setBuildingsTeleported(numBuildings: number) {
+        this.buildingsTeleported = numBuildings
     }
 
-    /**
-     * Tutorial02
-     * - Return 1, when surface drill icon was clicked
-     */
-    getDigIconClicked(): number {
-        return this.digIconClicked
-    }
-
-    flashDigIcon(flash: number) {
-        EventBroker.publish(new GuiButtonBlinkEvent('Interface_MenuItem_Dig', flash === 1))
-    }
-
-    setGoBackIconClicked(num: number) {
-        this.goBackIconClicked = num
-    }
-
-    getGoBackIconClicked(): number {
-        return this.goBackIconClicked
-    }
-
-    flashGoBackIcon(flash: number) {
-        EventBroker.publish(new GuiButtonBlinkEvent('InterfaceBackButton', flash === 1))
-    }
-
-    setBuildingsTeleported(...args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "setBuildingsTeleported" not yet implemented', args)
+    getBuildingsTeleported(): number {
+        return this.buildingsTeleported
     }
 
     getMiniFigureSelected(): number {
         return this.worldMgr.entityMgr.selection.raiders.length
+    }
+
+    getSmallDiggerSelected(): number {
+        return this.worldMgr.entityMgr.selection.vehicles.count((v) => v.entityType === EntityType.SMALL_DIGGER)
+    }
+
+    getSmallTruckSelected(): number {
+        return this.worldMgr.entityMgr.selection.vehicles.count((v) => v.entityType === EntityType.SMALL_TRUCK)
+    }
+
+    getSmallHelicopterSelected(): number {
+        return this.worldMgr.entityMgr.selection.vehicles.count((v) => v.entityType === EntityType.SMALL_HELI)
+    }
+
+    getGraniteGrinderSelected(): number {
+        return this.worldMgr.entityMgr.selection.vehicles.count((v) => v.entityType === EntityType.WALKER_DIGGER)
+    }
+
+    getChromeCrusherSelected(): number {
+        return this.worldMgr.entityMgr.selection.vehicles.count((v) => v.entityType === EntityType.LARGE_DIGGER)
+    }
+
+    getToolStoreSelected(): number {
+        return this.worldMgr.entityMgr.selection.building?.entityType === EntityType.TOOLSTATION ? 1 : 0
+    }
+
+    getTeleportPadSelected(): number {
+        return this.worldMgr.entityMgr.selection.building?.entityType === EntityType.TELEPORT_PAD ? 1 : 0
+    }
+
+    getPowerStationSelected(): number {
+        return this.worldMgr.entityMgr.selection.building?.entityType === EntityType.POWER_STATION ? 1 : 0
+    }
+
+    getBarracksSelected(): number {
+        return this.worldMgr.entityMgr.selection.building?.entityType === EntityType.BARRACKS ? 1 : 0
+    }
+
+    getMiniFigureInSmallDigger(): number {
+        return this.worldMgr.entityMgr.vehicles.count((v) => v.entityType === EntityType.SMALL_DIGGER && !!v.driver)
+    }
+
+    getMiniFigureInSmallTruck(): number {
+        return this.worldMgr.entityMgr.vehicles.count((v) => v.entityType === EntityType.SMALL_TRUCK && !!v.driver)
+    }
+
+    getMiniFigureInRapidRider(): number {
+        return this.worldMgr.entityMgr.vehicles.count((v) => v.entityType === EntityType.SMALL_CAT && !!v.driver)
+    }
+
+    getMiniFigureInSmallHelicopter(): number {
+        return this.worldMgr.entityMgr.vehicles.count((v) => v.entityType === EntityType.SMALL_HELI && !!v.driver)
+    }
+
+    getMiniFigureInGraniteGrinder(): number {
+        return this.worldMgr.entityMgr.vehicles.count((v) => v.entityType === EntityType.WALKER_DIGGER && !!v.driver)
+    }
+
+    getMiniFigureInChromeCrusher(): number {
+        return this.worldMgr.entityMgr.vehicles.count((v) => v.entityType === EntityType.LARGE_DIGGER && !!v.driver)
+    }
+
+    setMonsterAttackPowerStation(args: any[]): void {
+        // TODO Only used in tutorials
+        console.warn('NERP function "setMonsterAttackPowerStation" not yet implemented', args)
+    }
+
+    setMonsterAttackNowT(args: any[]): void {
+        // TODO Only used in tutorials
+        console.warn('NERP function "setMonsterAttackNowT" not yet implemented', args)
     }
 
     callMethod(methodName: string, methodArgs: any[]) {
@@ -679,6 +810,38 @@ export class NerpRunner {
         if (getTimerMatch) {
             const timer = parseInt(getTimerMatch[1])
             return this.getTimer(timer)
+        }
+        const flashIconMatch = methodName.match(/^Flash(.+)Icon$/)
+        if (flashIconMatch) {
+            const iconName = flashIconMatch[1]
+            const iconCLickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
+            if (iconCLickedEntry) {
+                EventBroker.publish(new GuiButtonBlinkEvent(iconCLickedEntry.buttonType, methodArgs[0] === 1))
+                return
+            } else {
+                console.warn(`Could not flash icon "${iconName}"`)
+            }
+        }
+        const setIconClickedMatch = methodName.match(/^Set(.+?)(?:Icon)?Clicked$/)
+        if (setIconClickedMatch) {
+            const iconName = setIconClickedMatch[1]
+            const iconCLickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
+            if (iconCLickedEntry) {
+                this.iconClicked.set(iconCLickedEntry.iconName.toLowerCase(), methodArgs[0])
+                return
+            } else {
+                console.warn(`Could not set icon "${iconName}" clicked`)
+            }
+        }
+        const getIconClickedMatch = methodName.match(/^Get(.+?)(?:Icon)?Clicked$/)
+        if (getIconClickedMatch) {
+            const iconName = getIconClickedMatch[1]
+            const iconCLickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
+            if (iconCLickedEntry) {
+                return this.iconClicked.getOrDefault(iconCLickedEntry.iconName.toLowerCase(), 0)
+            } else {
+                console.warn(`Could not get icon "${iconName}" clicked`)
+            }
         }
         const lMethodName = methodName.toLowerCase()
         const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.toLowerCase() === lMethodName)
@@ -772,6 +935,9 @@ export class NerpRunner {
             !statement.invoke?.startsWith('SetR') &&
             !statement.invoke?.startsWith('SetTimer') &&
             !statement.invoke?.startsWith('GetTimer') &&
+            (!!statement.invoke && !/^Flash(.+)Icon$/.test(statement.invoke)) &&
+            (!!statement.invoke && !/^Set(.+?)(?:Icon)?Clicked$/.test(statement.invoke)) &&
+            (!!statement.invoke && !/^Get(.+?)(?:Icon)?Clicked$/.test(statement.invoke)) &&
             !this[memberName]
         ) {
             console.warn(`Unexpected invocation "${statement.invoke}" found, NERP execution may fail!`, statement)
