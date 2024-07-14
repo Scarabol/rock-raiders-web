@@ -715,6 +715,10 @@ export class NerpRunner {
         return this.worldMgr.entityMgr.selection.vehicles.count((v) => v.entityType === EntityType.SMALL_TRUCK)
     }
 
+    getRapidRiderSelected(): number {
+        return this.worldMgr.entityMgr.selection.vehicles.count((v) => v.entityType === EntityType.SMALL_CAT)
+    }
+
     getSmallHelicopterSelected(): number {
         return this.worldMgr.entityMgr.selection.vehicles.count((v) => v.entityType === EntityType.SMALL_HELI)
     }
