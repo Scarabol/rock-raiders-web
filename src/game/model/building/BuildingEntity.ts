@@ -171,7 +171,7 @@ export class BuildingEntity {
     }
 
     setLevel(level: number) {
-        if (this.level == level) return
+        if (this.level == level || level > this.stats.Levels - 1) return
         this.level = level
         EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
