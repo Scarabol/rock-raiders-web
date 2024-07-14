@@ -135,6 +135,16 @@ export class GameLayer extends ScreenLayer {
     }
 
     private handlePointerUpEvent(event: GamePointerEvent) {
+        const x = event.canvasX / (this.canvas.width / 2) - 1
+        const y = -event.canvasY / (this.canvas.height / 2) + 1
+        const selection = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y))
+        if (selection.surface) {
+            this.worldMgr.nerpRunner?.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
+                if (surfaces.includes(selection.surface)) {
+                    GameState.tutoBlockClicks.set(tutoBlockId, GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0) + 1)
+                }
+            })
+        }
         if (this.worldMgr.sceneMgr.buildMarker.buildingType && this.worldMgr.sceneMgr.buildMarker.lastCheck) {
             this.worldMgr.sceneMgr.buildMarker.createBuildingSite()
             return
@@ -221,13 +231,6 @@ export class GameLayer extends ScreenLayer {
                 const selection = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y))
                 this.worldMgr.entityMgr.selection.set(selection)
                 EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
-                if (selection.surface) {
-                    this.worldMgr.nerpRunner?.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
-                        if (surfaces.includes(selection.surface)) {
-                            GameState.tutoBlockClicks.set(tutoBlockId, GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0) + 1)
-                        }
-                    })
-                }
             }
         } else if (event.pointerType === 'mouse') {
             const r1x = (this.pointerDown.x / this.canvas.width) * 2 - 1
