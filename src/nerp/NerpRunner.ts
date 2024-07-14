@@ -771,12 +771,17 @@ export class NerpRunner {
             !statement.invoke?.startsWith('SubR') &&
             !statement.invoke?.startsWith('SetR') &&
             !statement.invoke?.startsWith('SetTimer') &&
+            !statement.invoke?.startsWith('GetTimer') &&
             !this[memberName]
         ) {
             console.warn(`Unexpected invocation "${statement.invoke}" found, NERP execution may fail!`, statement)
         }
         if (Array.isArray(statement.args)) {
             statement.args.forEach((arg: any) => this.checkSyntax(arg))
+        }
+        if (statement.comparator) {
+            this.checkSyntax(statement.left)
+            this.checkSyntax(statement.right)
         }
     }
 }
