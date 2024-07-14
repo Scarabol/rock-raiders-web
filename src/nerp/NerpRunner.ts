@@ -929,10 +929,10 @@ export class NerpRunner {
             !statement.comparator &&
             isNaN(statement) &&
             statement.invoke !== 'Stop' &&
-            !statement.invoke?.startsWith('GetR') &&
-            !statement.invoke?.startsWith('AddR') &&
-            !statement.invoke?.startsWith('SubR') &&
-            !statement.invoke?.startsWith('SetR') &&
+            (!!statement.invoke && !/^GetR([0-7])$/.test(statement.invoke)) &&
+            (!!statement.invoke && !/^AddR([0-7])$/.test(statement.invoke)) &&
+            (!!statement.invoke && !/^SubR([0-7])$/.test(statement.invoke)) &&
+            (!!statement.invoke && !/^SetR([0-7])$/.test(statement.invoke)) &&
             !statement.invoke?.startsWith('SetTimer') &&
             !statement.invoke?.startsWith('GetTimer') &&
             (!!statement.invoke && !/^Flash(.+)Icon$/.test(statement.invoke)) &&
