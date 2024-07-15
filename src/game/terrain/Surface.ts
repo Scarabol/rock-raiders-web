@@ -317,14 +317,10 @@ export class Surface {
     isUnstable(): boolean {
         if (this.surfaceType.floor) return false
         const adjacent = this.terrain.getAdjacent(this.x, this.y)
-        return [adjacent.left, adjacent.topLeft, adjacent.top].some((s) => s.isGround())
-            && [adjacent.top, adjacent.topRight, adjacent.right].some((s) => s.isGround())
-            && [adjacent.right, adjacent.bottomRight, adjacent.bottom].some((s) => s.isGround())
-            && [adjacent.bottom, adjacent.bottomLeft, adjacent.left].some((s) => s.isGround())
-    }
-
-    private isGround(recursion: boolean = true): boolean {
-        return this.discovered && this.surfaceType.floor && (!recursion || this.neighbors.some((n) => n.isGround(false)))
+        return [adjacent.left, adjacent.topLeft, adjacent.top].some((s) => s.discovered && s.surfaceType.floor)
+            && [adjacent.top, adjacent.topRight, adjacent.right].some((s) => s.discovered && s.surfaceType.floor)
+            && [adjacent.right, adjacent.bottomRight, adjacent.bottom].some((s) => s.discovered && s.surfaceType.floor)
+            && [adjacent.bottom, adjacent.bottomLeft, adjacent.left].some((s) => s.discovered && s.surfaceType.floor)
     }
 
     updateMesh(force: boolean = true) {
@@ -342,7 +338,7 @@ export class Surface {
     }
 
     private getVertex(x: number, y: number, s1: Surface, s2: Surface, s3: Surface): SurfaceVertex {
-        const high = (!this.discovered || (!this.surfaceType.floor || !this.neighbors.some((s) => s.isGround())) && ![s1, s2, s3].some((s) => s.isGround()))
+        const high = [this, s1, s2, s3].some((s) => !s.discovered) || ![this, s1, s2, s3].some((s) => s.surfaceType.floor)
         const minSeamProgress = Math.min(this.getSeamProgress(), s1.getSeamProgress(), s2.getSeamProgress(), s3.getSeamProgress())
         const offset = this.terrain.getHeightOffset(x, y)
         return new SurfaceVertex(high, minSeamProgress, offset)
