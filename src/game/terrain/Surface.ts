@@ -369,29 +369,26 @@ export class Surface {
         let suffix = '', rotation = 0
         if (!this.discovered) {
             suffix = '70'
+        } else if (this.wallType === WALL_TYPE.WEIRD_CREVICE) {
+            suffix = '77'
+        } else if (this.wallType) {
+            if (this.wallType === WALL_TYPE.CORNER) {
+                suffix = this.surfaceType.shaping ? '5' + this.surfaceType.matIndex : this.surfaceType.matIndex
+            } else if (this.wallType === WALL_TYPE.INVERTED_CORNER) {
+                suffix = '3' + (this.surfaceType.shaping ? this.surfaceType.matIndex : SurfaceType.SOLID_ROCK.matIndex)
+            } else if (this.reinforced) {
+                suffix = '2' + (this.surfaceType.shaping ? this.surfaceType.matIndex : '1')
+            } else if (this.wallType === WALL_TYPE.WALL) {
+                suffix = this.surfaceType.shaping ? '0' + this.surfaceType.matIndex : this.surfaceType.matIndex
+            }
+        } else if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.energized && this.building) {
+            suffix = '66'
         } else if (this.surfaceType === SurfaceType.POWER_PATH) {
             const powerPath = this.determinePowerPathTextureNameSuffixAndRotation(rotation, suffix)
             rotation = powerPath.rotation
             suffix = powerPath.suffix
-        } else if (!this.surfaceType.shaping && this.neighbors.some((n) => n.discovered && n.surfaceType.floor)) {
-            if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.energized && this.building) {
-                suffix = '66'
-            } else {
-                suffix = this.surfaceType.matIndex
-            }
-        } else if (this.wallType === WALL_TYPE.WEIRD_CREVICE) {
-            suffix = '77'
         } else {
-            if (this.wallType === WALL_TYPE.CORNER) {
-                suffix += '5'
-            } else if (this.wallType === WALL_TYPE.INVERTED_CORNER) {
-                suffix += '3'
-            } else if (this.reinforced) {
-                suffix += '2'
-            } else {
-                suffix += '0'
-            }
-            suffix += this.surfaceType.shaping ? this.surfaceType.matIndex : SurfaceType.SOLID_ROCK.matIndex
+            suffix = this.surfaceType.shaping ? '0' + this.surfaceType.matIndex : this.surfaceType.matIndex
         }
         const textureFilepath = this.terrain.levelConf.textureBasename + suffix + '.bmp'
         this.mesh.setTexture(textureFilepath, rotation)
