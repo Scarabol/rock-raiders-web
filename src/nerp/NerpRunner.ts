@@ -369,7 +369,7 @@ export class NerpRunner {
     cameraLockOnObject(recordedEntity: number) {
         const entity = this.worldMgr.entityMgr.recordedEntities[recordedEntity - 1]
         if (!entity) {
-            console.warn(`Invalid entity ${recordedEntity} given`)
+            console.warn(`Invalid recorded entity index ${recordedEntity} given`, this.worldMgr.entityMgr.recordedEntities)
             return
         }
         const sceneEntity = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity

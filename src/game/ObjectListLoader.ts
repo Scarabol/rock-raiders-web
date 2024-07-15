@@ -92,6 +92,7 @@ export class ObjectListLoader {
             case EntityType.TELEPORT_BIG:
                 const building = new BuildingEntity(this.worldMgr, entityType)
                 building.placeDown(worldPos, -headingRad - Math.PI, this.disableStartTeleport)
+                this.worldMgr.entityMgr.recordedEntities.push(building.entity)
                 if (entityType === EntityType.TOOLSTATION) {
                     if (!this.trackEntity && building.sceneEntity.visible) this.trackEntity = building.entity
                     for (let c = 0; c < ObjectListLoader.numRaider; c++) {
