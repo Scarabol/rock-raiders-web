@@ -55,6 +55,8 @@ export class NerpRunner {
         {iconName: 'powerStation', buttonType: EntityType.POWER_STATION.toLowerCase()},
         {iconName: 'barracks', buttonType: EntityType.BARRACKS.toLowerCase()},
         {iconName: 'geodome', buttonType: EntityType.GEODOME.toLowerCase()},
+        {iconName: 'gunStation', buttonType: EntityType.GUNSTATION.toLowerCase()},
+        {iconName: 'vehicleTransport', buttonType: EntityType.TELEPORT_BIG.toLowerCase()},
         {iconName: 'dynamite', buttonType: 'Interface_MenuItem_Dynamite'},
         {iconName: 'getTool', buttonType: 'Interface_MenuItem_GetTool'},
         {iconName: 'getPusher', buttonType: 'Interface_MenuItem_GetPusherGun'}, // XXX Complete list and track all tool types here
@@ -119,8 +121,8 @@ export class NerpRunner {
             this.iconClicked.set('teleport', this.iconClicked.getOrDefault('teleport', 0) + 1)
         })
         EventBroker.subscribe(EventKey.COMMAND_SELECT_BUILD_MODE, (event) => {
-            const iconName = event.entityType.toLowerCase()
-            this.iconClicked.set(iconName, this.iconClicked.getOrDefault(iconName, 0) + 1)
+            const iconConfig = NerpRunner.iconClickedConfig.find((c) => c.buttonType.toLowerCase() === event.entityType.toLowerCase())
+            if (iconConfig) this.iconClicked.set(iconConfig.iconName.toLowerCase(), this.iconClicked.getOrDefault(iconConfig.iconName.toLowerCase(), 0) + 1)
         })
         EventBroker.subscribe(EventKey.COMMAND_TRAIN_RAIDER, (event) => {
             const iconName = RaiderTrainings.toStatsProperty(event.training).toLowerCase()
