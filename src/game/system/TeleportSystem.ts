@@ -32,6 +32,13 @@ export class TeleportSystem extends AbstractGameSystem {
 
     constructor(readonly worldMgr: WorldManager) {
         super()
+        EventBroker.subscribe(EventKey.LEVEL_SELECTED, () => {
+            this.requestedRaiders = 0
+            this.spawnRaiderTimer = 0
+            this.requestedVehicleTypes.length = 0
+            this.spawnVehicleTimer = 0
+            this.poweredBuildings?.clear()
+        })
         EventBroker.subscribe(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
             this.requestedRaiders = event.numRequested
         })
@@ -43,13 +50,6 @@ export class TeleportSystem extends AbstractGameSystem {
             for (let c = 0; c < requestedChange; c++) {
                 this.requestedVehicleTypes.push(event.vehicle)
             }
-        })
-        EventBroker.subscribe(EventKey.GAME_RESULT_STATE, () => {
-            this.requestedRaiders = 0
-            this.spawnRaiderTimer = 0
-            this.requestedVehicleTypes.length = 0
-            this.spawnVehicleTimer = 0
-            this.poweredBuildings?.clear()
         })
         EventBroker.subscribe(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
             this.poweredBuildings = event.poweredBuildings

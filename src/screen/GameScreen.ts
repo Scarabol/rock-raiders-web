@@ -15,7 +15,7 @@ import { SelectionFrameLayer } from './layer/SelectionFrameLayer'
 import { ScreenMaster } from './ScreenMaster'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventKey } from '../event/EventKeyEnum'
-import { GameResultEvent, LevelSelectedEvent } from '../event/WorldEvents'
+import { GameResultEvent, LevelSelectedEvent, MaterialAmountChanged } from '../event/WorldEvents'
 import { EntityType } from '../game/model/EntityType'
 import { AdvisorLayer } from './layer/AdvisorLayer'
 import { EventBroker } from '../event/EventBroker'
@@ -81,7 +81,8 @@ export class GameScreen {
 
     restartLevel() {
         this.hide()
-        this.setupAndStartLevel()
+        EventBroker.publish(new LevelSelectedEvent(this.levelConf))
+        EventBroker.publish(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
     }
 
     private setupAndStartLevel() {
