@@ -115,7 +115,7 @@ export class NerpRunner {
             })
         })
         EventBroker.subscribe(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
-            const increased = event.numRequested <= this.numRequestedRaiders
+            const increased = event.numRequested > this.numRequestedRaiders
             this.numRequestedRaiders = event.numRequested
             if (!increased) return
             this.iconClicked.set('teleport', this.iconClicked.getOrDefault('teleport', 0) + 1)
