@@ -930,6 +930,9 @@ export class NerpRunner {
 
     private checkSyntax(statement: any) {
         const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.equalsIgnoreCase(statement.invoke))
+        const flashIconMatch = statement.invoke?.match(/^Flash(.+)Icon$/)
+        const setIconClickedMatch = statement.invoke?.match(/^Set(.+?)(?:Icon)?Clicked$/)
+        const getIconClickedMatch = statement.invoke?.match(/^Get(.+?)(?:Icon)?Clicked$/)
         if (!statement.label &&
             !statement.jump &&
             !statement.comparator &&
@@ -941,9 +944,9 @@ export class NerpRunner {
             (!!statement.invoke && !/^SetR([0-7])$/.test(statement.invoke)) &&
             !statement.invoke?.startsWith('SetTimer') &&
             !statement.invoke?.startsWith('GetTimer') &&
-            (!!statement.invoke && !/^Flash(.+)Icon$/.test(statement.invoke)) &&
-            (!!statement.invoke && !/^Set(.+?)(?:Icon)?Clicked$/.test(statement.invoke)) &&
-            (!!statement.invoke && !/^Get(.+?)(?:Icon)?Clicked$/.test(statement.invoke)) &&
+            !(flashIconMatch && NerpRunner.iconClickedConfig.some((c) => c.iconName.toLowerCase() === flashIconMatch[1]?.toLowerCase())) &&
+            !(setIconClickedMatch && NerpRunner.iconClickedConfig.some((c) => c.iconName.toLowerCase() === setIconClickedMatch[1]?.toLowerCase())) &&
+            !(getIconClickedMatch && NerpRunner.iconClickedConfig.some((c) => c.iconName.toLowerCase() === getIconClickedMatch[1]?.toLowerCase())) &&
             !this[memberName]
         ) {
             console.warn(`Unexpected invocation "${statement.invoke}" found, NERP execution may fail!`, statement)
