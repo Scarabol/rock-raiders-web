@@ -70,8 +70,11 @@ export class BuildingSite {
             site.neededByType.set(EntityType.ORE, 2)
         }
         worldMgr.entityMgr.buildingSites.push(site)
-        worldMgr.entityMgr.getClosestBuildingByType(surface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnMaterials(EntityType.BRICK, 1)
-        worldMgr.entityMgr.getClosestBuildingByType(surface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnMaterials(EntityType.ORE, 2)
+        const closestToolstation = worldMgr.entityMgr.getClosestBuildingByType(surface.getCenterWorld(), EntityType.TOOLSTATION)
+        if (closestToolstation) {
+            closestToolstation.spawnMaterials(EntityType.BRICK, 1)
+            closestToolstation.spawnMaterials(EntityType.ORE, 2)
+        }
         return site
     }
 

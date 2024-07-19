@@ -65,17 +65,21 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Important
 
+- When building is started while material is carried, this material is not dropped to be used on building
 - Forbidding collection of ores or crystals stops building projects too
 - Damage and blow up buildings with lava erosion
 
 ### Nice to have
 
+- Camera movement, selection frame, options and non-flashing UI buttons not disabled in tutorial mode
 - Allow raider in alarm mode to be moved by player
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Add option to read/write savegames from URL
 
 ### Cosmetics
 
+- Advisor not shown in tutorials near icon panel
+- Surface object pointer in tutorials removes surface highlight color as in original
 - Lava rockies texture not using correct UV coordinates
 - Orange smoke column above lava tiles missing
 - Add tiny rockies running around after crumbling

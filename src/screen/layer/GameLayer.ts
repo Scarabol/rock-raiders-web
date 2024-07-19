@@ -208,8 +208,6 @@ export class GameLayer extends ScreenLayer {
                             this.worldMgr.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(cursorTarget.surface.getRandomPosition())))
                         }
                         this.worldMgr.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(cursorTarget.surface.getCenterWorld2D())))
-                    } else {
-                        console.warn('Unexpected surface target given', cursorTarget)
                     }
                     if (!this.worldMgr.entityMgr.selection.isEmpty()) EventBroker.publish(new DeselectAll())
                 } else if (cursorTarget.raider || cursorTarget.building) {

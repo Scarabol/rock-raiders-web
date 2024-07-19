@@ -7,7 +7,7 @@ export class DialogCfg extends BaseConfig {
     textWindow: Rect = null
     okWindow: Rect = null
     cancelWindow: Rect = null
-    contrastOverlay: string = null // not used in the game
+    contrastOverlay: string = null
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         if (unifiedKey.endsWith('window')) {
