@@ -48,7 +48,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.x - Late game features
 
-- Add helper features for all tutorial levels
+- after picking up shovel or completing training, raider should leave toolstation to first floor in negative x direction
+- implement clickOnly... methods for tutorials
+- disable all non-flashing UI elements in tutorial mode
+- implement NERP methods to complete last tutorial
 
 ### v0.9.x - Polishing
 
@@ -70,7 +73,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Nice to have
 
-- Camera movement, selection frame, options and non-flashing UI buttons not disabled in tutorial mode
 - Allow raider in alarm mode to be moved by player
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Add option to read/write savegames from URL

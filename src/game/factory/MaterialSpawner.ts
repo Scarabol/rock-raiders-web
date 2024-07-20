@@ -22,7 +22,6 @@ import { EventBroker } from '../../event/EventBroker'
 import { TooltipComponent } from '../component/TooltipComponent'
 import { TooltipSpriteBuilder } from '../../resource/TooltipSpriteBuilder'
 import { GameEntity } from '../ECS'
-import { GameState } from '../model/GameState'
 
 export class MaterialSpawner {
     static spawnMaterial(
@@ -108,7 +107,7 @@ export class MaterialSpawner {
         material.sceneEntity.addToScene(worldMgr.sceneMgr, worldPos, headingRad)
         worldMgr.entityMgr.addEntity(material.entity, material.entityType)
         if (material.sceneEntity.visible) {
-            if (!GameState.disallowAll) material.setupCarryJob()
+            material.setupCarryJob()
             worldMgr.entityMgr.materials.add(material) // TODO use game entities within entity manager
             worldMgr.ecs.addComponent(material.entity, new MapMarkerComponent(MapMarkerType.MATERIAL))
             EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, material.entity, MapMarkerChange.UPDATE, floorPosition))

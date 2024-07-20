@@ -28,6 +28,7 @@ export class BirdViewControls extends MapControls {
     shakeOrigin: Vector3 = new Vector3()
     shakeTimeout: number = 0
     bumpTimeout: number = 0
+    isTutorial: boolean = false
 
     constructor(camera: Camera, readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
@@ -55,6 +56,10 @@ export class BirdViewControls extends MapControls {
             this.shakeOrigin.set(event.position.x, 0, event.position.y)
             this.shakeTimeout = 1000
             this.bumpTimeout = 0
+        })
+        EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event) => {
+            this.isTutorial = event.levelConf.levelName.toLowerCase().startsWith('tutorial')
+            this.updateEnabled()
         })
     }
 
@@ -200,6 +205,6 @@ export class BirdViewControls extends MapControls {
     }
 
     updateEnabled() {
-        this.enabled = !this.lockBuild && !this.moveTarget && !this.lockedObject && !this.disabled && !this.gamePaused
+        this.enabled = !this.lockBuild && !this.moveTarget && !this.lockedObject && !this.disabled && !this.gamePaused && (!this.isTutorial || DEV_MODE)
     }
 }

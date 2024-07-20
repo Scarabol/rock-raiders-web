@@ -17,7 +17,6 @@ import { EatBarracksJob } from './model/job/raider/EatBarracksJob'
 import { EventBroker } from '../event/EventBroker'
 import { GameState } from './model/GameState'
 import { SurfaceType } from './terrain/SurfaceType'
-import { RaiderTool } from './model/raider/RaiderTool'
 
 export class Supervisor {
     jobs: Job[] = []
@@ -216,9 +215,9 @@ export class Supervisor {
                         for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
                             const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
                             if (!(surface?.hasRubble()) || !surface?.discovered) continue
-                            const clearRubbleJob = !GameState.disallowAll ? surface.setupClearRubbleJob() : null
-                            if (raider.hasTool(RaiderTool.SHOVEL)) {
-                                if (!clearRubbleJob || clearRubbleJob.hasFulfiller()) continue
+                            const clearRubbleJob = surface.setupClearRubbleJob()
+                            if (!clearRubbleJob || clearRubbleJob.hasFulfiller()) continue
+                            if (raider.hasTool(clearRubbleJob.requiredTool)) {
                                 if (GameState.priorityList.isEnabled(PriorityIdentifier.CLEARING) && raider.findShortestPath(clearRubbleJob.lastRubblePositions)) {
                                     raider.setJob(clearRubbleJob)
                                 }
@@ -226,7 +225,7 @@ export class Supervisor {
                             } else {
                                 const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
                                 if (pathToToolstation) {
-                                    raider.setJob(new GetToolJob(this.worldMgr.entityMgr, RaiderTool.SHOVEL, pathToToolstation.target.building), clearRubbleJob)
+                                    raider.setJob(new GetToolJob(this.worldMgr.entityMgr, clearRubbleJob.requiredTool, pathToToolstation.target.building), clearRubbleJob)
                                     return
                                 }
                             }

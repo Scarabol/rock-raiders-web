@@ -97,7 +97,7 @@ export class GameLayer extends ScreenLayer {
     }
 
     handlePointerMoveEvent(event: GamePointerEvent): boolean {
-        if (this.pointerDown && event.pointerType === 'mouse') {
+        if (this.pointerDown && event.pointerType === 'mouse' && !GameState.disallowAll) {
             const w = event.canvasX - this.pointerDown.x
             const h = event.canvasY - this.pointerDown.y
             EventBroker.publish(new SelectionFrameChangeEvent(new Rect(this.pointerDown.x, this.pointerDown.y, w, h)))
@@ -230,7 +230,7 @@ export class GameLayer extends ScreenLayer {
                 this.worldMgr.entityMgr.selection.set(selection)
                 EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
             }
-        } else if (event.pointerType === 'mouse') {
+        } else if (event.pointerType === 'mouse' && !GameState.disallowAll) {
             const r1x = (this.pointerDown.x / this.canvas.width) * 2 - 1
             const r1y = -(this.pointerDown.y / this.canvas.height) * 2 + 1
             const r2x = (event.canvasX / this.canvas.width) * 2 - 1
