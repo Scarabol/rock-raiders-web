@@ -1,4 +1,4 @@
-import { SpriteContext } from '../core/Sprite'
+import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { cancelAnimationFrameSafe } from '../core/Util'
 
 type AnimationFrameRedrawCallback = (context: SpriteContext) => any
@@ -11,7 +11,7 @@ export class AnimationFrame {
     scaleX: number = 1
     scaleY: number = 1
 
-    constructor(canvas: HTMLCanvasElement | OffscreenCanvas, readbackCanvas: HTMLCanvasElement | OffscreenCanvas) {
+    constructor(canvas: SpriteImage, readbackCanvas: SpriteImage) {
         this.context = canvas.getContext('2d') as SpriteContext
         this.readbackContext = readbackCanvas.getContext('2d', {willReadFrequently: true}) as SpriteContext
     }

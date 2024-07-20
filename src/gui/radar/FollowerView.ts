@@ -11,7 +11,7 @@ import { BaseEvent } from '../../event/EventTypeMap'
 export class FollowerView extends BaseElement {
     readonly overlay: SpriteImage
     renderInterval: NodeJS.Timeout
-    followerCanvas: HTMLCanvasElement
+    followerCanvas: SpriteImage
 
     constructor(panelCfg: PanelCfg) {
         super()

@@ -11,8 +11,8 @@ export class SceneEntityHeadingSystem extends AbstractGameSystem {
             try {
                 const components = this.ecs.getComponents(entity)
                 const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
-                const worldTargetComponent = components.get(HeadingComponent)
-                sceneEntityComponent.sceneEntity.headTowards(worldTargetComponent.location)
+                const headingComponent = components.get(HeadingComponent)
+                sceneEntityComponent.sceneEntity.headTowards(headingComponent.location)
             } catch (e) {
                 console.error(e)
             }

@@ -22,7 +22,7 @@ export class SelectionFrameSprite extends Sprite {
         ctx.fillRect(SelectionFrameSprite.textureSize - SelectionFrameSprite.shankLength, SelectionFrameSprite.textureSize - strength, SelectionFrameSprite.shankLength, strength)
         ctx.fillRect(0, SelectionFrameSprite.textureSize - strength, SelectionFrameSprite.shankLength, strength)
         ctx.fillRect(0, SelectionFrameSprite.textureSize - SelectionFrameSprite.shankLength, strength, SelectionFrameSprite.shankLength)
-        const selectionFrameTexture = new CanvasTexture(ctx.canvas as HTMLCanvasElement)
+        const selectionFrameTexture = new CanvasTexture(ctx.canvas)
         return new SpriteMaterial({map: selectionFrameTexture, depthTest: false})
     }
 }

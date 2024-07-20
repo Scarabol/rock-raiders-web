@@ -16,6 +16,7 @@ import { GameEntity } from '../game/ECS'
 import { HealthComponent } from '../game/component/HealthComponent'
 import { Rect } from '../core/Rect'
 import { BaseEvent } from './EventTypeMap'
+import { SpriteImage } from '../core/Sprite'
 
 export enum SelectPanelType {
     NONE,
@@ -227,7 +228,7 @@ export class SetSpaceToContinueEvent extends BaseEvent {
 }
 
 export class FollowerSetCanvasEvent extends BaseEvent {
-    constructor(readonly canvas: HTMLCanvasElement) {
+    constructor(readonly canvas: SpriteImage) {
         super(EventKey.FOLLOWER_SET_CANVAS)
     }
 }

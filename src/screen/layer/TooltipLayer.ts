@@ -6,6 +6,7 @@ import { clearTimeoutSafe } from '../../core/Util'
 import { SoundManager } from '../../audio/SoundManager'
 import { EventBroker } from '../../event/EventBroker'
 import { SaveGameManager } from '../../resource/SaveGameManager'
+import { SpriteImage } from '../../core/Sprite'
 
 export class TooltipLayer extends ScreenLayer {
     readonly gameCanvasContainer: HTMLElement
@@ -73,7 +74,7 @@ export class TooltipLayer extends ScreenLayer {
         this.lastTooltipKey = null
     }
 
-    private changeTooltipImage(tooltipImg: HTMLCanvasElement | OffscreenCanvas) {
+    private changeTooltipImage(tooltipImg: SpriteImage) {
         if (this.tooltipCanvas) this.gameCanvasContainer.removeChild(this.tooltipCanvas)
         if (this.cursorLeft) return
         this.tooltipCanvas = document.createElement('canvas')

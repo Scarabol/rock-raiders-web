@@ -12,6 +12,7 @@ import { ECS, GameEntity } from '../game/ECS'
 import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEntityComponent'
 import { BeamUpComponent } from '../game/component/BeamUpComponent'
 import { EventBroker } from '../event/EventBroker'
+import { SpriteImage } from '../core/Sprite'
 
 export class FollowerRenderer extends WebGLRenderer {
     static readonly MAX_FPS = 30
@@ -23,7 +24,7 @@ export class FollowerRenderer extends WebGLRenderer {
     lastAnimationRequest: number
     angle: number = 0
 
-    constructor(readonly canvas: HTMLCanvasElement, readonly scene: Scene, readonly ecs: ECS) {
+    constructor(readonly canvas: SpriteImage, readonly scene: Scene, readonly ecs: ECS) {
         super({antialias: true, canvas: canvas, powerPreference: 'high-performance'})
         this.camera = new PerspectiveCamera(45, 1, 0.1, 200)
         this.composer = new EffectComposer(this)

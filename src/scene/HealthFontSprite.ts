@@ -13,7 +13,7 @@ export class HealthFontSprite extends Sprite {
         this.position.set(0, yOffset, 0)
         this.scale.setScalar(startScale)
         this.textureContext = createContext(HealthFontSprite.textureSize, HealthFontSprite.textureSize)
-        this.material.map = new CanvasTexture(this.textureContext.canvas as HTMLCanvasElement)
+        this.material.map = new CanvasTexture(this.textureContext.canvas)
     }
 
     setNumber(healthNumber: number) {

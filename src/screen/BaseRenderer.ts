@@ -1,12 +1,13 @@
 import { Camera, Scene, WebGLRenderer, WebGLRendererParameters } from 'three'
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
+import { SpriteImage } from '../core/Sprite'
 
 export class BaseRenderer {
     renderer?: WebGLRenderer
     renderInterval: NodeJS.Timeout
     lastAnimationRequest: number
 
-    constructor(readonly redrawMs: number, readonly canvas: HTMLCanvasElement, readonly parameters: WebGLRendererParameters) {
+    constructor(readonly redrawMs: number, readonly canvas: SpriteImage, readonly parameters: WebGLRendererParameters) {
         this.parameters.canvas = canvas
     }
 
