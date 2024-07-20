@@ -12,5 +12,6 @@ export class BeamUpComponent extends AbstractGameComponent {
         super()
         EventBroker.publish(new DeselectAll())
         this.entity.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.MiniTeleportUp, this.entity.getPosition(), this.entity.sceneEntity.heading, false)
+        if (this.entity.worldMgr.sceneMgr.birdViewControls.lockedObject === entity.sceneEntity) this.entity.worldMgr.sceneMgr.birdViewControls.unlockCamera()
     }
 }
