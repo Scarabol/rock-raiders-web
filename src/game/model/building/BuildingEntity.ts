@@ -307,9 +307,12 @@ export class BuildingEntity {
         if (this.buildingType.primaryPowerPath) {
             const pathOffset = this.buildingType.primaryPowerPath.clone().multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
-            this.primaryPathSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
-            this.surfaces.push(this.primaryPathSurface)
-            this.pathSurfaces.push(this.primaryPathSurface)
+            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
+            if (surface.surfaceType.floor) { // Does not apply for toolstation in tutorial07
+                this.primaryPathSurface = surface
+                this.surfaces.push(this.primaryPathSurface)
+                this.pathSurfaces.push(this.primaryPathSurface)
+            }
         }
         if (this.buildingType.secondaryPowerPath) {
             const pathOffset = this.buildingType.secondaryPowerPath.clone().multiplyScalar(TILESIZE)
@@ -368,7 +371,7 @@ export class BuildingEntity {
         })
         this.getToolPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())
         this.carryPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())
-        if (this.buildingType.teleportedEntityTypes.length > 0) this.worldMgr.ecs.addComponent(this.entity, new TeleportComponent(this.buildingType.teleportedEntityTypes, this.pathSurfaces, this.sceneEntity.heading, this.primaryPathSurface, this.waterPathSurface))
+        if (this.buildingType.teleportedEntityTypes.length > 0 && this.primaryPathSurface) this.worldMgr.ecs.addComponent(this.entity, new TeleportComponent(this.buildingType.teleportedEntityTypes, this.pathSurfaces, this.sceneEntity.heading, this.primaryPathSurface, this.waterPathSurface))
         EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
