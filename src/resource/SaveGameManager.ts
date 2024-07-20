@@ -13,6 +13,7 @@ export class SaveGamePreferences { // this gets serialized
     toggleSfx: boolean = DEFAULT_SFX_TOGGLE
     autoGameSpeed: boolean = DEFAULT_AUTO_GAME_SPEED
     screenRatioFixed: number = DEFAULT_SCREEN_RATIO_FIXED // set to 0 for responsive screen ratio
+    testLevels: boolean = false
 }
 
 export class SaveGameManager {

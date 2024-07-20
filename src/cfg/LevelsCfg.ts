@@ -1,7 +1,7 @@
 import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseConfig } from './BaseConfig'
 import { LevelObjectiveTextEntry } from '../resource/fileparser/ObjectiveTextParser'
-import { DEV_MODE, TILESIZE, VERBOSE } from '../params'
+import { TILESIZE, VERBOSE } from '../params'
 import { GameConfig } from './GameConfig'
 import { SaveGameManager } from '../resource/SaveGameManager'
 
@@ -116,8 +116,7 @@ export class LevelEntryCfg extends BaseConfig {
     }
 
     isLocked(): boolean {
-        return (!DEV_MODE && this.levelName.toLowerCase().includes('tutorial')) || // TODO Remove this line when tutorial helper functions implemented
-            !(() => true) && // TODO Remove this line before release 1.0
+        return !SaveGameManager.currentPreferences.testLevels &&
             !this.frontEndOpen &&
             !this.levelName.equalsIgnoreCase(GameConfig.instance.main.startLevel) &&
             !this.levelName.equalsIgnoreCase(GameConfig.instance.main.tutorialStartLevel) &&

@@ -37,6 +37,7 @@ export class GameModule {
         this.gameScreen = new GameScreen(screenMaster)
         this.rewardScreen = new RewardScreen(screenMaster)
         const params = new URLSearchParams(window.location.search)
+        SaveGameManager.currentPreferences.testLevels = params.has('testlevels') || DEV_MODE
         const entry = params.get('entry')
         if (DEV_MODE && entry) {
             ObjectListLoader.numRaider = Number(params.get('numRaider')) || 0

@@ -55,11 +55,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Use same team for all missions and add names to raiders
 - Auto switch from portrait to landscape mode in fullscreen
 - Background music and soundtrack (needs files from ISO-File)
-- Fix all remaining bugs
 
 ### v1.0.0 - Final Release
 
-- Unlock levels only after linked levels are completed
+- Fix all remaining bugs
 
 ## Known Issues
 
