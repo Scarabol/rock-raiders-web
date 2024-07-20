@@ -647,4 +647,13 @@ export class BitmapWithPalette extends ImageData {
         }
         return this
     }
+
+    applyAlphaTranslucent(): BitmapWithPalette {
+        const data = this.data
+        for (let n = 0; n < data.length; n += 4) {
+            const grey = (data[n] + data[n + 1] + data[n + 2]) / 3
+            data[n + 3] = Math.min(255, grey * 4)
+        }
+        return this
+    }
 }

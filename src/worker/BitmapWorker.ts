@@ -6,6 +6,7 @@ export enum BitmapWorkerRequestType {
     DECODE_BITMAP = 1, // start with 1 for truthiness safety
     DECODE_BITMAP_ALPHA,
     DECODE_BITMAP_ALPHA_INDEX,
+    DECODE_BITMAP_ALPHA_TRANSLUCENT,
 }
 
 export class BitmapWorkerRequest {
@@ -29,6 +30,9 @@ export class BitmapSystem extends AbstractWorkerSystem<BitmapWorkerRequest, Bitm
                 break
             case BitmapWorkerRequestType.DECODE_BITMAP_ALPHA_INDEX:
                 this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlphaByIndex(request.alphaIndex)})
+                break
+            case BitmapWorkerRequestType.DECODE_BITMAP_ALPHA_TRANSLUCENT:
+                this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlphaTranslucent()})
                 break
         }
         return null

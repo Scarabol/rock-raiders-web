@@ -62,7 +62,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addAlphaImageFolder('Interface/Buttons/')
         this.addAlphaImageFolder('Interface/InfoImages/')
         this.addAlphaImageFolder('Interface/Fonts/HealthFont/')
-        this.addAssetFolder(this.assetLoader.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_')
+        this.addAssetFolder(this.assetLoader.loadAlphaTranslucentImageAsset, 'Interface/FrontEnd/Vol_')
         this.addAssetFolder(this.assetLoader.loadWadImageAsset, 'Interface/FrontEnd/lp_')
         this.addAssetFolder(this.assetLoader.loadAlphaImageAsset, 'Interface/ToolTipIcons/')
         this.addAsset(this.assetLoader.loadAlphaImageAsset, 'Interface/FrontEnd/LowerPanel.bmp')

@@ -71,6 +71,10 @@ export class AssetLoader {
         return BitmapWorkerPool.instance.decodeBitmapWithAlpha(this.vfs.getFile(name).toBuffer())
     }
 
+    async loadAlphaTranslucentImageAsset(name: string): Promise<ImageData> {
+        return BitmapWorkerPool.instance.decodeBitmapWithAlphaTranslucent(this.vfs.getFile(name).toBuffer())
+    }
+
     async loadFontImageAsset(name: string): Promise<BitmapFontData> {
         const imgData = await BitmapWorkerPool.instance.decodeBitmap(this.vfs.getFile(name).toBuffer())
         return new BitmapFontData(imgData)

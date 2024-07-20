@@ -31,4 +31,10 @@ export class BitmapWorkerPool extends AbstractWorkerPool<BitmapWorkerRequest, Bi
         const response = await this.processMessage(message)
         return response.decoded
     }
+
+    async decodeBitmapWithAlphaTranslucent(data: ArrayBuffer): Promise<BitmapWithPalette> {
+        const message = {type: BitmapWorkerRequestType.DECODE_BITMAP_ALPHA_TRANSLUCENT, bitmapData: data}
+        const response = await this.processMessage(message)
+        return response.decoded
+    }
 }
