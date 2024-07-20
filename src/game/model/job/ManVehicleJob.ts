@@ -10,7 +10,7 @@ import { EntityType } from '../EntityType'
 
 export class ManVehicleJob extends RaiderJob {
     vehicle: VehicleEntity
-    workplace: PathTarget
+    workplaces: PathTarget[]
 
     constructor(vehicle: VehicleEntity) {
         super()
@@ -20,9 +20,13 @@ export class ManVehicleJob extends RaiderJob {
         this.vehicle.callManJob = this
         const surface = this.vehicle.getSurface()
         const walkableSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable() || s.building?.entityType === EntityType.DOCKS) ?? surface
-        const hopOnSpot = walkableSurface.getRandomPosition()
-        const getInRadius = this.vehicle.stats.PickSphere / 2
-        this.workplace = PathTarget.fromLocation(hopOnSpot, getInRadius * getInRadius)
+        if (walkableSurface.building?.entityType === EntityType.DOCKS) {
+            this.workplaces = walkableSurface.building.getTrainingTargets()
+        } else {
+            const hopOnSpot = walkableSurface.getRandomPosition()
+            const getInRadius = this.vehicle.stats.PickSphere / 2
+            this.workplaces = [PathTarget.fromLocation(hopOnSpot, getInRadius * getInRadius)]
+        }
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
@@ -33,7 +37,7 @@ export class ManVehicleJob extends RaiderJob {
             this.jobState = JobState.COMPLETE
             return null
         }
-        return this.workplace
+        return entity.findShortestPath(this.workplaces)?.target
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {
