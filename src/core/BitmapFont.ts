@@ -27,12 +27,14 @@ export class BitmapFontData {
 
     readonly letterMap: Map<string, ImageData> = new Map()
     readonly charHeight: number
+    readonly alphaColor: { r: number, g: number, b: number }
 
     constructor(fontImageData: ImageData) {
         const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
         // XXX find better way to detect char dimensions
         const maxCharWidth = fontImageData.width / cols
         this.charHeight = fontImageData.height / rows
+        this.alphaColor = getPixel(fontImageData, 0, 0)
 
         function isLimiterColor(imgData: ImageData, index: number): boolean {
             // Last pixel in the first row of the first char defines the end of char limiter color (e.g. 255,39,0)
@@ -53,10 +55,10 @@ export class BitmapFontData {
         }
 
         for (let i = 0; i < BitmapFontData.chars.length; i++) {
-            let imgData = this.extractData(fontImageData, (i % 10) * maxCharWidth, Math.floor(i / 10) * this.charHeight, maxCharWidth, this.charHeight)
+            let imgData = this.extractData(fontImageData, (i % 10) * maxCharWidth, Math.floor(i / 10) * this.charHeight, maxCharWidth)
             const actualWidth = getActualCharacterWidth(imgData)
             if (actualWidth > 0) {
-                imgData = this.extractData(imgData, 0, 0, actualWidth, this.charHeight)
+                imgData = this.extractData(imgData, 0, 0, actualWidth)
             } else {
                 console.warn(`Could not determine actual character width for '${BitmapFontData.chars[i]}'. Adding dummy sprite to letter map`)
                 imgData = createDummyImgData(maxCharWidth, this.charHeight)
@@ -65,13 +67,12 @@ export class BitmapFontData {
         }
     }
 
-    extractData(imgData: ImageData, startX: number, startY: number, width: number, height: number): ImageData {
-        const alpha = getPixel(imgData, startX + width - 1, startY + height - 1)
-        const result = new ImageData(width, height)
+    extractData(imgData: ImageData, startX: number, startY: number, width: number): ImageData {
+        const result = new ImageData(width, this.charHeight)
         for (let x = 0; x < width; x++) {
-            for (let y = 0; y < height; y++) {
+            for (let y = 0; y < this.charHeight; y++) {
                 const p = getPixel(imgData, startX + x, startY + y)
-                if (p.r === alpha.r && p.g === alpha.g && p.b === alpha.b) p.a = 0 // apply alpha channel
+                if (p.r === this.alphaColor.r && p.g === this.alphaColor.g && p.b === this.alphaColor.b) p.a = 0 // apply alpha channel
                 setPixel(result, x, y, p.r, p.g, p.b, p.a)
             }
         }
