@@ -225,7 +225,7 @@ export class Supervisor {
                             } else {
                                 const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
                                 if (pathToToolstation) {
-                                    raider.setJob(new GetToolJob(this.worldMgr.entityMgr, clearRubbleJob.requiredTool, pathToToolstation.target.building), clearRubbleJob)
+                                    raider.setJob(new GetToolJob(this.worldMgr.entityMgr, clearRubbleJob.requiredTool, pathToToolstation.target.building))
                                     return
                                 }
                             }

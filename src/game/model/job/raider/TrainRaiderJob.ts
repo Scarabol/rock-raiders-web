@@ -10,6 +10,7 @@ import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
 import { EventBroker } from '../../../../event/EventBroker'
+import { MoveJob } from '../MoveJob'
 
 export class TrainRaiderJob extends RaiderJob {
     building: BuildingEntity
@@ -32,6 +33,10 @@ export class TrainRaiderJob extends RaiderJob {
         super.onJobComplete(fulfiller)
         this.raider.addTraining(this.training)
         EventBroker.publish(new RaiderTrainingCompleteEvent(this.training))
+        if (!this.raider.followUpJob) {
+            const walkableSurface = this.building.primaryPathSurface?.neighbors.find((n) => n.isWalkable())
+            if (walkableSurface) this.raider.followUpJob = new MoveJob(walkableSurface.getRandomPosition())
+        }
     }
 
     getWorkActivity(): AnimationActivity {
