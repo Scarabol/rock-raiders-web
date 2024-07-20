@@ -413,12 +413,13 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     dropDriver() {
+        const surface = this.getSurface()
+        const walkableSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable() || s.building?.entityType === EntityType.DOCKS)
+        if (!walkableSurface) return
         this.stopJob()
         if (!this.driver) return
         this.sceneEntity.removeDriver()
         this.driver.vehicle = null
-        const surface = this.getSurface()
-        const walkableSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable() || s.building?.entityType === EntityType.DOCKS) ?? surface
         const hopOffSpot = walkableSurface.building?.entityType === EntityType.DOCKS ? walkableSurface.building.primaryPathSurface.getRandomPosition() : walkableSurface.getRandomPosition()
         const floorPosition = this.driver.worldMgr.sceneMgr.getFloorPosition(hopOffSpot)
         this.driver.setPosition(floorPosition)
