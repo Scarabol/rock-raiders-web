@@ -1,5 +1,5 @@
 import { AbstractGameComponent } from '../ECS'
-import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
+import { MovableEntityStats } from '../../cfg/GameStatsCfg'
 
 export class MovableStatsComponent extends AbstractGameComponent {
     routeSpeed: number[] = [1]
@@ -11,7 +11,7 @@ export class MovableStatsComponent extends AbstractGameComponent {
     crossWater: boolean = false
     crossLava: boolean = false
 
-    constructor(stats: MonsterEntityStats) {
+    constructor(stats: MovableEntityStats) {
         super()
         this.routeSpeed = stats.RouteSpeed
         this.pathCoef = stats.PathCoef

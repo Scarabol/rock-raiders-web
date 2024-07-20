@@ -46,6 +46,7 @@ import { TooltipComponent } from '../../component/TooltipComponent'
 import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 import { LaserBeamTurretComponent } from '../../component/LaserBeamTurretComponent'
 import { MaterialSpawner } from '../../factory/MaterialSpawner'
+import { MovableStatsComponent } from '../../component/MovableStatsComponent'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -77,6 +78,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.sceneEntity = new AnimatedSceneEntity()
         this.sceneEntity.flipCamera = true // XXX Why is this needed for vehicles and not pilot?
         aeNames.forEach((aeName) => this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName)))
+        this.worldMgr.ecs.addComponent(this.entity, new MovableStatsComponent(stats))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         const objectKey = this.entityType.toLowerCase()

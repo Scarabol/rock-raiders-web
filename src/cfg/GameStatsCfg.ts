@@ -14,11 +14,13 @@ export interface DoubleSelectStats {
 }
 
 export interface MovableEntityStats extends PickSphereStats {
+    RouteSpeed: number[]
     CrossLand: boolean
     CrossWater: boolean
     CrossLava: boolean
     RubbleCoef: number
     PathCoef: number
+    RandomEnterWall: boolean
 }
 
 export class VehicleEntityStats extends BaseConfig implements MovableEntityStats, DoubleSelectStats, PickSphereStats {
