@@ -4,6 +4,7 @@ import { BaseElement } from '../base/BaseElement'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../event/GuiEvent'
 import { MenuEntryCfg } from '../../cfg/MenuEntryCfg'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
+import { EventKey } from '../../event/EventKeyEnum'
 
 export class MenuLabelItem extends BaseElement {
     target: string
@@ -24,6 +25,9 @@ export class MenuLabelItem extends BaseElement {
             this.updatePosition()
         })
         this.relY = itemCfg.y
+        this.registerEventListener(EventKey.LEVEL_SELECTED, (event) => {
+            this.disabled = event.levelConf.levelName.toLowerCase().startsWith('tutorial') && itemCfg.flag === 'NotInTuto'
+        })
     }
 
     onPointerMove(event: GuiHoverEvent): void {
