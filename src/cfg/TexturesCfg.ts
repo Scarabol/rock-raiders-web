@@ -12,9 +12,9 @@ export class TexturesCfg extends BaseConfig {
 }
 
 export class TextureEntryCfg extends BaseConfig {
-    roofTexture: string = null
+    roofTexture?: string
     surfTextWidth: number = 8
     surfTextHeight: number = 8
-    meshBasename: string = null
-    textureBasename: string = null
+    meshBasename?: string
+    textureBasename?: string
 }

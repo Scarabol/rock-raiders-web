@@ -10,7 +10,7 @@ import { GameConfig } from '../cfg/GameConfig'
 export class GameFilesLoader {
     readonly modal: SelectFilesModal
     readonly onDonePromise: Promise<VirtualFileSystem>
-    onDoneCallback: (vfs: VirtualFileSystem) => void
+    onDoneCallback?: (vfs: VirtualFileSystem) => void
 
     constructor(readonly loadingLayer: LoadingLayer) {
         this.modal = new SelectFilesModal('game-container', async (vfs) => {
@@ -26,7 +26,7 @@ export class GameFilesLoader {
         this.loadingLayer.setLoadingMessage('Try loading files from cache...')
         console.time('Files loaded from cache')
         try {
-            const vfsFileNames: string[] = await cacheGetData('vfs')
+            const vfsFileNames: string[] | undefined = await cacheGetData('vfs')
             if (vfsFileNames) {
                 const vfs = new VirtualFileSystem()
                 await Promise.all(vfsFileNames.map(async (fileName) => {
@@ -58,6 +58,6 @@ export class GameFilesLoader {
         const result = CfgFileParser.parse(vfs.getFile(cfgFiles[0]).toArray())
         GameConfig.instance.setFromCfgObj(result, true) // TODO do not create missing
         this.modal.hide()
-        this.onDoneCallback(vfs)
+        this.onDoneCallback?.(vfs)
     }
 }

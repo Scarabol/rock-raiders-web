@@ -59,7 +59,7 @@ export class LevelEntryCfg extends BaseConfig {
     cryOreMap: string = ''
     pathMap: string = ''
     noGather: boolean = false
-    textureSet: string = null
+    textureSet?: string
     rockFallStyle: string = ''
     emergeCreature: string = ''
     safeCaverns: boolean = true
@@ -69,8 +69,8 @@ export class LevelEntryCfg extends BaseConfig {
     nerpFile: string = ''
     nerpMessageFile: string = ''
     objectiveText: string = ''
-    objectiveTextCfg: LevelObjectiveTextEntry = null
-    objectiveImage640x480: ObjectiveImageCfg = null
+    objectiveTextCfg?: LevelObjectiveTextEntry
+    objectiveImage640x480?: ObjectiveImageCfg
     erodeTriggerTime: number = 0 // 1, 20, 40, 60, 120 time in seconds to trigger a new erosion
     erodeErodeTime: number = 0 // 1, 5, 7, 20, 30, 40, 60 time in seconds until next erosion level is reached
     erodeLockTime: number = 0 // 1, 300, 500, 600 grace time no erosion happens on surface with power path
@@ -80,7 +80,7 @@ export class LevelEntryCfg extends BaseConfig {
     frontEndY: number = 0
     frontEndOpen: boolean = false
     priorities: LevelPrioritiesEntryConfig[] = [] // priority order matters!
-    reward: LevelRewardConfig = null
+    reward?: LevelRewardConfig
     menuBMP: string[] = []
 
     constructor(readonly levelName: string) {
@@ -174,9 +174,9 @@ export class LevelPrioritiesEntryConfig {
 
 export class LevelRewardConfig extends BaseConfig {
     enable: boolean = true
-    modifier: number = null
-    importance: LevelRewardImportanceConfig = null
-    quota: LevelRewardQuotaConfig = null
+    modifier?: number
+    importance?: LevelRewardImportanceConfig
+    quota?: LevelRewardQuotaConfig
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         if (unifiedKey === 'importance') {

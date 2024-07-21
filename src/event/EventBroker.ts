@@ -41,14 +41,14 @@ export class EventBroker {
     public static subscribe<Type extends keyof EventTypeMap>(
         type: Type,
         listener: (e: EventTypeMap[Type]) => void
-    ): () => void {
+    ): void {
         if (!this.instance.observers[type]) {
             this.instance.observers = {
                 ...this.instance.observers,
                 [type]: new Observer<Type>(),
             }
         }
-        return this.instance.observers[type].subscribe(listener)
+        this.instance.observers[type]?.subscribe(listener)
     }
 
     public static init() {

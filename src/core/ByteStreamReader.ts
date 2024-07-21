@@ -11,7 +11,7 @@ export class ByteStreamReader {
     }
 
     readString(length: number): string {
-        const chars = []
+        const chars: number[] = []
         for (let c = 0; c < length; c++) {
             chars.push(this.dataView.getUint8(this.offset))
             this.offset++

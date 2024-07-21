@@ -50,13 +50,13 @@ export class GetToolJob extends RaiderJob {
                 return 'bubbleCollectSpade'
             case RaiderTool.SPANNER:
                 return 'bubbleCollectSpanner'
-            case RaiderTool.FREEZERGUN:
+            case RaiderTool.FREEZER_GUN:
                 return 'bubbleCollectFreezer'
             case RaiderTool.LASER:
                 return 'bubbleCollectLaser'
-            case RaiderTool.PUSHERGUN:
+            case RaiderTool.PUSHER_GUN:
                 return 'bubbleCollectPusher'
-            case RaiderTool.BIRDSCARER:
+            case RaiderTool.BIRD_SCARER:
                 return 'bubbleCollectBirdScarer'
         }
         return null

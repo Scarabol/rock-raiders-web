@@ -57,7 +57,7 @@ export class EmergeSystem extends AbstractGameSystem {
             }
         }
         triggeredEmerges.forEach((emergeComponent) => {
-            emergeSpawns.getOrDefault(emergeComponent.emergeSpawnId, []).forEach((surface) => {
+            emergeSpawns.getOrUpdate(emergeComponent.emergeSpawnId, () => []).forEach((surface) => {
                 emergeComponent.emergeDelayMs = this.emergeTimeoutMs
                 EventBroker.publish(new MonsterEmergeEvent(surface))
             })

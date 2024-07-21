@@ -148,7 +148,7 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.reinstallAllUpgrades()
         this.driverParent = this.animationParent
         this.animationData.forEach((animEntityData) => {
-            if (animEntityData.carryNullName) this.carryJoints.push(...this.meshesByLName.getOrDefault(animEntityData.carryNullName, []))
+            if (animEntityData.carryNullName) this.carryJoints.push(...this.meshesByLName.getOrUpdate(animEntityData.carryNullName, () => []))
             if (animEntityData.driverNullName) this.driverParent = this.meshesByLName.get(animEntityData.driverNullName)?.last() || this.driverParent
             if (animEntityData.toolNullName) this.toolParent = this.meshesByLName.get(animEntityData.toolNullName)?.last() || this.toolParent
             if (animEntityData.depositNullName) this.depositParent = this.meshesByLName.get(animEntityData.depositNullName)?.last() || this.depositParent

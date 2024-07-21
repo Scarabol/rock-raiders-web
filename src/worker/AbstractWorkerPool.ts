@@ -40,7 +40,6 @@ export abstract class AbstractWorkerPool<M, R> {
             this.lastRequestId++
             const message = {workerRequestHash: `message-${this.lastRequestId}`, request: broadcast}
             worker.sendMessage(message)
-            this.openRequests.getOrUpdate(message.workerRequestHash, () => [])
         })
         this.processNextMessage(worker)
     }

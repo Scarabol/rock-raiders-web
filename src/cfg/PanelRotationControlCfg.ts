@@ -26,7 +26,7 @@ export class PanelRotationControlCfg extends BaseConfig {
 }
 
 export class PanelRotationControlImageCfg extends BaseConfig {
-    imgHighlight: string = null
+    imgHighlight?: string
     x: number = 0
     y: number = 0
 

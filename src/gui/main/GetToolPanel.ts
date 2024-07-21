@@ -18,10 +18,10 @@ export class GetToolPanel extends IconSubPanel {
         this.addGetToolItem('Interface_MenuItem_GetSpade', RaiderTool.SHOVEL)
         this.addGetToolItem('Interface_MenuItem_GetHammer', RaiderTool.HAMMER)
         this.addGetToolItem('Interface_MenuItem_GetSpanner', RaiderTool.SPANNER)
-        this.addGetToolItem('Interface_MenuItem_GetFreezerGun', RaiderTool.FREEZERGUN)
+        this.addGetToolItem('Interface_MenuItem_GetFreezerGun', RaiderTool.FREEZER_GUN)
         this.addGetToolItem('Interface_MenuItem_GetLaser', RaiderTool.LASER)
-        this.addGetToolItem('Interface_MenuItem_GetPusherGun', RaiderTool.PUSHERGUN)
-        this.addGetToolItem('Interface_MenuItem_GetBirdScarer', RaiderTool.BIRDSCARER)
+        this.addGetToolItem('Interface_MenuItem_GetPusherGun', RaiderTool.PUSHER_GUN)
+        this.addGetToolItem('Interface_MenuItem_GetBirdScarer', RaiderTool.BIRD_SCARER)
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
             this.hasToolstation = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION)
             this.updateAllButtonStates()

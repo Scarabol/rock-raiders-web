@@ -43,9 +43,9 @@ export class GameConfig extends BaseConfig {
     panelRotationControl: PanelRotationControlCfg = new PanelRotationControlCfg()
     panels: PanelsCfg = new PanelsCfg()
     buttons: ButtonsCfg = new ButtonsCfg()
-    interfaceBackButton: IconPanelBackButtonCfg = null
+    interfaceBackButton?: IconPanelBackButtonCfg
     interfaceBuildImages: Map<string, MenuItemCfg> = new Map()
-    interfaceSurroundImages: InterfaceSurroundImagesCfg = null
+    interfaceSurroundImages?: InterfaceSurroundImagesCfg
     priorityImages: PriorityButtonsCfg = new PriorityButtonsCfg()
     prioritiesImagePositions: PrioritiesImagePositionsCfg = new PrioritiesImagePositionsCfg()
     miscObjects: MiscObjectsCfg = new MiscObjectsCfg()
@@ -171,11 +171,11 @@ export class GameConfig extends BaseConfig {
 
     getTooltipText(tooltipKey: string): string {
         if (!tooltipKey) return ''
-        return this.tooltips.get(tooltipKey.toLowerCase())
+        return this.tooltips.get(tooltipKey.toLowerCase()) || ''
     }
 
     getRockFallDamage(entityType: EntityType, level: number = 0): number {
-        return this.weaponTypes.get('rockfallin').damageByEntityType.get(entityType)?.[level] || 0
+        return this.weaponTypes.get('rockfallin')?.damageByEntityType.get(entityType)?.[level] || 0
     }
 
     getAllLevels(): LevelEntryCfg[] {

@@ -15,11 +15,9 @@ import { DEV_MODE } from '../../params'
 
 export class InfoDockPanel extends Panel {
     readonly stackButtons: InfoDockButton[] = []
-    informationPanel: InformationPanel = null
 
-    constructor(panelCfg: PanelCfg, buttonsCfg: ButtonInfoDockCfg, infoMessagesConfig: InfoMessagesCfg, informationPanel: InformationPanel) {
+    constructor(panelCfg: PanelCfg, buttonsCfg: ButtonInfoDockCfg, infoMessagesConfig: InfoMessagesCfg, readonly informationPanel: InformationPanel) {
         super(panelCfg)
-        this.informationPanel = informationPanel
         this.addChild(new Button(buttonsCfg.panelButtonInfoDockGoto)).onClick = () => this.gotoLatestMessage()
         this.addChild(new Button(buttonsCfg.panelButtonInfoDockClose)).onClick = () => this.dropLatestMessage()
 

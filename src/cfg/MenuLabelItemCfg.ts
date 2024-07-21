@@ -1,16 +1,16 @@
 import { parseLabel } from './CfgHelper'
 
 export class MenuLabelItemCfg {
-    actionName: string
-    x: number
-    y: number
-    label: string
-    imgNormal: string
-    imgHover: string
-    imgPressed: string
-    tooltipKey: string
-    target: string
-    flag: string
+    actionName?: string
+    x?: number
+    y?: number
+    label?: string
+    imgNormal?: string
+    imgHover?: string
+    imgPressed?: string
+    tooltipKey?: string
+    target?: string
+    flag?: string
 
     constructor(cfgObj: any) {
         if (cfgObj.length === 5 || cfgObj.length === 6) {

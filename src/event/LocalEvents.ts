@@ -69,10 +69,10 @@ export class SelectionChanged extends BaseEvent {
         this.isDrillable = entityMgr.selection.surface?.isDigable() && (entityMgr.selection.surface?.surfaceType !== SurfaceType.HARD_ROCK || entityMgr.vehicles.some((v) => v.canDrill(entityMgr.selection.surface)))
         this.isReinforcable = entityMgr.selection.surface?.isReinforcable()
         this.canPlaceFence = entityMgr.selection.surface?.canPlaceFence()
-        this.someCarries = !!entityMgr.selection.raiders.some((r) => !!r.carries)
-        this.everyHasMaxLevel = !!entityMgr.selection.raiders.every((r) => r.level >= r.stats.Levels)
+        this.someCarries = entityMgr.selection.raiders.some((r) => !!r.carries)
+        this.everyHasMaxLevel = entityMgr.selection.raiders.every((r) => r.level >= r.stats.Levels)
         RaiderTrainings.values.forEach((training) => this.canDoTraining.set(training, entityMgr.hasTrainingSite(training) && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
-        RaiderTools.values.forEach((tool) => this.everyHasTool.set(tool, !!entityMgr.selection.raiders.every((r) => r.hasTool(tool))))
+        RaiderTools.values.forEach((tool) => this.everyHasTool.set(tool, entityMgr.selection.raiders.every((r) => r.hasTool(tool))))
         VehicleUpgrades.values.forEach((upgrade) => this.canInstallUpgrade.set(upgrade, entityMgr.selection.vehicles.some((v) => v.canUpgrade(upgrade))))
         this.hasUpgradeSite = entityMgr.hasUpgradeSite()
         this.buildingCanUpgrade = entityMgr.selection.building?.canUpgrade()
@@ -85,7 +85,7 @@ export class SelectionChanged extends BaseEvent {
         this.vehicleHasCallManJob = entityMgr.selection.vehicles.every((v) => !!v.callManJob)
         this.noVehicleWithDriver = entityMgr.selection.vehicles.every((v) => !v.driver)
         this.vehicleWithCarried = entityMgr.selection.vehicles.some((v) => v.carriedItems.size > 0 || (!v.portering && !!v.carriedVehicle))
-        this.someHasBirdScarer = entityMgr.selection.raiders.some((r) => r.hasTool(RaiderTool.BIRDSCARER))
+        this.someHasBirdScarer = entityMgr.selection.raiders.some((r) => r.hasTool(RaiderTool.BIRD_SCARER))
         this.someVehicleCanLoad = entityMgr.selection.vehicles.some((v) => v.canLoad())
     }
 }

@@ -80,7 +80,7 @@ function maskColor(
     }
 }
 
-const enum Compression {
+enum Compression {
     NONE = 0,
     BI_RLE8 = 1,
     BI_RLE4 = 2,
@@ -202,10 +202,7 @@ class BmpDecoder implements IBitmapImage {
 
         // End of BITMAP_FILE_HEADER
         this.headerSize = this.readUInt32LE()
-
-        if (!(this.headerSize in HeaderTypes)) {
-            throw new Error(`Unsupported BMP header size ${this.headerSize}`)
-        }
+        if (!(this.headerSize in HeaderTypes)) throw new Error(`Unsupported BMP header size ${this.headerSize}`)
 
         this.width = this.readUInt32LE()
         this.height = this.readUInt32LE()
@@ -216,6 +213,7 @@ class BmpDecoder implements IBitmapImage {
         this.pos += 2
 
         this.compression = this.readUInt32LE()
+        if (!(this.compression in Compression)) throw new Error(`Unsupported BMP header size ${this.headerSize}`)
         this.rawSize = this.readUInt32LE()
         this.hr = this.readUInt32LE()
         this.vr = this.readUInt32LE()

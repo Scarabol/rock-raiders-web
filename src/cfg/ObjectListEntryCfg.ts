@@ -1,7 +1,7 @@
 export class ObjectListEntryCfg {
-    type: string
-    xPos: number
-    yPos: number
+    type?: string
+    xPos?: number
+    yPos?: number
     heading?: number
     driving?: string
 }

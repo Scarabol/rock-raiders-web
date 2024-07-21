@@ -2,17 +2,17 @@ import { BaseConfig } from './BaseConfig'
 import { ButtonCfg } from './ButtonCfg'
 
 export class ButtonsCfg extends BaseConfig {
-    panelRadar: ButtonRadarCfg = null
-    panelCrystalSideBar: ButtonCrystalSideBarCfg = null
-    panelTopPanel: ButtonTopCfg = null
-    panelInformation: ButtonInformationCfg = null
-    panelPriorityList: ButtonPriorityListCfg = null
-    panelCameraControl: ButtonCameraControlCfg = null
-    panelInfoDock: ButtonInfoDockCfg = null
-    panelEncyclopedia: any = null // not used in the game
+    panelRadar?: ButtonRadarCfg
+    panelCrystalSideBar?: ButtonCrystalSideBarCfg
+    panelTopPanel?: ButtonTopCfg
+    panelInformation?: ButtonInformationCfg
+    panelPriorityList?: ButtonPriorityListCfg
+    panelCameraControl?: ButtonCameraControlCfg
+    panelInfoDock?: ButtonInfoDockCfg
+    panelEncyclopedia?: any  // not used in the game
 
     parseValue(unifiedKey: string, cfgValue: any[]): any {
-        const btnCfgValue = {}
+        const btnCfgValue: any = {}
         cfgValue.forEach(arr => btnCfgValue[arr[0]] = arr)
         if (unifiedKey === 'panelRadar'.toLowerCase()) {
             return new ButtonRadarCfg().setFromCfgObj(btnCfgValue)
@@ -37,11 +37,11 @@ export class ButtonsCfg extends BaseConfig {
 }
 
 export class ButtonRadarCfg extends BaseConfig {
-    panelButtonRadarToggle: ButtonCfg = null
-    panelButtonRadarTaggedObjectView: ButtonCfg = null
-    panelButtonRadarZoomIn: ButtonCfg = null
-    panelButtonRadarZoomOut: ButtonCfg = null
-    panelButtonRadarMapView: ButtonCfg = null
+    panelButtonRadarToggle?: ButtonCfg
+    panelButtonRadarTaggedObjectView?: ButtonCfg
+    panelButtonRadarZoomIn?: ButtonCfg
+    panelButtonRadarZoomOut?: ButtonCfg
+    panelButtonRadarMapView?: ButtonCfg
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)
@@ -49,8 +49,8 @@ export class ButtonRadarCfg extends BaseConfig {
 }
 
 export class ButtonCrystalSideBarCfg extends BaseConfig {
-    panelButtonCrystalSideBarOre: ButtonCfg = null
-    panelButtonCrystalSideBarCrystals: ButtonCfg = null
+    panelButtonCrystalSideBarOre?: ButtonCfg
+    panelButtonCrystalSideBarCrystals?: ButtonCfg
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)
@@ -58,9 +58,9 @@ export class ButtonCrystalSideBarCfg extends BaseConfig {
 }
 
 export class ButtonTopCfg extends BaseConfig {
-    panelButtonTopPanelCallToArms: ButtonCfg = null
-    panelButtonTopPanelOptions: ButtonCfg = null
-    panelButtonTopPanelPriorities: ButtonCfg = null
+    panelButtonTopPanelCallToArms?: ButtonCfg
+    panelButtonTopPanelOptions?: ButtonCfg
+    panelButtonTopPanelPriorities?: ButtonCfg
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)
@@ -68,8 +68,8 @@ export class ButtonTopCfg extends BaseConfig {
 }
 
 export class ButtonInformationCfg extends BaseConfig {
-    panelButtonInformationToggle: ButtonCfg = null
-    panelButtonInformationFunction: ButtonCfg = null
+    panelButtonInformationToggle?: ButtonCfg
+    panelButtonInformationFunction?: ButtonCfg
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)
@@ -79,8 +79,8 @@ export class ButtonInformationCfg extends BaseConfig {
 export class ButtonPriorityListCfg extends BaseConfig {
     panelButtonPriorityListDisable: ButtonCfg[] = []
     panelButtonPriorityListUpOne: ButtonCfg[] = []
-    panelButtonPriorityListClose: ButtonCfg = null // not used in the game
-    panelButtonPriorityListReset: ButtonCfg = null
+    panelButtonPriorityListClose?: ButtonCfg  // not used in the game
+    panelButtonPriorityListReset?: ButtonCfg
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if (unifiedKey.match(/panelButtonPriorityListDisable\d+/i)) {
@@ -100,10 +100,10 @@ export class ButtonPriorityListCfg extends BaseConfig {
 }
 
 export class ButtonCameraControlCfg extends BaseConfig {
-    panelButtonCameraControlZoomIn: ButtonCfg = null
-    panelButtonCameraControlZoomOut: ButtonCfg = null
-    panelButtonCameraControlCycleBuildings: ButtonCfg = null
-    panelButtonCameraControlRotate: ButtonCfg = null
+    panelButtonCameraControlZoomIn?: ButtonCfg
+    panelButtonCameraControlZoomOut?: ButtonCfg
+    panelButtonCameraControlCycleBuildings?: ButtonCfg
+    panelButtonCameraControlRotate?: ButtonCfg
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)
@@ -111,8 +111,8 @@ export class ButtonCameraControlCfg extends BaseConfig {
 }
 
 export class ButtonInfoDockCfg extends BaseConfig {
-    panelButtonInfoDockGoto: ButtonCfg = null
-    panelButtonInfoDockClose: ButtonCfg = null
+    panelButtonInfoDockGoto?: ButtonCfg
+    panelButtonInfoDockClose?: ButtonCfg
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)

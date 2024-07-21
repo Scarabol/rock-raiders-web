@@ -1,18 +1,18 @@
 import { parseLabel } from './CfgHelper'
 
 export class BaseButtonCfg {
-    buttonType?: string = null
-    normalFile?: string = null
-    highlightFile?: string = null
-    pressedFile?: string = null
-    disabledFile?: string = null
-    relX?: number = 0
-    relY?: number = 0
-    width?: number = 0
-    height?: number = 0
-    tooltipKey?: string = null
-    tooltipText?: string = null
-    tooltipSfx?: string = null
+    buttonType?: string
+    normalFile?: string
+    highlightFile?: string
+    pressedFile?: string
+    disabledFile?: string
+    relX?: number
+    relY?: number
+    width?: number
+    height?: number
+    tooltipKey?: string
+    tooltipText?: string
+    tooltipSfx?: string
 }
 
 export class ButtonCfg extends BaseButtonCfg {
@@ -45,17 +45,17 @@ export class IconPanelBackButtonCfg extends BaseButtonCfg {
 }
 
 export class MenuItemCfg extends BaseButtonCfg {
-    tooltipDisabled: string = null
-    tooltipDisabledSfx: string = null
-    hotkey: string = null
+    tooltipDisabled?: string
+    tooltipDisabledSfx?: string
+    hotkey?: string
 
     constructor(cfgValue: any) {
         super()
-        let hotkeyName = null
+        let hotkeyName: string | undefined
         if (cfgValue.length === 4) {
             [this.normalFile, this.disabledFile, this.pressedFile, hotkeyName] = cfgValue
         } else if (cfgValue.length === 6 || cfgValue.length === 7) { // XXX 7th element is boolean, but usage unknown
-            let tooltip, tooltipDisabled
+            let tooltip: string | undefined, tooltipDisabled: string | undefined
             ;[this.normalFile, this.disabledFile, this.pressedFile, tooltip, tooltipDisabled, hotkeyName] = cfgValue
             ;[this.tooltipText, this.tooltipSfx] = Array.ensure(tooltip)
             ;[this.tooltipDisabled, this.tooltipDisabledSfx] = Array.ensure(tooltipDisabled)
@@ -69,7 +69,7 @@ export class MenuItemCfg extends BaseButtonCfg {
         this.hotkey = this.keyNameToKey(hotkeyName)
     }
 
-    private keyNameToKey(hotkeyName: string) {
+    private keyNameToKey(hotkeyName?: string): string {
         if ('KEY_ONE'.equalsIgnoreCase(hotkeyName)) {
             return '1'
         } else if ('KEY_TWO'.equalsIgnoreCase(hotkeyName)) {
@@ -102,6 +102,6 @@ export class MenuItemCfg extends BaseButtonCfg {
                 console.warn(`Given hotkey '${hotkeyName}' does not match with pattern`)
             }
         }
-        return null
+        return ''
     }
 }

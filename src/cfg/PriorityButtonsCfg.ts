@@ -2,16 +2,16 @@ import { BaseConfig } from './BaseConfig'
 import { ButtonCfg } from './ButtonCfg'
 
 export class PriorityButtonsCfg extends BaseConfig {
-    aiPriorityTrain: ButtonCfg = null
-    aiPriorityGetIn: ButtonCfg = null
-    aiPriorityCrystal: ButtonCfg = null
-    aiPriorityOre: ButtonCfg = null
-    aiPriorityRepair: ButtonCfg = null
-    aiPriorityClearing: ButtonCfg = null
-    aiPriorityDestruction: ButtonCfg = null
-    aiPriorityConstruction: ButtonCfg = null
-    aiPriorityReinforce: ButtonCfg = null
-    aiPriorityRecharge: ButtonCfg = null
+    aiPriorityTrain?: ButtonCfg
+    aiPriorityGetIn?: ButtonCfg
+    aiPriorityCrystal?: ButtonCfg
+    aiPriorityOre?: ButtonCfg
+    aiPriorityRepair?: ButtonCfg
+    aiPriorityClearing?: ButtonCfg
+    aiPriorityDestruction?: ButtonCfg
+    aiPriorityConstruction?: ButtonCfg
+    aiPriorityReinforce?: ButtonCfg
+    aiPriorityRecharge?: ButtonCfg
 
     parseValue(unifiedKey: string, cfgValue: any): ButtonCfg {
         const [tooltipText, tooltipSfx] = Array.ensure(cfgValue[0])

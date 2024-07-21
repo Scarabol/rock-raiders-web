@@ -22,7 +22,7 @@ export class DrillJob extends ShareableJob {
 
     getWorkplace(entity: JobFulfiller): PathTarget {
         if (!this.surface.isDigable()) return null
-        let digPositions = this.digPositionsByFulfiller.getOrDefault(entity.entity, [])
+        let digPositions = this.digPositionsByFulfiller.getOrUpdate(entity.entity, () => [])
         const surfaceDigPositions = this.surface.getDigPositions()
         if (digPositions.length < 1 ||
             !digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||

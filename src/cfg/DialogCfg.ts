@@ -2,12 +2,12 @@ import { Rect } from '../core/Rect'
 import { BaseConfig } from './BaseConfig'
 
 export class DialogCfg extends BaseConfig {
-    image: string = null
-    titleWindow: Rect = null
-    textWindow: Rect = null
-    okWindow: Rect = null
-    cancelWindow: Rect = null
-    contrastOverlay: string = null
+    image?: string
+    titleWindow?: Rect
+    textWindow?: Rect
+    okWindow?: Rect
+    cancelWindow?: Rect
+    contrastOverlay?: string
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         if (unifiedKey.endsWith('window')) {

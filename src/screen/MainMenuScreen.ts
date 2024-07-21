@@ -16,7 +16,6 @@ import { LevelLoader } from '../game/LevelLoader'
 
 export class MainMenuScreen {
     menuLayers: ScaledLayer[] = []
-    loadSaveLayer: LoadSaveLayer
     creditsLayer: MainMenuCreditsLayer
     rockWipeLayer: RockWipeLayer
 
@@ -30,8 +29,7 @@ export class MainMenuScreen {
             } else if (menuCfg.title.equalsIgnoreCase('Tutorials')) {
                 layer = new LevelSelectLayer(menuCfg, false)
             } else if (menuCfg.title.equalsIgnoreCase('Load Level Save')) {
-                this.loadSaveLayer = new LoadSaveLayer(menuCfg, true)
-                layer = this.loadSaveLayer
+                layer = new LoadSaveLayer(menuCfg, true)
             } else if (menuCfg.title.equalsIgnoreCase('ARE YOU SURE?')) {
                 layer = new MainMenuLayer(menuCfg)
             } else {

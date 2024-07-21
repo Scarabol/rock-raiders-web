@@ -424,6 +424,7 @@ export class LWOBParser {
                     break
                 case 'RFLT':
                     reflectionMode = this.lwoReader.readUint16()
+                    if (!(reflectionMode in ReflectionMode)) console.warn('Unexpected reflection mode given', reflectionMode)
                     if (this.verbose) console.log(`Reflection Mode (RFLT): ${reflectionMode}`)
                     break
                 case 'RIMG':

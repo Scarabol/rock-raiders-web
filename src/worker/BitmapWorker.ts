@@ -20,7 +20,7 @@ export class BitmapWorkerResponse {
 }
 
 export class BitmapSystem extends AbstractWorkerSystem<BitmapWorkerRequest, BitmapWorkerResponse> {
-    onMessageFromFrontend(workerRequestHash: string, request: BitmapWorkerRequest): BitmapWorkerResponse {
+    onMessageFromFrontend(workerRequestHash: string, request: BitmapWorkerRequest): void {
         switch (request.type) {
             case BitmapWorkerRequestType.DECODE_BITMAP:
                 this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData)})
@@ -35,7 +35,6 @@ export class BitmapSystem extends AbstractWorkerSystem<BitmapWorkerRequest, Bitm
                 this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlphaTranslucent()})
                 break
         }
-        return null
     }
 }
 

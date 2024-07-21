@@ -1,7 +1,7 @@
 import { BaseConfig } from './BaseConfig'
 
 export class PanelCfg extends BaseConfig {
-    filename: string = null
+    filename?: string
     xOut: number = 0
     yOut: number = 0
     xIn: number = 0
@@ -17,18 +17,18 @@ export class PanelCfg extends BaseConfig {
 }
 
 export class PanelsCfg extends BaseConfig {
-    panelRadar: PanelCfg = null
-    panelRadarFill: PanelCfg = null
-    panelRadarOverlay: PanelCfg = null
-    panelMessages: PanelCfg = null
-    panelMessagesSide: PanelCfg = null
-    panelCrystalSideBar: PanelCfg = null
-    panelTopPanel: PanelCfg = null
-    panelInformation: PanelCfg = null
-    panelPriorityList: PanelCfg = null
-    panelCameraControl: PanelCfg = null
-    panelInfoDock: PanelCfg = null
-    panelEncyclopedia: PanelCfg = null
+    panelRadar?: PanelCfg
+    panelRadarFill?: PanelCfg
+    panelRadarOverlay?: PanelCfg
+    panelMessages?: PanelCfg
+    panelMessagesSide?: PanelCfg
+    panelCrystalSideBar?: PanelCfg
+    panelTopPanel?: PanelCfg
+    panelInformation?: PanelCfg
+    panelPriorityList?: PanelCfg
+    panelCameraControl?: PanelCfg
+    panelInfoDock?: PanelCfg
+    panelEncyclopedia?: PanelCfg
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         return new PanelCfg().setFromCfgObj(cfgValue)

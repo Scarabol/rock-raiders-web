@@ -87,10 +87,10 @@ export class RewardFontsCfg extends BaseConfig {
 }
 
 export class RewardButtonCfg extends BaseConfig {
-    imgNormalFilepath: string = null
-    imgHoverFilepath: string = null
-    imgPressedFilepath: string = null
-    imgDisabledFilepath: string = null
+    imgNormalFilepath?: string
+    imgHoverFilepath?: string
+    imgPressedFilepath?: string
+    imgDisabledFilepath?: string
     x: number = 0
     y: number = 0
 

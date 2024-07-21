@@ -411,14 +411,14 @@ export class Raider implements Updatable, JobFulfiller {
                 misc: GameConfig.instance.miscObjects.LaserShot
             },
             {
-                tool: RaiderTool.FREEZERGUN,
+                tool: RaiderTool.FREEZER_GUN,
                 damage: stats.FreezerDamage,
                 weaponStats: GameConfig.instance.weaponTypes.get('freezer'),
                 bulletType: EntityType.FREEZER_SHOT,
                 misc: GameConfig.instance.miscObjects.Freezer
             },
             {
-                tool: RaiderTool.PUSHERGUN,
+                tool: RaiderTool.PUSHER_GUN,
                 damage: stats.PusherDamage,
                 weaponStats: GameConfig.instance.weaponTypes.get('pusher'),
                 bulletType: EntityType.PUSHER_SHOT,
@@ -484,7 +484,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private hasWeapon(): boolean {
-        return [RaiderTool.FREEZERGUN, RaiderTool.LASER, RaiderTool.PUSHERGUN].some((w) => this.hasTool(w))
+        return [RaiderTool.FREEZER_GUN, RaiderTool.LASER, RaiderTool.PUSHER_GUN].some((w) => this.hasTool(w))
     }
 
     hasTraining(training: RaiderTraining) {

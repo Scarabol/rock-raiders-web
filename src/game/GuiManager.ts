@@ -213,8 +213,8 @@ export class GuiManager {
         })
         EventBroker.subscribe(EventKey.COMMAND_DROP_BIRD_SCARER, () => {
             entityMgr.selection.raiders.forEach((r) => {
-                if (!r.hasTool(RaiderTool.BIRDSCARER)) return
-                r.removeTool(RaiderTool.BIRDSCARER)
+                if (!r.hasTool(RaiderTool.BIRD_SCARER)) return
+                r.removeTool(RaiderTool.BIRD_SCARER)
                 if (r.selected) EventBroker.publish(new SelectionChanged(entityMgr))
                 const birdScarer = worldMgr.ecs.addEntity()
                 const position = r.getPosition()
