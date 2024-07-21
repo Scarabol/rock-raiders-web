@@ -475,8 +475,8 @@ export class NerpRunner {
         return GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0)
     }
 
-    setTutorialBlockClicks(tutoBlockId: number) {
-        GameState.tutoBlockClicks.set(tutoBlockId, 0)
+    setTutorialBlockClicks(tutoBlockId: number, numClicks: number) {
+        GameState.tutoBlockClicks.set(tutoBlockId, numClicks)
     }
 
     getUnitAtBlock(tutoBlockId: number): number {
