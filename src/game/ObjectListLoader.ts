@@ -1,4 +1,4 @@
-import { MathUtils, Vector2 } from 'three'
+import { Vector2 } from 'three'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 import { FollowerSetLookAtEvent, RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
@@ -22,7 +22,7 @@ import { RaiderInfoComponent } from './component/RaiderInfoComponent'
 import { GameConfig } from '../cfg/GameConfig'
 import { GameEntity } from './ECS'
 import { EventBroker } from '../event/EventBroker'
-import degToRad = MathUtils.degToRad
+import { degToRad } from 'three/src/math/MathUtils'
 
 export class ObjectListLoader {
     static numRaider: number = 0
