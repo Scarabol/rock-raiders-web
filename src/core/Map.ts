@@ -2,21 +2,25 @@ declare global {
     interface Map<K, V> {
         getOrUpdate(key: K, updateCallback: () => V): V
 
-        getOrDefault(key: K, fallback: V): V
+        upsert(key: K, updateCallback: (prevVal?: V) => V): V
     }
 }
 
-Map.prototype.getOrUpdate = function <K, V>(key: K, updateCallback: () => V): V {
+// XXX Might be replaced with Map.prototype.emplace one day, see https://github.com/tc39/proposal-upsert
+Map.prototype.getOrUpdate = function <K, V>(key: K, insertCallback: () => V): V {
     let value = this.get(key)
     if (value === undefined) {
-        value = updateCallback()
+        value = insertCallback()
         this.set(key, value)
     }
     return value
 }
 
-Map.prototype.getOrDefault = function <K, V>(key: K, fallback: V): V {
-    return this.has(key) ? this.get(key) : fallback
+// XXX Might be replaced with Map.prototype.emplace one day, see https://github.com/tc39/proposal-upsert
+Map.prototype.upsert = function <K, V>(key: K, updateCallback: (prevVal?: V) => V): V {
+    const value = updateCallback(this.get(key)) // if used with Map.prototype.has this becomes incompatible with MapWithDefault
+    this.set(key, value)
+    return value
 }
 
 export {}

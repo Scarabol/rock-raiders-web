@@ -55,7 +55,7 @@ export class IconPanelButton extends Button {
             itemKey: d.itemKey,
             minLevel: d.minLevel,
             isOk: (d.entityType === EntityType.PILOT && this.hasRaider)
-                || (this.discoveredBuildingsMaxLevel.getOrDefault(d.entityType, -1) >= d.minLevel),
+                || (this.discoveredBuildingsMaxLevel.getOrUpdate(d.entityType, () => -1) >= d.minLevel),
         }))
         this.hasUnfulfilledDependency = !DEV_MODE && checked.some((d) => !d.isOk)
         DependencySpriteWorkerPool.instance.createDependenciesSprite(checked).then((dependencySprite) => this.dependencyTooltipImage = dependencySprite)

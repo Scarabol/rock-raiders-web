@@ -107,20 +107,18 @@ export class BuildingsChangedEvent extends BaseEvent {
         entityMgr.buildings.forEach((b) => {
             if (b.isReady()) {
                 this.placedVisibleBuildings.add(b.entity)
-                const current = this.discoveredBuildingsMaxLevel.getOrDefault(b.entityType, 0)
-                this.discoveredBuildingsMaxLevel.set(b.entityType, Math.max(current, b.level))
+                this.discoveredBuildingsMaxLevel.upsert(b.entityType, (current) => Math.max(current || 0, b.level))
             }
             if (b.isPowered()) {
                 this.poweredBuildings.add(b.entity)
-                const current = this.usableBuildingsMaxLevel.getOrDefault(b.entityType, 0)
-                this.usableBuildingsMaxLevel.set(b.entityType, Math.max(current, b.level))
+                this.usableBuildingsMaxLevel.upsert(b.entityType, (current) => Math.max(current || 0, b.level))
             }
         })
     }
 
     // needs static, because events might get de-/serialized, which removes class methods
     static hasUsable(event: BuildingsChangedEvent, building: EntityType, minLevel: number = 0): boolean {
-        const currentMaxLevel = event.usableBuildingsMaxLevel.getOrDefault(building, -1)
+        const currentMaxLevel = event.usableBuildingsMaxLevel.getOrUpdate(building, () => -1)
         return currentMaxLevel >= minLevel
     }
 }

@@ -111,22 +111,22 @@ export class NerpRunner {
             if (!iconCLickedEntry.eventKey) return
             EventBroker.subscribe(iconCLickedEntry.eventKey, () => {
                 const iconName = iconCLickedEntry.iconName.toLowerCase()
-                this.iconClicked.set(iconName, this.iconClicked.getOrDefault(iconName, 0) + 1)
+                this.iconClicked.upsert(iconName, (current) => (current || 0) + 1)
             })
         })
         EventBroker.subscribe(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
             const increased = event.numRequested > this.numRequestedRaiders
             this.numRequestedRaiders = event.numRequested
             if (!increased) return
-            this.iconClicked.set('teleport', this.iconClicked.getOrDefault('teleport', 0) + 1)
+            this.iconClicked.upsert('teleport', (current) => (current || 0) + 1)
         })
         EventBroker.subscribe(EventKey.COMMAND_SELECT_BUILD_MODE, (event) => {
             const iconConfig = NerpRunner.iconClickedConfig.find((c) => c.buttonType.toLowerCase() === event.entityType.toLowerCase())
-            if (iconConfig) this.iconClicked.set(iconConfig.iconName.toLowerCase(), this.iconClicked.getOrDefault(iconConfig.iconName.toLowerCase(), 0) + 1)
+            if (iconConfig) this.iconClicked.upsert(iconConfig.iconName.toLowerCase(), (current) => (current || 0) + 1)
         })
         EventBroker.subscribe(EventKey.COMMAND_TRAIN_RAIDER, (event) => {
             const iconName = RaiderTrainings.toStatsProperty(event.training).toLowerCase()
-            this.iconClicked.set(iconName, this.iconClicked.getOrDefault(iconName, 0) + 1)
+            this.iconClicked.upsert(iconName, (current) => (current || 0) + 1)
         })
     }
 
@@ -472,7 +472,7 @@ export class NerpRunner {
     }
 
     getTutorialBlockClicks(tutoBlockId: number): number {
-        return GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0)
+        return GameState.tutoBlockClicks.getOrUpdate(tutoBlockId, () => 0)
     }
 
     setTutorialBlockClicks(tutoBlockId: number, numClicks: number) {
@@ -844,7 +844,7 @@ export class NerpRunner {
             const iconName = getIconClickedMatch[1]
             const iconCLickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
             if (iconCLickedEntry) {
-                return this.iconClicked.getOrDefault(iconCLickedEntry.iconName.toLowerCase(), 0)
+                return this.iconClicked.getOrUpdate(iconCLickedEntry.iconName.toLowerCase(), () => 0)
             } else {
                 console.warn(`Could not get icon "${iconName}" clicked`)
             }

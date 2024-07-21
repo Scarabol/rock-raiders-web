@@ -141,7 +141,7 @@ export class GameLayer extends ScreenLayer {
         if (selection.surface) {
             this.worldMgr.nerpRunner?.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
                 if (surfaces.includes(selection.surface)) {
-                    GameState.tutoBlockClicks.set(tutoBlockId, GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0) + 1)
+                    GameState.tutoBlockClicks.upsert(tutoBlockId, (current) => (current || 0) + 1)
                 }
             })
         }
@@ -166,7 +166,7 @@ export class GameLayer extends ScreenLayer {
                 if (cursorTarget.surface) {
                     this.worldMgr.nerpRunner?.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
                         if (surfaces.includes(cursorTarget.surface)) {
-                            GameState.tutoBlockClicks.set(tutoBlockId, GameState.tutoBlockClicks.getOrDefault(tutoBlockId, 0) + 1)
+                            GameState.tutoBlockClicks.upsert(tutoBlockId, (current) => (current || 0) + 1)
                         }
                     })
                 }
