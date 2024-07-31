@@ -25,7 +25,7 @@ export class AVIParser {
     readonly videoStreams: AVIVideoStream[] = []
     readonly audioStreams: AVIAudioStream[] = []
     readonly chunksByStreamIndex: Map<number, ByteStreamReader[]> = new Map()
-    mainHeader: AVIMainHeader
+    mainHeader?: AVIMainHeader
 
     constructor(dataView: DataView) {
         this.reader = new AVIReader(dataView)
@@ -92,9 +92,11 @@ export class AVIParser {
         if (listType !== AVIParser.LIST_TYPE_STREAM_HEADER_LIST) throw new Error(`Unexpected list type; got ${listType} instead of ${AVIParser.LIST_TYPE_STREAM_HEADER_LIST}`)
         while (headerItem.reader.hasMoreData()) {
             const streamHeaderItem = headerItem.reader.readItem()
+            if (!streamHeaderItem) throw new Error('Failed to read next header item')
             if (streamHeaderItem.chunkType !== AVIParser.CHUNK_TYPE_STREAM_HEADER) throw new Error(`Unexpected header item; got ${streamHeaderItem.chunkType} instead of ${AVIParser.CHUNK_TYPE_STREAM_HEADER}`)
             const streamHeader = this.parseStreamHeader(streamHeaderItem.reader)
             const streamFormatItem = headerItem.reader.readItem()
+            if (!streamFormatItem) throw new Error('Failed to read next stream format item')
             if (streamFormatItem.chunkType !== AVIParser.CHUNK_TYPE_STREAM_FORMAT) throw new Error(`Unexpected header item; got ${streamFormatItem.chunkType} instead of ${AVIParser.CHUNK_TYPE_STREAM_FORMAT}`)
             switch (streamHeader.fccType) {
                 case AVIParser.FCC_TYPE_VIDEO:

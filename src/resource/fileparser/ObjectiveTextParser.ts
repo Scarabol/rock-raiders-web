@@ -1,15 +1,15 @@
 export class LevelObjectiveTextEntry {
-    levelKey: string
-    objective: string
-    failure: string
-    completion: string
-    crystalFailure: string
+    levelKey: string = ''
+    objective: string = ''
+    failure: string = ''
+    completion: string = ''
+    crystalFailure: string = ''
 }
 
 export class ObjectiveTextParser {
     parseObjectiveTextFile(txtFileText: string) {
         const result: Record<string, LevelObjectiveTextEntry> = {}
-        let currentLevel: LevelObjectiveTextEntry = null
+        let currentLevel: LevelObjectiveTextEntry
         txtFileText.split('\n').forEach((l) => {
             const line = l.trim()
             if (line.startsWith('[') && line.endsWith(']')) {

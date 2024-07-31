@@ -31,7 +31,7 @@ export class SelectBuildingPanel extends SelectBasePanel {
         upgradeItem.isDisabled = () => !this.buildingCanUpgrade
         upgradeItem.onClick = () => this.publishEvent(new UpgradeBuilding())
         upgradeItem.showTooltipDisabled = () => {
-            const event = new ChangeTooltip(upgradeItem.tooltipDisabled, 0, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX, () => {
+            const event: ChangeTooltip = new ChangeTooltip(upgradeItem.tooltipDisabled, 0, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX, () => {
                 return TooltipSpriteBuilder.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, this.buildingMissingOreForUpgrade)
             })
             this.publishEvent(event)

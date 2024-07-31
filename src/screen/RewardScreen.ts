@@ -53,9 +53,9 @@ export class RewardScreen {
         this.cfg.boxImages.forEach((img) => {
             this.boxes.push({img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y})
         })
-        Promise.all(Object.keys(this.cfg.fonts).map((fontKey, index) => {
-            this.fontNames.set(fontKey.toLowerCase(), this.cfg.fonts[fontKey])
-            const labelFontName = index < 9 ? this.cfg.fonts[fontKey] : this.cfg.backFont
+        Promise.all(Object.entries(this.cfg.fonts).map(([fontKey, fontValue], index) => {
+            this.fontNames.set(fontKey.toLowerCase(), fontValue)
+            const labelFontName = index < 9 ? fontValue : this.cfg.backFont
             return BitmapFontWorkerPool.instance.createTextImage(labelFontName, this.cfg.text[index].text)
         })).then((textImages) => this.texts = textImages)
         this.resultsLayer = screenMaster.addLayer(new ScaledLayer('RewardResultsLayer'), 610)

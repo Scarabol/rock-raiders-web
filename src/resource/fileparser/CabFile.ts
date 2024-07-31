@@ -12,6 +12,12 @@ interface CabFileEntry {
     fileDescriptorOffset: string;
 }
 
+interface CabFileGroup {
+    name: string;
+    firstFile: number;
+    lastFile: number;
+}
+
 export class CabFile {
     static readonly CAB_SIGNATURE = 0x28635349
     static readonly FALLBACK_MAJOR_VERSION = 5
@@ -71,7 +77,7 @@ export class CabFile {
 
         reader.skip(0xe)
 
-        const fileGroupOffsets = []
+        const fileGroupOffsets: number[] = []
         for (let c = 0; c < CabFile.MAX_FILE_GROUP_COUNT; c++) {
             fileGroupOffsets[c] = reader.readUint32()
         }
@@ -89,7 +95,7 @@ export class CabFile {
         // XXX Parse components from header
 
         // getFileGroups
-        const fileGroups = []
+        const fileGroups: CabFileGroup[] = []
         for (let c = 0; c < CabFile.MAX_FILE_GROUP_COUNT; c++) {
             if (!fileGroupOffsets[c]) continue
             const list = {nameOffset: 0, descriptorOffset: 0, nextOffset: fileGroupOffsets[c]}

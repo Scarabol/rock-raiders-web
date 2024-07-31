@@ -22,7 +22,8 @@ export class ZipFilesComponent implements SelectFilesComponent {
     readonly content: HTMLElement
     readonly btnContainer: HTMLElement
     readonly buttons: HTMLButtonElement[] = []
-    onFilesLoaded: (vfs: VirtualFileSystem) => void
+    onFilesLoaded: (vfs: VirtualFileSystem) => void = () => {
+    }
 
     constructor() {
         const description = this.element.appendChild(document.createElement('div'))
@@ -120,12 +121,12 @@ export class ZipFilesComponent implements SelectFilesComponent {
             const wadEntries = zipEntries.filter((e) => !e.directory && !!e.filename.match(/.+\.wad/i))
             await Promise.all(wadEntries.map(async (e) => {
                 const lFileName = e.filename.replace('Rock Raiders/', '').toLowerCase()
-                const zipFileData = await e.getData(new Uint8ArrayWriter(), {
+                const buffer = (await e.getData?.(new Uint8ArrayWriter(), {
                     onprogress: (progress: number, total: number): undefined => {
                         this.setProgress(`Extracting "${e.filename}"...`, progress, total)
                     }
-                })
-                const buffer = zipFileData.buffer
+                }))?.buffer
+                if (!buffer) throw new Error(`Could not read file buffer for ${lFileName}`)
                 vfs.registerFile(VirtualFile.fromBuffer(lFileName, buffer))
                 await cachePutData(lFileName, buffer)
             }))
@@ -133,7 +134,8 @@ export class ZipFilesComponent implements SelectFilesComponent {
             let progress = 0
             await Promise.all(dataEntries.map(async (e) => {
                 const lFileName = e.filename.replace('Rock Raiders/', '').toLowerCase()
-                const buffer = (await e.getData(new Uint8ArrayWriter())).buffer
+                const buffer = (await e.getData?.(new Uint8ArrayWriter()))?.buffer
+                if (!buffer) throw new Error(`Could not read file buffer for ${lFileName}`)
                 vfs.registerFile(VirtualFile.fromBuffer(lFileName, buffer))
                 await cachePutData(lFileName, buffer)
                 progress++

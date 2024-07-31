@@ -13,6 +13,7 @@ export class CabFilesComponent extends AbstractFormFilesComponent {
     }
 
     protected async onFilesSelected(vfs: VirtualFileSystem, files: File[]): Promise<void> {
+        if (files.length !== 2) throw new Error(`Unexpected number of files (${files.length}) given`)
         const cabHeader = await files[0].arrayBuffer()
         const cabVolume = await files[1].arrayBuffer()
         const cabFile = new CabFile(cabHeader, cabVolume, false).parse()

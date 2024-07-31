@@ -10,19 +10,19 @@ import { getFilename } from '../../core/Util'
 import { VERBOSE } from '../../params'
 
 export class LWSCData {
-    filePath: string = null
+    filePath: string = ''
     framesPerSecond: number = 25
-    durationSeconds: number = null
+    durationSeconds: number = 0
     readonly objects: LWSCObject[] = []
 }
 
 export class LWSCObject {
-    fileName: string = null
-    lowerName: string = null
+    fileName: string = ''
+    lowerName: string = ''
     isNull: boolean = false
-    sfxName: string = null
+    sfxName: string = ''
     parentObjInd: number = 0 // index is 1 based, 0 means no parent
-    pivot: number[] = null
+    pivot: number[] = []
     readonly keyframeTracks: KeyframeTrack[] = []
     readonly positionTracks: VectorKeyframeTrack[] = []
     readonly opacityTracks: NumberKeyframeTrack[] = []
@@ -76,7 +76,7 @@ export class LWSCParser {
 
     private static parseLine(line: string): string[] {
         const lineParts = line.split(' ').filter((l) => l !== '')
-        const key = lineParts.shift()
+        const key = lineParts.shift() || ''
         const value = lineParts.join(' ')
         return [key, value]
     }

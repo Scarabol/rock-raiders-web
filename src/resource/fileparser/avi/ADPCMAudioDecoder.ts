@@ -17,8 +17,10 @@ export class ADPCMAudioDecoder implements AVIAudioDecoder {
     constructor(
         readonly audioFormat: AVIAudioFormat,
     ) {
-        this.coefficient1 = audioFormat.extra.coefficientPairs[0]
-        this.coefficient2 = audioFormat.extra.coefficientPairs[1]
+        if (audioFormat.extra) {
+            this.coefficient1 = audioFormat.extra.coefficientPairs[0]
+            this.coefficient2 = audioFormat.extra.coefficientPairs[1]
+        }
     }
 
     decode(buf: AVIReader, channels: number, wSamplesPerBlock: number): number[][] {

@@ -5,7 +5,8 @@ import { VirtualFileSystem } from '../fileparser/VirtualFileSystem'
 export abstract class AbstractFormFilesComponent implements SelectFilesComponent {
     readonly element: HTMLElement
 
-    onFilesLoaded: (vfs: VirtualFileSystem) => void
+    onFilesLoaded: (vfs: VirtualFileSystem) => void = () => {
+    }
 
     protected constructor(args: { labelText: string, btnText: string, fileNames: string[] }) {
         this.element = document.createElement('form')
@@ -23,7 +24,7 @@ export abstract class AbstractFormFilesComponent implements SelectFilesComponent
             try {
                 e.preventDefault()
                 btnStart.disabled = true
-                const files = fileSelectInputs.map((f) => f.files[0])
+                const files = fileSelectInputs.map((f) => f.files?.[0]).filter((f) => !!f)
                 const vfs = new VirtualFileSystem()
                 await this.onFilesSelected(vfs, files)
                 this.onFilesLoaded(vfs)

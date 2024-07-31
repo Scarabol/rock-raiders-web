@@ -23,7 +23,9 @@ export class AVIVideoStream {
         this.canvas = document.createElement('canvas')
         this.canvas.width = videoFormat.biWidth
         this.canvas.height = videoFormat.biHeight
-        this.context = this.canvas.getContext('2d')
+        const context = this.canvas.getContext('2d')
+        if (!context) throw new Error('Failed to get context for video frame canvas')
+        this.context = context
 
         switch (streamHeader.fccHandler) {
             case 'MSVC':

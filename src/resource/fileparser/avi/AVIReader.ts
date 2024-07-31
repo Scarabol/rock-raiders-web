@@ -11,9 +11,9 @@ export class AVIReader extends ByteStreamReader {
         return this.readString(4)
     }
 
-    readItem(): AVIItem {
-        const chunkType: string = this.skipJunk()
-        if (!chunkType) return null
+    readItem(): AVIItem | undefined {
+        const chunkType = this.skipJunk()
+        if (!chunkType) return undefined
         const chunkLength = this.read32()
         const nextOffset = this.dataView.byteOffset + this.offset
         const reader = new AVIReader(new DataView(this.dataView.buffer, nextOffset, chunkLength))
@@ -22,8 +22,8 @@ export class AVIReader extends ByteStreamReader {
         return {chunkType, reader}
     }
 
-    private skipJunk(): string {
-        let chunkType: string = null
+    private skipJunk(): string | undefined {
+        let chunkType: string | undefined
         while (this.hasMoreData()) {
             chunkType = this.readFourCC()
             if (chunkType === AVIParser.CHUNK_TYPE_JUNK) {

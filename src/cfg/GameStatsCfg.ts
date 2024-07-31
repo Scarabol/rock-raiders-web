@@ -34,6 +34,11 @@ export class VehicleEntityStats extends BaseConfig implements MovableEntityStats
     EngineSound: string = ''
     CanClearRubble: boolean = false
     RouteSpeed: number[] = []
+    SoilDrillTime: number[] = []
+    LooseDrillTime: number[] = []
+    MedDrillTime: number[] = []
+    HardDrillTime: number[] = []
+    SeamDrillTime: number[] = []
     SurveyRadius: number[] = []
     OxygenCoef: number = 0
     PathCoef: number = 1

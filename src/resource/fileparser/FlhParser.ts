@@ -12,14 +12,14 @@ import { getPixel, setPixel } from '../../core/ImageHelper'
  */
 
 export class FlhParser {
-    fileLength: number = null
-    flicFileType: number = null
-    lengthFrames: number = null
-    frames: Array<ImageData> = null
-    width: number = null
-    height: number = null
-    depth: number = null
-    offsetFirstFrame: number = null
+    fileLength: number = 0
+    flicFileType: number = 0
+    lengthFrames: number = 0
+    frames: Array<ImageData> = []
+    width: number = 0
+    height: number = 0
+    depth: number = 0
+    offsetFirstFrame: number = 0
 
     constructor(readonly dataView: DataView, readonly interFrameMode: boolean) {
     }

@@ -11,8 +11,8 @@ export class SurfaceType {
     reinforcable: boolean = false
     hasRubble: boolean = false
     cursor: Cursor = Cursor.STANDARD
-    statsDrillName: string = null
-    statsLaserName: 'wallDestroyTimeHard' | 'wallDestroyTimeMedium' | 'wallDestroyTimeLoose' = null
+    statsDrillName?: 'HardDrillTime' | 'LooseDrillTime' | 'SoilDrillTime' | 'SeamDrillTime'
+    statsLaserName?: 'wallDestroyTimeHard' | 'wallDestroyTimeMedium' | 'wallDestroyTimeLoose'
     canHaveFence: boolean = false
     connectsPath: boolean = false
     mapSurfaceColor: string = '#00FFFF'

@@ -1,7 +1,7 @@
 const GreenScaleShader = {
     name: 'GreenScaleShader',
     uniforms: {
-        'tDiffuse': {value: null},
+        'tDiffuse': {value: null as never},
     },
     vertexShader: /* glsl */`
             varying vec2 vUv;

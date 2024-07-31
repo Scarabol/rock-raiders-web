@@ -60,9 +60,9 @@ export class LWOBParser {
     readonly lwoReader: LWOBFileReader
     materials: SequenceTextureMaterial[] = []
     geometry: BufferGeometry = new BufferGeometry()
-    vertices: Float32Array = null
-    indices: Uint16Array = null
-    uvs: Float32Array = null
+    vertices: Float32Array = new Float32Array()
+    indices: Uint16Array = new Uint16Array()
+    uvs: Float32Array = new Float32Array()
 
     constructor(
         readonly lwoFilepath: string,
@@ -74,10 +74,10 @@ export class LWOBParser {
         this.lwoReader = new LWOBFileReader(buffer)
     }
 
-    parse(): SceneMesh {
+    parse(): SceneMesh | undefined {
         if (this.lwoReader.readIDTag() !== 'FORM') {
             console.error('Cannot find header.')
-            return null
+            return undefined
         }
 
         const fileSize = this.lwoReader.readUint32()
@@ -89,7 +89,7 @@ export class LWOBParser {
         const magic = this.lwoReader.readString(4)
         if (magic !== 'LWOB') {
             console.error(`Invalid magic ID (${magic}) in LWO header.`)
-            return null
+            return undefined
         }
 
         while (!this.lwoReader.endOfFile()) {
@@ -215,7 +215,7 @@ export class LWOBParser {
         const materialName = this.lwoReader.readString()
         if (this.verbose) console.log(`Start parsing surface: "${materialName}"`)
         let materialIndex = -1
-        let material: SequenceTextureMaterial = null
+        let material: SequenceTextureMaterial | undefined
         for (let i = 0; i < this.materials.length; i++) {
             if (this.materials[i].name === materialName) {
                 materialIndex = i
@@ -237,7 +237,7 @@ export class LWOBParser {
         let sequenceFlags = 0
         let sequenceLoopLength = 0
         let reflectionMode = ReflectionMode.SPHERICAL_WITH_RAYTRACING
-        let textureColorArray: number[] = null
+        let textureColorArray: number[] | undefined
 
         while (this.lwoReader.cursor < chunkEnd) {
             const cursor = this.lwoReader.cursor
@@ -296,7 +296,7 @@ export class LWOBParser {
                 case 'DIFF':
                     const diffuse = this.lwoReader.readUint16() / 256
                     if (this.verbose) console.log(`Diffuse (DIFF): ${diffuse}`)
-                    if (!diffuse) material.color = null
+                    if (!diffuse) material.color.set(0xffffff)
                     break
                 case 'SPEC':
                     const specular = this.lwoReader.readUint16() / 256
@@ -352,7 +352,7 @@ export class LWOBParser {
                 case 'BTEX':
                     const textureTypeName = this.lwoReader.readString()
                     if (this.verbose) console.log(`Texture typename: ${textureTypeName}`)
-                    textureColorArray = null
+                    textureColorArray = undefined
                     break
                 case 'TFLG':
                     textureFlags = this.lwoReader.readUint16()
@@ -552,10 +552,10 @@ class LWOBFileReader {
         return this.readString(4)
     }
 
-    readString(size: number = null): string {
+    readString(size: number = -1): string {
         if (size === 0) return ''
         const charBuffer = []
-        if (size) {
+        if (size > 0) {
             for (let c = 0; c < size; c++) {
                 charBuffer[c] = this.readUint8()
             }

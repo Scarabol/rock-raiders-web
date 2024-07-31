@@ -1,8 +1,8 @@
 import { encodeChar } from './EncodingHelper'
 
 export class VirtualFile {
-    private buffer: ArrayBuffer = null
-    private text: string = null
+    private buffer?: ArrayBuffer
+    private text?: string
 
     private constructor(readonly fileName: string, private view: DataView) {
     }

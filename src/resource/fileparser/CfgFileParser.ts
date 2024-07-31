@@ -72,9 +72,8 @@ export class CfgFileParser {
 
         const stack = [root]
         while (stack.length > 0) {
-            const obj = stack.pop()
-            Object.keys(obj).forEach((key) => {
-                const val = obj[key]
+            const obj: Record<string, unknown> = stack.pop()
+            Object.entries(obj).forEach(([key, val]) => {
                 if (Array.isArray(val)) {
                     if (val.length === 1) {
                         obj[key] = val[0]
@@ -89,7 +88,7 @@ export class CfgFileParser {
 
         const entries = Object.values(root)
         if (entries.length > 1 && VERBOSE) console.warn(`Config file contains (${entries.length}) objects! Will proceed with first object '${Object.keys(root)[0]}' only`)
-        const result = entries[0] as object
+        const result = entries[0] as Record<string, unknown>
 
         // apply some patches here
         Object.values(result['Levels']).forEach((levelConf) => {

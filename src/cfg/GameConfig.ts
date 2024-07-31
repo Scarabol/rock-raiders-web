@@ -80,7 +80,10 @@ export class GameConfig extends BaseConfig {
         } else if ('ToolTipInfo'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.toolTipInfo.set(cfgKey.toLowerCase(), parseLabel(value as string)))
         } else if ('SurfaceTypeDescriptions'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.surfaceTypeDescriptions.set(this.stripKey(cfgKey), {objectName: value[0], sfxKey: value[1]}))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
+                const v = value as [string, string]
+                this.surfaceTypeDescriptions.set(this.stripKey(cfgKey), {objectName: v[0], sfxKey: v[1]})
+            })
         } else if ('ObjInfo'.equalsIgnoreCase(unifiedKey)) {
             this.objInfo.setFromCfgObj(cfgValue)
         } else if ('Pointers'.equalsIgnoreCase(unifiedKey)) {
@@ -139,8 +142,8 @@ export class GameConfig extends BaseConfig {
                     return
                 }
                 const entityType: EntityType = getEntityTypeByName(cfgKey.split(':')[1])
-                const deps: EntityDependency[] = (value as unknown[])
-                    .map((d): EntityDependency => ({entityType: getEntityTypeByName(d[0]), minLevel: d[1] as number, itemKey: d[0]}))
+                const deps: EntityDependency[] = (value as [string, number, string][])
+                    .map((d): EntityDependency => ({entityType: getEntityTypeByName(d[0]), minLevel: d[1], itemKey: d[0]}))
                 this.dependencies.set(entityType, deps)
             })
         } else if ('Levels'.equalsIgnoreCase(unifiedKey)) {

@@ -15,7 +15,7 @@ export class InterfaceSurroundImagesCfg {
     constructor(cfgValue: Record<number, [string, number, number, number, number, string, number, number]>) {
         Object.entries(cfgValue).forEach(([num, cfg]) => {
             const [imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2] = cfg
-            this.cfgByNumItems[num] = {imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2}
+            this.cfgByNumItems[Number(num)] = {imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2}
         })
     }
 }

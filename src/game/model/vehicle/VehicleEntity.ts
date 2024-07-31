@@ -320,7 +320,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     getDrillTimeSeconds(surface: Surface): number {
         if (!surface) return 0
-        return (this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0)
+        return this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0
     }
 
     setJob(job: Job, followUpJob: Job = null) {
