@@ -76,8 +76,8 @@ export class Supervisor {
         const unemployedVehicles = new Set(this.worldMgr.entityMgr.vehicles.filter((v) => v.isReadyToTakeAJob()))
         availableJobs.forEach((job) => { // XXX better use estimated time to complete job as metric
             try {
-                let closestVehicle: VehicleEntity = null
-                let closestVehicleDistance: number = null
+                let closestVehicle: VehicleEntity | undefined
+                let closestVehicleDistance: number = Infinity
                 unemployedVehicles.forEach((vehicle) => {
                     try {
                         const pathToWorkplace = vehicle.findShortestPath(job.getWorkplace(vehicle))
@@ -86,7 +86,7 @@ export class Supervisor {
                         if (!pathToJob) return
                         if (vehicle.isPrepared(job)) {
                             const dist = pathToJob.lengthSq
-                            if (closestVehicleDistance === null || dist < closestVehicleDistance) {
+                            if (dist < closestVehicleDistance) {
                                 closestVehicle = vehicle
                                 closestVehicleDistance = dist
                             }
@@ -100,15 +100,15 @@ export class Supervisor {
                     unemployedVehicles.delete(closestVehicle)
                     return // if vehicle found do not check for raider
                 }
-                let closestRaider: Raider = null
-                let minDistance: number = null
-                let closestToolRaider: Raider = null
-                let minToolDistance: number = null
-                let closestToolstation: BuildingEntity = null
+                let closestRaider: Raider | undefined
+                let minDistance: number = Infinity
+                let closestToolRaider: Raider | undefined
+                let minToolDistance: number = Infinity
+                let closestToolstation: BuildingEntity | undefined
                 const requiredTool = job.requiredTool
-                let closestTrainingRaider: Raider = null
-                let minTrainingDistance: number = null
-                let closestTrainingArea: BuildingEntity = null
+                let closestTrainingRaider: Raider | undefined
+                let minTrainingDistance: number = Infinity
+                let closestTrainingArea: BuildingEntity | undefined
                 const requiredTraining = job.requiredTraining
                 unemployedRaider.forEach((raider) => {
                     try {
@@ -118,7 +118,7 @@ export class Supervisor {
                         if (!pathToJob) return
                         if (raider.isPrepared(job)) {
                             const dist = pathToJob.lengthSq
-                            if (minDistance === null || dist < minDistance) {
+                            if (dist < minDistance) {
                                 closestRaider = raider
                                 minDistance = dist
                             }
@@ -126,7 +126,7 @@ export class Supervisor {
                             const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
                             if (pathToToolstation) {
                                 const dist = pathToToolstation.lengthSq
-                                if (minToolDistance === null || dist < minToolDistance) {
+                                if (dist < minToolDistance) {
                                     closestToolRaider = raider
                                     minToolDistance = dist
                                     closestToolstation = pathToToolstation.target.building
@@ -136,7 +136,7 @@ export class Supervisor {
                             const pathToTrainingSite = raider.findShortestPath(this.worldMgr.entityMgr.getTrainingSiteTargets(requiredTraining))
                             if (pathToTrainingSite) {
                                 const dist = pathToTrainingSite.lengthSq
-                                if (minTrainingDistance === null || dist < minTrainingDistance) {
+                                if (dist < minTrainingDistance) {
                                     closestTrainingRaider = raider
                                     minTrainingDistance = dist
                                     closestTrainingArea = pathToTrainingSite.target.building

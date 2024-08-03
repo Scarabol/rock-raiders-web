@@ -131,11 +131,11 @@ export class EntityManager {
 
     getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity {
         const buildings = this.getBuildingsByType(...buildingTypes)
-        let closest: BuildingEntity = null, minDist: number = null
+        let closest: BuildingEntity | undefined, minDist: number = Infinity
         buildings.forEach((b) => {
             const bPos = b.getPosition()
             const dist = position.distanceToSquared(bPos)
-            if (closest === null || dist < minDist) {
+            if (dist < minDist) {
                 closest = b
                 minDist = dist
             }

@@ -14,7 +14,7 @@ export class GetToolJob extends RaiderJob {
     tool: RaiderTool
     workplaces: PathTarget[]
 
-    constructor(entityMgr: EntityManager, tool: RaiderTool, toolstation: BuildingEntity) {
+    constructor(entityMgr: EntityManager, tool: RaiderTool, toolstation?: BuildingEntity) {
         super()
         this.entityMgr = entityMgr
         this.tool = tool

@@ -16,7 +16,7 @@ export class TrainRaiderJob extends RaiderJob {
     building: BuildingEntity
     workplaces: PathTarget[]
 
-    constructor(readonly entityMgr: EntityManager, readonly training: RaiderTraining, building: BuildingEntity) {
+    constructor(readonly entityMgr: EntityManager, readonly training: RaiderTraining, building?: BuildingEntity) {
         super()
         this.building = building
         this.workplaces = this.building?.getTrainingTargets()

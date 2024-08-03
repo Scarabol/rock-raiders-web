@@ -42,8 +42,8 @@ export class GameModule {
         if (DEV_MODE && entry) {
             ObjectListLoader.numRaider = Number(params.get('numRaider')) || 0
             ObjectListLoader.startVehicle = params.get('vehicle') || ''
-            const loadGame = params.get('loadGame')
-            if (loadGame !== null) SaveGameManager.loadGame(Number(loadGame))
+            const loadGame = params.get('loadGame') || ''
+            if (loadGame) SaveGameManager.loadGame(Number(loadGame))
             if (entry === 'level') this.mainMenuScreen.showLevelSelection()
             else if (entry === 'tutorial') this.mainMenuScreen.showMainMenu(2)
             else if (entry === 'reward') this.rewardScreen.showGameResult(GameResult.random())
