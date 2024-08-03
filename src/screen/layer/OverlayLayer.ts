@@ -8,7 +8,7 @@ import { DEV_MODE } from '../../params'
 import { ChangeCursor, HideTooltip } from '../../event/GuiCommand'
 import { Panel } from '../../gui/base/Panel'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { Cursor } from '../../resource/Cursor'
+import { CURSOR } from '../../resource/Cursor'
 import { POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../../gui/event/GuiEvent'
 import { BaseElement } from '../../gui/base/BaseElement'
@@ -118,7 +118,7 @@ export class OverlayLayer extends ScaledLayer {
         this.panels.forEach(p => p !== panel && p.hide())
         if (panel) {
             panel.show()
-            EventBroker.publish(new ChangeCursor(Cursor.STANDARD))
+            EventBroker.publish(new ChangeCursor(CURSOR.STANDARD))
             EventBroker.publish(new HideTooltip())
         }
         EventBroker.publish(new BaseEvent(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))

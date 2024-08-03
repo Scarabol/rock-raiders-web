@@ -2,7 +2,7 @@ import { GameFilesLoader } from './resource/GameFilesLoader'
 import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME, VERBOSE } from './params'
 import { ScreenMaster } from './screen/ScreenMaster'
 import { AssetLoader } from './resource/AssetLoader'
-import { Cursor } from './resource/Cursor'
+import { CURSOR } from './resource/Cursor'
 import { ResourceManager } from './resource/ResourceManager'
 import { GameConfig } from './cfg/GameConfig'
 import { BitmapFontWorkerPool } from './worker/BitmapFontWorkerPool'
@@ -32,7 +32,7 @@ export async function start() {
             resolve()
         }),
         new Promise<void>(async (resolve) => {
-            const name = GameConfig.instance.pointers.get(Cursor.STANDARD)
+            const name = GameConfig.instance.pointers.get(CURSOR.STANDARD)
             const data = await assetLoader.loadAlphaImageAsset(name)
             ResourceManager.resourceByName.set(name.toLowerCase(), data)
             resolve()
@@ -49,8 +49,8 @@ export async function start() {
     BitmapFontWorkerPool.instance.setupPool(DEFAULT_FONT_NAME, fontData)
     const imgLabel = await BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, GameConfig.instance.main.loadingText)
     screenMaster.loadingLayer.enableGraphicMode(imgBackground, imgProgress, imgLabel)
-    const cursorImageName = GameConfig.instance.pointers.get(Cursor.STANDARD)
-    ResourceManager.loadCursor(cursorImageName, Cursor.STANDARD).then(() => CursorManager.changeCursor(Cursor.STANDARD))
+    const cursorImageName = GameConfig.instance.pointers.get(CURSOR.STANDARD)
+    ResourceManager.loadCursor(cursorImageName, CURSOR.STANDARD).then(() => CursorManager.changeCursor(CURSOR.STANDARD))
     if (VERBOSE) console.log('Initial loading done.')
     await assetLoader.assetRegistry.registerAllAssets(GameConfig.instance) // dynamically register all assets from config
     await assetLoader.loadRegisteredAssets((progress) => screenMaster.loadingLayer.setLoadingProgress(progress))

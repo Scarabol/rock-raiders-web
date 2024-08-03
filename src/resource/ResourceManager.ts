@@ -9,7 +9,7 @@ import { UVData } from './fileparser/LWOUVParser'
 import { SpriteImage } from '../core/Sprite'
 import { createCanvas, createContext, createDummyImgData, imgDataToCanvas } from '../core/ImageHelper'
 import { GameConfig } from '../cfg/GameConfig'
-import { Cursor } from './Cursor'
+import { Cursor, CURSOR } from './Cursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { CursorManager } from '../screen/CursorManager'
 import { AnimatedCursorData } from '../screen/AnimatedCursor'
@@ -55,7 +55,7 @@ export class ResourceManager {
     }
 
     static async loadAllCursor() {
-        const blankPointerFilename = GameConfig.instance.pointers.get(Cursor.BLANK)
+        const blankPointerFilename = GameConfig.instance.pointers.get(CURSOR.BLANK)
         const blankPointerImageData = this.getImageData(blankPointerFilename)
         const loadingCursors: Promise<void>[] = []
         GameConfig.instance.pointers.forEach((cursorFileName, cursor) => {

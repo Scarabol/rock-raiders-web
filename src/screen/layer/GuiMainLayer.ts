@@ -12,7 +12,7 @@ import { BaseElement } from '../../gui/base/BaseElement'
 import { ChangeCursor, PlaySoundEvent } from '../../event/GuiCommand'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { USE_KEYBOARD_SHORTCUTS } from '../../params'
-import { Cursor } from '../../resource/Cursor'
+import { CURSOR } from '../../resource/Cursor'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../../gui/event/GuiEvent'
 import { CameraControlPanel } from '../../gui/cameracontrol/CameraControlPanel'
@@ -80,7 +80,7 @@ export class GuiBaseLayer extends ScaledLayer {
     handlePointerEvent(event: GamePointerEvent): boolean {
         const hit = this.animationFrame.isOpaque(event.canvasX, event.canvasY)
         if (hit) {
-            EventBroker.publish(new ChangeCursor(Cursor.STANDARD)) // TODO don't spam so many events?!
+            EventBroker.publish(new ChangeCursor(CURSOR.STANDARD)) // TODO don't spam so many events?!
             if (event.eventEnum === POINTER_EVENT.MOVE) {
                 this.rootElement.onPointerMove(new GuiHoverEvent(event.canvasX, event.canvasY))
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {
@@ -91,7 +91,7 @@ export class GuiBaseLayer extends ScaledLayer {
                 if (event.button === MOUSE_BUTTON.MAIN) {
                     const stateChanged = this.rootElement.onPointerUp(new GuiPointerUpEvent(event.canvasX, event.canvasY, event.button))
                     if (!stateChanged) {
-                        this.rootElement.publishEvent(new ChangeCursor(Cursor.NOT_OKAY, 1000))
+                        this.rootElement.publishEvent(new ChangeCursor(CURSOR.NOT_OKAY, 1000))
                         this.rootElement.publishEvent(new PlaySoundEvent(SAMPLE.SFX_NotOkay, false))
                     }
                 }

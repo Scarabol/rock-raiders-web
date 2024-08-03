@@ -8,7 +8,7 @@ import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
 import { DEV_MODE, FPV_ENTITY_TURN_SPEED } from '../../params'
 import { ScreenLayer } from './ScreenLayer'
-import { Cursor } from '../../resource/Cursor'
+import { Cursor, CURSOR } from '../../resource/Cursor'
 import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/terrain/Surface'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -339,45 +339,45 @@ export class GameLayer extends ScreenLayer {
 
     determineCursor(cursorTarget: CursorTarget): Cursor {
         if (this.worldMgr.sceneMgr.hasBuildModeSelection()) {
-            return this.worldMgr.sceneMgr.buildMarker.lastCheck ? Cursor.CAN_BUILD : Cursor.CANNOT_BUILD
+            return this.worldMgr.sceneMgr.buildMarker.lastCheck ? CURSOR.CAN_BUILD : CURSOR.CANNOT_BUILD
         }
-        if (cursorTarget.raider) return Cursor.SELECTED
+        if (cursorTarget.raider) return CURSOR.SELECTED
         if (cursorTarget.vehicle) {
             if (!cursorTarget.vehicle.driver && this.worldMgr.entityMgr.selection.raiders.length > 0) {
-                return Cursor.GETIN
+                return CURSOR.GET_IN
             }
-            return Cursor.SELECTED
+            return CURSOR.SELECTED
         }
-        if (cursorTarget.monster) return Cursor.SELECTED
-        if (cursorTarget.fence) return Cursor.SELECTED
-        if (cursorTarget.building) return Cursor.SELECTED
+        if (cursorTarget.monster) return CURSOR.SELECTED
+        if (cursorTarget.fence) return CURSOR.SELECTED
+        if (cursorTarget.building) return CURSOR.SELECTED
         if (cursorTarget.material) return this.determineMaterialCursor(cursorTarget.material)
         if (cursorTarget.surface) return this.determineSurfaceCursor(cursorTarget.surface)
-        return Cursor.STANDARD
+        return CURSOR.STANDARD
     }
 
     private determineMaterialCursor(material: MaterialEntity): Cursor {
         if (this.worldMgr.entityMgr.selection.canPickup()) {
             if (material.entityType === EntityType.ORE) {
-                return Cursor.PICK_UP_ORE
+                return CURSOR.PICK_UP_ORE
             } else {
-                return Cursor.PICK_UP
+                return CURSOR.PICK_UP
             }
         }
-        return Cursor.SELECTED
+        return CURSOR.SELECTED
     }
 
     private determineSurfaceCursor(surface: Surface): Cursor {
         if (this.worldMgr.entityMgr.selection.canMove()) {
             if (surface.surfaceType.digable) {
                 if (this.worldMgr.entityMgr.selection.canDrill(surface)) {
-                    return Cursor.DRILL
+                    return CURSOR.DRILL
                 }
             } else if (surface.surfaceType.floor) {
                 if (surface.hasRubble() && this.worldMgr.entityMgr.selection.canClear()) {
-                    return Cursor.CLEAR
+                    return CURSOR.CLEAR
                 }
-                return Cursor.MAN_GO
+                return CURSOR.MAN_GO
             }
         }
         return surface.surfaceType.cursor
