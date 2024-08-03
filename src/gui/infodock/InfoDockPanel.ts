@@ -64,7 +64,7 @@ export class InfoDockPanel extends Panel {
 
     private addInfoDockButton(config: InfoMessagesEntryConfig, eventType: keyof WorldLocationEventMap, eventTypeGone?: keyof WorldLocationEventMap) {
         const infoDockButton = this.addChild(new InfoDockButton(this, config))
-        const sample = Sample[config.sfxName]
+        const sample = Sample.fromString(config.sfxName)
         this.registerEventListener(eventType, (event: WorldLocationEvent) => {
             if (infoDockButton.messages.some((m) => m.location === event.location)) return
             infoDockButton.hidden = false

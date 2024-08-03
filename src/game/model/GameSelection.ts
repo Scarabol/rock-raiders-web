@@ -1,4 +1,4 @@
-import { Sample } from '../../audio/Sample'
+import { SAMPLE } from '../../audio/Sample'
 import { SoundManager } from '../../audio/SoundManager'
 import { SelectPanelType } from '../../event/LocalEvents'
 import { BuildingEntity } from './building/BuildingEntity'
@@ -81,7 +81,7 @@ export class GameSelection {
                 this.surface = null
             }
         }
-        if (added) SoundManager.playSample(Sample.SFX_Okay, false)
+        if (added) SoundManager.playSample(SAMPLE.SFX_Okay, false)
     }
 
     private syncRaiderSelection(before: Raider[], after: Raider[]): boolean {

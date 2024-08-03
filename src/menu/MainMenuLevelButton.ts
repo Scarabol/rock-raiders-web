@@ -7,7 +7,7 @@ import { UiElementCallback } from './UiElementState'
 import { clearTimeoutSafe } from '../core/Util'
 import { TOOLTIP_DELAY_SFX_MENU } from '../params'
 import { SoundManager } from '../audio/SoundManager'
-import { Sample } from '../audio/Sample'
+import { SAMPLE } from '../audio/Sample'
 
 export class MainMenuLevelButton extends MainMenuBaseItem {
     imgActive: SpriteImage = null
@@ -36,7 +36,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = () => {
-            SoundManager.playSample(Sample.SFX_ButtonPressed, false)
+            SoundManager.playSample(SAMPLE.SFX_ButtonPressed, false)
             callback()
         }
     }

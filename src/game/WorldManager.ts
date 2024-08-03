@@ -34,7 +34,7 @@ import { EventBroker } from '../event/EventBroker'
 import { PowerGrid } from './terrain/PowerGrid'
 import { EmergeSystem } from './system/EmergeSystem'
 import { SoundManager } from '../audio/SoundManager'
-import { Sample } from '../audio/Sample'
+import { SAMPLE } from '../audio/Sample'
 import { TeleportSystem } from './system/TeleportSystem'
 import { FallInSystem } from './system/FallInSystem'
 import { FluidSurfaceSystem } from './system/FluidSurfaceSystem'
@@ -92,7 +92,7 @@ export class WorldManager {
         EventBroker.subscribe(EventKey.LOCATION_RAIDER_DISCOVERED, () => GameState.hiddenObjectsFound++)
         EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
             GameState.alarmMode = event.alarmState
-            if (GameState.alarmMode) SoundManager.playSample(Sample.SFX_Siren, false)
+            if (GameState.alarmMode) SoundManager.playSample(SAMPLE.SFX_Siren, false)
         })
     }
 

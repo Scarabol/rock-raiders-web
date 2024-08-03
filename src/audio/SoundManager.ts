@@ -34,7 +34,7 @@ export class SoundManager {
     }
 
     static playSample(sample: Sample, isVoice: boolean) {
-        this.playSound(Sample[sample], isVoice)
+        this.playSound(sample, isVoice)
     }
 
     static playSound(soundName: string, isVoice: boolean): AudioBufferSourceNode {

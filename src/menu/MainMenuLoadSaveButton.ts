@@ -8,7 +8,7 @@ import { imgDataToCanvas } from '../core/ImageHelper'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 import { GameConfig } from '../cfg/GameConfig'
 import { SoundManager } from '../audio/SoundManager'
-import { Sample } from '../audio/Sample'
+import { SAMPLE } from '../audio/Sample'
 
 export class MainMenuLoadSaveButton extends MainMenuBaseItem {
     labelImgLo: SpriteImage = null
@@ -51,7 +51,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = async () => {
-            SoundManager.playSample(Sample.SFX_ButtonPressed, false)
+            SoundManager.playSample(SAMPLE.SFX_ButtonPressed, false)
             await this.overlay?.play()
             callback()
         }

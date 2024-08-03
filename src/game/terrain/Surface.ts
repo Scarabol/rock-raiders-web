@@ -1,5 +1,5 @@
 import { Raycaster, Vector2, Vector3 } from 'three'
-import { Sample } from '../../audio/Sample'
+import { SAMPLE } from '../../audio/Sample'
 import { SoundManager } from '../../audio/SoundManager'
 import { DeselectAll, SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, OreFoundEvent } from '../../event/WorldEvents'
@@ -445,8 +445,8 @@ export class Surface {
         if (!this.isSelectable()) return false
         this.selected = true
         this.mesh.setHighlightColor(0x6060a0)
-        if (this.surfaceType.floor) SoundManager.playSample(Sample.SFX_Floor, false)
-        else if (this.surfaceType.shaping) SoundManager.playSample(Sample.SFX_Wall, false)
+        if (this.surfaceType.floor) SoundManager.playSample(SAMPLE.SFX_Floor, false)
+        else if (this.surfaceType.shaping) SoundManager.playSample(SAMPLE.SFX_Wall, false)
         if (DEV_MODE) console.log(`Surface selected ${this.x}/${this.y}`, this)
         return true
     }

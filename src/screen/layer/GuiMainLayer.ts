@@ -18,7 +18,7 @@ import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../../gui
 import { CameraControlPanel } from '../../gui/cameracontrol/CameraControlPanel'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
-import { Sample } from '../../audio/Sample'
+import { SAMPLE } from '../../audio/Sample'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
@@ -92,7 +92,7 @@ export class GuiBaseLayer extends ScaledLayer {
                     const stateChanged = this.rootElement.onPointerUp(new GuiPointerUpEvent(event.canvasX, event.canvasY, event.button))
                     if (!stateChanged) {
                         this.rootElement.publishEvent(new ChangeCursor(Cursor.NOT_OKAY, 1000))
-                        this.rootElement.publishEvent(new PlaySoundEvent(Sample.SFX_NotOkay, false))
+                        this.rootElement.publishEvent(new PlaySoundEvent(SAMPLE.SFX_NotOkay, false))
                     }
                 }
             }

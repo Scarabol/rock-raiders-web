@@ -8,7 +8,7 @@ import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { UiElementCallback } from './UiElementState'
 import { SoundManager } from '../audio/SoundManager'
-import { Sample } from '../audio/Sample'
+import { SAMPLE } from '../audio/Sample'
 
 export class RewardScreenButton extends MainMenuBaseItem {
     imgNormal: SpriteImage
@@ -31,7 +31,7 @@ export class RewardScreenButton extends MainMenuBaseItem {
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = () => {
-            SoundManager.playSample(Sample.SFX_ButtonPressed, false)
+            SoundManager.playSample(SAMPLE.SFX_ButtonPressed, false)
             callback()
         }
     }

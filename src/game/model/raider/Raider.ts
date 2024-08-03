@@ -1,6 +1,5 @@
 import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
-import { Sample } from '../../../audio/Sample'
 import { RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, RAIDER_PATH_PRECISION, SPIDER_SLIP_RANGE_SQ, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -365,7 +364,7 @@ export class Raider implements Updatable, JobFulfiller {
         }
         const workActivity = this.job.getWorkActivity() || this.getDefaultAnimationName()
         if (!this.workAudio && this.job.workSoundRaider) {
-            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[this.job.workSoundRaider], true, this.job.getExpectedTimeLeft() !== null)
+            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundRaider, true, this.job.getExpectedTimeLeft() !== null)
         }
         if (workActivity === RaiderActivity.Drill) {
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())

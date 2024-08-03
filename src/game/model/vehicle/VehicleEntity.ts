@@ -1,6 +1,5 @@
 import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
-import { Sample } from '../../../audio/Sample'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { DEV_MODE, ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../../../params'
@@ -114,7 +113,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         }
         const workActivity = this.job.getWorkActivity() || AnimEntityActivity.Stand
         if (!this.workAudio && this.job.workSoundVehicle) {
-            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[this.job.workSoundVehicle], true, true)
+            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundVehicle, true, true)
         }
         if (workActivity === RaiderActivity.Drill) {
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
