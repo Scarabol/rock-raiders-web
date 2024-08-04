@@ -11,8 +11,8 @@ import { SpriteImage } from '../../core/Sprite'
 export class TooltipLayer extends ScreenLayer {
     readonly gameCanvasContainer: HTMLElement
     readonly lastCursorPos: { x: number, y: number } = {x: 0, y: 0}
-    tooltipTimeoutText: NodeJS.Timeout = null
-    tooltipTimeoutSfx: NodeJS.Timeout = null
+    tooltipTimeoutText?: NodeJS.Timeout
+    tooltipTimeoutSfx?: NodeJS.Timeout
     cursorLeft: boolean = false
     tooltipCanvas: HTMLCanvasElement = null
     lastTooltipKey: string = null

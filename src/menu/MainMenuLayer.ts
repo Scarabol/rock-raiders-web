@@ -23,8 +23,8 @@ export class MainMenuLayer extends ScaledLayer {
     readonly overlays: FlicAnimOverlay[] = []
     scrollY: number = 0
     scrollSpeedY: number = 0
-    scrollInterval: NodeJS.Timeout = null
-    overlayTimeout: NodeJS.Timeout = null
+    scrollInterval?: NodeJS.Timeout
+    overlayTimeout?: NodeJS.Timeout
     overlayIndex: number = 0
     overlay: FlicAnimOverlay = null
 

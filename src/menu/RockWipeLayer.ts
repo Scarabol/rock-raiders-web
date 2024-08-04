@@ -11,7 +11,7 @@ export class RockWipeLayer extends ScreenLayer {
     readonly renderer: BaseRenderer
     readonly scene: Scene
     readonly group: AnimationGroup
-    groupUpdateInterval: NodeJS.Timeout
+    groupUpdateInterval?: NodeJS.Timeout
 
     constructor() {
         super()

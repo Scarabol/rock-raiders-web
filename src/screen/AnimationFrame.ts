@@ -4,10 +4,10 @@ import { cancelAnimationFrameSafe } from '../core/Util'
 type AnimationFrameRedrawCallback = (context: SpriteContext) => any
 
 export class AnimationFrame {
-    readonly context: SpriteContext = null
-    readonly readbackContext: SpriteContext = null
-    private lastAnimationRequest: number = null
-    private redrawCallback: AnimationFrameRedrawCallback = null
+    readonly context: SpriteContext
+    readonly readbackContext: SpriteContext
+    private lastAnimationRequest?: number
+    private redrawCallback?: AnimationFrameRedrawCallback
     scaleX: number = 1
     scaleY: number = 1
 

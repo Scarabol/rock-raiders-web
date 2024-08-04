@@ -26,19 +26,19 @@ export function iGet(obj: any, ...keys: string[]): any {
     return obj
 }
 
-export function clearTimeoutSafe(timeout: NodeJS.Timeout): null {
+export function clearTimeoutSafe(timeout?: NodeJS.Timeout): undefined {
     if (timeout) clearTimeout(timeout)
-    return null
+    return undefined
 }
 
-export function clearIntervalSafe(interval: NodeJS.Timeout): null {
+export function clearIntervalSafe(interval?: NodeJS.Timeout): undefined {
     if (interval) clearInterval(interval)
-    return null
+    return undefined
 }
 
-export function cancelAnimationFrameSafe(handle: number): null {
+export function cancelAnimationFrameSafe(handle?: number): undefined {
     if (handle) cancelAnimationFrame(handle)
-    return null
+    return undefined
 }
 
 export function yieldToMainThread(): Promise<void> {

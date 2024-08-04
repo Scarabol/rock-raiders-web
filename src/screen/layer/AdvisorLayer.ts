@@ -13,8 +13,8 @@ import { SaveGameManager } from '../../resource/SaveGameManager'
 export class AdvisorLayer extends ScreenLayer {
     readonly renderer: BaseRenderer
     readonly scene: Scene
-    readonly group: AnimationLoopGroup
-    groupUpdateInterval: NodeJS.Timeout
+    readonly group?: AnimationLoopGroup
+    groupUpdateInterval?: NodeJS.Timeout
 
     constructor() {
         super()
@@ -48,14 +48,14 @@ export class AdvisorLayer extends ScreenLayer {
             if (event.isShowing) {
                 this.startRendering()
             } else {
-                this.group.interruptLoop()
+                this.group?.interruptLoop()
             }
         })
         EventBroker.subscribe(EventKey.SHOW_MISSION_ADVISOR, (event: ShowMissionAdvisorEvent) => {
             if (event.showAdvisor) {
                 this.startRendering()
             } else {
-                this.group.interruptLoop()
+                this.group?.interruptLoop()
             }
         })
     }
@@ -67,7 +67,7 @@ export class AdvisorLayer extends ScreenLayer {
         this.renderer.startRendering(this.scene).then()
         this.groupUpdateInterval = clearIntervalSafe(this.groupUpdateInterval)
         this.groupUpdateInterval = setInterval(() => {
-            this.group.update(NATIVE_UPDATE_INTERVAL)
+            this.group?.update(NATIVE_UPDATE_INTERVAL)
         }, NATIVE_UPDATE_INTERVAL)
     }
 

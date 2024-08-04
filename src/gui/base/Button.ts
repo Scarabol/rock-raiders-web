@@ -21,7 +21,7 @@ export class Button extends BaseElement {
     tooltipSfx: string = null
     hoverFrame: boolean = false
     blink: boolean = false
-    blinkInterval: NodeJS.Timeout = null
+    blinkInterval?: NodeJS.Timeout
 
     constructor(btnCfg: BaseButtonCfg, blinking: boolean = false) {
         super()

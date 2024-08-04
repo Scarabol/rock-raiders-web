@@ -6,20 +6,20 @@ export class CursorManager {
     static readonly cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
     static readonly cursorTarget: HTMLElement = document.getElementById('game-canvas-container')
 
-    static currentCursor: Cursor = null
-    static cursorTimeout: NodeJS.Timeout = null
-    static activeCursor: AnimatedCursor = null
+    static currentCursor: Cursor
+    static cursorTimeout?: NodeJS.Timeout
+    static activeCursor?: AnimatedCursor
 
     static addCursor(cursor: Cursor, dataUrls: string[]) {
         this.cursorToUrl.set(cursor, new AnimatedCursor(dataUrls))
     }
 
-    static changeCursor(cursor: Cursor, timeout: number = null) {
+    static changeCursor(cursor: Cursor, timeout?: number) {
         if (timeout) {
             this.cursorTimeout = clearTimeoutSafe(this.cursorTimeout)
             this.setCursor(cursor)
             this.cursorTimeout = setTimeout(() => {
-                this.cursorTimeout = null
+                this.cursorTimeout = undefined
                 this.setCursor(this.currentCursor)
             }, timeout)
         } else if (this.currentCursor !== cursor) {

@@ -48,7 +48,7 @@ export class WorldManager {
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
     powerGrid: PowerGrid
-    gameLoopInterval: NodeJS.Timeout = null
+    gameLoopInterval?: NodeJS.Timeout
     gameTimeMs: number = 0
     firstUnpause: boolean = true
     gameSpeedMultiplier: number = 1

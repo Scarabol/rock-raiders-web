@@ -36,7 +36,7 @@ export class RewardScreen {
     resultIndex: number = 0
     resultLastIndex: number = 0
     texts: SpriteImage[] = []
-    uncoverTimeout: NodeJS.Timeout = null
+    uncoverTimeout?: NodeJS.Timeout
     levelFullNameImg: SpriteImage
     resultText: string
     resultValues: SpriteImage[] = []

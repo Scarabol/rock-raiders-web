@@ -17,8 +17,8 @@ export class DebugHelper {
     fpsIndex: number = 0
     fps: number = 0
     usage: number = 0
-    renderInterval: NodeJS.Timeout
-    animationFrame: number
+    renderInterval?: NodeJS.Timeout
+    animationFrame?: number
 
     constructor() {
         const fpsCanvas = DebugHelper.element.appendChild(document.createElement('canvas'))

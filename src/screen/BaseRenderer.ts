@@ -4,8 +4,8 @@ import { SpriteImage } from '../core/Sprite'
 
 export class BaseRenderer {
     renderer?: WebGLRenderer
-    renderInterval: NodeJS.Timeout
-    lastAnimationRequest: number
+    renderInterval?: NodeJS.Timeout
+    lastAnimationRequest?: number
     scene: Scene
     camera: Camera
 

@@ -11,7 +11,7 @@ export class Panel extends BaseElement {
     yOut: number = 0
     xIn: number = 0
     yIn: number = 0
-    animationTimeout: NodeJS.Timeout = null
+    animationTimeout?: NodeJS.Timeout
     movedIn: boolean = true // xIn, yIn is the collapsed position out of screen
 
     constructor(panelCfg?: PanelCfg) {

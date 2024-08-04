@@ -20,8 +20,8 @@ export class FollowerRenderer extends WebGLRenderer {
     readonly composer: EffectComposer
     trackEntity: GameEntity
     started: boolean = false
-    renderInterval: NodeJS.Timeout
-    lastAnimationRequest: number
+    renderInterval?: NodeJS.Timeout
+    lastAnimationRequest?: number
     angle: number = 0
 
     constructor(readonly canvas: SpriteImage, readonly scene: Scene, readonly ecs: ECS) {

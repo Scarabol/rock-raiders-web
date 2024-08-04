@@ -24,12 +24,12 @@ export class MessagePanel extends Panel {
     imgAir: SpriteImage = null
     imgNoAir: SpriteImage = null
     currentMessage: TextInfoMessage = null
-    messageTimeout: NodeJS.Timeout = null
+    messageTimeout?: NodeJS.Timeout
 
     airLevelWidth: number = this.maxAirLevelWidth
     nextAirWarning: number = 1 - AIR_LEVEL_WARNING_STEP
     blinkLabel: boolean = false
-    blinkInterval: NodeJS.Timeout = null
+    blinkInterval?: NodeJS.Timeout
 
     btnNext: Button
     btnRepeat: Button

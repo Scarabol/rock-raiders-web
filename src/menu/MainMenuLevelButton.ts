@@ -13,7 +13,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
     imgActive: SpriteImage = null
     imgInactive: SpriteImage = null
     imgCross: SpriteImage = null
-    tooltipTimeout: NodeJS.Timeout = null
+    tooltipTimeout?: NodeJS.Timeout
     onShowTooltip: () => void = null
 
     constructor(
