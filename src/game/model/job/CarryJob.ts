@@ -18,7 +18,7 @@ import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
 
 export class CarryJob extends Job {
-    fulfiller: JobFulfiller = null
+    fulfiller: JobFulfiller
     target: PathTarget
 
     constructor(readonly carryItem: MaterialEntity) {

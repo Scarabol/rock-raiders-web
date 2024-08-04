@@ -15,12 +15,12 @@ import { VehicleUpgrade } from './vehicle/VehicleUpgrade'
 import { UpgradeVehicleJob } from './job/UpgradeVehicleJob'
 
 export class GameSelection {
-    surface: Surface = null
-    building: BuildingEntity = null
+    surface: Surface
+    building: BuildingEntity
     raiders: Raider[] = []
     vehicles: VehicleEntity[] = []
-    fence: MaterialEntity = null
-    doubleSelect: BuildingEntity | VehicleEntity = null
+    fence: MaterialEntity
+    doubleSelect: BuildingEntity | VehicleEntity
 
     isEmpty(): boolean {
         return !this.surface && !this.building && this.raiders.length < 1 && this.vehicles.length < 1 && !this.fence

@@ -17,8 +17,8 @@ import { EventBroker } from '../../../event/EventBroker'
 
 export class MaterialEntity {
     entity: GameEntity
-    carryJob: CarryJob = null
-    sceneEntity: AnimatedSceneEntity = null
+    carryJob: CarryJob
+    sceneEntity: AnimatedSceneEntity
     priorityIdentifier: PriorityIdentifier = PriorityIdentifier.NONE
     requiredTraining: RaiderTraining = RaiderTraining.NONE
 

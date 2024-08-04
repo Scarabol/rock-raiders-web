@@ -58,7 +58,7 @@ export class LaserShotSystem extends AbstractGameSystem {
         GameState.numCrystal--
         EventBroker.publish(new MaterialAmountChanged())
         const closestToolstore = this.worldMgr.entityMgr.getClosestBuildingByType(positionComponent.position, EntityType.TOOLSTATION)
-        let spawnPos: Vector2 = null
+        let spawnPos: Vector2
         if (closestToolstore) {
             spawnPos = closestToolstore.getDropPosition2D()
         } else if (positionComponent.surface.isWalkable()) {

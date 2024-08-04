@@ -19,7 +19,7 @@ export class MainMenuCreditsLayer extends ScaledLayer {
     loopIndexTimeout?: NodeJS.Timeout
     offsetY: number = 0
     counter: number = 0
-    onExitCredits: UiElementCallback = null
+    onExitCredits: UiElementCallback
 
     constructor() {
         super('credits')

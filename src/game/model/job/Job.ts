@@ -29,13 +29,13 @@ export interface JobFulfiller {
 
 export abstract class Job {
     jobState: JobState = JobState.INCOMPLETE
-    surface: Surface = null
-    carryItem: MaterialEntity = null
+    surface: Surface
+    carryItem: MaterialEntity
     requiredTool: RaiderTool = RaiderTool.NONE
     requiredTraining: RaiderTraining = RaiderTraining.NONE
     priorityIdentifier: PriorityIdentifier = PriorityIdentifier.NONE
-    workSoundRaider: Sample = null
-    workSoundVehicle: Sample = null
+    workSoundRaider: Sample
+    workSoundVehicle: Sample
 
     abstract assign(fulfiller: JobFulfiller): void
 

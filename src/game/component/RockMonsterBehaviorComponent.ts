@@ -23,10 +23,10 @@ export enum RockMonsterBehaviorState {
 export class RockMonsterBehaviorComponent extends AbstractGameComponent {
     state: RockMonsterBehaviorState = RockMonsterBehaviorState.IDLE
     numCrystalsEaten: number = 0
-    targetCrystal: MaterialEntity = null
-    targetWall: Surface = null
-    boulder: SceneMesh = null
-    targetBuilding: BuildingEntity = null
+    targetCrystal: MaterialEntity
+    targetWall: Surface
+    boulder: SceneMesh
+    targetBuilding: BuildingEntity
 
     changeToIdle() {
         this.state = RockMonsterBehaviorState.IDLE

@@ -20,7 +20,7 @@ import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 
 export class RewardScreen {
-    readonly cfg: RewardCfg = null
+    readonly cfg: RewardCfg
     readonly backgroundLayer: ScaledLayer
     readonly resultsLayer: ScaledLayer
     readonly descriptionTextLayer: ScaledLayer
@@ -40,7 +40,7 @@ export class RewardScreen {
     levelFullNameImg: SpriteImage
     resultText: string
     resultValues: SpriteImage[] = []
-    screenshot: HTMLCanvasElement = null
+    screenshot: HTMLCanvasElement
 
     constructor(readonly screenMaster: ScreenMaster) {
         this.cfg = GameConfig.instance.reward

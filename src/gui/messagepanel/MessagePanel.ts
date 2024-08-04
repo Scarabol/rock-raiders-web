@@ -21,9 +21,9 @@ export class MessagePanel extends Panel {
     private readonly maxAirLevelWidth = 236
     readonly textInfoMessageCache: Map<TextInfoMessageEntryCfg, Promise<TextInfoMessage>> = new Map()
 
-    imgAir: SpriteImage = null
-    imgNoAir: SpriteImage = null
-    currentMessage: TextInfoMessage = null
+    imgAir: SpriteImage
+    imgNoAir: SpriteImage
+    currentMessage: TextInfoMessage
     messageTimeout?: NodeJS.Timeout
 
     airLevelWidth: number = this.maxAirLevelWidth

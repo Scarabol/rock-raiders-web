@@ -4,8 +4,8 @@ import { DEFAULT_FONT_NAME } from '../params'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 
 export class MainMenuWindow extends MainMenuBaseItem {
-    imgFirstLine: SpriteImage = null
-    imgSecondLine: SpriteImage = null
+    imgFirstLine: SpriteImage
+    imgSecondLine: SpriteImage
 
     constructor(area: { x: number; y: number; w: number; h: number }) {
         super(area.x, area.y, area.w, area.h)

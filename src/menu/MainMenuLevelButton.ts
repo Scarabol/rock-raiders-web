@@ -10,11 +10,11 @@ import { SoundManager } from '../audio/SoundManager'
 import { SAMPLE } from '../audio/Sample'
 
 export class MainMenuLevelButton extends MainMenuBaseItem {
-    imgActive: SpriteImage = null
-    imgInactive: SpriteImage = null
-    imgCross: SpriteImage = null
+    imgActive: SpriteImage
+    imgInactive: SpriteImage
+    imgCross: SpriteImage
     tooltipTimeout?: NodeJS.Timeout
-    onShowTooltip: () => void = null
+    onShowTooltip: () => void
 
     constructor(
         readonly layer: MainMenuLayer,

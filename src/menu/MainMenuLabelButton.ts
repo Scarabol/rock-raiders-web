@@ -8,8 +8,8 @@ import { UiElementCallback } from './UiElementState'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 
 export class MainMenuLabelButton extends MainMenuBaseItem {
-    labelImgLo: SpriteImage = null
-    labelImgHi: SpriteImage = null
+    labelImgLo: SpriteImage
+    labelImgHi: SpriteImage
 
     constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {
         super()

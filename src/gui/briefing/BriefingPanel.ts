@@ -10,18 +10,18 @@ import { SoundManager } from '../../audio/SoundManager'
 import { EventBroker } from '../../event/EventBroker'
 
 export class BriefingPanel extends Panel {
-    cfg: BriefingPanelCfg = null
-    imgTitle: SpriteImage = null
+    cfg: BriefingPanelCfg
+    imgTitle: SpriteImage
     titleRelX: number = 0
     titleRelY: number = 0
-    btnNext: Button = null
-    btnBack: Button = null
-    imgBack: SpriteImage = null
+    btnNext: Button
+    btnBack: Button
+    imgBack: SpriteImage
     imgParagraphList: SpriteImage[] = []
     paragraph: number = 0
     objectiveParagraphs: string[] = []
     objectiveSfxName: string = ''
-    objectiveSfx: AudioBufferSourceNode = null
+    objectiveSfx: AudioBufferSourceNode
     onContinueMission: () => any = () => console.log('Start mission')
 
     constructor() {

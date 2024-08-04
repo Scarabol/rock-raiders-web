@@ -2,7 +2,7 @@ import { Vector2 } from 'three'
 import { PathTarget } from '../model/PathTarget'
 
 export class TerrainPath {
-    target: PathTarget = null
+    target: PathTarget
     locations: Vector2[] = []
     lengthSq: number = 0
 

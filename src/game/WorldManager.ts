@@ -46,7 +46,7 @@ export class WorldManager {
     readonly jobSupervisor: Supervisor = new Supervisor(this)
     sceneMgr: SceneManager
     entityMgr: EntityManager
-    nerpRunner: NerpRunner = null
+    nerpRunner: NerpRunner
     powerGrid: PowerGrid
     gameLoopInterval?: NodeJS.Timeout
     gameTimeMs: number = 0

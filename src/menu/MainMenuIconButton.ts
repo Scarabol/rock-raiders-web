@@ -12,9 +12,9 @@ import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 
 export class MainMenuIconButton extends MainMenuBaseItem {
-    imgNormal: SpriteImage = null
-    imgHover: SpriteImage = null
-    imgPressed: SpriteImage = null
+    imgNormal: SpriteImage
+    imgHover: SpriteImage
+    imgPressed: SpriteImage
 
     constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {
         super()

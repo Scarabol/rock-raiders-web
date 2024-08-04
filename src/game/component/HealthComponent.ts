@@ -6,8 +6,8 @@ import { HealthFontSprite } from '../../scene/HealthFontSprite'
 import { EventBroker } from '../../event/EventBroker'
 
 export class HealthComponent extends AbstractGameComponent {
-    readonly healthBarSprite: HealthBarSprite = null
-    readonly healthFontSprite: HealthFontSprite = null
+    readonly healthBarSprite: HealthBarSprite
+    readonly healthFontSprite: HealthFontSprite
     health: number = 100
     maxHealth: number = 100
     hitByLavaTimeoutMs: number = 0

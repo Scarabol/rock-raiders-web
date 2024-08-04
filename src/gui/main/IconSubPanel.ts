@@ -10,7 +10,7 @@ import { GuiButtonClicked } from '../../event/LocalEvents'
 import { EventKey } from '../../event/EventKeyEnum'
 
 export class IconSubPanel extends Panel {
-    backBtn: Button = null
+    backBtn: Button
     iconPanelButtons: IconPanelButton[] = []
 
     constructor(numOfItems: number, onBackPanel: Panel = null) {

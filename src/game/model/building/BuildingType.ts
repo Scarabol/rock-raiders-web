@@ -4,13 +4,13 @@ import { EntityType } from '../EntityType'
 import { GameConfig } from '../../../cfg/GameConfig'
 
 export class BuildingType {
-    entityType: EntityType = null
-    stats: BuildingEntityStats = null
-    aeFilename: string = null
-    secondaryBuildingPart: Vector2 = null
+    entityType: EntityType
+    stats: BuildingEntityStats
+    aeFilename: string
+    secondaryBuildingPart: Vector2
     primaryPowerPath: Vector2 = new Vector2(0, 1)
-    secondaryPowerPath: Vector2 = null
-    waterPathSurface: Vector2 = null
+    secondaryPowerPath: Vector2
+    waterPathSurface: Vector2
     teleportedEntityTypes: EntityType[] = []
 
     constructor(entityType: EntityType, stats: BuildingEntityStats, aeFilename: string) {

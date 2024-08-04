@@ -8,7 +8,7 @@ import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class SelectionFrameLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrame
-    selectionRect: Rect = null
+    selectionRect: Rect
 
     constructor() {
         super()

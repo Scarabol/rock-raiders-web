@@ -388,7 +388,7 @@ export class EntityManager {
     }
 
     findVehicleInRange(position2d: Vector2, rangeSq: number): VehicleTarget {
-        let result: VehicleTarget = null
+        let result: VehicleTarget
         this.worldMgr.entityMgr.vehicles.some((v) => {
             const vPos = this.worldMgr.ecs.getComponents(v.entity).get(PositionComponent)
             if (vPos.getPosition2D().distanceToSquared(position2d) < rangeSq) {

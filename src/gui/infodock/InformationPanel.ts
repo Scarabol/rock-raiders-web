@@ -4,7 +4,7 @@ import { DEFAULT_FONT_NAME } from '../../params'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class InformationPanel extends Panel {
-    textImage: SpriteImage = null
+    textImage: SpriteImage
 
     setText(text?: string) {
         BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, text, this.img.width - 80)

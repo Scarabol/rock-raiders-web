@@ -83,7 +83,7 @@ export class NerpRunner {
     timeForNoSample: number = 0
     currentMessage: number = -1
     messageTimerMs: number = 0
-    messageSfx: AudioBufferSourceNode = null
+    messageSfx: AudioBufferSourceNode
     tutoBlocksById: Map<number, Surface[]> = new Map()
     iconClicked: Map<string, number> = new Map()
     buildingsTeleported: number = 0

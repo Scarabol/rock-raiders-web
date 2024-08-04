@@ -6,7 +6,7 @@ import { JobFulfiller } from '../Job'
 import { RaiderInfoComponent } from '../../../component/RaiderInfoComponent'
 
 export class EatJob extends RaiderJob {
-    target: PathTarget = null
+    target: PathTarget
 
     getWorkplace(entity: JobFulfiller): PathTarget {
         if (!this.target) this.target = PathTarget.fromLocation(this.raider.getPosition2D())

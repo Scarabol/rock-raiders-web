@@ -46,17 +46,17 @@ export class Raider implements Updatable, JobFulfiller {
     readonly tools: RaiderTool[] = []
     readonly trainings: RaiderTraining[] = []
     worldMgr: WorldManager
-    currentPath: TerrainPath = null
+    currentPath: TerrainPath
     level: number = 0
-    job: Job = null
-    followUpJob: Job = null
+    job: Job
+    followUpJob: Job
     workAudio: PositionalAudio
     sceneEntity: AnimatedSceneEntity
-    carries: MaterialEntity = null
+    carries: MaterialEntity
     slipped: boolean = false
     thrown: boolean = false
     foodLevel: number = 1
-    vehicle: VehicleEntity = null
+    vehicle: VehicleEntity
     scared: boolean = false
     toolsIndex: number = 0
     weaponCooldown: number = 0

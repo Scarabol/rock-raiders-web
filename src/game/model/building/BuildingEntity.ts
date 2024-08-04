@@ -44,14 +44,14 @@ export class BuildingEntity {
     powerOffSprite: BubbleSprite
     level: number = 0
     powerSwitch: boolean = true
-    primarySurface: Surface = null
-    secondarySurface: Surface = null
-    primaryPathSurface: Surface = null
-    secondaryPathSurface: Surface = null
-    waterPathSurface: Surface = null
+    primarySurface: Surface
+    secondarySurface: Surface
+    primaryPathSurface: Surface
+    secondaryPathSurface: Surface
+    waterPathSurface: Surface
     energized: boolean = false
-    getToolPathTarget: PathTarget = null
-    carryPathTarget: PathTarget = null
+    getToolPathTarget: PathTarget
+    carryPathTarget: PathTarget
     engineSound: PositionalAudio
     surfaces: Surface[] = []
     pathSurfaces: Surface[] = []

@@ -20,14 +20,14 @@ export class BuildPlacementMarker {
 
     readonly group: Group = new Group()
     readonly markers: BuildPlacementMarkerMesh[] = []
-    readonly buildingMarkerPrimary: BuildPlacementMarkerMesh = null
-    readonly buildingMarkerSecondary: BuildPlacementMarkerMesh = null
-    readonly powerPathMarkerPrimary: BuildPlacementMarkerMesh = null
-    readonly powerPathMarkerSecondary: BuildPlacementMarkerMesh = null
-    readonly waterPathMarker: BuildPlacementMarkerMesh = null
+    readonly buildingMarkerPrimary: BuildPlacementMarkerMesh
+    readonly buildingMarkerSecondary: BuildPlacementMarkerMesh
+    readonly powerPathMarkerPrimary: BuildPlacementMarkerMesh
+    readonly powerPathMarkerSecondary: BuildPlacementMarkerMesh
+    readonly waterPathMarker: BuildPlacementMarkerMesh
     heading: number = 0
     lastCheck: boolean = false
-    buildingType: BuildingType = null
+    buildingType: BuildingType
     buildingMarkerColor: number = BuildPlacementMarker.goodBuildingMarkerColor
     pathMarkerColor: number = BuildPlacementMarker.goodPathMarkerColor
     waterMarkerColor: number = BuildPlacementMarker.goodWaterMarkerColor

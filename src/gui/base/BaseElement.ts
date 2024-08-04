@@ -7,7 +7,7 @@ import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 import { EventBroker } from '../../event/EventBroker'
 
 export class BaseElement {
-    parent: BaseElement = null
+    parent: BaseElement
     x: number = 0
     y: number = 0
     relX: number = 0
@@ -19,8 +19,8 @@ export class BaseElement {
     disabled: boolean = false
     hover: boolean = false
     pressed: boolean = false
-    pointerDown: { x: number, y: number } = null
-    onClick: (cx: number, cy: number) => void = null
+    pointerDown: { x: number, y: number }
+    onClick: (cx: number, cy: number) => void
 
     reset() {
         this.hidden = false

@@ -42,10 +42,10 @@ export class Surface {
     scanned: boolean = false
     selected: boolean = false
     reinforced: boolean = false
-    drillJob: DrillJob = null
-    reinforceJob: ReinforceJob = null
-    dynamiteJob: CarryJob = null
-    clearRubbleJob: ClearRubbleJob = null
+    drillJob: DrillJob
+    reinforceJob: ReinforceJob
+    dynamiteJob: CarryJob
+    clearRubbleJob: ClearRubbleJob
     seamLevel: number = 0
     drillProgress: number = 0
 
@@ -55,11 +55,11 @@ export class Surface {
 
     rubblePositions: Vector2[] = []
 
-    building: BuildingEntity = null
+    building: BuildingEntity
     pathBlockedByBuilding: boolean = false
-    site: BuildingSite = null
-    fence: GameEntity = null
-    stud: AnimationGroup = null
+    site: BuildingSite
+    fence: GameEntity
+    stud: AnimationGroup
     fenceRequested: boolean = false
     energized: boolean = false
 

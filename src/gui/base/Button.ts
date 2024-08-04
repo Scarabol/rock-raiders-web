@@ -12,13 +12,13 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { GuiButtonBlinkEvent } from '../../event/LocalEvents'
 
 export class Button extends BaseElement {
-    buttonType: string = null
-    imgNormal: SpriteImage = null
-    imgHover: SpriteImage = null
-    imgPressed: SpriteImage = null
-    imgDisabled: SpriteImage = null
-    tooltip: string = null
-    tooltipSfx: string = null
+    buttonType: string
+    imgNormal: SpriteImage
+    imgHover: SpriteImage
+    imgPressed: SpriteImage
+    imgDisabled: SpriteImage
+    tooltip: string
+    tooltipSfx: string
     hoverFrame: boolean = false
     blink: boolean = false
     blinkInterval?: NodeJS.Timeout

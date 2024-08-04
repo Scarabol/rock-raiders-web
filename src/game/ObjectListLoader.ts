@@ -30,7 +30,7 @@ export class ObjectListLoader {
 
     readonly vehicleKeyToDriver = new Map<string, Raider>()
     readonly vehicleByKey = new Map<string, VehicleEntity>()
-    trackEntity: GameEntity = null
+    trackEntity: GameEntity
 
     constructor(readonly worldMgr: WorldManager, readonly disableStartTeleport: boolean) {
     }

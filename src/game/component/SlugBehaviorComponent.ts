@@ -12,7 +12,7 @@ export enum SlugBehaviorState {
 export class SlugBehaviorComponent extends AbstractGameComponent {
     state: SlugBehaviorState = SlugBehaviorState.EMERGE
     energyLeeched: boolean = false
-    targetBuilding: BuildingEntity = null
-    targetEnter: PathTarget = null
+    targetBuilding: BuildingEntity
+    targetEnter: PathTarget
     idleTimer: number = 0
 }

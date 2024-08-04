@@ -26,13 +26,13 @@ export class MainMenuLayer extends ScaledLayer {
     scrollInterval?: NodeJS.Timeout
     overlayTimeout?: NodeJS.Timeout
     overlayIndex: number = 0
-    overlay: FlicAnimOverlay = null
+    overlay: FlicAnimOverlay
 
     constructor(menuCfg: MenuEntryCfg) {
         super()
         this.cfg = menuCfg
         this.menuImage = menuCfg.menuImage ? ResourceManager.getImage(menuCfg.menuImage) : null // TODO create all images in loading phase
-        let titleImage: SpriteImage = null
+        let titleImage: SpriteImage
         if (menuCfg.displayTitle && menuCfg.fullName) {
             BitmapFontWorkerPool.instance.createTextImage(menuCfg.loFont, menuCfg.fullName) // TODO create all images in loading phase
                 .then((img) => titleImage = img)

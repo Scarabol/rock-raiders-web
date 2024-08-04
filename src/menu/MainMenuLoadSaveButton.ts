@@ -11,9 +11,9 @@ import { SoundManager } from '../audio/SoundManager'
 import { SAMPLE } from '../audio/Sample'
 
 export class MainMenuLoadSaveButton extends MainMenuBaseItem {
-    labelImgLo: SpriteImage = null
-    labelImgHi: SpriteImage = null
-    saveGameImg: SpriteImage = null
+    labelImgLo: SpriteImage
+    labelImgHi: SpriteImage
+    saveGameImg: SpriteImage
     saveGameImgWidthLo: number = 0
     saveGameImgHeightLo: number = 0
     saveGameImgWidthHi: number = 0

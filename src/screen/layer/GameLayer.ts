@@ -28,7 +28,7 @@ import { SceneSelectionComponent } from '../../game/component/SceneSelectionComp
 import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class GameLayer extends ScreenLayer {
-    private pointerDown: { x: number, y: number } = null
+    private pointerDown: { x: number, y: number }
     private readonly beforeUnloadListener = (event: BeforeUnloadEvent): string => {
         if (DEV_MODE) return undefined
         // XXX save complete game state in local storage and allow page reload

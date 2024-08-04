@@ -6,7 +6,7 @@ import { BaseElement } from './BaseElement'
 import { ResourceManager } from '../../resource/ResourceManager'
 
 export class Panel extends BaseElement {
-    img: SpriteImage = null
+    img: SpriteImage
     xOut: number = 0
     yOut: number = 0
     xIn: number = 0

@@ -28,9 +28,9 @@ export class MapView extends BaseElement {
     surfaceRectSize: number = 10
     terrainWidth: number = 0
     terrainHeight: number = 0
-    lastSurface: MapSurfaceRect = null
-    lastEntity: GameEntity = null
-    entityBelowCursor: GameEntity = null
+    lastSurface: MapSurfaceRect
+    lastEntity: GameEntity
+    entityBelowCursor: GameEntity
 
     constructor() {
         super()

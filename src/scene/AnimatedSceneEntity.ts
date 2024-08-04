@@ -21,17 +21,17 @@ export class AnimatedSceneEntity extends SceneEntity {
     readonly wheelJoints: { mesh: Object3D, radius: number }[] = []
     upgradeLevel: string = '0000'
     currentAnimation: string
-    driverParent: Object3D = null
-    driver: Object3D = null
-    toolParent: Object3D = null
-    depositParent: Object3D = null
-    xPivotObj: Object3D = null
-    pivotMinZ: number = null
-    pivotMaxZ: number = null
-    yPivotObj: Object3D = null
+    driverParent: Object3D
+    driver: Object3D
+    toolParent: Object3D
+    depositParent: Object3D
+    xPivotObj: Object3D
+    pivotMinZ: number
+    pivotMaxZ: number
+    yPivotObj: Object3D
     flipCamera: boolean = false
-    camFPVJoint: Object3D = null
-    camShoulderJoint: Object3D = null
+    camFPVJoint: Object3D
+    camShoulderJoint: Object3D
     camFPVChildren: Object3D[] = []
     camShoulderChildren: Object3D[] = []
 

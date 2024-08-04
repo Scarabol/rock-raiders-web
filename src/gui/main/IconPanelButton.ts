@@ -10,13 +10,13 @@ import { EntityDependency, EntityDependencyChecked, GameConfig } from '../../cfg
 import { DependencySpriteWorkerPool } from '../../worker/DependencySpriteWorkerPool'
 
 export class IconPanelButton extends Button {
-    tooltipDisabled: string = null
-    tooltipDisabledSfx: string = null
-    hotkey: string = null
+    tooltipDisabled: string
+    tooltipDisabledSfx: string
+    hotkey: string
     isDisabled: () => boolean = () => true
     hasRaider: boolean = false
     discoveredBuildingsMaxLevel: Map<EntityType, number> = new Map()
-    dependencyTooltipImage: SpriteImage = null
+    dependencyTooltipImage: SpriteImage
     showDependencies: boolean = false
     hasUnfulfilledDependency: boolean = false
 

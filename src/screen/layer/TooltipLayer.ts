@@ -14,8 +14,8 @@ export class TooltipLayer extends ScreenLayer {
     tooltipTimeoutText?: NodeJS.Timeout
     tooltipTimeoutSfx?: NodeJS.Timeout
     cursorLeft: boolean = false
-    tooltipCanvas: HTMLCanvasElement = null
-    lastTooltipKey: string = null
+    tooltipCanvas: HTMLCanvasElement
+    lastTooltipKey: string
 
     constructor() {
         super()

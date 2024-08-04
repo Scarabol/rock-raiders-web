@@ -19,7 +19,7 @@ export enum CameraRotation {
 export class BirdViewControls extends MapControls {
     private readonly dummyPointerId: number
     private lockBuild: boolean = false
-    moveTarget: Vector3 = null
+    moveTarget: Vector3
     lastPanKey: string = ''
     lockedObject: Object3D
     disabled: boolean = false

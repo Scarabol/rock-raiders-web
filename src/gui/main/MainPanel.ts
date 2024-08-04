@@ -39,7 +39,7 @@ export class MainPanel extends Panel {
     numRequestedRaiders: number = 0
     hasRaiderTeleport: boolean = false
     hasMaxRaiders: boolean = false
-    lastSelectionEvent: SelectionChanged = null
+    lastSelectionEvent: SelectionChanged
 
     constructor() {
         super()

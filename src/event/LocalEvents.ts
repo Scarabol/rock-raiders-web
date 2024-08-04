@@ -149,7 +149,7 @@ export class VehicleUpgradeCompleteEvent extends BaseEvent {
 }
 
 export class InitRadarMap extends BaseEvent {
-    focusTile: { x: number, y: number } = null
+    focusTile: { x: number, y: number }
     surfaces: MapSurfaceRect[] = []
     terrainWidth: number
     terrainHeight: number
