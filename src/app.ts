@@ -93,6 +93,7 @@ export async function start() {
     let game = new GameModule(screenMaster)
     if (import.meta.hot) {
         import.meta.hot.accept('./GameModule', (mNs) => {
+            if (!mNs) return
             try {
                 game.dispose()
                 game = new mNs.GameModule(screenMaster)

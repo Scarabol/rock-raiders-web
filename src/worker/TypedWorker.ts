@@ -37,7 +37,9 @@ export interface TypedWorkerBackend<M, R> {
 }
 
 export class TypedWorkerThreaded<M, R> implements TypedWorkerBackend<M, R> {
-    onMessageFromFrontend: (message: M) => any
+    onMessageFromFrontend: (message: M) => any = () => {
+        throw new Error('Not implemented')
+    }
 
     constructor(readonly worker: Worker) {
         worker.addEventListener('message', (event) => this.onMessageFromFrontend(event?.data))
@@ -49,7 +51,9 @@ export class TypedWorkerThreaded<M, R> implements TypedWorkerBackend<M, R> {
 }
 
 export class TypedWorkerFallback<M, R> implements TypedWorker<M>, TypedWorkerBackend<M, R> {
-    onMessageFromFrontend: (message: M) => any
+    onMessageFromFrontend: (message: M) => any = () => {
+        throw new Error('Not implemented')
+    }
 
     constructor(readonly onResponseFromWorker: (response: R) => any) {
     }

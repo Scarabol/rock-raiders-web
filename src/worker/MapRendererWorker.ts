@@ -21,18 +21,32 @@ type MapRendererInitMessage = {
     geoScanSprite: SpriteImage
 }
 
-type MapRendererRenderMessage = {
-    type: MapRendererWorkerRequestType.MAP_RENDER_TERRAIN | MapRendererWorkerRequestType.MAP_RENDER_SURFACE | MapRendererWorkerRequestType.MAP_RENDER_ENTITIES
+type MapRendererTerrainRenderMessage = {
+    type: MapRendererWorkerRequestType.MAP_RENDER_TERRAIN
     requestId: string
     offset: { x: number, y: number }
-    surfaceRectSize?: number
-    terrain?: MapSurfaceRect[][]
-    surface?: MapSurfaceRect
-    mapMarkerType?: MapMarkerType
-    entities?: { x: number, z: number, r: number }[]
+    surfaceRectSize: number
+    terrain: MapSurfaceRect[][]
 }
 
-export type MapRendererMessage = MapRendererInitMessage | MapRendererRenderMessage
+type MapRendererSurfaceRenderMessage = {
+    type: MapRendererWorkerRequestType.MAP_RENDER_SURFACE
+    requestId: string
+    offset: { x: number, y: number }
+    surfaceRectSize: number
+    surface: MapSurfaceRect
+}
+
+type MapRendererEntitiesRenderMessage = {
+    type: MapRendererWorkerRequestType.MAP_RENDER_ENTITIES
+    requestId: string
+    offset: { x: number, y: number }
+    surfaceRectSize: number
+    mapMarkerType: MapMarkerType
+    entities: { x: number, z: number, r: number }[]
+}
+
+export type MapRendererMessage = MapRendererInitMessage | MapRendererTerrainRenderMessage | MapRendererSurfaceRenderMessage | MapRendererEntitiesRenderMessage
 
 export type MapRendererResponse = {
     type: MapRendererWorkerRequestType.RESPONSE_MAP_RENDERER
@@ -40,26 +54,26 @@ export type MapRendererResponse = {
 }
 
 export class MapRendererWorker {
-    surfaceContext: SpriteContext
-    entityContext: SpriteContext
-    monsterContext: SpriteContext
-    materialContext: SpriteContext
-    geoScanContext: SpriteContext
+    surfaceContext?: SpriteContext
+    entityContext?: SpriteContext
+    monsterContext?: SpriteContext
+    materialContext?: SpriteContext
+    geoScanContext?: SpriteContext
     blocked: Set<MapMarkerType> = new Set()
-    markedDirty: Map<MapMarkerType, MapRendererRenderMessage> = new Map()
+    markedDirty: Map<MapMarkerType, MapRendererEntitiesRenderMessage> = new Map()
 
     constructor(readonly worker: TypedWorkerBackend<MapRendererMessage, MapRendererResponse>) {
         this.worker.onMessageFromFrontend = (msg) => this.processMessage(msg)
     }
 
     processMessage(msg: MapRendererMessage) {
-        if (this.isInitMessage(msg)) {
+        if (msg.type === MapRendererWorkerRequestType.MAP_RENDERER_INIT) {
             this.surfaceContext = msg.terrainSprite.getContext('2d') as SpriteContext
             this.monsterContext = msg.monsterSprite.getContext('2d') as SpriteContext
             this.materialContext = msg.materialSprite.getContext('2d') as SpriteContext
             this.geoScanContext = msg.geoScanSprite.getContext('2d') as SpriteContext
             this.entityContext = msg.entitySprite.getContext('2d') as SpriteContext
-        } else if (this.isRenderMessage(msg)) {
+        } else {
             switch (msg.type) {
                 case MapRendererWorkerRequestType.MAP_RENDER_TERRAIN:
                     this.redrawTerrain(msg.offset, msg.surfaceRectSize, msg.terrain)
@@ -88,7 +102,8 @@ export class MapRendererWorker {
         }
     }
 
-    private redrawEntitiesContext(msg: MapRendererRenderMessage, context: SpriteContext, rectColor: string, rectSize: number) {
+    private redrawEntitiesContext(msg: MapRendererEntitiesRenderMessage, context: SpriteContext | undefined, rectColor: string, rectSize: number) {
+        if (!context) return
         if (this.blocked.has(msg.mapMarkerType)) {
             this.markedDirty.set(msg.mapMarkerType, msg)
             return
@@ -109,7 +124,9 @@ export class MapRendererWorker {
         })
     }
 
-    private redrawGeoScanContext(msg: MapRendererRenderMessage) {
+    private redrawGeoScanContext(msg: MapRendererEntitiesRenderMessage) {
+        const geoScanContext = this.geoScanContext
+        if (!geoScanContext) return
         if (this.blocked.has(msg.mapMarkerType)) {
             this.markedDirty.set(msg.mapMarkerType, msg)
             return
@@ -121,41 +138,29 @@ export class MapRendererWorker {
             this.markedDirty.delete(msg.mapMarkerType)
             if (dirty) this.redrawGeoScanContext(dirty)
         }, MAP_MAX_UPDATE_INTERVAL)
-        this.geoScanContext.clearRect(0, 0, this.geoScanContext.canvas.width, this.geoScanContext.canvas.height)
-        this.geoScanContext.strokeStyle = '#fff'
-        this.geoScanContext.lineWidth = 1
+        geoScanContext.clearRect(0, 0, geoScanContext.canvas.width, geoScanContext.canvas.height)
+        geoScanContext.strokeStyle = '#fff'
+        geoScanContext.lineWidth = 1
         msg.entities.forEach((e) => {
             const scanRadius = Math.round(e.r * msg.surfaceRectSize)
             const x = Math.round(e.x * msg.surfaceRectSize / TILESIZE - msg.offset.x)
             const y = Math.round(e.z * msg.surfaceRectSize / TILESIZE - msg.offset.y)
-            this.geoScanContext.beginPath()
-            this.geoScanContext.setLineDash([1, 1])
-            this.geoScanContext.ellipse(x, y, scanRadius, scanRadius, 0, 0, 2 * Math.PI)
-            this.geoScanContext.stroke()
+            geoScanContext.beginPath()
+            geoScanContext.setLineDash([1, 1])
+            geoScanContext.ellipse(x, y, scanRadius, scanRadius, 0, 0, 2 * Math.PI)
+            geoScanContext.stroke()
         })
     }
 
-    private isInitMessage(msg?: MapRendererMessage): msg is MapRendererInitMessage {
-        return msg?.type === MapRendererWorkerRequestType.MAP_RENDERER_INIT
-    }
-
-    private isRenderMessage(msg?: MapRendererMessage): msg is MapRendererRenderMessage {
-        switch (msg?.type) {
-            case MapRendererWorkerRequestType.MAP_RENDER_TERRAIN:
-            case MapRendererWorkerRequestType.MAP_RENDER_SURFACE:
-            case MapRendererWorkerRequestType.MAP_RENDER_ENTITIES:
-                return true
-        }
-        return false
-    }
-
     private redrawTerrain(offset: { x: number, y: number }, surfaceRectSize: number, terrain: MapSurfaceRect[][]) {
+        if (!this.surfaceContext) return
         this.surfaceContext.fillStyle = '#000'
         this.surfaceContext.fillRect(0, 0, this.surfaceContext.canvas.width, this.surfaceContext.canvas.height)
         terrain.forEach((r) => r.forEach((s) => this.redrawSurface(offset, surfaceRectSize, s)))
     }
 
     private redrawSurface(offset: { x: number, y: number }, surfaceRectSize: number, surfaceRect: MapSurfaceRect) {
+        if (!this.surfaceContext) return
         const surfaceX = Math.round(surfaceRect.x * surfaceRectSize - offset.x)
         const surfaceY = Math.round(surfaceRect.y * surfaceRectSize - offset.y)
         const rectSize = surfaceRectSize - MAP_PANEL_SURFACE_RECT_MARGIN

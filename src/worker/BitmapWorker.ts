@@ -29,6 +29,10 @@ export class BitmapSystem extends AbstractWorkerSystem<BitmapWorkerRequest, Bitm
                 this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlpha()})
                 break
             case BitmapWorkerRequestType.DECODE_BITMAP_ALPHA_INDEX:
+                if (request.alphaIndex === undefined || request.alphaIndex === null) {
+                    console.error(`No alpha index given for bitmap decode request`)
+                    return
+                }
                 this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlphaByIndex(request.alphaIndex)})
                 break
             case BitmapWorkerRequestType.DECODE_BITMAP_ALPHA_TRANSLUCENT:

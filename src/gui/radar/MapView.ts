@@ -28,9 +28,9 @@ export class MapView extends BaseElement {
     surfaceRectSize: number = 10
     terrainWidth: number = 0
     terrainHeight: number = 0
-    lastSurface: MapSurfaceRect
-    lastEntity: GameEntity
-    entityBelowCursor: GameEntity
+    lastSurface?: MapSurfaceRect
+    lastEntity?: GameEntity
+    entityBelowCursor?: GameEntity
 
     constructor() {
         super()
@@ -85,7 +85,7 @@ export class MapView extends BaseElement {
             const entities = this.entitiesByOrder.getOrUpdate(event.mapMarkerType, () => new Map())
             switch (event.change) {
                 case MapMarkerChange.UPDATE:
-                    entities.set(event.entity, {...event.position, r: event.radius})
+                    if (event.position && event.radius) entities.set(event.entity, {x: event.position?.x, z: event.position?.z, r: event.radius})
                     break
                 case MapMarkerChange.REMOVE:
                     entities.delete(event.entity)
@@ -135,7 +135,7 @@ export class MapView extends BaseElement {
 
     isInRect(sx: number, sy: number): boolean {
         const inRect = super.isInRect(sx, sy)
-        this.entityBelowCursor = null
+        this.entityBelowCursor = undefined
         if (inRect) {
             this.entitiesByOrder.forEach((entities) => {
                 entities.forEach((pos, entity) => {

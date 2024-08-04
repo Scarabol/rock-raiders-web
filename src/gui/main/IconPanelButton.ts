@@ -16,7 +16,7 @@ export class IconPanelButton extends Button {
     isDisabled: () => boolean = () => true
     hasRaider: boolean = false
     discoveredBuildingsMaxLevel: Map<EntityType, number> = new Map()
-    dependencyTooltipImage: SpriteImage
+    dependencyTooltipImage?: SpriteImage
     showDependencies: boolean = false
     hasUnfulfilledDependency: boolean = false
 

@@ -11,7 +11,6 @@ export abstract class AbstractWorkerSystem<M, R> {
                 }
             } catch (e) {
                 console.error(e)
-                this.worker.sendResponse({workerRequestHash: msg.workerRequestHash, response: null}) // XXX improve error handling
             }
         }
     }

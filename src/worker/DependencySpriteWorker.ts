@@ -11,28 +11,34 @@ export enum DependencySpriteWorkerRequestType {
     CREATE_SPRITE,
 }
 
-export interface DependencySpriteWorkerRequest {
-    type: DependencySpriteWorkerRequestType
-    dependencies?: EntityDependencyChecked[]
-    upgradeNames?: string[]
-    tooltipFontData?: BitmapFontData
-    plusSignImgData?: ImageData
-    equalSignImgData?: ImageData
-    interfaceImageData?: Map<string, ImageData[]>
-    interfaceBuildImageData?: Map<string, ImageData[]>
+export interface DependencySpriteWorkerSetupRequest {
+    type: DependencySpriteWorkerRequestType.SETUP
+    upgradeNames: string[]
+    tooltipFontData: BitmapFontData
+    plusSignImgData: ImageData
+    equalSignImgData: ImageData
+    interfaceImageData: Map<string, [ImageData, ImageData]>
+    interfaceBuildImageData: Map<string, [ImageData, ImageData]>
 }
 
+export interface DependencySpriteWorkerCreateSpriteRequest {
+    type: DependencySpriteWorkerRequestType.CREATE_SPRITE
+    dependencies: EntityDependencyChecked[]
+}
+
+export type DependencySpriteWorkerRequest = DependencySpriteWorkerSetupRequest | DependencySpriteWorkerCreateSpriteRequest
+
 export interface DependencySpriteWorkerResponse {
-    dependencyImage: ImageData
+    dependencyImage?: ImageData
 }
 
 export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySpriteWorkerRequest, DependencySpriteWorkerResponse> {
-    readonly interfaceImages: Map<string, SpriteImage[]> = new Map()
-    readonly interfaceBuildImages: Map<string, SpriteImage[]> = new Map()
-    upgradeNames: string[]
-    tooltipFont: BitmapFont
-    plusSignImg: SpriteImage
-    equalsSignImg: SpriteImage
+    readonly interfaceImages: Map<string, [SpriteImage, SpriteImage]> = new Map()
+    readonly interfaceBuildImages: Map<string, [SpriteImage, SpriteImage]> = new Map()
+    upgradeNames?: string[]
+    tooltipFont?: BitmapFont
+    plusSignImg?: SpriteImage
+    equalsSignImg?: SpriteImage
 
     onMessageFromFrontend(workerRequestHash: string, request: DependencySpriteWorkerRequest): void {
         switch (request.type) {
@@ -42,41 +48,50 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
                 this.plusSignImg = imgDataToCanvas(request.plusSignImgData)
                 this.equalsSignImg = imgDataToCanvas(request.equalSignImgData)
                 request.interfaceImageData.forEach((imgData, key) => this.interfaceImages
-                    .set(key.toLowerCase(), imgData.map((imgData) => imgDataToCanvas(imgData))))
+                    .set(key.toLowerCase(), [imgDataToCanvas(imgData[0]), imgDataToCanvas(imgData[1])]))
                 request.interfaceBuildImageData.forEach((imgData, key) => this.interfaceBuildImages
-                    .set(key.toLowerCase(), imgData.map((imgData) => imgDataToCanvas(imgData))))
-                this.sendResponse(workerRequestHash, null)
+                    .set(key.toLowerCase(), [imgDataToCanvas(imgData[0]), imgDataToCanvas(imgData[1])]))
+                this.sendResponse(workerRequestHash, {})
                 break
             case DependencySpriteWorkerRequestType.CREATE_SPRITE:
+                const upgradeNames = this.upgradeNames
+                const tooltipFont = this.tooltipFont
+                const plusSignImg = this.plusSignImg
+                const equalsSignImg = this.equalsSignImg
+                if (!upgradeNames || !tooltipFont || !plusSignImg || !equalsSignImg) {
+                    console.error('Dependency sprite worker not yet setup', upgradeNames, tooltipFont, plusSignImg, equalsSignImg)
+                    this.sendResponse(workerRequestHash, {})
+                    return
+                }
                 let totalWidth = 0
                 let totalHeight = 0
                 const deps = request.dependencies.map((dep) => {
-                    let depImages: SpriteImage[]
+                    let depImages: [SpriteImage, SpriteImage]
                     if (dep.entityType === EntityType.PILOT) {
-                        depImages = this.interfaceImages.get('Interface_MenuItem_TeleportMan'.toLowerCase())
+                        depImages = this.interfaceImages.get('Interface_MenuItem_TeleportMan'.toLowerCase()) // TODO Improve config parsing and use specific key here
                     } else {
-                        depImages = this.interfaceBuildImages.get(dep.itemKey.toLowerCase())
+                        depImages = this.interfaceBuildImages.get(dep.itemKey.toLowerCase()) // TODO Improve config parsing and use specific key here
                     }
                     const depImg = dep.isOk ? depImages[0] : depImages[1]
                     totalWidth += depImg.width
                     totalHeight = Math.max(totalHeight, depImg.height)
                     return {img: depImg, level: dep.minLevel}
                 })
-                totalWidth += this.plusSignImg.width * (deps.length - 1)
-                totalWidth += this.equalsSignImg.width * 2
+                totalWidth += plusSignImg.width * (deps.length - 1)
+                totalWidth += equalsSignImg.width * 2
                 const dependencySprite = createContext(totalWidth, totalHeight)
                 let posX = 0
                 deps.forEach((s, index) => {
                     dependencySprite.drawImage(s.img, posX, (totalHeight - s.img.height) / 2)
                     if (s.level) {
-                        const upgradeName = this.upgradeNames[s.level - 1]
+                        const upgradeName = upgradeNames[s.level - 1]
                         if (upgradeName) {
-                            const minLevelImg = this.tooltipFont.createTextImage(upgradeName)
+                            const minLevelImg = tooltipFont.createTextImage(upgradeName)
                             dependencySprite.drawImage(minLevelImg, posX + 3, (totalHeight - s.img.height) / 2 + 3)
                         }
                     }
                     posX += s.img.width
-                    const signImg = index === deps.length - 1 ? this.equalsSignImg : this.plusSignImg
+                    const signImg = index === deps.length - 1 ? equalsSignImg : plusSignImg
                     dependencySprite.drawImage(signImg, posX, (totalHeight - signImg.height) / 2)
                     posX += signImg.width
                 })

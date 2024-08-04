@@ -12,7 +12,7 @@ export abstract class AbstractWorkerPool<M, R> {
 
     protected abstract attachFallbackSystem(worker: TypedWorkerFallback<WorkerRequestMessage<M>, WorkerResponseMessage<R>>): void
 
-    startPool(poolSize: number, setupMessage: M): this {
+    startPool(poolSize: number, setupMessage: M | undefined): this {
         if (this.allWorkers.size > 0) {
             console.warn('Pool already has been started')
             return this
@@ -23,7 +23,7 @@ export abstract class AbstractWorkerPool<M, R> {
                 this.allWorkers.add(worker)
                 if (setupMessage) {
                     this.lastRequestId++
-                    const message = {workerRequestHash: `message-${this.lastRequestId}`, request: setupMessage}
+                    const message: WorkerRequestMessage<M> = {workerRequestHash: `message-${this.lastRequestId}`, request: setupMessage}
                     worker.sendMessage(message)
                     this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(() => this.sendBroadcasts(worker))
                 } else {
@@ -38,7 +38,7 @@ export abstract class AbstractWorkerPool<M, R> {
         this.broadcastHistory.forEach((broadcast) => {
             this.lastRequestId++
             this.lastRequestId++
-            const message = {workerRequestHash: `message-${this.lastRequestId}`, request: broadcast}
+            const message: WorkerRequestMessage<M> = {workerRequestHash: `message-${this.lastRequestId}`, request: broadcast}
             worker.sendMessage(message)
         })
         this.processNextMessage(worker)

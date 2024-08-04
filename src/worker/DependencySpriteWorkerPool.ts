@@ -1,6 +1,6 @@
 import { AbstractWorkerPool } from './AbstractWorkerPool'
 import { TypedWorkerFallback, WorkerRequestMessage, WorkerResponseMessage } from './TypedWorker'
-import { DependencySpriteSystem, DependencySpriteWorkerRequest, DependencySpriteWorkerRequestType, DependencySpriteWorkerResponse } from './DependencySpriteWorker'
+import { DependencySpriteSystem, DependencySpriteWorkerCreateSpriteRequest, DependencySpriteWorkerRequest, DependencySpriteWorkerRequestType, DependencySpriteWorkerResponse } from './DependencySpriteWorker'
 import { EntityDependencyChecked, GameConfig } from '../cfg/GameConfig'
 import { SpriteImage } from '../core/Sprite'
 import { BitmapFontData } from '../core/BitmapFont'
@@ -16,9 +16,9 @@ export class DependencySpriteWorkerPool extends AbstractWorkerPool<DependencySpr
         tooltipFontData: BitmapFontData,
         plusSign: ImageData,
         equalSign: ImageData,
-        depInterfaceBuildImageData: Map<string, ImageData[]>,
+        depInterfaceBuildImageData: Map<string, [ImageData, ImageData]>,
     }) {
-        const depInterfaceImageData: Map<string, ImageData[]> = new Map()
+        const depInterfaceImageData: Map<string, [ImageData, ImageData]> = new Map()
         depInterfaceImageData.set('Interface_MenuItem_TeleportMan'.toLowerCase(), [args.teleportManNormal, args.teleportManDisabled])
         return this.startPool(4, {
             type: DependencySpriteWorkerRequestType.SETUP,
@@ -31,13 +31,14 @@ export class DependencySpriteWorkerPool extends AbstractWorkerPool<DependencySpr
         })
     }
 
-    async createDependenciesSprite(dependencies: EntityDependencyChecked[]): Promise<SpriteImage> {
+    async createDependenciesSprite(dependencies: EntityDependencyChecked[]): Promise<SpriteImage | undefined> {
         const depHash = dependencies.map((d) => `${d.itemKey}:${d.minLevel}=${d.isOk}`).join(';')
         const fromCache = DependencySpriteWorkerPool.dependencySpriteCache.get(depHash)
         if (fromCache) return fromCache
-        const message = {type: DependencySpriteWorkerRequestType.CREATE_SPRITE, dependencies: dependencies, hash: depHash}
+        const message: DependencySpriteWorkerCreateSpriteRequest & { hash: string } = {type: DependencySpriteWorkerRequestType.CREATE_SPRITE, dependencies: dependencies, hash: depHash}
         const response = await this.processMessage(message)
         const imgData = response.dependencyImage
+        if (!imgData) return undefined
         const dependencyImage = imgDataToCanvas(imgData)
         DependencySpriteWorkerPool.dependencySpriteCache.set(depHash, dependencyImage)
         return dependencyImage
