@@ -1,8 +1,6 @@
 import { RaiderJob } from './RaiderJob'
 import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
-import { Raider } from '../../raider/Raider'
-import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { JobFulfiller } from '../Job'
 import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
@@ -24,7 +22,7 @@ export class RepairBuildingJob extends RaiderJob {
         this.priorityIdentifier = PriorityIdentifier.REPAIR
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         const healthComponent = this.building.worldMgr.ecs.getComponents(this.building.entity).get(HealthComponent)
         if (healthComponent.health >= healthComponent.maxHealth) return null
         return entity.findShortestPath(this.workplaces)?.target

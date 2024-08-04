@@ -1,18 +1,16 @@
 import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from '../../worker/TypedWorker'
-import { WorkerResponse } from '../../worker/WorkerResponse'
 import { MapSurfaceRect } from './MapSurfaceRect'
-import { MapRendererMessage, MapRendererResponse, MapRendererWorker } from '../../worker/MapRendererWorker'
-import { WorkerMessageType } from '../../worker/WorkerMessageType'
+import { MapRendererMessage, MapRendererResponse, MapRendererWorker, MapRendererWorkerRequestType } from '../../worker/MapRendererWorker'
 import { generateUUID } from 'three/src/math/MathUtils'
 import { MapMarkerType } from '../../game/component/MapMarkerComponent'
 
 export class MapRenderer {
     readonly resolveCallbackById: Map<string, (() => void)> = new Map()
-    readonly worker: TypedWorker<MapRendererMessage, MapRendererResponse>
+    readonly worker: TypedWorker<MapRendererMessage>
 
     constructor(terrainSprite: HTMLCanvasElement, entitySprite: HTMLCanvasElement, monsterSprite: HTMLCanvasElement, materialSprite: HTMLCanvasElement, geoScanSprite: HTMLCanvasElement) {
         const msgInit: MapRendererMessage = {
-            type: WorkerMessageType.MAP_RENDERER_INIT,
+            type: MapRendererWorkerRequestType.MAP_RENDERER_INIT,
             terrainSprite: terrainSprite,
             entitySprite: entitySprite,
             monsterSprite: monsterSprite,
@@ -38,21 +36,17 @@ export class MapRenderer {
     }
 
     onResponseFromWorker(response: MapRendererResponse) {
-        if (this.isMapRendererResponse(response)) {
+        if (response.type === MapRendererWorkerRequestType.RESPONSE_MAP_RENDERER) {
             this.resolveCallbackById.get(response.requestId)?.()
             this.resolveCallbackById.delete(response.requestId)
         }
-    }
-
-    private isMapRendererResponse(response: WorkerResponse): response is MapRendererResponse {
-        return response.type === WorkerMessageType.RESPONSE_MAP_RENDERER
     }
 
     redrawTerrain(offset: { x: number, y: number }, surfaceRectSize: number, surfaceMap: MapSurfaceRect[][]): Promise<void> {
         return new Promise((resolve) => {
             const requestId = generateUUID()
             this.resolveCallbackById.set(requestId, resolve)
-            this.worker.sendMessage({type: WorkerMessageType.MAP_RENDER_TERRAIN, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, terrain: surfaceMap})
+            this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_TERRAIN, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, terrain: surfaceMap})
         })
     }
 
@@ -60,7 +54,7 @@ export class MapRenderer {
         return new Promise((resolve) => {
             const requestId = generateUUID()
             this.resolveCallbackById.set(requestId, resolve)
-            this.worker.sendMessage({type: WorkerMessageType.MAP_RENDER_SURFACE, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, surface: surface})
+            this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_SURFACE, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, surface: surface})
         })
     }
 
@@ -68,7 +62,7 @@ export class MapRenderer {
         return new Promise((resolve) => {
             const requestId = generateUUID()
             this.resolveCallbackById.set(requestId, resolve)
-            this.worker.sendMessage({type: WorkerMessageType.MAP_RENDER_ENTITIES, mapMarkerType: mapMarkerType, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, entities: entities})
+            this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_ENTITIES, mapMarkerType: mapMarkerType, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, entities: entities})
         })
     }
 }

@@ -5,13 +5,13 @@ import { SceneMesh } from './SceneMesh'
 import { TILESIZE } from '../params'
 
 export class SceneAudioMesh extends SceneMesh {
-    audioNode: PositionalAudio
-    lastSfxName: string
+    audioNode?: PositionalAudio
+    lastSfxName: string = ''
 
     update(elapsedMs: number) {
         const sfxVolume = SaveGameManager.getSfxVolume()
         if (sfxVolume <= 0) return
-        const sfxName = this.userData.sfxNameAnimation
+        const sfxName = this.userData.sfxNameAnimation || ''
         if (!sfxName || (this.lastSfxName === sfxName && this.audioNode?.isPlaying)) return
         this.lastSfxName = sfxName
         const audioBuffer = SoundManager.getSoundBuffer(this.lastSfxName)
@@ -33,6 +33,6 @@ export class SceneAudioMesh extends SceneMesh {
 
     dispose() {
         SoundManager.stopAudio(this.audioNode)
-        this.lastSfxName = null
+        this.lastSfxName = ''
     }
 }

@@ -16,7 +16,6 @@ export class SceneMesh extends Mesh {
     dispose() {
         this.geometry?.dispose()
         this.getMaterials().forEach((m) => m.dispose())
-        this.material = null
     }
 
     getMaterials(): SequenceTextureMaterial[] {

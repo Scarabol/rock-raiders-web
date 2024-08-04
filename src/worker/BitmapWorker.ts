@@ -9,13 +9,13 @@ export enum BitmapWorkerRequestType {
     DECODE_BITMAP_ALPHA_TRANSLUCENT,
 }
 
-export class BitmapWorkerRequest {
+export interface BitmapWorkerRequest {
     type: BitmapWorkerRequestType
     bitmapData: ArrayBuffer
     alphaIndex?: number
 }
 
-export class BitmapWorkerResponse {
+export interface BitmapWorkerResponse {
     decoded: BitmapWithPalette
 }
 

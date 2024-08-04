@@ -1,8 +1,6 @@
 import { Vector2 } from 'three'
 import { PathTarget } from '../PathTarget'
 import { Job, JobFulfiller } from './Job'
-import { Raider } from '../raider/Raider'
-import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 
 export class MoveJob extends Job {
@@ -13,7 +11,7 @@ export class MoveJob extends Job {
         this.target = PathTarget.fromLocation(location)
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         return this.target
     }
 

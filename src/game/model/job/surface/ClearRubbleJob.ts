@@ -4,8 +4,6 @@ import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
-import { Raider } from '../../raider/Raider'
-import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
 import { EntityType } from '../../EntityType'
@@ -20,7 +18,7 @@ export class ClearRubbleJob extends ShareableJob {
         this.priorityIdentifier = PriorityIdentifier.CLEARING
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         if (!this.surface.hasRubble()) return null
         if (entity.entityType === EntityType.BULLDOZER) {
             return entity.findShortestPath(PathTarget.fromLocation(this.surface.getCenterWorld2D()))?.target

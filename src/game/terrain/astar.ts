@@ -7,7 +7,7 @@
 
 function pathTo(node: GridNode) {
     let curr = node
-    const path = []
+    const path: GridNode[] = []
     while (curr.parent) {
         path.unshift(curr)
         curr = curr.parent
@@ -248,10 +248,10 @@ export class Graph {
     }
 
     toString() {
-        const graphString = []
+        const graphString: string[] = []
         const nodes = this.grid
         for (let x = 0; x < nodes.length; x++) {
-            const rowDebug = []
+            const rowDebug: number[] = []
             const row = nodes[x]
             for (let y = 0; y < row.length; y++) {
                 rowDebug.push(row[y].weight)

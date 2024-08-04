@@ -11,7 +11,7 @@ export enum DependencySpriteWorkerRequestType {
     CREATE_SPRITE,
 }
 
-export class DependencySpriteWorkerRequest {
+export interface DependencySpriteWorkerRequest {
     type: DependencySpriteWorkerRequestType
     dependencies?: EntityDependencyChecked[]
     upgradeNames?: string[]
@@ -22,7 +22,7 @@ export class DependencySpriteWorkerRequest {
     interfaceBuildImageData?: Map<string, ImageData[]>
 }
 
-export class DependencySpriteWorkerResponse {
+export interface DependencySpriteWorkerResponse {
     dependencyImage: ImageData
 }
 

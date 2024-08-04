@@ -4,7 +4,6 @@ import { PathTarget } from '../PathTarget'
 import { Job, JobFulfiller } from './Job'
 import { EntityType } from '../EntityType'
 import { Raider } from '../raider/Raider'
-import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { SAMPLE } from '../../../audio/Sample'
 import { DynamiteExplosionEvent } from '../../../event/WorldEvents'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
@@ -35,7 +34,7 @@ export class CarryJob extends Job {
         }
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         if (this.target && !(
             (this.target.building && !this.target.building.isPowered()) ||
             (this.target.site && (this.target.site.complete || this.target.site.canceled)) ||
@@ -50,7 +49,7 @@ export class CarryJob extends Job {
         return this.target
     }
 
-    private findWorkplaces(entity: Raider | VehicleEntity): PathTarget[] {
+    private findWorkplaces(entity: JobFulfiller): PathTarget[] {
         const carryItem = this.carryItem
         const entityMgr = carryItem.worldMgr.entityMgr
         switch (carryItem.entityType) {
@@ -99,14 +98,14 @@ export class CarryJob extends Job {
         }
     }
 
-    private findReachableBuildingSiteWithNeed(entityMgr: EntityManager, carryItem: MaterialEntity, entity: Raider | VehicleEntity) {
+    private findReachableBuildingSiteWithNeed(entityMgr: EntityManager, carryItem: MaterialEntity, entity: JobFulfiller) {
         return entityMgr.buildingSites
             .filter((b) => b.needs(carryItem.entityType))
             .map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
             .filter((p) => !!entity.findShortestPath(p))
     }
 
-    private findReachableBuilding(entityMgr: EntityManager, buildingType: EntityType, entity: Raider | VehicleEntity) {
+    private findReachableBuilding(entityMgr: EntityManager, buildingType: EntityType, entity: JobFulfiller) {
         return entityMgr.getBuildingCarryPathTargets(buildingType).filter((p) => !!entity.findShortestPath(p))
     }
 

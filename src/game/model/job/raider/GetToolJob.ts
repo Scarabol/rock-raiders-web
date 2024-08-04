@@ -3,8 +3,6 @@ import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { RaiderJob } from './RaiderJob'
-import { Raider } from '../../raider/Raider'
-import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
 import { MoveJob } from '../MoveJob'
@@ -21,7 +19,7 @@ export class GetToolJob extends RaiderJob {
         this.workplaces = toolstation ? [toolstation.getToolPathTarget] : this.entityMgr.getGetToolTargets()
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         if (this.workplaces.some((b) => !b.building.isPowered())) {
             this.workplaces = this.entityMgr.getGetToolTargets()
         }

@@ -1,8 +1,6 @@
 import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
-import { Raider } from '../../raider/Raider'
-import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
 import { RaiderInfoComponent } from '../../../component/RaiderInfoComponent'
@@ -10,7 +8,7 @@ import { RaiderInfoComponent } from '../../../component/RaiderInfoComponent'
 export class EatJob extends RaiderJob {
     target: PathTarget = null
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         if (!this.target) this.target = PathTarget.fromLocation(this.raider.getPosition2D())
         return this.target
     }

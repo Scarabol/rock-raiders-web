@@ -1,8 +1,8 @@
 import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend, WorkerRequestMessage, WorkerResponseMessage } from './TypedWorker'
 
 export abstract class AbstractWorkerPool<M, R> {
-    private readonly allWorkers: Set<TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>> = new Set()
-    private readonly idleWorkers: TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>[] = []
+    private readonly allWorkers: Set<TypedWorker<WorkerRequestMessage<M>>> = new Set()
+    private readonly idleWorkers: TypedWorker<WorkerRequestMessage<M>>[] = []
     private readonly openRequests: Map<string, ((response: R) => unknown)[]> = new Map()
     private readonly messageBacklog: WorkerRequestMessage<M>[] = []
     private readonly broadcastHistory: Set<M> = new Set()
@@ -34,7 +34,7 @@ export abstract class AbstractWorkerPool<M, R> {
         return this
     }
 
-    private sendBroadcasts(worker: TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>) {
+    private sendBroadcasts(worker: TypedWorker<WorkerRequestMessage<M>>) {
         this.broadcastHistory.forEach((broadcast) => {
             this.lastRequestId++
             this.lastRequestId++
@@ -48,7 +48,7 @@ export abstract class AbstractWorkerPool<M, R> {
         this.allWorkers.forEach((w) => w.terminate())
     }
 
-    private createTypedWorker(): TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>> {
+    private createTypedWorker(): TypedWorker<WorkerRequestMessage<M>> {
         try {
             const wadWorker: TypedWorkerFrontend<WorkerRequestMessage<M>, WorkerResponseMessage<R>> = new TypedWorkerFrontend(this.createWorker(),
                 (r: WorkerResponseMessage<R>) => this.onWorkerResponse(wadWorker, r))
@@ -91,7 +91,7 @@ export abstract class AbstractWorkerPool<M, R> {
         return result
     }
 
-    private onWorkerResponse(worker: TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>, response: WorkerResponseMessage<R>) {
+    private onWorkerResponse(worker: TypedWorker<WorkerRequestMessage<M>>, response: WorkerResponseMessage<R>) {
         if (response.workerRequestHash) {
             const requests = this.openRequests.get(response.workerRequestHash)
             if (requests) {
@@ -106,7 +106,7 @@ export abstract class AbstractWorkerPool<M, R> {
         this.processNextMessage(worker)
     }
 
-    private processNextMessage(worker: TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>) {
+    private processNextMessage(worker: TypedWorker<WorkerRequestMessage<M>>) {
         const nextMessage = this.messageBacklog.shift()
         if (nextMessage) {
             worker.sendMessage(nextMessage)

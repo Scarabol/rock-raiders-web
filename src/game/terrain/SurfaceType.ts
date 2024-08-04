@@ -2,7 +2,7 @@ import { Cursor, CURSOR } from '../../resource/Cursor'
 import { GameConfig } from '../../cfg/GameConfig'
 
 export class SurfaceType {
-    name: string // human-readable config name
+    name: string = '' // human-readable config name
     shaping: boolean = false
     matIndex: string = '00'
     floor: boolean = false

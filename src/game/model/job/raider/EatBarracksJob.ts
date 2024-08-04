@@ -1,8 +1,6 @@
 import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
-import { Raider } from '../../raider/Raider'
-import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
 import { RaiderInfoComponent } from '../../../component/RaiderInfoComponent'
@@ -19,7 +17,7 @@ export class EatBarracksJob extends RaiderJob {
         this.workplaces = this.building?.getTrainingTargets()
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         if (!this.building?.isPowered()) this.workplaces = this.entityMgr.getRaiderEatPathTarget()
         const target = entity.findShortestPath(this.workplaces)?.target
         this.building = target?.building

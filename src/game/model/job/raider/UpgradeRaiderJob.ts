@@ -2,8 +2,6 @@ import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
-import { Raider } from '../../raider/Raider'
-import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { JobFulfiller } from '../Job'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { HealthComponent } from '../../../component/HealthComponent'
@@ -19,7 +17,7 @@ export class UpgradeRaiderJob extends RaiderJob {
         this.workplaces = building.getTrainingTargets()
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         if (!this.building.isPowered()) return null
         return entity.findShortestPath(this.workplaces)?.target
     }

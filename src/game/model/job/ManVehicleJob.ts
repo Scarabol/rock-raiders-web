@@ -3,7 +3,6 @@ import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { JobState } from './JobState'
 import { PriorityIdentifier } from './PriorityIdentifier'
 import { RaiderJob } from './raider/RaiderJob'
-import { Raider } from '../raider/Raider'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { JobFulfiller } from './Job'
 import { EntityType } from '../EntityType'
@@ -29,7 +28,7 @@ export class ManVehicleJob extends RaiderJob {
         }
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         if (this.vehicle.isInBeam()) {
             this.jobState = JobState.CANCELED
             return null

@@ -5,8 +5,6 @@ import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
-import { Raider } from '../../raider/Raider'
-import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { JobFulfiller } from '../Job'
 import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
@@ -29,7 +27,7 @@ export class CompleteSurfaceJob extends ShareableJob {
         this.surface.site = null
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         if (!this.surface.isWalkable()) return null
         return this.workplace
     }

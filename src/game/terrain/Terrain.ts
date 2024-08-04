@@ -25,15 +25,15 @@ export class Terrain {
         this.height = levelConf.mapHeight
     }
 
-    getSurfaceFromWorld(worldPosition: Vector3): Surface | null {
+    getSurfaceFromWorld(worldPosition: Vector3): Surface {
         return this.getSurfaceFromWorldXZ(worldPosition.x, worldPosition.z)
     }
 
-    getSurfaceFromWorld2D(worldPosition: Vector2): Surface | null {
+    getSurfaceFromWorld2D(worldPosition: Vector2): Surface {
         return this.getSurfaceFromWorldXZ(worldPosition.x, worldPosition.y)
     }
 
-    getSurfaceFromWorldXZ(worldX: number, worldZ: number): Surface | null {
+    getSurfaceFromWorldXZ(worldX: number, worldZ: number): Surface {
         return this.getSurface(worldX / TILESIZE, worldZ / TILESIZE)
     }
 

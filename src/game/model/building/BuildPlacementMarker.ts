@@ -18,13 +18,13 @@ export class BuildPlacementMarker {
     static readonly invalidMarkerColor: number = 0x500000
     static readonly tooSteepMarkerColor: number = 0x500050
 
-    group: Group = new Group()
-    markers: BuildPlacementMarkerMesh[] = []
-    buildingMarkerPrimary: BuildPlacementMarkerMesh = null
-    buildingMarkerSecondary: BuildPlacementMarkerMesh = null
-    powerPathMarkerPrimary: BuildPlacementMarkerMesh = null
-    powerPathMarkerSecondary: BuildPlacementMarkerMesh = null
-    waterPathMarker: BuildPlacementMarkerMesh = null
+    readonly group: Group = new Group()
+    readonly markers: BuildPlacementMarkerMesh[] = []
+    readonly buildingMarkerPrimary: BuildPlacementMarkerMesh = null
+    readonly buildingMarkerSecondary: BuildPlacementMarkerMesh = null
+    readonly powerPathMarkerPrimary: BuildPlacementMarkerMesh = null
+    readonly powerPathMarkerSecondary: BuildPlacementMarkerMesh = null
+    readonly waterPathMarker: BuildPlacementMarkerMesh = null
     heading: number = 0
     lastCheck: boolean = false
     buildingType: BuildingType = null
@@ -50,7 +50,7 @@ export class BuildPlacementMarker {
         this.markers.push(marker)
     }
 
-    updatePosition(worldPosition: Vector3) {
+    updatePosition(worldPosition?: Vector3) {
         if (!worldPosition || !this.buildingType) {
             this.hideAllMarker()
         } else {

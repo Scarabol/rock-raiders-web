@@ -210,7 +210,7 @@ export class BuildingEntity {
     }
 
     spawnMaterials(type: EntityType, quantity: number) {
-        const material = [] // XXX actually this does not require a list
+        const material: MaterialEntity[] = [] // XXX actually this does not require a list
         if (type === EntityType.CRYSTAL) {
             while (GameState.numCrystal > 0 && material.length < quantity) {
                 GameState.numCrystal--

@@ -1,20 +1,20 @@
-export class WorkerRequestMessage<T> {
+export interface WorkerRequestMessage<T> {
     workerRequestHash: string
     request: T
 }
 
-export class WorkerResponseMessage<T> {
+export interface WorkerResponseMessage<T> {
     workerRequestHash: string
     response: T
 }
 
-export interface TypedWorker<M, R> {
+export interface TypedWorker<M> {
     sendMessage(message: M, transfer?: (Transferable | OffscreenCanvas)[]): void
 
     terminate(): void
 }
 
-export class TypedWorkerFrontend<M, R> implements TypedWorker<M, R> {
+export class TypedWorkerFrontend<M, R> implements TypedWorker<M> {
     constructor(readonly worker: Worker, onResponseFromWorker: (response: R) => any) {
         worker.onmessage = (event) => {
             onResponseFromWorker(event?.data)
@@ -48,13 +48,13 @@ export class TypedWorkerThreaded<M, R> implements TypedWorkerBackend<M, R> {
     }
 }
 
-export class TypedWorkerFallback<M, R> implements TypedWorker<M, R>, TypedWorkerBackend<M, R> {
+export class TypedWorkerFallback<M, R> implements TypedWorker<M>, TypedWorkerBackend<M, R> {
     onMessageFromFrontend: (message: M) => any
 
     constructor(readonly onResponseFromWorker: (response: R) => any) {
     }
 
-    sendMessage(message: M, transfer?: (Transferable | OffscreenCanvas)[]) {
+    sendMessage(message: M, _transfer?: (Transferable | OffscreenCanvas)[]) {
         this.onMessageFromFrontend(message)
     }
 

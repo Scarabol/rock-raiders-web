@@ -2,10 +2,8 @@ import { AnimationActivity } from '../anim/AnimationActivity'
 import { Surface } from '../../terrain/Surface'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
-import { Raider } from '../raider/Raider'
 import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
-import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { JobState } from './JobState'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { PriorityIdentifier } from './PriorityIdentifier'
@@ -53,7 +51,7 @@ export abstract class Job {
         this.jobState = JobState.COMPLETE
     }
 
-    abstract getWorkplace(entity: Raider | VehicleEntity): PathTarget
+    abstract getWorkplace(entity: JobFulfiller): PathTarget
 
     getWorkActivity(): AnimationActivity {
         return null

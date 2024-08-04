@@ -11,8 +11,8 @@ const enum PARSING_STATE {
 export class CfgFileParser {
     static parse(buffer: Uint8Array): object {
         const root = {}
-        const ancestry = []
-        let activeObject = root
+        const ancestry: object[] = []
+        let activeObject: object = root
         let isComment = false
         let parsingState: PARSING_STATE = PARSING_STATE.LOOKING_FOR_KEY
         let key = ''
@@ -110,7 +110,7 @@ export class CfgFileParser {
         })
         const dependencies = result['Dependencies']
         Object.keys(dependencies).forEach((key) => {
-            const flatDeps = []
+            const flatDeps: unknown[][] = []
             dependencies[key].forEach((d) => {
                 if (Array.isArray(d)) {
                     flatDeps.push(...d)

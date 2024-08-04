@@ -5,8 +5,6 @@ import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTraining } from '../../raider/RaiderTraining'
 import { RaiderJob } from './RaiderJob'
-import { Raider } from '../../raider/Raider'
-import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
 import { EventBroker } from '../../../../event/EventBroker'
@@ -22,7 +20,7 @@ export class TrainRaiderJob extends RaiderJob {
         this.workplaces = this.building?.getTrainingTargets()
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         if (!this.building?.isPowered()) this.workplaces = this.entityMgr.getTrainingSiteTargets(this.training)
         const target = entity.findShortestPath(this.workplaces)?.target
         this.building = target?.building

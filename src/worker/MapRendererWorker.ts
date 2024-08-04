@@ -1,12 +1,19 @@
 import { TypedWorkerBackend, TypedWorkerThreaded } from './TypedWorker'
-import { WorkerMessageType } from './WorkerMessageType'
 import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { MAP_MAX_UPDATE_INTERVAL, MAP_PANEL_SURFACE_RECT_MARGIN, TILESIZE } from '../params'
 import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { MapMarkerType } from '../game/component/MapMarkerComponent'
 
+export enum MapRendererWorkerRequestType {
+    RESPONSE_MAP_RENDERER = 1, // start with 1 for truthiness safety
+    MAP_RENDERER_INIT,
+    MAP_RENDER_TERRAIN,
+    MAP_RENDER_SURFACE,
+    MAP_RENDER_ENTITIES,
+}
+
 type MapRendererInitMessage = {
-    type: WorkerMessageType.MAP_RENDERER_INIT
+    type: MapRendererWorkerRequestType.MAP_RENDERER_INIT
     terrainSprite: SpriteImage
     entitySprite: SpriteImage
     monsterSprite: SpriteImage
@@ -15,7 +22,7 @@ type MapRendererInitMessage = {
 }
 
 type MapRendererRenderMessage = {
-    type: WorkerMessageType.MAP_RENDER_TERRAIN | WorkerMessageType.MAP_RENDER_SURFACE | WorkerMessageType.MAP_RENDER_ENTITIES
+    type: MapRendererWorkerRequestType.MAP_RENDER_TERRAIN | MapRendererWorkerRequestType.MAP_RENDER_SURFACE | MapRendererWorkerRequestType.MAP_RENDER_ENTITIES
     requestId: string
     offset: { x: number, y: number }
     surfaceRectSize?: number
@@ -28,7 +35,7 @@ type MapRendererRenderMessage = {
 export type MapRendererMessage = MapRendererInitMessage | MapRendererRenderMessage
 
 export type MapRendererResponse = {
-    type: WorkerMessageType.RESPONSE_MAP_RENDERER
+    type: MapRendererWorkerRequestType.RESPONSE_MAP_RENDERER
     requestId: string
 }
 
@@ -54,13 +61,13 @@ export class MapRendererWorker {
             this.entityContext = msg.entitySprite.getContext('2d') as SpriteContext
         } else if (this.isRenderMessage(msg)) {
             switch (msg.type) {
-                case WorkerMessageType.MAP_RENDER_TERRAIN:
+                case MapRendererWorkerRequestType.MAP_RENDER_TERRAIN:
                     this.redrawTerrain(msg.offset, msg.surfaceRectSize, msg.terrain)
                     break
-                case WorkerMessageType.MAP_RENDER_SURFACE:
+                case MapRendererWorkerRequestType.MAP_RENDER_SURFACE:
                     this.redrawSurface(msg.offset, msg.surfaceRectSize, msg.surface)
                     break
-                case WorkerMessageType.MAP_RENDER_ENTITIES:
+                case MapRendererWorkerRequestType.MAP_RENDER_ENTITIES:
                     switch (msg.mapMarkerType) {
                         case MapMarkerType.DEFAULT:
                             this.redrawEntitiesContext(msg, this.entityContext, '#e8d400', 4)
@@ -77,7 +84,7 @@ export class MapRendererWorker {
                     }
                     break
             }
-            this.worker.sendResponse({type: WorkerMessageType.RESPONSE_MAP_RENDERER, requestId: msg.requestId})
+            this.worker.sendResponse({type: MapRendererWorkerRequestType.RESPONSE_MAP_RENDERER, requestId: msg.requestId})
         }
     }
 
@@ -129,14 +136,14 @@ export class MapRendererWorker {
     }
 
     private isInitMessage(msg?: MapRendererMessage): msg is MapRendererInitMessage {
-        return msg?.type === WorkerMessageType.MAP_RENDERER_INIT
+        return msg?.type === MapRendererWorkerRequestType.MAP_RENDERER_INIT
     }
 
     private isRenderMessage(msg?: MapRendererMessage): msg is MapRendererRenderMessage {
         switch (msg?.type) {
-            case WorkerMessageType.MAP_RENDER_TERRAIN:
-            case WorkerMessageType.MAP_RENDER_SURFACE:
-            case WorkerMessageType.MAP_RENDER_ENTITIES:
+            case MapRendererWorkerRequestType.MAP_RENDER_TERRAIN:
+            case MapRendererWorkerRequestType.MAP_RENDER_SURFACE:
+            case MapRendererWorkerRequestType.MAP_RENDER_ENTITIES:
                 return true
         }
         return false

@@ -49,8 +49,8 @@ export class Surface {
     seamLevel: number = 0
     drillProgress: number = 0
 
-    readonly mesh: SurfaceMesh = null
-    wallType: WALL_TYPE = null
+    readonly mesh: SurfaceMesh
+    wallType: WALL_TYPE = WALL_TYPE.FLOOR
     needsMeshUpdate: boolean = false
 
     rubblePositions: Vector2[] = []

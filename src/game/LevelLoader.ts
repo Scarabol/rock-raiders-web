@@ -28,7 +28,7 @@ export interface LevelConfData {
     blockPointersMap?: number[][]
     emergeMap?: number[][]
     nerpScript?: NerpScript
-    nerpMessages?: NerpMessage[]
+    nerpMessages: NerpMessage[]
     objectiveTextCfg: LevelObjectiveTextEntry
     objectiveImage640x480: ObjectiveImageCfg
     priorities: LevelPrioritiesEntryConfig[]

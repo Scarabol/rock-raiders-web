@@ -296,7 +296,7 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.lookAt(new Vector3(location.x, this.position.y, location.y))
     }
 
-    addToScene(sceneMgr: SceneManager, worldPosition: Vector2, headingRad: number) {
+    addToScene(sceneMgr: SceneManager, worldPosition?: Vector2, headingRad?: number) {
         if (worldPosition) {
             this.position.copy(sceneMgr.getFloorPosition(worldPosition))
         }

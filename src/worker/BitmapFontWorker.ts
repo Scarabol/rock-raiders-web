@@ -7,7 +7,7 @@ export enum BitmapFontWorkerRequestType {
     CREATE_TEXT_IMAGE,
 }
 
-export class BitmapFontWorkerRequest {
+export interface BitmapFontWorkerRequest {
     type: BitmapFontWorkerRequestType
     fontName?: string
     fontData?: BitmapFontData
@@ -16,7 +16,7 @@ export class BitmapFontWorkerRequest {
     autoCenter?: boolean
 }
 
-export class BitmapFontWorkerResponse {
+export interface BitmapFontWorkerResponse {
     textImageData: ImageData
 }
 

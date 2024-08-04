@@ -86,8 +86,8 @@ export class ScaledLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrame
     fixedWidth: number = NATIVE_SCREEN_WIDTH
     fixedHeight: number = NATIVE_SCREEN_HEIGHT
-    scaleX: number
-    scaleY: number
+    scaleX: number = 1
+    scaleY: number = 1
 
     constructor(layerName?: string) {
         super(layerName)

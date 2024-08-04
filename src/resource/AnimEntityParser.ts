@@ -19,7 +19,7 @@ export class AnimEntityData {
     readonly mediumPolyBodies: Map<string, string> = new Map()
     readonly lowPolyBodies: Map<string, string> = new Map()
     readonly fPPolyBodies: Map<string, Map<string, string>> = new Map()
-    fireNullName: string
+    fireNullName?: string
     xPivotName?: string
     yPivotName?: string
     pivotMaxZ?: number
@@ -28,7 +28,7 @@ export class AnimEntityData {
     readonly upgradesByLevel: Map<string, AnimEntityUpgradeData[]> = new Map()
 }
 
-export class AnimEntityAnimationData {
+export interface AnimEntityAnimationData {
     name: string
     file: string
     transcoef: number

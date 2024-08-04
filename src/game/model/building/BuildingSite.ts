@@ -34,13 +34,13 @@ export class BuildingSite {
             this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, this.buildingType.getSfxKey(), () => {
                 return TooltipSpriteBuilder.getBuildingSiteTooltipSprite(objectName, {
                         actual: this.onSiteByType.get(EntityType.CRYSTAL)?.length || 0,
-                        needed: this.neededByType.get(EntityType.CRYSTAL),
+                        needed: this.neededByType.get(EntityType.CRYSTAL) || 0,
                     }, {
                         actual: this.onSiteByType.get(EntityType.ORE)?.length || 0,
-                        needed: this.neededByType.get(EntityType.ORE),
+                        needed: this.neededByType.get(EntityType.ORE) || 0,
                     }, {
                         actual: this.onSiteByType.get(EntityType.BRICK)?.length || 0,
-                        needed: this.neededByType.get(EntityType.BRICK),
+                        needed: this.neededByType.get(EntityType.BRICK) || 0,
                     },
                 )
             }))
