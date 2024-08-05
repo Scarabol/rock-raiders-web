@@ -237,10 +237,10 @@ export class SurfaceType {
     }
 
     getObjectName(): string {
-        return GameConfig.instance.surfaceTypeDescriptions.get(this.name.toLowerCase())?.objectName
+        return GameConfig.instance.surfaceTypeDescriptions.get(this.name.toLowerCase())?.objectName || ''
     }
 
     getSfxKey(): string {
-        return GameConfig.instance.surfaceTypeDescriptions.get(this.name.toLowerCase())?.sfxKey
+        return GameConfig.instance.surfaceTypeDescriptions.get(this.name.toLowerCase())?.sfxKey || ''
     }
 }

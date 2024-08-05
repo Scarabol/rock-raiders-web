@@ -88,12 +88,12 @@ export class LevelLoader {
         }
     }
 
-    static checkMap(mapFileName: string, width: number, height: number): number[][] {
+    static checkMap(mapFileName: string, width: number, height: number): number[][] | undefined {
         const map = ResourceManager.getResource(mapFileName)
-        if (!map) return null
+        if (!map) return undefined
         if (map.width !== width || map.height !== height) {
             console.warn(`Given map "${mapFileName}" has unexpected size ${width} x ${height}`)
-            return null
+            return undefined
         }
         return map.level
     }

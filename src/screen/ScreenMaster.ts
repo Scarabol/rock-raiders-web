@@ -3,10 +3,9 @@ import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { ScreenLayer } from './layer/ScreenLayer'
 import { LoadingLayer } from './layer/LoadingLayer'
 import { SaveGameManager } from '../resource/SaveGameManager'
+import { HTML_GAME_CANVAS_CONTAINER, HTML_GAME_CONTAINER } from '../core'
 
 export class ScreenMaster {
-    readonly gameContainer: HTMLElement
-    readonly gameCanvasContainer: HTMLElement
     readonly layers: ScreenLayer[] = []
     readonly loadingLayer: LoadingLayer
     width: number = NATIVE_SCREEN_WIDTH
@@ -17,23 +16,21 @@ export class ScreenMaster {
     }
 
     constructor() {
-        this.gameContainer = document.getElementById('game-container')
-        this.gameCanvasContainer = document.getElementById('game-canvas-container')
-        this.gameCanvasContainer.addEventListener('contextmenu', (event: MouseEvent) => event.preventDefault())
+        HTML_GAME_CANVAS_CONTAINER.addEventListener('contextmenu', (event: MouseEvent) => event.preventDefault())
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
-        this.gameCanvasContainer.addEventListener('pointerdown', () => {
+        HTML_GAME_CANVAS_CONTAINER.addEventListener('pointerdown', () => {
             this.getActiveLayersSorted()?.[0]?.canvas?.focus() // always focus topmost
         })
         // in case topmost layer does not listen for event, it reaches game-canvas-container as fallback dispatch from here
         ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'wheel', 'mousemove', 'mouseleave'].forEach((eventType) => {
-            this.gameCanvasContainer.addEventListener(eventType, (event) => {
+            HTML_GAME_CANVAS_CONTAINER.addEventListener(eventType, (event) => {
                 event.stopPropagation()
                 this.dispatchEvent(event)
             })
         })
         ;['touchstart', 'touchmove', 'touchend'].forEach((eventType) => {
-            this.gameCanvasContainer.addEventListener(eventType, (event) => {
+            HTML_GAME_CANVAS_CONTAINER.addEventListener(eventType, (event) => {
                 event.preventDefault()
                 event.stopPropagation()
                 this.dispatchEvent(event)
@@ -61,8 +58,8 @@ export class ScreenMaster {
             this.saveScreenshot()
         })
         this.setupButton('button-fullscreen', () => {
-            if (document.fullscreenElement === this.gameContainer) document.exitFullscreen().then()
-            else this.gameContainer?.requestFullscreen().then()
+            if (document.fullscreenElement === HTML_GAME_CONTAINER) document.exitFullscreen().then()
+            else HTML_GAME_CONTAINER.requestFullscreen().then()
         })
     }
 
@@ -78,7 +75,7 @@ export class ScreenMaster {
     }
 
     dispatchEvent(event: Event, zIndexStart: number = Infinity) {
-        if (event.type === 'pointerleave' && event.target === this.gameCanvasContainer) return // don't dispatch, fired by setPointerCapture
+        if (event.type === 'pointerleave' && event.target === HTML_GAME_CANVAS_CONTAINER) return // don't dispatch, fired by setPointerCapture
         const activeLayersSorted = this.getActiveLayersSorted()
         const nextLayer = activeLayersSorted.find((l) => l.zIndex < zIndexStart && l.eventListener.has(event.type))
         if (!nextLayer) return
@@ -94,7 +91,7 @@ export class ScreenMaster {
         layer.resize(this.width, this.height)
         layer.setZIndex(zIndex)
         this.layers.push(layer)
-        this.gameCanvasContainer.appendChild(layer.canvas)
+        HTML_GAME_CANVAS_CONTAINER.appendChild(layer.canvas)
         return layer
     }
 
@@ -102,13 +99,13 @@ export class ScreenMaster {
         layer.hide()
         if (this.layers.includes(layer)) {
             this.layers.remove(layer)
-            this.gameCanvasContainer.removeChild(layer.canvas)
+            HTML_GAME_CANVAS_CONTAINER.removeChild(layer.canvas)
         }
     }
 
     onWindowResize() {
-        this.width = this.gameContainer.offsetWidth - 100
-        this.height = this.gameContainer.offsetHeight - 1
+        this.width = HTML_GAME_CONTAINER.offsetWidth - 100
+        this.height = HTML_GAME_CONTAINER.offsetHeight - 1
         if (SaveGameManager.currentPreferences.screenRatioFixed > 0) {
             const idealHeight = Math.round(this.width / SaveGameManager.currentPreferences.screenRatioFixed)
             if (idealHeight > this.height) {

@@ -29,6 +29,10 @@ export class MenuBasePanel extends Panel {
 
     selectLayer(key: string) {
         const layer = this.layersByKey.get(key.toLowerCase())
+        if (!layer) {
+            console.error(`Could not find layer with key "${key}"`)
+            return
+        }
         this.layersByKey.forEach(l => l !== layer && l.hide())
         layer.show()
         this.notifyRedraw()

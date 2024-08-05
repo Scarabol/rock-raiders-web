@@ -28,10 +28,10 @@ export class MaterialSpawner {
         worldMgr: WorldManager,
         entityType: MaterialEntityType,
         worldPos: Vector2,
-        headingRad: number = null,
-        targetSurface: Surface = null,
-        barrierLocation: Vector2 = null,
-        targetSite: BuildingSite = null,
+        headingRad?: number,
+        targetSurface?: Surface,
+        barrierLocation?: Vector2,
+        targetSite?: BuildingSite,
     ) {
         const floorPosition = worldMgr.sceneMgr.getFloorPosition(worldPos)
         const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
@@ -97,8 +97,10 @@ export class MaterialSpawner {
                 material.worldMgr.ecs.addComponent(material.entity, new LastWillComponent(() => {
                     EventBroker.publish(new GenericDeathEvent(material.worldMgr.ecs.getComponents(material.entity).get(PositionComponent)))
                     material.worldMgr.entityMgr.removeEntity(material.entity)
-                    material.targetSurface.fence = null
-                    material.targetSurface.fenceRequested = false
+                    if (material.targetSurface) {
+                        material.targetSurface.fence = undefined
+                        material.targetSurface.fenceRequested = false
+                    }
                     material.worldMgr.ecs.addComponent(material.entity, new BeamUpComponent(material))
                 }))
                 this.addTooltip(worldMgr, material.entity, material.entityType, () => healthComponent.health)

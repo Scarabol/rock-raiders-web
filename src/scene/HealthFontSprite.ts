@@ -42,7 +42,7 @@ export class HealthFontSprite extends Sprite {
             this.textureContext.drawImage(img, x, (HealthFontSprite.textureSize - img.height) / 2)
             x += img.width
         })
-        this.material.map.needsUpdate = true
+        if (this.material.map) this.material.map.needsUpdate = true
         const r = healthNumber < 0 ? 255 : 0
         const g = Math.max(0, Math.min((100 + healthNumber) / 50 * 255, 255))
         this.material.color.setRGB(r, g, 0)

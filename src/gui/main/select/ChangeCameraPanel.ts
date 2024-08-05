@@ -3,7 +3,7 @@ import { CameraViewMode, ChangeCameraEvent } from '../../../event/GuiCommand'
 import { GameConfig } from '../../../cfg/GameConfig'
 
 export class ChangeCameraPanel extends IconSubPanel {
-    cameraViewMode: CameraViewMode
+    cameraViewMode?: CameraViewMode
 
     constructor() {
         super(3)
@@ -20,6 +20,6 @@ export class ChangeCameraPanel extends IconSubPanel {
 
     reset() {
         super.reset()
-        this.cameraViewMode = null
+        this.cameraViewMode = undefined
     }
 }

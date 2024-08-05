@@ -119,8 +119,8 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         ;[...this.worldMgr.entityMgr.surfacesWithStuds].forEach((s) => {
             if (!studPositions.includes(s)) {
                 this.worldMgr.entityMgr.surfacesWithStuds.remove(s)
-                this.worldMgr.sceneMgr.disposeSceneEntity(s.stud)
-                s.stud = null
+                if (s.stud) this.worldMgr.sceneMgr.disposeSceneEntity(s.stud)
+                s.stud = undefined
             }
         })
         toAdd.forEach((s) => {

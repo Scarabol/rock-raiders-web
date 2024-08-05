@@ -6,6 +6,7 @@ import { VirtualFile } from './fileparser/VirtualFile'
 import { WadParser } from './fileparser/WadParser'
 import { CfgFileParser } from './fileparser/CfgFileParser'
 import { GameConfig } from '../cfg/GameConfig'
+import { HTML_GAME_CONTAINER } from '../core'
 
 export class GameFilesLoader {
     readonly modal: SelectFilesModal
@@ -13,7 +14,7 @@ export class GameFilesLoader {
     onDoneCallback?: (vfs: VirtualFileSystem) => void
 
     constructor(readonly loadingLayer: LoadingLayer) {
-        this.modal = new SelectFilesModal('game-container', async (vfs) => {
+        this.modal = new SelectFilesModal(HTML_GAME_CONTAINER, async (vfs) => {
             await cachePutData('vfs', vfs.fileNames)
             this.onGameFilesLoaded(vfs).then()
         })

@@ -30,7 +30,7 @@ export class ObjectListLoader {
 
     readonly vehicleKeyToDriver = new Map<string, Raider>()
     readonly vehicleByKey = new Map<string, VehicleEntity>()
-    trackEntity: GameEntity
+    trackEntity?: GameEntity
 
     constructor(readonly worldMgr: WorldManager, readonly disableStartTeleport: boolean) {
     }
@@ -95,21 +95,23 @@ export class ObjectListLoader {
                 this.worldMgr.entityMgr.recordedEntities.push(building.entity)
                 if (entityType === EntityType.TOOLSTATION) {
                     if (!this.trackEntity && building.sceneEntity.visible) this.trackEntity = building.entity
-                    for (let c = 0; c < ObjectListLoader.numRaider; c++) {
-                        const randomPosition = building.primaryPathSurface.getRandomPosition()
-                        const raider = this.spawnRaider(randomPosition, headingRad - Math.PI)
-                        RaiderTrainings.values.forEach((t) => raider.addTraining(t))
-                    }
-                    if (ObjectListLoader.startVehicle) {
-                        const startVehicleEntityType = getEntityTypeByName(ObjectListLoader.startVehicle) as VehicleEntityType
-                        if (startVehicleEntityType) {
-                            const vehiclePos = building.primaryPathSurface.getCenterWorld2D()
-                            const vehicle = this.spawnVehicle(startVehicleEntityType, vehiclePos, headingRad - Math.PI)
-                            const driver = this.spawnRaider(vehiclePos, headingRad - Math.PI)
-                            RaiderTrainings.values.forEach((t) => driver.addTraining(t))
-                            vehicle.addDriver(driver)
-                        } else {
-                            console.warn(`Could not determine entity type for '${ObjectListLoader.startVehicle}'`)
+                    if (building.primaryPathSurface) {
+                        for (let c = 0; c < ObjectListLoader.numRaider; c++) {
+                            const randomPosition = building.primaryPathSurface.getRandomPosition()
+                            const raider = this.spawnRaider(randomPosition, headingRad - Math.PI)
+                            RaiderTrainings.values.forEach((t) => raider.addTraining(t))
+                        }
+                        if (ObjectListLoader.startVehicle) {
+                            const startVehicleEntityType = getEntityTypeByName(ObjectListLoader.startVehicle) as VehicleEntityType
+                            if (startVehicleEntityType) {
+                                const vehiclePos = building.primaryPathSurface.getCenterWorld2D()
+                                const vehicle = this.spawnVehicle(startVehicleEntityType, vehiclePos, headingRad - Math.PI)
+                                const driver = this.spawnRaider(vehiclePos, headingRad - Math.PI)
+                                RaiderTrainings.values.forEach((t) => driver.addTraining(t))
+                                vehicle.addDriver(driver)
+                            } else {
+                                console.warn(`Could not determine entity type for '${ObjectListLoader.startVehicle}'`)
+                            }
                         }
                     }
                 }

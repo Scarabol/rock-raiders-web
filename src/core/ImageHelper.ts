@@ -79,5 +79,7 @@ export function cloneContext(origin: HTMLCanvasElement): CanvasRenderingContext2
     const canvas = document.createElement('canvas')
     canvas.width = origin.width
     canvas.height = origin.height
-    return canvas.getContext('2d')
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('Could not get drawing context for canvas')
+    return context
 }

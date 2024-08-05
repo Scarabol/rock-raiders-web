@@ -121,7 +121,7 @@ export class Terrain {
         return this.heightOffset[x]?.[y] ?? 0
     }
 
-    findClosestWall(position: Vector2): Surface {
+    findClosestWall(position: Vector2): Surface | undefined {
         const start = this.getSurfaceFromWorld2D(position)
         const checked: Surface[] = []
         const toCheck: Surface[] = [start]
@@ -131,6 +131,6 @@ export class Terrain {
             checked.add(next)
             toCheck.push(...next.neighbors.filter((n) => !checked.includes(n)))
         }
-        return null
+        return undefined
     }
 }

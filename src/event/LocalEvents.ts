@@ -226,7 +226,7 @@ export class SetSpaceToContinueEvent extends BaseEvent {
 }
 
 export class FollowerSetCanvasEvent extends BaseEvent {
-    constructor(readonly canvas: SpriteImage) {
+    constructor(readonly canvas: SpriteImage | undefined) {
         super(EventKey.FOLLOWER_SET_CANVAS)
     }
 }
@@ -238,7 +238,7 @@ export class FollowerSetLookAtEvent extends BaseEvent {
 }
 
 export class SelectionFrameChangeEvent extends BaseEvent {
-    constructor(readonly rect: Rect) {
+    constructor(readonly rect: Rect | undefined) {
         super(EventKey.SELECTION_FRAME_CHANGE)
     }
 }

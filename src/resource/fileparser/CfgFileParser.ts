@@ -30,7 +30,9 @@ export class CfgFileParser {
                     const charStr = String.fromCharCode(encodeChar[charCode])
                     if (parsingState === PARSING_STATE.LOOKING_FOR_KEY) {
                         if (charCode === '}'.charCodeAt(0)) {
-                            activeObject = ancestry.pop()
+                            const lastElement = ancestry.pop()
+                            if (!lastElement) throw new Error('Unexpected end of config ancestry stack')
+                            activeObject = lastElement
                         } else {
                             key = charStr
                             parsingState = PARSING_STATE.INSIDE_KEY
@@ -70,7 +72,7 @@ export class CfgFileParser {
             }
         }
 
-        const stack = [root]
+        const stack: Record<string, unknown>[] = [root]
         while (stack.length > 0) {
             const obj: Record<string, unknown> = stack.pop()
             Object.entries(obj).forEach(([key, val]) => {
@@ -81,7 +83,7 @@ export class CfgFileParser {
                         val.forEach((sub) => stack.push(sub))
                     }
                 } else if (Object.keys(val).length > 1) {
-                    stack.push(val)
+                    stack.push(val as Record<string, unknown>)
                 }
             })
         }

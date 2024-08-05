@@ -17,7 +17,7 @@ export class UpgradeVehicleJob extends Job {
         this.workplace = vehicle.findShortestPath(worldMgr.entityMgr.getVehicleUpgradePathTargets())?.target
     }
 
-    getWorkplace(entity: VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         if (!this.workplace.building.isPowered()) {
             this.vehicle.upgrading = false
             return null

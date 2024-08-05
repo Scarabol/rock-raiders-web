@@ -39,7 +39,7 @@ export class MainPanel extends Panel {
     numRequestedRaiders: number = 0
     hasRaiderTeleport: boolean = false
     hasMaxRaiders: boolean = false
-    lastSelectionEvent: SelectionChanged
+    lastSelectionEvent?: SelectionChanged
 
     constructor() {
         super()
@@ -151,7 +151,7 @@ export class MainPanel extends Panel {
         this.numRequestedRaiders = 0
         this.hasRaiderTeleport = false
         this.hasMaxRaiders = false
-        this.lastSelectionEvent = null
+        this.lastSelectionEvent = undefined
     }
 
     addSubPanel<T extends IconSubPanel>(childPanel: T): T {

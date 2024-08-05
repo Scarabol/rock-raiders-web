@@ -77,7 +77,7 @@ export async function start() {
     })
 
     const teleportManConfig = GameConfig.instance.interfaceImages.get('Interface_MenuItem_TeleportMan'.toLowerCase())
-    const depInterfaceBuildImageData: Map<string, ImageData[]> = new Map()
+    const depInterfaceBuildImageData: Map<string, [ImageData, ImageData]> = new Map()
     GameConfig.instance.interfaceBuildImages.forEach((cfg, key) => {
         depInterfaceBuildImageData.set(key, [ResourceManager.getImageData(cfg.normalFile), ResourceManager.getImageData(cfg.disabledFile)])
     })

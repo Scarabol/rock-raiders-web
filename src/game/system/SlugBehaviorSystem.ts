@@ -80,7 +80,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                 this.worldMgr.ecs.removeComponent(entity, HeadingComponent)
                                 this.changeToIdle(sceneEntity, behaviorComponent)
                                 const safeNeighbors = scarerInRange.surface.neighbors.filter((s) => s !== scarerInRange.surface)
-                                const safePos = [...safeNeighbors, scarerInRange.surface].find((s) => s.isWalkable()).getRandomPosition()
+                                const safePos = (safeNeighbors.find((s) => s.isWalkable()) || scarerInRange.surface).getRandomPosition()
                                 this.ecs.addComponent(entity, new WorldTargetComponent(safePos, SLUG_ENTER_DISTANCE_SQ))
                                 this.ecs.addComponent(entity, new HeadingComponent(safePos))
                             } else {
@@ -157,8 +157,8 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
     private changeToIdle(sceneEntity: AnimatedSceneEntity, behaviorComponent: SlugBehaviorComponent) {
         if (behaviorComponent.state === SlugBehaviorState.EMERGE) return
         sceneEntity.setAnimation(AnimEntityActivity.Stand)
-        behaviorComponent.targetBuilding = null
-        behaviorComponent.targetEnter = null
+        behaviorComponent.targetBuilding = undefined
+        behaviorComponent.targetEnter = undefined
         behaviorComponent.state = SlugBehaviorState.IDLE
     }
 }

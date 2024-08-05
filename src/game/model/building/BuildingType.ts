@@ -4,19 +4,17 @@ import { EntityType } from '../EntityType'
 import { GameConfig } from '../../../cfg/GameConfig'
 
 export class BuildingType {
-    entityType: EntityType
-    stats: BuildingEntityStats
-    aeFilename: string
-    secondaryBuildingPart: Vector2
-    primaryPowerPath: Vector2 = new Vector2(0, 1)
-    secondaryPowerPath: Vector2
-    waterPathSurface: Vector2
+    secondaryBuildingPart?: Vector2
+    primaryPowerPath?: Vector2 = new Vector2(0, 1)
+    secondaryPowerPath?: Vector2
+    waterPathSurface?: Vector2
     teleportedEntityTypes: EntityType[] = []
 
-    constructor(entityType: EntityType, stats: BuildingEntityStats, aeFilename: string) {
-        this.entityType = entityType
-        this.stats = stats
-        this.aeFilename = aeFilename
+    constructor(
+        readonly entityType: EntityType,
+        readonly stats: BuildingEntityStats,
+        readonly aeFilename: string
+    ) {
     }
 
     static from(entityType: EntityType): BuildingType {
@@ -52,12 +50,12 @@ export class BuildingType {
                     .addTeleport(EntityType.BULLDOZER, EntityType.WALKER_DIGGER, EntityType.LARGE_MLP, EntityType.LARGE_DIGGER) // XXX evaluate stats UseLargeTeleporter
             default:
                 if (entityType) console.error(`EntityType (${entityType}) is not a BuildingType`)
-                return null
+                return undefined
         }
     }
 
     setPrimaryPowerPath(x: number, y: number): this {
-        this.primaryPowerPath.set(x, y)
+        this.primaryPowerPath?.set(x, y)
         return this
     }
 
@@ -77,7 +75,7 @@ export class BuildingType {
     }
 
     removePrimaryPowerPath(): this {
-        this.primaryPowerPath = null
+        this.primaryPowerPath = undefined
         return this
     }
 
@@ -87,13 +85,13 @@ export class BuildingType {
     }
 
     getObjectName(level: number): string {
-        let objectName = GameConfig.instance.objectNamesCfg.get(this.entityType.toLowerCase())
+        let objectName = GameConfig.instance.objectNamesCfg.getOrUpdate(this.entityType.toLowerCase(), () => '')
         const upgradeName = GameConfig.instance.upgradeNames[level - 1]
         if (upgradeName) objectName += ` (${upgradeName})`
         return objectName
     }
 
     getSfxKey(): string {
-        return GameConfig.instance.objTtSFXs.get(this.entityType.toLowerCase())
+        return GameConfig.instance.objTtSFXs.getOrUpdate(this.entityType.toLowerCase(), () => '')
     }
 }

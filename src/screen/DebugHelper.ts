@@ -1,8 +1,9 @@
 import { SpriteContext } from '../core/Sprite'
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
+import { HTML_GAME_CANVAS_CONTAINER } from '../core'
 
 export class DebugHelper {
-    static readonly element: HTMLElement = document.getElementById('game-canvas-container').appendChild(document.createElement('div'))
+    static readonly element: HTMLElement = HTML_GAME_CANVAS_CONTAINER.appendChild(document.createElement('div'))
     static readonly maxNumFpsValues = 150
     static {
         DebugHelper.element.classList.add('game-debug-layer')
@@ -29,7 +30,9 @@ export class DebugHelper {
         fpsCanvas.style.top = '0'
         fpsCanvas.style.scale = '1'
         fpsCanvas.style.marginLeft = '-80px'
-        this.context = fpsCanvas.getContext('2d')
+        const context = fpsCanvas.getContext('2d')
+        if (!context) throw new Error('Could not get context for fps rendering')
+        this.context = context
         const copyToClipboard = DebugHelper.element.appendChild(document.createElement('button'))
         copyToClipboard.innerText = 'Copy to clipboard'
         copyToClipboard.style.width = '120px'
@@ -62,7 +65,7 @@ export class DebugHelper {
 
     static addDebugMessage(message: any, optionalParams: any[], color: string) {
         try {
-            if (DebugHelper.element.children.length > 100) DebugHelper.element.removeChild(DebugHelper.element.lastChild)
+            if (DebugHelper.element.children.length > 100 && DebugHelper.element.lastChild) DebugHelper.element.removeChild(DebugHelper.element.lastChild)
             const msg = DebugHelper.element.insertBefore(document.createElement('DIV'), DebugHelper.element.firstChild)
             msg.innerText = message
             optionalParams.forEach((p) => msg.innerText += `\n${JSON.stringify(p)}`)

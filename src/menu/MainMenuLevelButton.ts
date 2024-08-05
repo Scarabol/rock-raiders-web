@@ -14,7 +14,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
     imgInactive: SpriteImage
     imgCross: SpriteImage
     tooltipTimeout?: NodeJS.Timeout
-    onShowTooltip: () => void
+    onShowTooltip?: () => void
 
     constructor(
         readonly layer: MainMenuLayer,
@@ -43,10 +43,11 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
 
     set onHoverChange(callback: UiElementCallback) {
         super.onHoverChange = () => {
-            if (this.onShowTooltip) {
+            const onShowTooltipCallback = this.onShowTooltip
+            if (onShowTooltipCallback) {
                 if (this.hover) {
                     if (!this.tooltipTimeout) {
-                        this.tooltipTimeout = setTimeout(() => this.onShowTooltip(), TOOLTIP_DELAY_SFX_MENU)
+                        this.tooltipTimeout = setTimeout(() => onShowTooltipCallback(), TOOLTIP_DELAY_SFX_MENU)
                     }
                 } else {
                     this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)

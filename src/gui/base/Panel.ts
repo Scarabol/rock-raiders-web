@@ -40,7 +40,7 @@ export class Panel extends BaseElement {
         return !!this.animationTimeout || super.isInactive()
     }
 
-    setMovedIn(movedIn: boolean, onDone: () => any = null) {
+    setMovedIn(movedIn: boolean, onDone?: () => any) {
         if (this.movedIn !== movedIn) {
             this.toggleState(onDone)
         } else if (onDone) {
@@ -48,7 +48,7 @@ export class Panel extends BaseElement {
         }
     }
 
-    toggleState(onDone: () => any = null) {
+    toggleState(onDone?: () => any) {
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
         if (this.movedIn) {
             this.movedIn = false
@@ -59,13 +59,13 @@ export class Panel extends BaseElement {
         }
     }
 
-    protected updateAnimation(targetX: number, targetY: number, speed: number, onDone: () => any) {
+    protected updateAnimation(targetX: number, targetY: number, speed: number, onDone: (() => any) | undefined) {
         const diffX = targetX - this.relX
         const diffY = targetY - this.relY
         if (Math.abs(diffX) <= Math.sqrt(Math.abs(diffX)) * speed && Math.abs(diffY) <= Math.sqrt(Math.abs(diffY)) * speed) {
             this.relX = targetX
             this.relY = targetY
-            this.animationTimeout = null
+            this.animationTimeout = undefined
             if (onDone) onDone()
         } else {
             this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * speed)

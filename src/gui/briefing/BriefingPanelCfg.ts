@@ -17,8 +17,10 @@ export class BriefingPanelCfg extends PanelCfg {
         super()
         this.titleFontName = 'Interface/Fonts/MbriefFont2.bmp'
         const dialogCfg = GameConfig.instance.dialog
-        this.titleWindow = dialogCfg.titleWindow
+        if (!dialogCfg.titleWindow) throw new Error('No title window config given')
+        this.titleWindow = {...dialogCfg.titleWindow}
         this.textFontName = 'Interface/Fonts/MbriefFont.bmp'
+        if (!dialogCfg.textWindow) throw new Error('No text window config given')
         this.textWindow = {...dialogCfg.textWindow}
         this.textWindow.y -= 10 // XXX Why offset needed? Better use help window?
         this.nextButtonCfg = {

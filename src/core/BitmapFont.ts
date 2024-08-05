@@ -28,6 +28,7 @@ export class BitmapFontData {
     readonly letterMap: Map<string, ImageData> = new Map()
     readonly charHeight: number
     readonly alphaColor: { r: number, g: number, b: number }
+    readonly spaceWidth: number
 
     constructor(fontImageData: ImageData) {
         const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
@@ -65,6 +66,8 @@ export class BitmapFontData {
             }
             this.letterMap.set(BitmapFontData.chars[i], imgData)
         }
+
+        this.spaceWidth = this.letterMap.get(' ')?.width || 10
     }
 
     extractData(imgData: ImageData, startX: number, startY: number, width: number): ImageData {
@@ -119,7 +122,6 @@ export class BitmapFont {
     }
 
     private determineRows(text: string, maxWidth?: number): { text: string, width: number }[] {
-        const spaceWidth = this.data.letterMap.get(' ').width
         const rows: { text: string, width: number }[] = []
         let rowText = ''
         let rowWidth = 0
@@ -138,9 +140,9 @@ export class BitmapFont {
                 }
             }
             if (rowWidth > 0) {
-                if (!maxWidth || rowWidth + spaceWidth + wordWidth < maxWidth) {
+                if (!maxWidth || rowWidth + this.data.spaceWidth + wordWidth < maxWidth) {
                     rowText += ` ${word}`
-                    rowWidth += spaceWidth + wordWidth
+                    rowWidth += this.data.spaceWidth + wordWidth
                 } else {
                     rows.push({text: rowText, width: rowWidth})
                     rowText = word
