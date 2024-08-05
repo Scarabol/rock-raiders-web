@@ -63,7 +63,7 @@ export class Button extends BaseElement {
         this.notifyRedraw()
     }
 
-    private static ignoreUndefinedMax(...numbers: number[]): number {
+    private static ignoreUndefinedMax(...numbers: (number | undefined)[]): number {
         return Math.max(...numbers.map((n) => n || 0))
     }
 

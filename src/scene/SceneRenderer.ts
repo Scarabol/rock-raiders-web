@@ -1,13 +1,13 @@
 import { Scene } from 'three'
 import { DebugHelper } from '../screen/DebugHelper'
-import { cloneContext } from '../core/ImageHelper'
+import { createContext } from '../core/ImageHelper'
 import { BaseRenderer } from '../screen/BaseRenderer'
 import { SpriteImage } from '../core/Sprite'
 
 export class SceneRenderer extends BaseRenderer {
     static readonly MAX_FPS = 30 // animations and videos have 25 fps (PAL)
     readonly debugHelper: DebugHelper
-    screenshotCallback: (canvas: HTMLCanvasElement) => any
+    screenshotCallback?: (canvas: SpriteImage) => void
 
     constructor(canvas: SpriteImage) {
         super(1000 / SceneRenderer.MAX_FPS, canvas, {antialias: true, powerPreference: 'high-performance'})
@@ -31,11 +31,19 @@ export class SceneRenderer extends BaseRenderer {
     private checkForScreenshot() {
         if (!this.screenshotCallback) return
         const callback = this.screenshotCallback
-        this.screenshotCallback = null
+        this.screenshotCallback = undefined
         this.renderer?.domElement.toBlob((blob) => {
+            if (!blob) {
+                console.error('Creating blob for screenshot failed. No blob created')
+                return
+            }
             const img = document.createElement('img')
             img.onload = () => {
-                const context = cloneContext(this.renderer.domElement)
+                if (!this.renderer) {
+                    console.error('Renderer is not ready for screenshot')
+                    return
+                }
+                const context = createContext(this.renderer.domElement.width, this.renderer.domElement.height)
                 context.drawImage(img, 0, 0)
                 callback(context.canvas)
             }

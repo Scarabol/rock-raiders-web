@@ -18,7 +18,9 @@ export function createContext(width: number, height: number): SpriteContext {
     } else {
         canvas = new OffscreenCanvas(width, height)
     }
-    return canvas.getContext('2d') as SpriteContext
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('Could not get context for canvas')
+    return context
 }
 
 /**
@@ -73,11 +75,4 @@ export function imgDataToCanvas(imgData: ImageData): SpriteImage {
     const context = createContext(imgData.width, imgData.height)
     context.putImageData(imgData, 0, 0)
     return context.canvas
-}
-
-export function cloneContext(origin: HTMLCanvasElement): CanvasRenderingContext2D {
-    const canvas = document.createElement('canvas')
-    canvas.width = origin.width
-    canvas.height = origin.height
-    return canvas.getContext('2d')
 }

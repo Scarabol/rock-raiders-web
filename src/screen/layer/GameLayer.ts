@@ -26,6 +26,7 @@ import { TooltipComponent } from '../../game/component/TooltipComponent'
 import { WALL_TYPE } from '../../game/terrain/WallType'
 import { SceneSelectionComponent } from '../../game/component/SceneSelectionComponent'
 import { SaveGameManager } from '../../resource/SaveGameManager'
+import { SpriteImage } from '../../core/Sprite'
 
 export class GameLayer extends ScreenLayer {
     private pointerDown: { x: number, y: number }
@@ -326,8 +327,8 @@ export class GameLayer extends ScreenLayer {
         return false
     }
 
-    takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {
-        return new Promise<HTMLCanvasElement>((resolve) => {
+    takeScreenshotFromLayer(): Promise<SpriteImage> {
+        return new Promise<SpriteImage>((resolve) => {
             this.worldMgr.sceneMgr.renderer.screenshotCallback = resolve
         })
     }

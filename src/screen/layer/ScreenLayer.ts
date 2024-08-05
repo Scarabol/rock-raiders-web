@@ -1,6 +1,7 @@
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { AnimationFrame } from '../AnimationFrame'
 import { ScreenMaster } from '../ScreenMaster'
+import { SpriteImage } from '../../core/Sprite'
 
 export class ScreenLayer {
     readonly eventListener: Set<string> = new Set()
@@ -77,7 +78,7 @@ export class ScreenLayer {
         return [clientX - clientRect.left, clientY - clientRect.top]
     }
 
-    takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {
+    takeScreenshotFromLayer(): Promise<SpriteImage> {
         return Promise.resolve(this.canvas)
     }
 }

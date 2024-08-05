@@ -7,8 +7,8 @@ import { VirtualFileSystem } from '../fileparser/VirtualFileSystem'
 export class SelectFilesModal {
     readonly rootElement: HTMLElement
 
-    constructor(parentId: string, readonly onFilesLoaded: (vfs: VirtualFileSystem) => void) {
-        this.rootElement = document.getElementById(parentId).appendChild(document.createElement('div'))
+    constructor(parent: HTMLElement, readonly onFilesLoaded: (vfs: VirtualFileSystem) => void) {
+        this.rootElement = parent.appendChild(document.createElement('div'))
         this.rootElement.classList.add('select-files-modal')
         this.rootElement.style.visibility = 'hidden'
         const heading = this.rootElement.appendChild(document.createElement('h5'))

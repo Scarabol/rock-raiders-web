@@ -1,11 +1,10 @@
 import { Cursor } from '../resource/Cursor'
 import { AnimatedCursor } from './AnimatedCursor'
 import { clearTimeoutSafe } from '../core/Util'
+import { HTML_GAME_CANVAS_CONTAINER } from '../core'
 
 export class CursorManager {
     static readonly cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
-    static readonly cursorTarget: HTMLElement = document.getElementById('game-canvas-container')
-
     static currentCursor: Cursor
     static cursorTimeout?: NodeJS.Timeout
     static activeCursor?: AnimatedCursor
@@ -33,6 +32,6 @@ export class CursorManager {
         this.activeCursor?.disableAnimation()
         this.activeCursor = CursorManager.cursorToUrl.get(cursor)
         if (!this.activeCursor) throw new Error(`Cursor ${cursor} not found`)
-        this.activeCursor.enableAnimation(this.cursorTarget)
+        this.activeCursor.enableAnimation(HTML_GAME_CANVAS_CONTAINER)
     }
 }

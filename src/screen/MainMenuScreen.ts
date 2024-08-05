@@ -116,19 +116,13 @@ export class MainMenuScreen {
         const allLevels = GameConfig.instance.getAllLevels()
         const unlockedLevels = allLevels.filter((levelConf) => !levelConf.isLocked())
         const incompleteLevels = unlockedLevels.filter((levelConf) => !SaveGameManager.getLevelCompleted(levelConf.levelName))
-        let randomLevelName: string
-        if (incompleteLevels.length > 0) {
-            randomLevelName = incompleteLevels.random().levelName
-        } else if (unlockedLevels.length > 0) {
-            randomLevelName = unlockedLevels.random().levelName
-        } else {
-            randomLevelName = allLevels.random().levelName
-        }
-        this.selectLevel(randomLevelName)
+        const levelName = incompleteLevels.random()?.levelName || unlockedLevels.random()?.levelName || allLevels.random()?.levelName
+        this.selectLevel(levelName)
     }
 
-    selectLevel(levelName: string) {
+    selectLevel(levelName: string | undefined) {
         try {
+            if (!levelName) return
             const levelConf = LevelLoader.fromName(levelName) // Get config first in case of error
             this.screenMaster.loadingLayer.show()
             this.menuLayers.forEach((m) => m.hide())

@@ -8,7 +8,6 @@ import { SurfaceType } from './SurfaceType'
 import { LandslideEvent } from '../../event/WorldLocationEvent'
 import { PositionComponent } from '../component/PositionComponent'
 import { WALL_TYPE } from './WallType'
-import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 
 export class Terrain {
@@ -102,7 +101,7 @@ export class Terrain {
     createFallIn(source: Surface, target: Surface) { // TODO Move to scene effects generator class and trigger with event
         const fallInPosition = target.getCenterWorld()
         const heading = Math.atan2(target.y - source.y, source.x - target.x) + Math.PI / 2
-        const rockFallAnimName = GameConfig.instance.rockFallStyles.get(this.levelConf.rockFallStyle).tunnel // fall-ins always come from (reinforcable) walls
+        const rockFallAnimName = this.levelConf.rockFallStyle.tunnel // fall-ins always come from (reinforcable) walls
         this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading, false)
         target.makeRubble()
         EventBroker.publish(new LandslideEvent(new PositionComponent(target.getCenterWorld(), target)))
@@ -121,7 +120,7 @@ export class Terrain {
         return this.heightOffset[x]?.[y] ?? 0
     }
 
-    findClosestWall(position: Vector2): Surface {
+    findClosestWall(position: Vector2): Surface | undefined {
         const start = this.getSurfaceFromWorld2D(position)
         const checked: Surface[] = []
         const toCheck: Surface[] = [start]
@@ -131,6 +130,6 @@ export class Terrain {
             checked.add(next)
             toCheck.push(...next.neighbors.filter((n) => !checked.includes(n)))
         }
-        return null
+        return undefined
     }
 }

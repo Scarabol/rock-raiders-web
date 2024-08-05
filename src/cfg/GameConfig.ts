@@ -80,8 +80,7 @@ export class GameConfig extends BaseConfig {
         } else if ('ToolTipInfo'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.toolTipInfo.set(cfgKey.toLowerCase(), parseLabel(value as string)))
         } else if ('SurfaceTypeDescriptions'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
-                const v = value as [string, string]
+            Object.entries(cfgValue as Record<string, [string, string]>).forEach(([cfgKey, v]) => {
                 this.surfaceTypeDescriptions.set(this.stripKey(cfgKey), {objectName: v[0], sfxKey: v[1]})
             })
         } else if ('ObjInfo'.equalsIgnoreCase(unifiedKey)) {
@@ -172,7 +171,7 @@ export class GameConfig extends BaseConfig {
         }
     }
 
-    getTooltipText(tooltipKey: string): string {
+    getTooltipText(tooltipKey: string | undefined): string {
         if (!tooltipKey) return ''
         return this.tooltips.get(tooltipKey.toLowerCase()) || ''
     }

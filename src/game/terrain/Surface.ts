@@ -238,16 +238,16 @@ export class Surface {
             const neighborToRight = this.terrain.getSurface(this.x - randomWallNeighbor.y + this.y, this.y + randomWallNeighbor.x - this.x)
             let crumbleAngle = Math.atan2(neighborToRight.x - this.x, neighborToRight.y - this.y)
             if (!neighborToRight.wallType) crumbleAngle += Math.PI / 2
-            const rockFallAnimName = GameConfig.instance.rockFallStyles.get(this.terrain.levelConf.rockFallStyle).outsideCorner
+            const rockFallAnimName = this.terrain.levelConf.rockFallStyle.outsideCorner
             this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
         } else if (wallNeighbors.length === 3) {
             const nonWallNeighbor = this.neighbors.filter((n) => !n.wallType)[0]
             const crumbleAngle = Math.atan2(this.x - nonWallNeighbor.x, this.y - nonWallNeighbor.y)
-            const rockFallAnimName = GameConfig.instance.rockFallStyles.get(this.terrain.levelConf.rockFallStyle).threeSides
+            const rockFallAnimName = this.terrain.levelConf.rockFallStyle.threeSides
             this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
         } else {
             const crumbleAngle = !!randomWallNeighbor ? Math.atan2(randomWallNeighbor.x - this.x, randomWallNeighbor.y - this.y) : 0
-            const rockFallAnimName = GameConfig.instance.rockFallStyles.get(this.terrain.levelConf.rockFallStyle).tunnel
+            const rockFallAnimName = this.terrain.levelConf.rockFallStyle.tunnel
             this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
         }
         // update meshes and wallType
@@ -490,7 +490,7 @@ export class Surface {
     }
 
     getDigPositions(): Vector2[] {
-        const digPosition = []
+        const digPosition: Vector2[] = []
         if (this.terrain.getSurface(this.x - 1, this.y).isWalkable()) digPosition.push(new Vector2(this.x * TILESIZE - 1, this.y * TILESIZE + TILESIZE / 2))
         if (this.terrain.getSurface(this.x, this.y - 1).isWalkable()) digPosition.push(new Vector2(this.x * TILESIZE + TILESIZE / 2, this.y * TILESIZE - 1))
         if (this.terrain.getSurface(this.x + 1, this.y).isWalkable()) digPosition.push(new Vector2(this.x * TILESIZE + TILESIZE + 1, this.y * TILESIZE + TILESIZE / 2))

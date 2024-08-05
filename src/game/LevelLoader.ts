@@ -8,13 +8,14 @@ import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 import { DEV_MODE } from '../params'
 import { getMonsterEntityTypeByName, MonsterEntityType } from './model/EntityType'
 import { NerpMessage } from '../resource/fileparser/NerpMsgParser'
+import { RockFallStyle } from '../cfg/RockFallStyle'
 
 export interface LevelConfData {
     levelName: string
     fullName: string
     generateSpiders: boolean
     textureBasename: string
-    rockFallStyle: string
+    rockFallStyle: RockFallStyle
     fallinMultiplier: number
     mapWidth: number
     mapHeight: number
@@ -52,6 +53,8 @@ export class LevelLoader {
         levelConf.objectiveTextCfg = levelObjective[levelName.toLowerCase()]
         const terrainMap = ResourceManager.getResource(levelConf.terrainMap)
         if (!terrainMap) throw new Error(`Could not load terrain data for "${levelConf.terrainMap}"`)
+        const rockFallStyle = GameConfig.instance.rockFallStyles.get(levelConf.rockFallStyle.toLowerCase())
+        if (!rockFallStyle) throw new Error(`Could not get rock fall style "${levelConf.rockFallStyle.toLowerCase()}" from config with ${Array.from(GameConfig.instance.rockFallStyles.values())}`)
         return {
             levelName: levelConf.levelName,
             fullName: levelConf.fullName,
@@ -59,7 +62,7 @@ export class LevelLoader {
             mapWidth: terrainMap.width,
             mapHeight: terrainMap.height,
             textureBasename: GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet).textureBasename,
-            rockFallStyle: levelConf.rockFallStyle.toLowerCase(),
+            rockFallStyle: rockFallStyle,
             fallinMultiplier: levelConf.fallinMultiplier,
             terrainMap: this.checkMap(levelConf.terrainMap, terrainMap.width, terrainMap.height),
             pathMap: this.checkMap(levelConf.pathMap, terrainMap.width, terrainMap.height),
@@ -88,12 +91,12 @@ export class LevelLoader {
         }
     }
 
-    static checkMap(mapFileName: string, width: number, height: number): number[][] {
+    static checkMap(mapFileName: string, width: number, height: number): number[][] | undefined {
         const map = ResourceManager.getResource(mapFileName)
-        if (!map) return null
+        if (!map) return undefined
         if (map.width !== width || map.height !== height) {
             console.warn(`Given map "${mapFileName}" has unexpected size ${width} x ${height}`)
-            return null
+            return undefined
         }
         return map.level
     }

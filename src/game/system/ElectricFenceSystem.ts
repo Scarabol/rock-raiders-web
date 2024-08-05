@@ -119,8 +119,8 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         ;[...this.worldMgr.entityMgr.surfacesWithStuds].forEach((s) => {
             if (!studPositions.includes(s)) {
                 this.worldMgr.entityMgr.surfacesWithStuds.remove(s)
-                this.worldMgr.sceneMgr.disposeSceneEntity(s.stud)
-                s.stud = null
+                if (s.stud) this.worldMgr.sceneMgr.disposeSceneEntity(s.stud)
+                s.stud = undefined
             }
         })
         toAdd.forEach((s) => {
@@ -155,9 +155,8 @@ export class ElectricFenceSystem extends AbstractGameSystem {
                 shortBeams.push({lwsFilename: GameConfig.instance.miscObjects.ShortElectricFenceBeam, beamPos: fenceSurface.getCenterWorld(), beamHeading})
             })
         })
-        const beamLocations = [...longBeams, ...shortBeams]
-        if (beamLocations.length < 1) return
-        const nextBeam = beamLocations.random()
+        const nextBeam = [...longBeams, ...shortBeams].random()
+        if (!nextBeam) return
         this.beamDelayMs += Math.randomInclusive(0, 4000)
         this.worldMgr.sceneMgr.addMiscAnim(nextBeam.lwsFilename, nextBeam.beamPos, nextBeam.beamHeading, false)
     }

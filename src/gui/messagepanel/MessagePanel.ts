@@ -23,7 +23,7 @@ export class MessagePanel extends Panel {
 
     imgAir: SpriteImage
     imgNoAir: SpriteImage
-    currentMessage: TextInfoMessage
+    currentMessage?: TextInfoMessage
     messageTimeout?: NodeJS.Timeout
 
     airLevelWidth: number = this.maxAirLevelWidth
@@ -117,7 +117,7 @@ export class MessagePanel extends Panel {
         this.nextAirWarning = 1 - AIR_LEVEL_WARNING_STEP
         this.blinkLabel = false
         this.blinkInterval = clearIntervalSafe(this.blinkInterval)
-        this.currentMessage = null
+        this.currentMessage = undefined
         this.btnNext.hidden = true
         this.btnRepeat.hidden = true
         this.suppressArrow = false
@@ -141,7 +141,7 @@ export class MessagePanel extends Panel {
             if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample, true))
             if (timeout > 0) {
                 this.messageTimeout = setTimeout(() => {
-                    this.messageTimeout = null
+                    this.messageTimeout = undefined
                     this.removeMessage()
                 }, timeout)
             }
@@ -155,7 +155,7 @@ export class MessagePanel extends Panel {
     }
 
     private removeMessage() {
-        this.currentMessage = null
+        this.currentMessage = undefined
         this.setMovedIn(true)
         this.btnNext.hidden = true
         this.btnRepeat.hidden = true

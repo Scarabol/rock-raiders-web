@@ -56,6 +56,7 @@ export class ResourceManager {
 
     static async loadAllCursor() {
         const blankPointerFilename = GameConfig.instance.pointers.get(CURSOR.BLANK)
+        if (!blankPointerFilename) throw new Error('Could not determine blank pointer filename')
         const blankPointerImageData = this.getImageData(blankPointerFilename)
         const loadingCursors: Promise<void>[] = []
         GameConfig.instance.pointers.forEach((cursorFileName, cursor) => {
@@ -68,6 +69,7 @@ export class ResourceManager {
                     const cursorImages = (this.getResource(cursorFileName) as ImageData[]).map((imgData) => {
                         const blankCanvas = createCanvas(blankPointerImageData.width, blankPointerImageData.height)
                         const context = blankCanvas.getContext('2d')
+                        if (!context) throw new Error('Could not init context for cursor canvas')
                         context.putImageData(blankPointerImageData, 0, 0)
                         const cursorCanvas = imgDataToCanvas(imgData)
                         const x = Math.round((blankPointerImageData.width - imgData.width) / 2)

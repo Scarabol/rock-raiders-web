@@ -34,7 +34,7 @@ export class RaiderScareSystem extends AbstractGameSystem {
                     r.dropCarried(true)
                     const scareNeighbors = positionComponent.surface.neighbors
                     const safeNeighbors = raiderPos.surface.neighbors.filter((s) => s !== positionComponent.surface && !scareNeighbors.includes(s))
-                    const runTarget = [...safeNeighbors, ...scareNeighbors, raiderPos.surface].find((s) => s.isWalkable()).getRandomPosition()
+                    const runTarget = ([...safeNeighbors, ...scareNeighbors].find((s) => s.isWalkable()) ?? raiderPos.surface).getRandomPosition()
                     r.setJob(new RunPanicJob(runTarget))
                 })
                 if (selectionChanged) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))

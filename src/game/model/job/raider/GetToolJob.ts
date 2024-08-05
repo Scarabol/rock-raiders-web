@@ -16,7 +16,7 @@ export class GetToolJob extends RaiderJob {
         super()
         this.entityMgr = entityMgr
         this.tool = tool
-        this.workplaces = toolstation ? [toolstation.getToolPathTarget] : this.entityMgr.getGetToolTargets()
+        this.workplaces = toolstation?.getToolPathTarget ? [toolstation.getToolPathTarget] : this.entityMgr.getGetToolTargets()
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget {

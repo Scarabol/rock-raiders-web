@@ -10,8 +10,8 @@ export class GameWheelEvent {
     ctrlKey: boolean
     metaKey: boolean
     shiftKey: boolean
-    canvasX: number
-    canvasY: number
+    canvasX: number = 0
+    canvasY: number = 0
 
     constructor(event: WheelEvent) {
         this.type = event.type

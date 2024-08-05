@@ -12,7 +12,7 @@ import { TooltipSpriteBuilder } from '../resource/TooltipSpriteBuilder'
 import { SpriteImage } from '../core/Sprite'
 
 export class ChangeCursor extends BaseEvent {
-    constructor(readonly cursor: Cursor, readonly timeout: number = null) {
+    constructor(readonly cursor: Cursor, readonly timeout?: number) {
         super(EventKey.COMMAND_CHANGE_CURSOR)
     }
 }
@@ -24,7 +24,7 @@ export class ChangeTooltip extends BaseEvent {
     constructor(
         public tooltipText: string,
         readonly timeoutText: number,
-        readonly tooltipSfx: string = null,
+        readonly tooltipSfx?: string,
         readonly timeoutSfx: number = 0,
         callback: () => Promise<SpriteImage> = () => {
             return TooltipSpriteBuilder.getTooltipSprite(this.tooltipText, 0)

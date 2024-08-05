@@ -42,7 +42,7 @@ export class InfoDockButton extends Button {
         if (Math.abs(diffX) <= this.animationSpeedX && Math.abs(diffY) <= this.animationSpeedY) {
             this.relX = targetX
             this.relY = targetY
-            this.animationTimeout = null
+            this.animationTimeout = undefined
             if (onDone) onDone()
         } else {
             this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * this.animationSpeedX)
