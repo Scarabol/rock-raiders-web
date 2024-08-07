@@ -29,13 +29,13 @@ export interface JobFulfiller {
 
 export abstract class Job {
     jobState: JobState = JobState.INCOMPLETE
-    surface: Surface
-    carryItem: MaterialEntity
+    surface?: Surface
+    carryItem?: MaterialEntity
     requiredTool: RaiderTool = RaiderTool.NONE
     requiredTraining: RaiderTraining = RaiderTraining.NONE
     priorityIdentifier: PriorityIdentifier = PriorityIdentifier.NONE
-    workSoundRaider: Sample
-    workSoundVehicle: Sample
+    workSoundRaider?: Sample
+    workSoundVehicle?: Sample
 
     abstract assign(fulfiller: JobFulfiller): void
 
@@ -51,17 +51,17 @@ export abstract class Job {
         this.jobState = JobState.COMPLETE
     }
 
-    abstract getWorkplace(entity: JobFulfiller): PathTarget
+    abstract getWorkplace(entity: JobFulfiller): PathTarget | undefined
 
-    getWorkActivity(): AnimationActivity {
-        return null
+    getWorkActivity(): AnimationActivity | undefined {
+        return undefined
     }
 
-    getExpectedTimeLeft(): number {
-        return null
+    getExpectedTimeLeft(): number | undefined {
+        return undefined
     }
 
-    getJobBubble(): keyof BubblesCfg {
-        return null
+    getJobBubble(): keyof BubblesCfg | undefined {
+        return undefined
     }
 }

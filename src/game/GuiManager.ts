@@ -15,7 +15,6 @@ import { SoundManager } from '../audio/SoundManager'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SelectionFrameComponent } from './component/SelectionFrameComponent'
 import { BeamUpComponent } from './component/BeamUpComponent'
-import { CameraRotation } from '../scene/BirdViewControls'
 import { RepairBuildingJob } from './model/job/raider/RepairBuildingJob'
 import { MaterialSpawner } from './factory/MaterialSpawner'
 import { GenericDeathEvent } from '../event/WorldLocationEvent'
@@ -67,7 +66,7 @@ export class GuiManager {
             fence.worldMgr.ecs.getComponents(fence.entity).get(SelectionFrameComponent)?.deselect()
             fence.worldMgr.ecs.removeComponent(fence.entity, SelectionFrameComponent)
             fence.worldMgr.entityMgr.removeEntity(fence.entity)
-            fence.targetSurface.fence = null
+            fence.targetSurface.fence = undefined
             fence.targetSurface.fenceRequested = false
             fence.worldMgr.ecs.addComponent(fence.entity, new BeamUpComponent(fence))
         })
@@ -129,7 +128,7 @@ export class GuiManager {
             entityMgr.selection.raiders.forEach((r) => r.beamUp())
         })
         EventBroker.subscribe(EventKey.COMMAND_TRAIN_RAIDER, (event: TrainRaider) => {
-            entityMgr.selection.raiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainRaiderJob(entityMgr, event.training, null)))
+            entityMgr.selection.raiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainRaiderJob(entityMgr, event.training, undefined)))
             EventBroker.publish(new DeselectAll())
             return true
         })
@@ -179,7 +178,7 @@ export class GuiManager {
                 const target = entityMgr.buildings[this.buildingCycleIndex].primarySurface.getCenterWorld()
                 cameraControls.jumpTo(target)
             }
-            if (event.args.rotationIndex !== CameraRotation.NONE) cameraControls.rotate(event.args.rotationIndex)
+            if (event.args.rotationIndex) cameraControls.rotate(event.args.rotationIndex)
             if (event.args.jumpToWorld) {
                 const jumpTo = worldMgr.sceneMgr.terrain.getFloorPosition(event.args.jumpToWorld)
                 cameraControls.jumpTo(jumpTo)

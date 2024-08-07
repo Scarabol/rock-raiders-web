@@ -19,9 +19,9 @@ export enum CameraRotation {
 export class BirdViewControls extends MapControls {
     private readonly dummyPointerId: number
     private lockBuild: boolean = false
-    moveTarget: Vector3
+    moveTarget?: Vector3
     lastPanKey: string = ''
-    lockedObject: Object3D
+    lockedObject?: Object3D
     disabled: boolean = false
     gamePaused: boolean = false
     shakeOffset: Vector3 = new Vector3()
@@ -129,7 +129,7 @@ export class BirdViewControls extends MapControls {
             if (this.lockedObject) this.moveTarget = this.lockedObject.getWorldPosition(new Vector3())
             if (this.moveTarget) {
                 if (this.target.distanceToSquared(this.moveTarget) < 1) {
-                    this.moveTarget = null
+                    this.moveTarget = undefined
                     this.updateEnabled()
                 } else {
                     const nextCameraTargetPos = this.target.clone().add(this.moveTarget.clone().sub(this.target)
@@ -177,8 +177,8 @@ export class BirdViewControls extends MapControls {
     }
 
     unlockCamera() {
-        this.lockedObject = null
-        this.moveTarget = null
+        this.lockedObject = undefined
+        this.moveTarget = undefined
         this.updateEnabled()
     }
 

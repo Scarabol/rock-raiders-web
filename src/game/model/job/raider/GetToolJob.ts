@@ -19,7 +19,7 @@ export class GetToolJob extends RaiderJob {
         this.workplaces = toolstation?.getToolPathTarget ? [toolstation.getToolPathTarget] : this.entityMgr.getGetToolTargets()
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
         if (this.workplaces.some((b) => !b.building.isPowered())) {
             this.workplaces = this.entityMgr.getGetToolTargets()
         }
@@ -28,6 +28,7 @@ export class GetToolJob extends RaiderJob {
 
     onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
+        if (!this.raider) return
         this.raider.addTool(this.tool)
         if (!this.raider.followUpJob) {
             const building = this.raider.getSurface().building
@@ -57,6 +58,6 @@ export class GetToolJob extends RaiderJob {
             case RaiderTool.BIRD_SCARER:
                 return 'bubbleCollectBirdScarer'
         }
-        return null
+        return 'bubbleIdle'
     }
 }

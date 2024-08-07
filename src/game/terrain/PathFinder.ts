@@ -28,7 +28,7 @@ interface PathFindingSurfaceData {
 
 export class PathFinder {
     readonly graphByCacheKey: Map<string, ConfiguredGraph> = new Map()
-    readonly cachedPathsByKey: Map<string, Vector2[]> = new Map()
+    readonly cachedPathsByKey: Map<string, Vector2[] | undefined> = new Map()
 
     constructor(readonly surfaces: PathFindingSurfaceData[][]) {
     }
@@ -44,16 +44,16 @@ export class PathFinder {
         })
     }
 
-    findShortestPath(start: Vector2, targets: PathTarget[] | PathTarget, stats: MovableEntityStats, precision: number): TerrainPath {
+    findShortestPath(start: Vector2, targets: PathTarget[] | PathTarget | undefined, stats: MovableEntityStats, precision: number): TerrainPath | undefined {
+        if (!targets) return undefined
         return Array.ensure(targets).map((pathTarget) => this.findTerrainPath(start, pathTarget, stats, precision))
             .filter((terrainPath) => !!terrainPath)
             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
     }
 
-    private findTerrainPath(start: Vector2, target: PathTarget, stats: MovableEntityStats, precision: number): TerrainPath {
-        if (!target) return null
+    private findTerrainPath(start: Vector2, target: PathTarget, stats: MovableEntityStats, precision: number): TerrainPath | undefined {
         const path = this.findPath(start, target.targetLocation, stats, precision)
-        if (!path) return null
+        if (!path) return undefined
         return new TerrainPath(target, path)
     }
 
@@ -98,7 +98,7 @@ export class PathFinder {
             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
     }
 
-    private findPath(start: Vector2, targetLocation: Vector2, stats: MovableEntityStats, precision: number): Vector2[] {
+    private findPath(start: Vector2, targetLocation: Vector2, stats: MovableEntityStats, precision: number): Vector2[] | undefined {
         const gridStart = start.clone().divideScalar(TILESIZE / precision).floor()
         const gridEnd = targetLocation.clone().divideScalar(TILESIZE / precision).floor()
         const startTileX = Math.floor(gridStart.x / precision) * precision
@@ -123,7 +123,7 @@ export class PathFinder {
                 }
                 startNode.weight = 1
                 const freshPath = astar.search(graph, startNode, endNode)
-                if (freshPath.length < 1) return null // no path found
+                if (freshPath.length < 1) return undefined // no path found
                 freshPath.pop() // last node is replaced with actual target position
                 return freshPath.map((n) => new Vector2(n.x + 0.5, n.y + 0.5))
             } finally {
@@ -134,7 +134,7 @@ export class PathFinder {
                 }
             }
         })
-        if (!resultPath) return null
+        if (!resultPath) return undefined
         // return shallow copy to avoid interference
         const pathWithOffsets = resultPath.map((n) => n.clone().multiplyScalar(TILESIZE / precision))
         return [...pathWithOffsets, targetLocation]

@@ -35,12 +35,12 @@ export class RewardScreen {
     readonly btnAdvance: RewardScreenButton
     resultIndex: number = 0
     resultLastIndex: number = 0
-    texts: SpriteImage[] = []
+    texts: (SpriteImage | undefined)[] = []
     uncoverTimeout?: NodeJS.Timeout
-    levelFullNameImg: SpriteImage
-    resultText: string
-    resultValues: SpriteImage[] = []
-    screenshot: HTMLCanvasElement
+    levelFullNameImg?: SpriteImage
+    resultText: string = ''
+    resultValues: (SpriteImage | undefined)[] = []
+    screenshot?: HTMLCanvasElement
 
     constructor(readonly screenMaster: ScreenMaster) {
         this.cfg = GameConfig.instance.reward
@@ -235,8 +235,8 @@ export class RewardScreen {
                         const text = this.resultValues[c]
                         if (text) context.drawImage(text, txt.x - text.width / 2, txt.y)
                     }
-                    context.drawImage(this.levelFullNameImg, this.resultsLayer.fixedWidth / 2 - this.levelFullNameImg.width / 2, this.cfg.vertSpacing - this.levelFullNameImg.height / 2)
-                    context.drawImage(gameResultTextImg, this.resultsLayer.fixedWidth / 2 - gameResultTextImg.width / 2, this.cfg.vertSpacing + this.levelFullNameImg.height / 2)
+                    if (this.levelFullNameImg) context.drawImage(this.levelFullNameImg, this.resultsLayer.fixedWidth / 2 - this.levelFullNameImg.width / 2, this.cfg.vertSpacing - this.levelFullNameImg.height / 2)
+                    if (gameResultTextImg) context.drawImage(gameResultTextImg, this.resultsLayer.fixedWidth / 2 - gameResultTextImg.width / 2, this.cfg.vertSpacing + (this.levelFullNameImg?.height || 0) / 2)
                 }
                 this.descriptionTextLayer.animationFrame.onRedraw = (context) => {
                     const descriptionTextImg = this.texts[this.resultIndex]

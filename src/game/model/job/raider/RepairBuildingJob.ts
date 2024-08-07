@@ -22,9 +22,9 @@ export class RepairBuildingJob extends RaiderJob {
         this.priorityIdentifier = PriorityIdentifier.REPAIR
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
         const healthComponent = this.building.worldMgr.ecs.getComponents(this.building.entity).get(HealthComponent)
-        if (healthComponent.health >= healthComponent.maxHealth) return null
+        if (healthComponent.health >= healthComponent.maxHealth) return undefined
         return entity.findShortestPath(this.workplaces)?.target
     }
 

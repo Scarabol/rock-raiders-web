@@ -17,8 +17,8 @@ export class ReinforceJob extends ShareableJob {
         this.priorityIdentifier = PriorityIdentifier.REINFORCE
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
-        if (!this.surface.isReinforcable()) return null
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
+        if (!this.surface.isReinforcable()) return undefined
         const surfaceDigPositions = this.surface.getDigPositions()
         if (!this.digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
             !surfaceDigPositions.every((p) => this.digPositions.some((d) => p.equals(d.targetLocation)))) {

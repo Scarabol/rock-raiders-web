@@ -37,12 +37,12 @@ export class SoundManager {
         this.playSound(sample, isVoice)
     }
 
-    static playSound(soundName: string, isVoice: boolean): AudioBufferSourceNode {
-        if (isVoice && this.skipVoiceLines) return null
+    static playSound(soundName: string, isVoice: boolean): AudioBufferSourceNode | undefined {
+        if (isVoice && this.skipVoiceLines) return undefined
         this.skipVoiceLines = isVoice
         try {
             const audioBuffer = this.getSoundBuffer(soundName)
-            if (!audioBuffer) return null
+            if (!audioBuffer) return undefined
             const source = AudioContext.getContext().createBufferSource()
             source.buffer = audioBuffer
             source.connect(SoundManager.setupSfxAudioTarget())
@@ -57,7 +57,7 @@ export class SoundManager {
             return source
         } catch (e) {
             console.error(`Could not play sound ${soundName}`, e)
-            return null
+            return undefined
         }
     }
 
@@ -71,9 +71,10 @@ export class SoundManager {
         }).random()
     }
 
-    static stopAudio(audio: PositionalAudio): null {
+    static stopAudio(audio?: PositionalAudio): undefined {
+        if (!audio) return undefined
         if (audio?.isPlaying) audio.stop()
         this.playingAudio.delete(audio)
-        return null
+        return undefined
     }
 }

@@ -1,5 +1,5 @@
 import { BaseConfig } from './BaseConfig'
-import { ButtonCfg } from './ButtonCfg'
+import { BaseButtonCfg, ButtonCfg } from './ButtonCfg'
 
 export class PriorityButtonsCfg extends BaseConfig {
     aiPriorityTrain?: ButtonCfg
@@ -15,14 +15,14 @@ export class PriorityButtonsCfg extends BaseConfig {
 
     parseValue(unifiedKey: string, cfgValue: any): ButtonCfg {
         const [tooltipText, tooltipSfx] = Array.ensure(cfgValue[0])
-        return {
+        return Object.assign(new BaseButtonCfg(), {
             normalFile: cfgValue[1],
             highlightFile: cfgValue[1],
             pressedFile: cfgValue[2],
             disabledFile: cfgValue[3],
             tooltipText: tooltipText,
             tooltipSfx: tooltipSfx,
-        }
+        })
     }
 }
 

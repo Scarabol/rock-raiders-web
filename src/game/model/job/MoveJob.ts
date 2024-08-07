@@ -11,7 +11,7 @@ export class MoveJob extends Job {
         this.target = PathTarget.fromLocation(location)
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
         return this.target
     }
 

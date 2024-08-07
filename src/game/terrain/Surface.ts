@@ -42,10 +42,10 @@ export class Surface {
     scanned: boolean = false
     selected: boolean = false
     reinforced: boolean = false
-    drillJob: DrillJob
-    reinforceJob: ReinforceJob
-    dynamiteJob: CarryJob
-    clearRubbleJob: ClearRubbleJob
+    drillJob?: DrillJob
+    reinforceJob?: ReinforceJob
+    dynamiteJob?: CarryJob
+    clearRubbleJob?: ClearRubbleJob
     seamLevel: number = 0
     drillProgress: number = 0
 
@@ -55,11 +55,11 @@ export class Surface {
 
     rubblePositions: Vector2[] = []
 
-    building: BuildingEntity
+    building?: BuildingEntity
     pathBlockedByBuilding: boolean = false
-    site: BuildingSite
-    fence: GameEntity
-    stud: AnimationGroup
+    site?: BuildingSite
+    fence?: GameEntity
+    stud?: AnimationGroup
     fenceRequested: boolean = false
     energized: boolean = false
 
@@ -284,14 +284,14 @@ export class Surface {
     cancelJobs() {
         this.drillJob = Surface.safeRemoveJob(this.drillJob)
         this.reinforceJob = Surface.safeRemoveJob(this.reinforceJob)
-        this.dynamiteJob = null // Dynamite is carried back to storage
+        this.dynamiteJob = undefined // Dynamite is carried back to storage
         this.clearRubbleJob = Surface.safeRemoveJob(this.clearRubbleJob)
         this.updateJobColor()
     }
 
-    private static safeRemoveJob(job: Job): null {
+    private static safeRemoveJob(job?: Job): undefined {
         if (job) job.jobState = JobState.CANCELED
-        return null
+        return undefined
     }
 
     reduceRubble() {
@@ -545,7 +545,7 @@ export class Surface {
         this.setSurfaceType(SurfaceType.RUBBLE4)
     }
 
-    setBuilding(building: BuildingEntity) {
+    setBuilding(building?: BuildingEntity) {
         this.building = building
         this.setSurfaceType(this.building ? SurfaceType.POWER_PATH_BUILDING : SurfaceType.GROUND)
     }
@@ -592,8 +592,8 @@ export class Surface {
         return !!this.fence || (this === this.building?.primarySurface || this === this.building?.secondarySurface)
     }
 
-    setupDrillJob(): DrillJob {
-        if (!this.isDigable()) return null
+    setupDrillJob(): DrillJob | undefined {
+        if (!this.isDigable()) return undefined
         if (this.drillJob) return this.drillJob
         this.drillJob = new DrillJob(this)
         EventBroker.publish(new JobCreateEvent(this.drillJob))
@@ -617,8 +617,8 @@ export class Surface {
         this.updateJobColor()
     }
 
-    setupClearRubbleJob(): ClearRubbleJob {
-        if (!this.hasRubble()) return null
+    setupClearRubbleJob(): ClearRubbleJob | undefined {
+        if (!this.hasRubble()) return undefined
         if (this.clearRubbleJob) return this.clearRubbleJob
         this.clearRubbleJob = new ClearRubbleJob(this)
         this.updateJobColor()

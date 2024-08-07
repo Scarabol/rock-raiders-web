@@ -18,8 +18,8 @@ export class ClearRubbleJob extends ShareableJob {
         this.priorityIdentifier = PriorityIdentifier.CLEARING
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
-        if (!this.surface.hasRubble()) return null
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
+        if (!this.surface.hasRubble()) return undefined
         if (entity.entityType === EntityType.BULLDOZER) {
             return entity.findShortestPath(PathTarget.fromLocation(this.surface.getCenterWorld2D()))?.target
         } else {
@@ -37,12 +37,12 @@ export class ClearRubbleJob extends ShareableJob {
             while (this.surface.hasRubble()) {
                 this.surface.reduceRubble()
             }
-            this.surface.clearRubbleJob = null
+            this.surface.clearRubbleJob = undefined
             super.onJobComplete(fulfiller)
         } else {
             this.surface.reduceRubble()
             if (!this.surface.hasRubble()) {
-                this.surface.clearRubbleJob = null
+                this.surface.clearRubbleJob = undefined
                 super.onJobComplete(fulfiller)
             }
         }
