@@ -49,11 +49,11 @@ export class SaveGameManager {
 
     static loadSaveGameScreenshots() {
         if (VERBOSE) console.log('Loading save game screenshots...')
-        this.screenshots = this.saveGames.map((s, index) => new Promise<HTMLCanvasElement>((resolve) => {
+        this.screenshots = this.saveGames.map((s, index) => new Promise<HTMLCanvasElement | undefined>((resolve) => {
             try {
                 const screenshot = localStorage.getItem(`screenshot${index}`)
                 if (!screenshot) {
-                    resolve(null)
+                    resolve(undefined)
                     return
                 }
                 const img = new Image()
@@ -67,7 +67,7 @@ export class SaveGameManager {
                 img.src = screenshot
             } catch (e) {
                 console.error('Could not load save game screenshot', e)
-                resolve(null)
+                resolve(undefined)
             }
         }))
     }

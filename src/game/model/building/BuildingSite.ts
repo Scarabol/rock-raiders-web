@@ -148,7 +148,7 @@ export class BuildingSite {
 
     teleportIn() {
         this.worldMgr.entityMgr.completedBuildingSites.remove(this)
-        this.surfaces.forEach((s) => s.site = null)
+        this.surfaces.forEach((s) => s.site = undefined)
         this.onSiteByType.forEach((byType: MaterialEntity[]) => byType.forEach((item: MaterialEntity) => {
             if (item.entityType === EntityType.BARRIER) {
                 item.sceneEntity.setAnimation(BarrierActivity.Teleport, () => item.disposeFromWorld())
@@ -164,7 +164,7 @@ export class BuildingSite {
         this.worldMgr.entityMgr.buildingSites.remove(this)
         this.canceled = true
         this.surfaces.forEach((s) => {
-            s.site = null
+            s.site = undefined
             if (s.surfaceType === SurfaceType.POWER_PATH_BUILDING || s.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE) {
                 s.setSurfaceType(SurfaceType.GROUND)
             }

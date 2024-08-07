@@ -21,7 +21,7 @@ export class BriefingPanel extends Panel {
     paragraph: number = 0
     objectiveParagraphs: string[] = []
     objectiveSfxName: string = ''
-    objectiveSfx: AudioBufferSourceNode
+    objectiveSfx?: AudioBufferSourceNode
     onContinueMission: () => any = () => console.log('Start mission')
 
     constructor() {
@@ -91,7 +91,7 @@ export class BriefingPanel extends Panel {
         this.setParagraph(0)
         if (this.objectiveSfxName) {
             this.objectiveSfx = SoundManager.playSound(this.objectiveSfxName, false)
-            this.objectiveSfx.addEventListener('ended', () => EventBroker.publish(new ShowMissionAdvisorEvent(false)))
+            this.objectiveSfx?.addEventListener('ended', () => EventBroker.publish(new ShowMissionAdvisorEvent(false)))
         }
         this.btnNext.hidden = this.paragraph >= this.objectiveParagraphs.length - 1
         this.btnBack.hidden = this.paragraph < 1

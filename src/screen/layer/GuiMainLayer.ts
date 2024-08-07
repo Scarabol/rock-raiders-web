@@ -156,7 +156,7 @@ export class GuiTopRightLayer extends GuiBaseLayer {
             if (event.eventEnum === KEY_EVENT.UP) {
                 const bx = buttonWithKey.x + buttonWithKey.width / 2
                 const by = buttonWithKey.y + buttonWithKey.height / 2
-                buttonWithKey.onClick(bx, by)
+                buttonWithKey.onClick?.(bx, by)
             }
             return true
         }

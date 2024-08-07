@@ -20,8 +20,9 @@ export class ResourceManager {
     static readonly lwoCache: Map<string, SceneMesh> = new Map()
 
     static getResource(resourceName: string): any {
-        const lName = resourceName?.toString()?.toLowerCase() || null
-        return this.resourceByName.get(lName) || null
+        const lName = resourceName?.toString()?.toLowerCase() || undefined
+        if (!lName) return undefined
+        return this.resourceByName.get(lName) || undefined
     }
 
     static getImage(imageName: string): SpriteImage {
@@ -50,8 +51,8 @@ export class ResourceManager {
         })
     }
 
-    static getImageOrNull(imageName: string): SpriteImage | null {
-        return imageName ? this.getImage(imageName) : null
+    static getImageOrNull(imageName: string): SpriteImage | undefined {
+        return imageName ? this.getImage(imageName) : undefined
     }
 
     static async loadAllCursor() {

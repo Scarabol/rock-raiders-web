@@ -46,17 +46,17 @@ export class Raider implements Updatable, JobFulfiller {
     readonly tools: RaiderTool[] = []
     readonly trainings: RaiderTraining[] = []
     worldMgr: WorldManager
-    currentPath: TerrainPath
+    currentPath?: TerrainPath
     level: number = 0
-    job: Job
-    followUpJob: Job
-    workAudio: PositionalAudio
+    job?: Job
+    followUpJob?: Job
+    workAudio?: PositionalAudio
     sceneEntity: AnimatedSceneEntity
-    carries: MaterialEntity
+    carries?: MaterialEntity
     slipped: boolean = false
     thrown: boolean = false
     foodLevel: number = 1
-    vehicle: VehicleEntity
+    vehicle?: VehicleEntity
     scared: boolean = false
     toolsIndex: number = 0
     weaponCooldown: number = 0
@@ -194,7 +194,7 @@ export class Raider implements Updatable, JobFulfiller {
         if (!target) return MoveState.TARGET_UNREACHABLE
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
             const path = this.findShortestPath(target)
-            this.currentPath = path && path.locations.length > 0 ? path : null
+            this.currentPath = path && path.locations.length > 0 ? path : undefined
             this.currentPath?.locations?.forEach((l, index) => {
                 if (index < this.currentPath.locations.length - 1) l.add(new Vector2().random().subScalar(0.5).multiplyScalar(TILESIZE / RAIDER_PATH_PRECISION))
             }) // XXX Externalize precision
@@ -311,7 +311,7 @@ export class Raider implements Updatable, JobFulfiller {
     Working on Jobs
      */
 
-    setJob(job: Job, followUpJob: Job = null) {
+    setJob(job: Job, followUpJob?: Job) {
         if (this.job !== job) this.stopJob()
         this.job = job
         this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture(this.job.getJobBubble())
@@ -331,8 +331,8 @@ export class Raider implements Updatable, JobFulfiller {
         if (!this.job) return
         this.job.unAssign(this)
         if (this.followUpJob) this.followUpJob.unAssign(this)
-        this.job = null
-        this.followUpJob = null
+        this.job = undefined
+        this.followUpJob = undefined
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture('bubbleIdle')
     }
@@ -345,7 +345,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.carries.setPosition(floorPosition)
         this.carries.worldMgr.sceneMgr.addSceneEntity(this.carries.sceneEntity)
         const carriedEntity = this.carries
-        this.carries = null
+        this.carries = undefined
         return [carriedEntity]
     }
 
@@ -450,16 +450,16 @@ export class Raider implements Updatable, JobFulfiller {
 
     private completeJob() {
         if (this.workAudio?.loop) this.workAudio = SoundManager.stopAudio(this.workAudio)
-        else this.workAudio = null
+        else this.workAudio = undefined
         this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
-        this.followUpJob = null
+        this.followUpJob = undefined
         if (this.job && !GameState.priorityList.isEnabled(this.job.priorityIdentifier)) {
             this.job.unAssign(this)
-            this.job = null
+            this.job = undefined
         }
         this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture(this.job?.getJobBubble() || 'bubbleIdle')
     }

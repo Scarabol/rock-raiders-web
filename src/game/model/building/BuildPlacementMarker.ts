@@ -27,7 +27,7 @@ export class BuildPlacementMarker {
     readonly waterPathMarker: BuildPlacementMarkerMesh
     heading: number = 0
     lastCheck: boolean = false
-    buildingType: BuildingType
+    buildingType?: BuildingType
     buildingMarkerColor: number = BuildPlacementMarker.goodBuildingMarkerColor
     pathMarkerColor: number = BuildPlacementMarker.goodPathMarkerColor
     waterMarkerColor: number = BuildPlacementMarker.goodWaterMarkerColor
@@ -65,6 +65,7 @@ export class BuildPlacementMarker {
     }
 
     private updateAllMarker(worldPosition: Vector2) {
+        if (!this.buildingType) return
         this.buildingMarkerPrimary.updateMesh(worldPosition, new Vector2(0, 0))
         const sdxv = worldPosition.x - this.buildingMarkerPrimary.position.x - TILESIZE / 2
         const sdzv = worldPosition.y - this.buildingMarkerPrimary.position.z - TILESIZE / 2
@@ -125,6 +126,7 @@ export class BuildPlacementMarker {
     }
 
     createBuildingSite() {
+        if (!this.buildingType) return
         const barrierLocations = this.getBarrierLocations()
         const stats = this.buildingType.stats
         const neededCrystals = stats?.CostCrystal || 0
@@ -156,7 +158,7 @@ export class BuildPlacementMarker {
         } else {
             site.checkComplete()
         }
-        this.worldMgr.sceneMgr.setBuildModeSelection(null)
+        this.worldMgr.sceneMgr.setBuildModeSelection(undefined)
     }
 
     getBarrierLocations(): Vector2[] {
@@ -191,8 +193,8 @@ export class BuildPlacementMarker {
         return barrierLocations
     }
 
-    setBuildMode(entityType: EntityType) {
-        this.buildingType = BuildingType.from(entityType)
+    setBuildMode(entityType: EntityType | undefined) {
+        this.buildingType = entityType ? BuildingType.from(entityType) : undefined
         if (!this.buildingType) this.hideAllMarker()
     }
 
