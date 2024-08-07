@@ -2,6 +2,7 @@
 
 import { BaseConfig } from './BaseConfig'
 import { RaiderTrainingStats } from '../game/model/raider/RaiderTraining'
+import { isNum } from '../core/Util'
 
 export interface PickSphereStats {
     PickSphere: number
@@ -178,7 +179,7 @@ export class PilotStats extends BaseConfig implements MovableEntityStats, PickSp
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if ('RestPercent'.equalsIgnoreCase(unifiedKey)) {
-            if (isNaN(cfgValue)) {
+            if (!isNum(cfgValue)) {
                 console.warn(`Unexpected value "${cfgValue}" given for "${objKey}"`)
             } else {
                 this.RestPercent = cfgValue / 100

@@ -13,7 +13,7 @@ export class GameMenuCfg extends BaseConfig {
     saveGame: string = ''
     loadGame: string = ''
     overwrite: OverwriteCfg = new OverwriteCfg()
-    saveImage?: {
+    saveImage: {
         BigWidth: number,
         BigHeight: number,
         Width: number,
@@ -23,6 +23,16 @@ export class GameMenuCfg extends BaseConfig {
         Pos3: number[],
         Pos4: number[],
         Pos5: number[],
+    } = {
+        BigWidth: 0,
+        BigHeight: 0,
+        Width: 0,
+        Height: 0,
+        Pos1: [0, 0],
+        Pos2: [0, 0],
+        Pos3: [0, 0],
+        Pos4: [0, 0],
+        Pos5: [0, 0],
     }
     saveText: SaveTextCfg = new SaveTextCfg()
 
@@ -93,7 +103,7 @@ class LevelTextCfg extends BaseConfig {
 }
 
 export class MenuPanelCfg extends BaseConfig {
-    imgBackground?: string
+    imgBackground: string = ''
     rect: Rect = new Rect()
 
     setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {

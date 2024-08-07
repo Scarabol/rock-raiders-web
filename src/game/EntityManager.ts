@@ -129,7 +129,7 @@ export class EntityManager {
         return this.buildings.filter(b => b.isPowered() && buildingTypes.some(bt => b.entityType === bt))
     }
 
-    getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity {
+    getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity | undefined {
         const buildings = this.getBuildingsByType(...buildingTypes)
         let closest: BuildingEntity | undefined, minDist: number = Infinity
         buildings.forEach((b) => {
@@ -278,7 +278,7 @@ export class EntityManager {
     }
 
     placeMaterial(item: MaterialEntity, worldPosition: Vector2) {
-        item.sceneEntity.addToScene(item.worldMgr.sceneMgr, worldPosition, null)
+        item.sceneEntity.addToScene(item.worldMgr.sceneMgr, worldPosition, undefined)
         if (item.sceneEntity.visible) {
             this.materials.push(item) // TODO use game entities within entity manager
             item.setupCarryJob()
@@ -387,8 +387,8 @@ export class EntityManager {
         this.bullets.remove(entity)
     }
 
-    findVehicleInRange(position2d: Vector2, rangeSq: number): VehicleTarget {
-        let result: VehicleTarget
+    findVehicleInRange(position2d: Vector2, rangeSq: number): VehicleTarget | undefined {
+        let result: VehicleTarget | undefined
         this.worldMgr.entityMgr.vehicles.some((v) => {
             const vPos = this.worldMgr.ecs.getComponents(v.entity).get(PositionComponent)
             if (vPos.getPosition2D().distanceToSquared(position2d) < rangeSq) {

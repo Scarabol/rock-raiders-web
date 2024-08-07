@@ -7,7 +7,6 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { SceneSelectionComponent } from '../component/SceneSelectionComponent'
 import { BuildingSite } from '../model/building/BuildingSite'
 import { PositionComponent } from '../component/PositionComponent'
-import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { BarrierActivity, DynamiteActivity } from '../model/anim/AnimationActivity'
 import { PriorityIdentifier } from '../model/job/PriorityIdentifier'
 import { RaiderTraining } from '../model/raider/RaiderTraining'
@@ -37,7 +36,6 @@ export class MaterialSpawner {
         const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
         const material = new MaterialEntity(worldMgr, entityType, targetSurface, targetSite, barrierLocation)
         worldMgr.ecs.addComponent(material.entity, new PositionComponent(floorPosition, surface))
-        material.sceneEntity = new AnimatedSceneEntity()
         switch (entityType) {
             case EntityType.ORE:
                 material.sceneEntity.add(ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Ore))
@@ -122,7 +120,7 @@ export class MaterialSpawner {
     static addTooltip(worldMgr: WorldManager, entity: GameEntity, entityType: EntityType, energyCallback: () => number) {
         const objectKey = entityType.toLowerCase()
         const objectName = GameConfig.instance.objectNamesCfg.get(objectKey)
-        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey)
+        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey) || ''
         if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, sfxKey, () => {
             return TooltipSpriteBuilder.getTooltipSprite(objectName, energyCallback())
         }))

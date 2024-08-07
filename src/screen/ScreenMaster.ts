@@ -139,6 +139,10 @@ export class ScreenMaster {
 
     private downloadCanvasAsImage(canvas: HTMLCanvasElement) {
         canvas.toBlob((blob) => {
+            if (!blob) {
+                console.error('Null instead of blob returned from canvas')
+                return
+            }
             const link = document.createElement('a')
             link.download = `Rock Raiders Web ${new Date().toISOString().replace('T', ' ').replace('Z', '')}.png`
             link.href = URL.createObjectURL(blob)

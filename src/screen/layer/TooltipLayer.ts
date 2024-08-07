@@ -14,8 +14,8 @@ export class TooltipLayer extends ScreenLayer {
     tooltipTimeoutText?: NodeJS.Timeout
     tooltipTimeoutSfx?: NodeJS.Timeout
     cursorLeft: boolean = false
-    tooltipCanvas: HTMLCanvasElement
-    lastTooltipKey: string
+    tooltipCanvas?: HTMLCanvasElement
+    lastTooltipKey: string = ''
 
     constructor() {
         super()
@@ -27,13 +27,14 @@ export class TooltipLayer extends ScreenLayer {
             this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
             if (this.tooltipCanvas) {
                 HTML_GAME_CANVAS_CONTAINER.removeChild(this.tooltipCanvas)
-                this.tooltipCanvas = null
+                this.tooltipCanvas = undefined
             }
             this.tooltipTimeoutText = setTimeout(async () => {
                 this.changeTooltipImage(await event.getTooltipTextImg())
             }, event.timeoutText)
-            if (!DEV_MODE && event.tooltipSfx) {
-                this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSound(event.tooltipSfx, true), event.timeoutSfx)
+            const tooltipSfx = event.tooltipSfx
+            if (!DEV_MODE && tooltipSfx) {
+                this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSound(tooltipSfx, true), event.timeoutSfx)
             }
         })
         EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_HIDE, (event: HideTooltip) => {
@@ -68,9 +69,9 @@ export class TooltipLayer extends ScreenLayer {
         this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
         if (this.tooltipCanvas) {
             HTML_GAME_CANVAS_CONTAINER.removeChild(this.tooltipCanvas)
-            this.tooltipCanvas = null
+            this.tooltipCanvas = undefined
         }
-        this.lastTooltipKey = null
+        this.lastTooltipKey = ''
     }
 
     private changeTooltipImage(tooltipImg: SpriteImage) {
@@ -89,6 +90,7 @@ export class TooltipLayer extends ScreenLayer {
     }
 
     private updateTooltipCanvasPosition() {
+        if (!this.tooltipCanvas) return
         const posX = Math.min(this.lastCursorPos.x + this.tooltipCanvas.width, this.canvas.width) - this.tooltipCanvas.width
         let posY: number
         if (this.lastCursorPos.y + this.tooltipCanvas.height < this.canvas.height) {
@@ -111,6 +113,6 @@ export class TooltipLayer extends ScreenLayer {
         this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
         this.cursorLeft = false
         if (this.tooltipCanvas) HTML_GAME_CANVAS_CONTAINER.removeChild(this.tooltipCanvas)
-        this.tooltipCanvas = null
+        this.tooltipCanvas = undefined
     }
 }

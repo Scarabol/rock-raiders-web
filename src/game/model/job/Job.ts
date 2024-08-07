@@ -20,7 +20,7 @@ export interface JobFulfiller {
     sceneEntity: AnimatedSceneEntity
     stats: PickSphereStats
 
-    findShortestPath(targets: PathTarget[] | PathTarget): TerrainPath
+    findShortestPath(targets: PathTarget[] | PathTarget | undefined): TerrainPath | undefined
     stopJob(): void
     dropCarried(unAssign: boolean): MaterialEntity[]
     getDrillTimeSeconds(surface: Surface): number

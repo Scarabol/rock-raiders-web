@@ -32,13 +32,13 @@ export class GameResult {
 
     constructor(
         readonly levelFullName: string,
-        readonly rewardConfig: LevelRewardConfig,
+        readonly rewardConfig: LevelRewardConfig | undefined,
         readonly state: GameResultState,
         readonly numBuildings: number,
         readonly numRaiders: number,
         readonly numMaxAirRaiders: number,
         readonly gameTimeSeconds: number,
-        readonly screenshot: HTMLCanvasElement
+        readonly screenshot: HTMLCanvasElement | undefined,
     ) {
         this.airLevelPercent = GameState.airLevel * 100
         this.numCrystal = GameState.numCrystal
@@ -47,9 +47,9 @@ export class GameResult {
         this.remainingDiggables = GameState.remainingDiggables
         this.totalDiggables = GameState.totalDiggables
         this.discoveredCaverns = GameState.discoveredCaverns
-        if (this.rewardConfig) {
-            const quota = this.rewardConfig.quota
-            const importance = this.rewardConfig.importance
+        const quota = this.rewardConfig?.quota
+        const importance = this.rewardConfig?.importance
+        if (quota && importance) {
             this.scoreCrystals = quota.crystals ? Math.min(1, GameState.numCrystal / quota.crystals) * importance.crystals : 0
             this.scoreTimer = quota.timer && this.gameTimeSeconds <= quota.timer ? importance.timer : 0
             this.scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
@@ -63,7 +63,8 @@ export class GameResult {
     }
 
     static random(): GameResult {
-        const randomLevelConf = GameConfig.instance.levels.levelCfgByName.get(`Level${Math.randomInclusive(1, 25).toPadded()}`)
-        return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GameResultState.COMPLETE, Math.randomInclusive(6), Math.randomInclusive(10), 10, 942, null)
+        const randomLevelConf = Array.from(GameConfig.instance.levels.levelCfgByName.values()).filter((c) => c.levelName.toLowerCase().startsWith('level')).random()
+        if (!randomLevelConf) throw new Error('Could not find random level configuration')
+        return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GameResultState.COMPLETE, Math.randomInclusive(6), Math.randomInclusive(10), 10, 942, undefined)
     }
 }

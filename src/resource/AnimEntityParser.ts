@@ -3,27 +3,27 @@ import { VERBOSE } from '../params'
 import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 
 export class AnimEntityData {
-    scale?: number
-    carryNullName?: string
-    carryNullFrames?: number
-    depositNullName?: string
-    toolNullName?: string
-    wheelMesh?: string
-    wheelRadius?: number
-    wheelNullName?: string
-    drillNullName?: string
-    driverNullName?: string
-    cameraNullName?: string
-    cameraNullFrames?: number
+    scale: number = 1
+    carryNullName: string = ''
+    carryNullFrames: number = 0
+    depositNullName: string = ''
+    toolNullName: string = ''
+    wheelMesh: string = ''
+    wheelRadius: number = 0
+    wheelNullName: string = ''
+    drillNullName: string = ''
+    driverNullName: string = ''
+    cameraNullName: string = ''
+    cameraNullFrames: number = 0
     readonly highPolyBodies: Map<string, string> = new Map()
     readonly mediumPolyBodies: Map<string, string> = new Map()
     readonly lowPolyBodies: Map<string, string> = new Map()
     readonly fPPolyBodies: Map<string, Map<string, string>> = new Map()
-    fireNullName?: string
-    xPivotName?: string
-    yPivotName?: string
-    pivotMaxZ?: number
-    pivotMinZ?: number
+    fireNullName: string = ''
+    xPivotName: string = ''
+    yPivotName: string = ''
+    pivotMaxZ: number | undefined
+    pivotMinZ: number | undefined
     readonly animations: AnimEntityAnimationData[] = []
     readonly upgradesByLevel: Map<string, AnimEntityUpgradeData[]> = new Map()
 }

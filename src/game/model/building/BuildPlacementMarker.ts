@@ -27,7 +27,7 @@ export class BuildPlacementMarker {
     readonly waterPathMarker: BuildPlacementMarkerMesh
     heading: number = 0
     lastCheck: boolean = false
-    buildingType: BuildingType
+    buildingType?: BuildingType
     buildingMarkerColor: number = BuildPlacementMarker.goodBuildingMarkerColor
     pathMarkerColor: number = BuildPlacementMarker.goodPathMarkerColor
     waterMarkerColor: number = BuildPlacementMarker.goodWaterMarkerColor
@@ -65,6 +65,7 @@ export class BuildPlacementMarker {
     }
 
     private updateAllMarker(worldPosition: Vector2) {
+        if (!this.buildingType) return
         this.buildingMarkerPrimary.updateMesh(worldPosition, new Vector2(0, 0))
         const sdxv = worldPosition.x - this.buildingMarkerPrimary.position.x - TILESIZE / 2
         const sdzv = worldPosition.y - this.buildingMarkerPrimary.position.z - TILESIZE / 2
@@ -78,15 +79,15 @@ export class BuildPlacementMarker {
         const allNonWaterPathsAreGround = [this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
             .filter((c) => c.visible).map((c) => this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(c.position)).every((s) => s.surfaceType === SurfaceType.GROUND && !s.fence && !s.fenceRequested)
         const isGood = allNonWaterPathsAreGround && (
-                [this.powerPathMarkerPrimary, this.powerPathMarkerSecondary].some((c) => c.visible && c.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)) ||
-                (!this.buildingType.primaryPowerPath && (this.buildingMarkerPrimary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH ||
-                    (this.buildingMarkerSecondary.visible && this.buildingMarkerSecondary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)))))
-            ) && (!this.waterPathMarker.visible || this.waterPathMarker.surface.surfaceType === SurfaceType.WATER)
+                [this.powerPathMarkerPrimary, this.powerPathMarkerSecondary].some((c) => c.visible && c.getSurface().neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)) ||
+                (!this.buildingType.primaryPowerPath && (this.buildingMarkerPrimary.getSurface().neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH ||
+                    (this.buildingMarkerSecondary.visible && this.buildingMarkerSecondary.getSurface().neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)))))
+            ) && (!this.waterPathMarker.visible || this.waterPathMarker.getSurface().surfaceType === SurfaceType.WATER)
             && ![this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
                 .some((c) => [...this.worldMgr.entityMgr.rockMonsters, ...this.worldMgr.entityMgr.slugs]
-                    .some((m) => this.worldMgr.ecs.getComponents(m).get(PositionComponent).surface === c.surface))
+                    .some((m) => this.worldMgr.ecs.getComponents(m).get(PositionComponent).surface === c.getSurface()))
         if (isGood) {
-            const tooSteep = [this.buildingMarkerPrimary?.surface, this.buildingMarkerSecondary?.surface].some((s) => {
+            const tooSteep = [this.buildingMarkerPrimary.getVisibleSurface(), this.buildingMarkerSecondary.getVisibleSurface()].some((s) => {
                 if (!s) return false
                 const offsets = [
                     this.worldMgr.sceneMgr.terrain.getHeightOffset(s.x, s.y),
@@ -125,14 +126,15 @@ export class BuildPlacementMarker {
     }
 
     createBuildingSite() {
+        if (!this.buildingType) return
         const barrierLocations = this.getBarrierLocations()
         const stats = this.buildingType.stats
         const neededCrystals = stats?.CostCrystal || 0
         const neededBricks = stats?.CostRefinedOre || 0
         const neededOres = stats?.CostOre || 0
         const needsAnything = neededCrystals || neededOres || neededBricks
-        const primarySurface = this.buildingMarkerPrimary.surface
-        const site = new BuildingSite(this.worldMgr, primarySurface, this.buildingMarkerSecondary.surface, this.powerPathMarkerPrimary.surface, this.powerPathMarkerSecondary.surface, this.buildingType)
+        const primarySurface = this.buildingMarkerPrimary.getSurface()
+        const site = new BuildingSite(this.worldMgr, primarySurface, this.buildingMarkerSecondary.getVisibleSurface(), this.powerPathMarkerPrimary.getVisibleSurface(), this.powerPathMarkerSecondary.getVisibleSurface(), this.buildingType)
         primarySurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
         site.heading = this.heading
         if (needsAnything) site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
@@ -156,15 +158,15 @@ export class BuildPlacementMarker {
         } else {
             site.checkComplete()
         }
-        this.worldMgr.sceneMgr.setBuildModeSelection(null)
+        this.worldMgr.sceneMgr.setBuildModeSelection(undefined)
     }
 
     getBarrierLocations(): Vector2[] {
         const barrierLocations: Vector2[] = []
-        const centerPrimary = this.buildingMarkerPrimary.surface.getCenterWorld2D()
+        const centerPrimary = this.buildingMarkerPrimary.getSurface().getCenterWorld2D()
         const barrierOffset = TILESIZE * 9 / 20
         if (this.buildingMarkerSecondary.visible) {
-            const centerSecondary = this.buildingMarkerSecondary.surface.getCenterWorld2D()
+            const centerSecondary = this.buildingMarkerSecondary.getSurface().getCenterWorld2D()
             const dx = Math.sign(centerSecondary.x - centerPrimary.x)
             const dy = Math.sign(centerSecondary.y - centerPrimary.y)
             if (dx !== 0) {
@@ -191,8 +193,8 @@ export class BuildPlacementMarker {
         return barrierLocations
     }
 
-    setBuildMode(entityType: EntityType) {
-        this.buildingType = BuildingType.from(entityType)
+    setBuildMode(entityType: EntityType | undefined) {
+        this.buildingType = entityType ? BuildingType.from(entityType) : undefined
         if (!this.buildingType) this.hideAllMarker()
     }
 

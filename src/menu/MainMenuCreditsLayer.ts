@@ -14,12 +14,12 @@ export class MainMenuCreditsLayer extends ScaledLayer {
     readonly maxNumOfLinesOnScreen: number
     readonly currentLines: SpriteImage[] = []
     readonly renderedBitmapLines: SpriteImage[] = []
-    readonly backVideo: AVIVideoStream
-    backImg: SpriteImage
+    readonly backVideo?: AVIVideoStream
+    backImg?: SpriteImage
     loopIndexTimeout?: NodeJS.Timeout
     offsetY: number = 0
     counter: number = 0
-    onExitCredits: UiElementCallback
+    onExitCredits?: UiElementCallback
 
     constructor() {
         super('credits')
@@ -36,15 +36,15 @@ export class MainMenuCreditsLayer extends ScaledLayer {
             this.backVideo = videoStreams[0]
             this.backImg = this.backVideo.getNextFrame()
             this.animationFrame.onRedraw = (context) => {
-                context.drawImage(this.backImg, 0, 0, this.fixedWidth, this.fixedHeight)
+                if (this.backImg) context.drawImage(this.backImg, 0, 0, this.fixedWidth, this.fixedHeight)
             }
         }
         Promise.all((bitmapLines)).then((bitmapLines) => {
-            this.renderedBitmapLines.push(...bitmapLines)
+            this.renderedBitmapLines.push(...bitmapLines.filter((l) => !!l))
             this.counter = this.maxNumOfLinesOnScreen + 5
             this.currentLines.push(...this.renderedBitmapLines.slice(0, this.counter))
             this.animationFrame.onRedraw = (context) => {
-                +context.clearRect(0, 0, this.fixedWidth, this.fixedHeight)
+                context.clearRect(0, 0, this.fixedWidth, this.fixedHeight)
                 if (this.backImg) context.drawImage(this.backImg, 0, 0, this.fixedWidth, this.fixedHeight)
                 this.currentLines.forEach((lineImage, index) => {
                     if (lineImage) context.drawImage(lineImage, (this.fixedWidth - lineImage.width) / 2, Math.round(index * fontHeight - this.offsetY))

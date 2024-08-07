@@ -61,7 +61,7 @@ export class SoundManager {
         }
     }
 
-    static getSoundBuffer(sfxName: string): AudioBuffer {
+    static getSoundBuffer(sfxName: string): AudioBuffer | undefined {
         return this.sfxBuffersByKey.getOrUpdate(sfxName.toLowerCase(), () => {
             // ignore known sound issues
             if (VERBOSE || !['SurfaceSFX_Tunnel'].includes(sfxName)) {

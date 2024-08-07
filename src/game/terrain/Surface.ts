@@ -157,10 +157,14 @@ export class Surface {
                     this.terrain.rechargeSeams.add(this)
                     const position = new Vector3(0.5, this.terrain.getHeightOffset(this.x, this.y), 0.5)
                     const floorNeighbor = this.neighbors.find((n) => n.surfaceType.floor)
-                    const angle = Math.atan2(floorNeighbor.y - this.y, this.x - floorNeighbor.x) + Math.PI / 2
-                    const grp = this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.RechargeSparkle, position, angle, true)
-                    grp.scale.setScalar(1 / TILESIZE)
-                    this.mesh.add(grp)
+                    if (floorNeighbor) { // TODO Same code as in terrain loader class
+                        const angle = Math.atan2(floorNeighbor.y - this.y, this.x - floorNeighbor.x) + Math.PI / 2
+                        const grp = this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.RechargeSparkle, position, angle, true)
+                        grp.scale.setScalar(1 / TILESIZE)
+                        this.mesh.add(grp)
+                    } else {
+                        console.warn('Could not add sparkles to recharge seam, because of missing floor neighbor')
+                    }
                     break
             }
         }
@@ -234,7 +238,7 @@ export class Surface {
         // add crumble animation
         const wallNeighbors = this.neighbors.filter((n) => !!n.wallType)
         const randomWallNeighbor = wallNeighbors.random()
-        if (this.wallType === WALL_TYPE.CORNER) { // by default the corner animation goes from this.x+1,this.y+1 to this.x,this.y
+        if (this.wallType === WALL_TYPE.CORNER && randomWallNeighbor) { // by default the corner animation goes from this.x+1,this.y+1 to this.x,this.y
             const neighborToRight = this.terrain.getSurface(this.x - randomWallNeighbor.y + this.y, this.y + randomWallNeighbor.x - this.x)
             let crumbleAngle = Math.atan2(neighborToRight.x - this.x, neighborToRight.y - this.y)
             if (!neighborToRight.wallType) crumbleAngle += Math.PI / 2
@@ -356,7 +360,7 @@ export class Surface {
         if (this.wallType !== WALL_TYPE.WALL) {
             this.cancelReinforceJobs()
             const emergeComponent = this.worldMgr.ecs.getComponents(this.entity).get(EmergeComponent)
-            if (emergeComponent) emergeComponent.emergeSurface = null
+            if (emergeComponent) emergeComponent.emergeSurface = undefined
         }
     }
 

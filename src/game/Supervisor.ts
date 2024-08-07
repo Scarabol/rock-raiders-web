@@ -167,7 +167,7 @@ export class Supervisor {
                 const blockedSite = raiderSurface.site
                 if (blockedSite?.buildingType) raider.setJob(new MoveJob(blockedSite.getWalkOutSurface().getRandomPosition()))
                 if (raiderSurface.surfaceType === SurfaceType.LAVA5) {
-                    const safeNeighbor = raiderSurface.neighbors.filter((n) => n.isWalkable()).random()
+                    const safeNeighbor = raiderSurface.neighbors.filter((n) => n.isWalkable()).random() || raiderSurface
                     raider.setJob(new MoveJob(safeNeighbor.getRandomPosition()))
                 }
             } catch (e) {

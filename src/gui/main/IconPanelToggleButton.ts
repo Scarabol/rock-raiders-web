@@ -13,7 +13,7 @@ export class IconPanelToggleButton extends IconPanelButton {
     isToggled: () => boolean = () => false
 
     constructor(menuItemOffCfg: MenuItemCfg, menuItemOnCfg: MenuItemCfg, parentWidth: number, menuIndex: number) {
-        super(menuItemOffCfg, null, parentWidth, menuIndex)
+        super(menuItemOffCfg, '', parentWidth, menuIndex)
         this.imgOnNormal = ResourceManager.getImageOrNull(menuItemOnCfg.normalFile)
         this.imgOnHover = ResourceManager.getImageOrNull(menuItemOnCfg.highlightFile)
         this.imgOnPressed = ResourceManager.getImageOrNull(menuItemOnCfg.pressedFile)

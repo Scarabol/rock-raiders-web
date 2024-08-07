@@ -75,7 +75,7 @@ export class CarryJob extends Job {
                 if (sites.length > 0) return sites
                 return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
             case EntityType.BARRIER:
-                if (carryItem.targetSite.complete || carryItem.targetSite.canceled) {
+                if (!carryItem.targetSite || carryItem.targetSite.complete || carryItem.targetSite.canceled) {
                     return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
                 } else {
                     return [PathTarget.fromSite(carryItem.targetSite, carryItem.location)].filter((p) => !!entity.findShortestPath(p))
@@ -90,7 +90,7 @@ export class CarryJob extends Job {
                     return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
                 }
             case EntityType.ELECTRIC_FENCE:
-                if (!carryItem.targetSurface.isWalkable()) {
+                if (!carryItem.targetSurface?.isWalkable()) {
                     return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
                 } else {
                     return [PathTarget.fromLocation(carryItem.targetSurface.getCenterWorld2D(), 25)].filter((p) => !!entity.findShortestPath(p))

@@ -266,12 +266,12 @@ class GridNode {
     x: number
     y: number
     weight: number
-    h: number
-    closed: boolean
-    visited: boolean
-    g: number
+    h: number = 0
+    closed: boolean = false
+    visited: boolean = false
+    g: number = 0
     parent?: GridNode
-    f: number
+    f: number = 0
 
     constructor(x: number, y: number, weight: number) {
         this.x = x
@@ -390,7 +390,7 @@ class BinaryHeap {
             const child1N = child2N - 1
             // This is used to store the new position of the element, if any.
             let swap: number | null = null
-            let child1Score: number
+            let child1Score: number = Infinity
             // If the first child exists (is inside the array)...
             if (child1N < length) {
                 // Look it up and compute its score.

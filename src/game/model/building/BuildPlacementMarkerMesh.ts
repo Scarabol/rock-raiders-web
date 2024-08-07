@@ -5,7 +5,7 @@ import { Surface } from '../../terrain/Surface'
 
 export class BuildPlacementMarkerMesh extends Mesh {
     sceneMgr: SceneManager
-    lastSurfaceMesh: Mesh
+    lastSurfaceMesh?: Mesh
 
     constructor(sceneMgr: SceneManager) {
         super(new BufferGeometry(), new MeshPhongMaterial({
@@ -18,9 +18,9 @@ export class BuildPlacementMarkerMesh extends Mesh {
         this.scale.setScalar(TILESIZE)
     }
 
-    updateMesh(worldPosition: Vector2, offset: Vector2, heading: number = 0) {
+    updateMesh(worldPosition: Vector2, offset: Vector2 | undefined, heading: number = 0) {
         this.visible = !!offset
-        if (!this.visible) return
+        if (!offset) return
         const posWithOffset = offset.clone().multiplyScalar(TILESIZE).rotateAround(new Vector2(0, 0), heading - Math.PI / 2).add(worldPosition)
         const surfaceMesh = this.sceneMgr.terrain.getSurfaceFromWorld2D(posWithOffset).mesh
         if (surfaceMesh === this.lastSurfaceMesh) return
@@ -35,7 +35,11 @@ export class BuildPlacementMarkerMesh extends Mesh {
         (this.material as MeshPhongMaterial).color.setHex(hexColor)
     }
 
-    get surface(): Surface {
-        return this.visible ? this.sceneMgr.terrain.getSurfaceFromWorld(this.position) : null
+    getSurface(): Surface {
+        return this.sceneMgr.terrain.getSurfaceFromWorld(this.position)
+    }
+
+    getVisibleSurface(): Surface | undefined {
+        return this.visible ? this.getSurface() : undefined
     }
 }

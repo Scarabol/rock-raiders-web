@@ -16,7 +16,7 @@ declare global {
 
         partition(filter: (element: T) => boolean): [T[], T[]]
 
-        random(): T
+        random(): T | undefined
 
         shuffle(): this
     }

@@ -16,7 +16,7 @@ export class AnimationGroup extends SceneEntity {
     maxDurationMs: number = 0
     animationTriggerTimeMs: number = 0
 
-    constructor(readonly lwsFilepath: string, public onAnimationDone: () => void, public durationTimeoutMs: number = 0, public onAnimationTrigger: () => void = null) {
+    constructor(readonly lwsFilepath: string, public onAnimationDone: (() => void) | undefined, public durationTimeoutMs: number = 0, public onAnimationTrigger?: () => void) {
         super()
         this.maxDurationMs = durationTimeoutMs
         this.animationTriggerTimeMs = durationTimeoutMs
@@ -29,15 +29,15 @@ export class AnimationGroup extends SceneEntity {
         return this
     }
 
-    protected resolveMesh(lowerName: string): SceneMesh {
-        if (!lowerName) return null
+    protected resolveMesh(lowerName: string | undefined): SceneMesh | undefined {
+        if (!lowerName) return undefined
         return ResourceManager.getLwoModel(getPath(this.lwsFilepath) + lowerName)
     }
 
     protected createMeshList(lwscData: LWSCData) {
         this.meshList.length = 0
         lwscData.objects.forEach((obj) => {
-            let mesh: SceneMesh
+            let mesh: SceneMesh | undefined
             if (obj.isNull) {
                 if (obj.lowerName === 'sfx' || obj.lowerName === 'snd') {
                     mesh = new SceneAudioMesh()

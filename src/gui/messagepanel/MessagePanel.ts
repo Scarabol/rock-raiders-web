@@ -74,7 +74,7 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(textInfoMessageConfig.textManTrained))
         this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(textInfoMessageConfig.textUnitUpgraded))
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessageEvent) => {
-            this.setTimedMessage({text: event.text}, event.arrowDisabled ? event.messageTimeoutMs : 0, event.arrowDisabled)
+            this.setTimedMessage({text: event.text, imageFilename: '', sfxName: ''}, event.arrowDisabled ? event.messageTimeoutMs : 0, event.arrowDisabled)
         })
         this.registerEventListener(EventKey.NERP_MESSAGE_NEXT, () => {
             this.removeMessage()

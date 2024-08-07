@@ -27,11 +27,11 @@ export class BuildingSite {
     placeDownTimer: number = 0
     isEmptyTimer: number = 0
 
-    constructor(readonly worldMgr: WorldManager, readonly primarySurface: Surface, readonly secondarySurface: Surface, readonly primaryPathSurface: Surface, secondaryPathSurface: Surface, readonly buildingType: BuildingType) {
+    constructor(readonly worldMgr: WorldManager, readonly primarySurface: Surface, readonly secondarySurface: Surface | undefined, readonly primaryPathSurface: Surface | undefined, secondaryPathSurface: Surface | undefined, readonly buildingType: BuildingType | undefined) {
         this.entity = this.worldMgr.ecs.addEntity()
         const objectName = this.buildingType?.getObjectName(0)
         if (objectName) {
-            this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, this.buildingType.getSfxKey(), () => {
+            this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, this.buildingType?.getSfxKey() || '', () => {
                 return TooltipSpriteBuilder.getBuildingSiteTooltipSprite(objectName, {
                         actual: this.onSiteByType.get(EntityType.CRYSTAL)?.length || 0,
                         needed: this.neededByType.get(EntityType.CRYSTAL) || 0,
@@ -63,7 +63,7 @@ export class BuildingSite {
     }
 
     static createImproveSurfaceSite(worldMgr: WorldManager, surface: Surface): BuildingSite {
-        const site = new BuildingSite(worldMgr, surface, null, null, null, null)
+        const site = new BuildingSite(worldMgr, surface, undefined, undefined, undefined, undefined)
         if (worldMgr.entityMgr.hasBuilding(EntityType.ORE_REFINERY)) {
             site.neededByType.set(EntityType.BRICK, 1)
         } else {
@@ -148,7 +148,7 @@ export class BuildingSite {
 
     teleportIn() {
         this.worldMgr.entityMgr.completedBuildingSites.remove(this)
-        this.surfaces.forEach((s) => s.site = null)
+        this.surfaces.forEach((s) => s.site = undefined)
         this.onSiteByType.forEach((byType: MaterialEntity[]) => byType.forEach((item: MaterialEntity) => {
             if (item.entityType === EntityType.BARRIER) {
                 item.sceneEntity.setAnimation(BarrierActivity.Teleport, () => item.disposeFromWorld())
@@ -156,7 +156,7 @@ export class BuildingSite {
                 item.disposeFromWorld()
             }
         }))
-        new BuildingEntity(this.worldMgr, this.buildingType.entityType) // TODO Refactor power path building site handling
+        if (this.buildingType) new BuildingEntity(this.worldMgr, this.buildingType.entityType) // TODO Refactor power path building site handling
             .placeDown(this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
     }
 
@@ -164,7 +164,7 @@ export class BuildingSite {
         this.worldMgr.entityMgr.buildingSites.remove(this)
         this.canceled = true
         this.surfaces.forEach((s) => {
-            s.site = null
+            s.site = undefined
             if (s.surfaceType === SurfaceType.POWER_PATH_BUILDING || s.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE) {
                 s.setSurfaceType(SurfaceType.GROUND)
             }
@@ -183,6 +183,6 @@ export class BuildingSite {
 
     getWalkOutSurface(): Surface {
         return this.primaryPathSurface || this.primarySurface.neighbors.find((n) => !n.site && n.isWalkable()) ||
-            this.secondarySurface?.neighbors.find((n) => !n.site && n.isWalkable())
+            this.secondarySurface?.neighbors.find((n) => !n.site && n.isWalkable()) || this.primarySurface
     }
 }

@@ -46,17 +46,17 @@ export class Raider implements Updatable, JobFulfiller {
     readonly tools: RaiderTool[] = []
     readonly trainings: RaiderTraining[] = []
     worldMgr: WorldManager
-    currentPath: TerrainPath
+    currentPath?: TerrainPath
     level: number = 0
-    job: Job
-    followUpJob: Job
-    workAudio: PositionalAudio
+    job?: Job
+    followUpJob?: Job
+    workAudio?: PositionalAudio
     sceneEntity: AnimatedSceneEntity
-    carries: MaterialEntity
+    carries?: MaterialEntity
     slipped: boolean = false
     thrown: boolean = false
     foodLevel: number = 1
-    vehicle: VehicleEntity
+    vehicle?: VehicleEntity
     scared: boolean = false
     toolsIndex: number = 0
     weaponCooldown: number = 0
@@ -73,7 +73,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         const objectKey = this.entityType.toLowerCase()
         const objectName = GameConfig.instance.objectNamesCfg.get(objectKey)
-        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey)
+        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey) || ''
         if (objectName) this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, sfxKey, () => {
             return TooltipSpriteBuilder.getRaiderTooltipSprite(objectName, this.maxTools(), this.tools, this.trainings)
         }))
@@ -142,11 +142,11 @@ export class Raider implements Updatable, JobFulfiller {
     Movement
      */
 
-    findShortestPath(targets: PathTarget[] | PathTarget): TerrainPath {
+    findShortestPath(targets: PathTarget[] | PathTarget | undefined): TerrainPath | undefined {
         return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), targets, this.stats, RAIDER_PATH_PRECISION)
     }
 
-    private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {
+    private moveToClosestTarget(target: PathTarget | undefined, elapsedMs: number): MoveState {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
         if (result === MoveState.MOVED) {
             this.onEntityMoved()
@@ -190,11 +190,11 @@ export class Raider implements Updatable, JobFulfiller {
         })
     }
 
-    private moveToClosestTargetInternal(target: PathTarget, elapsedMs: number): MoveState {
+    private moveToClosestTargetInternal(target: PathTarget | undefined, elapsedMs: number): MoveState {
         if (!target) return MoveState.TARGET_UNREACHABLE
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
             const path = this.findShortestPath(target)
-            this.currentPath = path && path.locations.length > 0 ? path : null
+            this.currentPath = path && path.locations.length > 0 ? path : undefined
             this.currentPath?.locations?.forEach((l, index) => {
                 if (index < this.currentPath.locations.length - 1) l.add(new Vector2().random().subScalar(0.5).multiplyScalar(TILESIZE / RAIDER_PATH_PRECISION))
             }) // XXX Externalize precision
@@ -311,7 +311,7 @@ export class Raider implements Updatable, JobFulfiller {
     Working on Jobs
      */
 
-    setJob(job: Job, followUpJob: Job = null) {
+    setJob(job: Job, followUpJob?: Job) {
         if (this.job !== job) this.stopJob()
         this.job = job
         this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture(this.job.getJobBubble())
@@ -331,8 +331,8 @@ export class Raider implements Updatable, JobFulfiller {
         if (!this.job) return
         this.job.unAssign(this)
         if (this.followUpJob) this.followUpJob.unAssign(this)
-        this.job = null
-        this.followUpJob = null
+        this.job = undefined
+        this.followUpJob = undefined
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture('bubbleIdle')
     }
@@ -345,12 +345,12 @@ export class Raider implements Updatable, JobFulfiller {
         this.carries.setPosition(floorPosition)
         this.carries.worldMgr.sceneMgr.addSceneEntity(this.carries.sceneEntity)
         const carriedEntity = this.carries
-        this.carries = null
+        this.carries = undefined
         return [carriedEntity]
     }
 
     private work(elapsedMs: number) {
-        if (this.job.jobState !== JobState.INCOMPLETE) {
+        if (this.job?.jobState !== JobState.INCOMPLETE) {
             this.stopJob()
             return
         }
@@ -450,21 +450,21 @@ export class Raider implements Updatable, JobFulfiller {
 
     private completeJob() {
         if (this.workAudio?.loop) this.workAudio = SoundManager.stopAudio(this.workAudio)
-        else this.workAudio = null
+        else this.workAudio = undefined
         this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
-        this.followUpJob = null
+        this.followUpJob = undefined
         if (this.job && !GameState.priorityList.isEnabled(this.job.priorityIdentifier)) {
             this.job.unAssign(this)
-            this.job = null
+            this.job = undefined
         }
         this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture(this.job?.getJobBubble() || 'bubbleIdle')
     }
 
-    private grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
+    private grabJobItem(elapsedMs: number, carryItem: MaterialEntity | undefined): boolean {
         if (this.carries === carryItem) return true
         this.dropCarried(true)
         if (!carryItem) return true
@@ -521,8 +521,8 @@ export class Raider implements Updatable, JobFulfiller {
         return this.hasTool(job.requiredTool) && this.hasTraining(job.requiredTraining) && this.hasCapacity()
     }
 
-    canDrill(surface: Surface): boolean {
-        return this.getDrillTimeSeconds(surface) > 0
+    canDrill(surface: Surface | undefined): boolean {
+        return !!surface && this.getDrillTimeSeconds(surface) > 0
     }
 
     hasCapacity(): boolean {

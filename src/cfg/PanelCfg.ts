@@ -1,7 +1,7 @@
 import { BaseConfig } from './BaseConfig'
 
 export class PanelCfg extends BaseConfig {
-    filename?: string
+    filename: string = ''
     xOut: number = 0
     yOut: number = 0
     xIn: number = 0
@@ -12,6 +12,7 @@ export class PanelCfg extends BaseConfig {
             throw new Error(`Invalid config value given: ${cfgValue}`)
         }
         [this.filename, this.xOut, this.yOut, this.xIn, this.yIn] = cfgValue
+        if (!this.filename) throw new Error(`No filename given in ${cfgValue}`)
         return this
     }
 }

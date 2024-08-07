@@ -77,7 +77,7 @@ export class BuildingEntity {
             this.setEnergized(false)
             this.sceneEntity.setAnimation(BuildingActivity.Explode, () => this.disposeFromWorld())
             this.powerOffSprite.setEnabled(false)
-            this.surfaces.forEach((s) => s.setBuilding(null))
+            this.surfaces.forEach((s) => s.setBuilding(undefined))
             this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
             this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
             EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
@@ -184,7 +184,7 @@ export class BuildingEntity {
         this.setEnergized(false)
         this.sceneEntity.setAnimation(BuildingActivity.Stand)
         this.powerOffSprite.setEnabled(false)
-        this.surfaces.forEach((s) => s.setBuilding(null))
+        this.surfaces.forEach((s) => s.setBuilding(undefined))
         this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
         this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
         this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
@@ -233,12 +233,12 @@ export class BuildingEntity {
 
     spawnBarriers(barrierLocations: Vector2[], site: BuildingSite) {
         barrierLocations.forEach((l) => {
-            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.BARRIER, this.getDropPosition2D(), null, null, l, site)
+            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.BARRIER, this.getDropPosition2D(), undefined, undefined, l, site)
         })
     }
 
     spawnFence(targetSurface: Surface) {
-        MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ELECTRIC_FENCE, this.getDropPosition2D(), null, targetSurface)
+        MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ELECTRIC_FENCE, this.getDropPosition2D(), undefined, targetSurface)
     }
 
     setPowerSwitch(state: boolean) {

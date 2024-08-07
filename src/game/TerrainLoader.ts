@@ -10,6 +10,7 @@ import { GameConfig } from '../cfg/GameConfig'
 import { EmergeComponent } from './component/EmergeComponent'
 import { FallInComponent } from './component/FallInComponent'
 import { FluidSurfaceComponent } from './component/FluidSurfaceComponent'
+import { isNum } from '../core/Util'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelConfData, worldMgr: WorldManager): Terrain {
@@ -67,7 +68,7 @@ export class TerrainLoader {
         for (let x = 0; x < terrain.width + 1; x++) {
             terrain.heightOffset[x] = []
             for (let y = 0; y < terrain.height + 1; y++) {
-                const offsets = [levelConf.surfaceMap?.[y - 1]?.[x - 1], levelConf.surfaceMap?.[y - 1]?.[x], levelConf.surfaceMap?.[y]?.[x - 1], levelConf.surfaceMap?.[y]?.[x]].filter((n) => !isNaN(n))
+                const offsets = [levelConf.surfaceMap?.[y - 1]?.[x - 1], levelConf.surfaceMap?.[y - 1]?.[x], levelConf.surfaceMap?.[y]?.[x - 1], levelConf.surfaceMap?.[y]?.[x]].filter((n) => isNum(n))
                 terrain.heightOffset[x][y] = offsets.reduce((l, r) => l + r, 0) / (offsets.length || 1) * HEIGHT_MULTIPLIER
             }
         }
@@ -89,10 +90,14 @@ export class TerrainLoader {
                                         terrain.rechargeSeams.add(surface)
                                         const position = new Vector3(0.5, 0.5 + surface.terrain.getHeightOffset(surface.x, surface.y), 0.5)
                                         const floorNeighbor = surface.neighbors.find((n) => n.surfaceType.floor)
-                                        const angle = Math.atan2(floorNeighbor.y - surface.y, surface.x - floorNeighbor.x) + Math.PI / 2
-                                        const grp = worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.RechargeSparkle, position, angle, true)
-                                        grp.scale.setScalar(1 / TILESIZE)
-                                        surface.mesh.add(grp)
+                                        if (floorNeighbor) { // TODO Same code as in surface class
+                                            const angle = Math.atan2(floorNeighbor.y - surface.y, surface.x - floorNeighbor.x) + Math.PI / 2
+                                            const grp = worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.RechargeSparkle, position, angle, true)
+                                            grp.scale.setScalar(1 / TILESIZE)
+                                            surface.mesh.add(grp)
+                                        } else {
+                                            console.warn('Could not add sparkles to recharge seam, because of missing floor neighbor')
+                                        }
                                         break
                                 }
                             }
@@ -149,9 +154,9 @@ export class TerrainLoader {
                     if (!emergeValue) continue
                     const surface = terrain.surfaces[x][y]
                     if (emergeValue % 2 === 1) {
-                        worldMgr.ecs.addComponent(surface.entity, new EmergeComponent(emergeValue + 1, surface, null))
+                        worldMgr.ecs.addComponent(surface.entity, new EmergeComponent(emergeValue + 1, surface, undefined))
                     } else {
-                        worldMgr.ecs.addComponent(surface.entity, new EmergeComponent(emergeValue, null, surface))
+                        worldMgr.ecs.addComponent(surface.entity, new EmergeComponent(emergeValue, undefined, surface))
                     }
                 }
             }

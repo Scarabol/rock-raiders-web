@@ -82,7 +82,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         const objectKey = this.entityType.toLowerCase()
         const objectName = GameConfig.instance.objectNamesCfg.get(objectKey)
-        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey)
+        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey) || ''
         if (objectName) this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, sfxKey, () => {
             const health = this.worldMgr.ecs.getComponents(this.entity).get(HealthComponent)?.health ?? 0
             return TooltipSpriteBuilder.getTooltipSprite(objectName, health)
@@ -131,7 +131,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     beamUp(dropCarried: boolean = false) {
         this.carriedVehicle?.beamUp(dropCarried)
-        this.carriedVehicle = null
+        this.carriedVehicle = undefined
         if (dropCarried) {
             const surface = this.getSurface()
             const pathSurface = surface.neighbors.find((n) => n.building?.entityType === EntityType.DOCKS)?.building?.primaryPathSurface
@@ -167,7 +167,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     Movement
      */
 
-    findShortestPath(targets: PathTarget[] | PathTarget): TerrainPath {
+    findShortestPath(targets: PathTarget[] | PathTarget | undefined): TerrainPath | undefined {
         return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), targets, this.stats, 1)
     }
 
@@ -206,7 +206,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (!target) return MoveState.TARGET_UNREACHABLE
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
             const path = this.findShortestPath(target)
-            this.currentPath = path && path.locations.length > 0 ? path : null
+            this.currentPath = path && path.locations.length > 0 ? path : undefined
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
         const step = this.determineStep(elapsedMs)
@@ -298,8 +298,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (!this.job) return
         this.job.unAssign(this)
         if (this.followUpJob) this.followUpJob.unAssign(this)
-        this.job = null
-        this.followUpJob = null
+        this.job = undefined
+        this.followUpJob = undefined
         this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
     }
 
@@ -310,10 +310,10 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
-        this.followUpJob = null
+        this.followUpJob = undefined
         if (this.job && !GameState.priorityList.isEnabled(this.job.priorityIdentifier)) {
             this.job.unAssign(this)
-            this.job = null
+            this.job = undefined
         }
     }
 
@@ -322,7 +322,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         return this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0
     }
 
-    setJob(job: Job, followUpJob: Job = null) {
+    setJob(job: Job, followUpJob?: Job) {
         if (!this.driver || this.portering) return
         if (this.job !== job) this.stopJob()
         this.job = job
@@ -331,7 +331,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (this.followUpJob) this.followUpJob.assign(this)
     }
 
-    private grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
+    private grabJobItem(elapsedMs: number, carryItem: MaterialEntity | undefined): boolean {
         if (!carryItem) {
             return true // nothing to do here
         } else if (!this.carriedItems.has(carryItem)) {
@@ -418,7 +418,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.stopJob()
         if (!this.driver) return
         this.sceneEntity.removeDriver()
-        this.driver.vehicle = null
+        this.driver.vehicle = undefined
         const hopOffSpot = walkableSurface.building?.entityType === EntityType.DOCKS ? walkableSurface.building.primaryPathSurface.getRandomPosition() : walkableSurface.getRandomPosition()
         const floorPosition = this.driver.worldMgr.sceneMgr.getFloorPosition(hopOffSpot)
         this.driver.setPosition(floorPosition)
@@ -431,7 +431,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const driverComponents = this.worldMgr.ecs.getComponents(this.driver.entity)
         const driverScannerComponent = driverComponents.get(ScannerComponent)
         if (driverScannerComponent) driverScannerComponent.origin = driverComponents.get(PositionComponent)
-        this.driver = null
+        this.driver = undefined
         this.engineSound = SoundManager.stopAudio(this.engineSound)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
@@ -458,8 +458,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         return true
     }
 
-    canDrill(surface: Surface): boolean {
-        return this.getDrillTimeSeconds(surface) > 0
+    canDrill(surface: Surface | undefined): boolean {
+        return !!surface && this.getDrillTimeSeconds(surface) > 0
     }
 
     canClear(): boolean {
@@ -572,6 +572,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     private loadCarriedVehicle() {
+        if (!this.carriedVehicle) return
         this.portering = true
         this.carriedVehicle.carriedBy = this.entity
         if (this.carriedVehicle.selected) EventBroker.publish(new DeselectAll()) // XXX Only remove carried vehicle from selection
@@ -605,7 +606,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (!this.carriedVehicle || !unloadSurface) return
         this.portering = true
         const dropOffVehicle = this.carriedVehicle
-        this.carriedVehicle = null
+        this.carriedVehicle = undefined
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
         this.sceneEntity.headTowards(unloadSurface.getCenterWorld2D())
         this.sceneEntity.setAnimation('Activity_Opening', () => {
@@ -618,7 +619,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
                 dropOffVehicle.sceneEntity.position.copy(unloadPosition)
                 dropOffVehicle.setPosition(unloadPosition)
                 dropOffVehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                dropOffVehicle.carriedBy = null
+                dropOffVehicle.carriedBy = undefined
                 this.sceneEntity.setAnimation('Activity_Closing', () => {
                     this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
                     this.portering = false

@@ -22,9 +22,9 @@ abstract class VehiclePanel extends IconSubPanel {
         const item = super.addMenuItem(GameConfig.instance.interfaceBuildImages, entityType.toLowerCase())
         item.isDisabled = () => item.hasUnfulfilledDependency
         item.onClick = () => this.publishEvent(new RequestedVehiclesChanged(entityType, this.requestedVehiclesByType.getOrUpdate(entityType, () => 0) + 1))
-        item.tooltip = GameConfig.instance.objectNamesCfg.get(entityType.toLowerCase())
+        item.tooltip = GameConfig.instance.objectNamesCfg.getOrUpdate(entityType.toLowerCase(), () => '')
         if (!item.tooltip) console.warn(`Could not determine tooltip for ${entityType}`)
-        item.tooltipSfx = GameConfig.instance.objTtSFXs.get(entityType.toLowerCase())
+        item.tooltipSfx = GameConfig.instance.objTtSFXs.getOrUpdate(entityType.toLowerCase(), () => '')
         if (!item.tooltipSfx) console.warn(`Could not determine tooltip SFX for ${entityType}`)
         item.tooltipDisabled = item.tooltip
         item.tooltipDisabledSfx = item.tooltipSfx

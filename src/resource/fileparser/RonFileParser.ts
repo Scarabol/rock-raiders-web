@@ -1,6 +1,7 @@
 // The RockRaidersObjectNotation (RON) format is related to JSON
 
 import { VERBOSE } from '../../params'
+import { isNum } from '../../core/Util'
 
 export class RonFileParser {
     static parse(filename: string, content: string): object {
@@ -49,7 +50,7 @@ export class RonFileParser {
 
     private static parseValue(value: string) {
         const num = Number(value)
-        if (!isNaN(num)) return num
+        if (isNum(num)) return num
         const lv = value.toLowerCase()
         if (lv === 'false') {
             return false

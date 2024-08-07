@@ -17,7 +17,7 @@ import { EventBroker } from '../../../event/EventBroker'
 
 export class MaterialEntity {
     entity: GameEntity
-    carryJob: CarryJob
+    carryJob?: CarryJob
     sceneEntity: AnimatedSceneEntity
     priorityIdentifier: PriorityIdentifier = PriorityIdentifier.NONE
     requiredTraining: RaiderTraining = RaiderTraining.NONE
@@ -25,11 +25,12 @@ export class MaterialEntity {
     constructor(
         readonly worldMgr: WorldManager,
         readonly entityType: MaterialEntityType,
-        readonly targetSurface: Surface,
-        readonly targetSite: BuildingSite,
-        readonly location: Vector2,
+        readonly targetSurface: Surface | undefined,
+        readonly targetSite: BuildingSite | undefined,
+        readonly location: Vector2 | undefined,
     ) {
         this.entity = this.worldMgr.ecs.addEntity()
+        this.sceneEntity = new AnimatedSceneEntity()
     }
 
     setupCarryJob(): CarryJob {

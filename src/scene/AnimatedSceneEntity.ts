@@ -20,18 +20,18 @@ export class AnimatedSceneEntity extends SceneEntity {
     readonly carriedByIndex: Map<number, Object3D> = new Map()
     readonly wheelJoints: { mesh: Object3D, radius: number }[] = []
     upgradeLevel: string = '0000'
-    currentAnimation: string
-    driverParent: Object3D
-    driver: Object3D
-    toolParent: Object3D
-    depositParent: Object3D
-    xPivotObj: Object3D
-    pivotMinZ: number
-    pivotMaxZ: number
-    yPivotObj: Object3D
+    currentAnimation: string = ''
+    driverParent?: Object3D
+    driver?: Object3D
+    toolParent?: Object3D
+    depositParent?: Object3D
+    xPivotObj?: Object3D
+    pivotMinZ: number | undefined
+    pivotMaxZ: number | undefined
+    yPivotObj?: Object3D
     flipCamera: boolean = false
-    camFPVJoint: Object3D
-    camShoulderJoint: Object3D
+    camFPVJoint?: Object3D
+    camShoulderJoint?: Object3D
     camFPVChildren: Object3D[] = []
     camShoulderChildren: Object3D[] = []
 
@@ -55,13 +55,13 @@ export class AnimatedSceneEntity extends SceneEntity {
 
     removeDriver() {
         if (!this.driver) return
-        this.driverParent.remove(this.driver)
-        this.driver.position.copy(this.driverParent.position)
-        this.driver.rotation.copy(this.driverParent.rotation)
-        this.driver = null
+        this.driverParent?.remove(this.driver)
+        this.driver.position.copy(this.driverParent?.position || this.position)
+        this.driver.rotation.copy(this.driverParent?.rotation || this.rotation)
+        this.driver = undefined
     }
 
-    setAnimation(animationName: string, onAnimationDone?: () => void, durationTimeoutMs: number = 0, onAnimationTrigger: () => void = null) {
+    setAnimation(animationName: string, onAnimationDone?: () => void, durationTimeoutMs: number = 0, onAnimationTrigger?: () => void) {
         if (this.currentAnimation === animationName) return
         this.currentAnimation = animationName
         if (this.animationData.length > 0) this.removeAll()
@@ -70,6 +70,10 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.animationData.forEach((animEntityData) => {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
+            if (!animData) {
+                console.error(`Animation data neither have "${animationName}" nor stand animation`)
+                return
+            }
             const animatedGroup = this.cacheAnimationGroups.getOrUpdate(animData.file, () => {
                 return new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs, onAnimationTrigger).setup()
             })
@@ -107,12 +111,12 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.camFPVJoint = camJoints[0]
         if (this.camFPVJoint) {
             this.camFPVJoint.rotation.y = this.flipCamera ? Math.PI : 0 // XXX Why is this needed for vehicles and not pilot?
-            this.camFPVChildren.forEach((c) => this.camFPVJoint.add(c))
+            this.camFPVChildren.forEach((c) => this.camFPVJoint?.add(c))
         }
         this.camShoulderJoint = camJoints[1]
         if (this.camShoulderJoint) {
             this.camShoulderJoint.rotation.y = this.flipCamera ? Math.PI : 0 // XXX Why is this needed for vehicles and not pilot?
-            this.camShoulderChildren.forEach((c) => this.camShoulderJoint.add(c))
+            this.camShoulderChildren.forEach((c) => this.camShoulderJoint?.add(c))
         }
     }
 
@@ -129,11 +133,11 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.wheelJoints.length = 0
         this.carryJoints.length = 0
         if (this.driverParent && this.driver) this.driverParent.remove(this.driver)
-        this.driverParent = null
-        this.toolParent = null
-        this.depositParent = null
-        this.xPivotObj = null
-        this.yPivotObj = null
+        this.driverParent = undefined
+        this.toolParent = undefined
+        this.depositParent = undefined
+        this.xPivotObj = undefined
+        this.yPivotObj = undefined
     }
 
     setUpgradeLevel(upgradeLevel: string) {
@@ -269,7 +273,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             this.xPivotObj.rotateX(this.limitAngle(angleToTarget))
         }
         const yPivot = this.yPivotObj ?? this.xPivotObj
-        if (yPivot) {
+        if (yPivot?.parent) {
             const pivotWorldPos = yPivot.getWorldPosition(new Vector3())
             const angleToTarget = Math.atan2(worldTarget.x - pivotWorldPos.x, worldTarget.z - pivotWorldPos.z)
             const parentDir = yPivot.parent.getWorldDirection(new Vector3())
@@ -296,7 +300,7 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.lookAt(new Vector3(location.x, this.position.y, location.y))
     }
 
-    addToScene(sceneMgr: SceneManager, worldPosition?: Vector2, headingRad?: number) {
+    addToScene(sceneMgr: SceneManager, worldPosition: Vector2 | undefined, headingRad: number | undefined) {
         if (worldPosition) {
             this.position.copy(sceneMgr.getFloorPosition(worldPosition))
         }
@@ -308,7 +312,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     }
 
     getFireNullParents(): { worldPos: Vector3, worldDirection: Vector3 }[] {
-        return this.animationData.flatMap((a) => this.meshesByLName.get(a.fireNullName).map((parent) => {
+        return this.animationData.flatMap((a) => this.meshesByLName.getOrUpdate(a.fireNullName, () => []).map((parent) => {
             return {worldPos: parent.getWorldPosition(new Vector3()), worldDirection: parent.getWorldDirection(new Vector3())}
         }))
     }

@@ -15,12 +15,12 @@ import { VehicleUpgrade } from './vehicle/VehicleUpgrade'
 import { UpgradeVehicleJob } from './job/UpgradeVehicleJob'
 
 export class GameSelection {
-    surface: Surface
-    building: BuildingEntity
+    surface?: Surface
+    building?: BuildingEntity
     raiders: Raider[] = []
     vehicles: VehicleEntity[] = []
-    fence: MaterialEntity
-    doubleSelect: BuildingEntity | VehicleEntity
+    fence?: MaterialEntity
+    doubleSelect?: BuildingEntity | VehicleEntity
 
     isEmpty(): boolean {
         return !this.surface && !this.building && this.raiders.length < 1 && this.vehicles.length < 1 && !this.fence
@@ -32,12 +32,12 @@ export class GameSelection {
         this.vehicles.forEach((v) => v.deselect())
         this.vehicles = []
         this.building?.deselect()
-        this.building = null
+        this.building = undefined
         this.surface?.deselect()
-        this.surface = null
-        this.doubleSelect = null
+        this.surface = undefined
+        this.doubleSelect = undefined
         this.fence?.worldMgr.ecs.getComponents(this.fence.entity).get(SelectionFrameComponent)?.deselect()
-        this.fence = null
+        this.fence = undefined
     }
 
     canMove(): boolean {
@@ -45,7 +45,7 @@ export class GameSelection {
     }
 
     set(selection: GameSelection) {
-        this.doubleSelect = null // XXX refactor this only reset if needed
+        this.doubleSelect = undefined // XXX refactor this only reset if needed
         let added = false
         added = this.syncRaiderSelection(this.raiders, selection.raiders) || added
         added = this.syncVehicleSelection(this.vehicles, selection.vehicles) || added
@@ -55,7 +55,7 @@ export class GameSelection {
                 this.building = selection.building
                 if (this.building.select()) added = true
             } else {
-                this.building = null
+                this.building = undefined
             }
         } else if (this.building?.stats.CanDoubleSelect) {
             if (this.building.doubleSelect()) {
@@ -78,7 +78,7 @@ export class GameSelection {
                 this.surface = selection.surface
                 if (this.surface.select()) added = true
             } else {
-                this.surface = null
+                this.surface = undefined
             }
         }
         if (added) SoundManager.playSample(SAMPLE.SFX_Okay, false)

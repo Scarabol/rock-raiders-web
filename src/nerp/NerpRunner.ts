@@ -30,6 +30,7 @@ import { MaterialSpawner } from '../game/factory/MaterialSpawner'
 import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseEvent } from '../event/EventTypeMap'
 import { RaiderTrainings } from '../game/model/raider/RaiderTraining'
+import { isNum } from '../core/Util'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -73,8 +74,8 @@ export class NerpRunner {
     readonly registers = new Array(8).fill(0)
     readonly timers = new Array(4).fill(0)
     timer: number = 0
-    halted = false
-    programCounter = 0
+    halted: boolean = false
+    programCounter: number = 0
     // more state variables and switches
     messagePermit: boolean = true
     objectiveSwitch: boolean = true
@@ -83,7 +84,7 @@ export class NerpRunner {
     timeForNoSample: number = 0
     currentMessage: number = -1
     messageTimerMs: number = 0
-    messageSfx: AudioBufferSourceNode
+    messageSfx?: AudioBufferSourceNode
     tutoBlocksById: Map<number, Surface[]> = new Map()
     iconClicked: Map<string, number> = new Map()
     buildingsTeleported: number = 0
@@ -97,7 +98,7 @@ export class NerpRunner {
             this.currentMessage = -1
             this.messageTimerMs = 0
             this.messageSfx?.stop()
-            this.messageSfx = null
+            this.messageSfx = undefined
             this.timer += NERP_EXECUTION_INTERVAL
         })
         EventBroker.subscribe(EventKey.GAME_RESULT_STATE, () => {
@@ -146,7 +147,7 @@ export class NerpRunner {
      */
     checkRegister(register: string): number {
         const num = parseInt(register)
-        if (isNaN(num) || num < 0 || num > this.registers.length) throw new Error(`Invalid register (${register}) provided`)
+        if (!isNum(num) || num < 0 || num > this.registers.length) throw new Error(`Invalid register (${register}) provided`)
         return num
     }
 
@@ -157,7 +158,7 @@ export class NerpRunner {
      */
     checkRegisterValue(value: string): number {
         const num = parseInt(value)
-        if (isNaN(num)) throw new Error(`Invalid register value (${value}) provided`)
+        if (!isNum(num)) throw new Error(`Invalid register value (${value}) provided`)
         return num
     }
 

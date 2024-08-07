@@ -91,7 +91,7 @@ export class LaserShotSystem extends AbstractGameSystem {
             if (floorIntersection) {
                 beamLength = floorIntersection.distance
                 const surface: Surface = floorIntersection.object?.userData?.selectable
-                if (surface) {
+                if (surface.surfaceType.statsLaserName) {
                     const laserDestroyTime = turretComponent.weaponCfg[surface.surfaceType.statsLaserName]
                     if (laserDestroyTime) {
                         // XXX original game needs 13 shots with double or 27 with single laser turret to collapse medium wall

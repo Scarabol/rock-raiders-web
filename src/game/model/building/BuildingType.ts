@@ -17,7 +17,7 @@ export class BuildingType {
     ) {
     }
 
-    static from(entityType: EntityType): BuildingType {
+    static from(entityType: EntityType): BuildingType | undefined {
         switch (entityType) {
             case EntityType.TOOLSTATION:
                 return new BuildingType(entityType, GameConfig.instance.stats.toolStation, 'Buildings/Toolstation')

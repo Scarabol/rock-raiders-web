@@ -91,7 +91,7 @@ export class SceneManager implements Updatable {
 
         this.buildMarker = new BuildPlacementMarker(this.worldMgr)
         this.scene.add(this.buildMarker.group)
-        this.setBuildModeSelection(null)
+        this.setBuildModeSelection(undefined)
 
         this.floorGroup = new Group()
         this.floorGroup.scale.setScalar(TILESIZE)
@@ -153,7 +153,7 @@ export class SceneManager implements Updatable {
         this.followerRenderer?.dispose()
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
-        this.terrain = null
+        this.terrain = undefined
         this.sceneObjects.forEach((e) => e.dispose())
         this.sceneObjects.length = 0
     }
@@ -182,7 +182,7 @@ export class SceneManager implements Updatable {
         return !!this.buildMarker?.hasBuildMode()
     }
 
-    setBuildModeSelection(entityType: EntityType) {
+    setBuildModeSelection(entityType: EntityType | undefined) {
         this.buildMarker.setBuildMode(entityType)
     }
 
@@ -198,7 +198,7 @@ export class SceneManager implements Updatable {
     }
 
     addMiscAnim(lwsFilename: string, position: Vector3, heading: number, loop: boolean, onRemove?: () => unknown) {
-        const group = new AnimationGroup(lwsFilename, loop ? null : () => {
+        const group = new AnimationGroup(lwsFilename, loop ? undefined : () => {
             this.disposeSceneEntity(group)
             if (onRemove) onRemove()
         }).setup().play()

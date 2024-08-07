@@ -121,14 +121,14 @@ export class Terrain {
     }
 
     findClosestWall(position: Vector2): Surface | undefined {
-        const start = this.getSurfaceFromWorld2D(position)
         const checked: Surface[] = []
-        const toCheck: Surface[] = [start]
-        while (toCheck.length > 0) {
-            const next = toCheck.shift()
+        const toCheck: Surface[] = []
+        let next: Surface | undefined = this.getSurfaceFromWorld2D(position)
+        while (next) {
             if (next.wallType === WALL_TYPE.WALL) return next
             checked.add(next)
             toCheck.push(...next.neighbors.filter((n) => !checked.includes(n)))
+            next = toCheck.shift()
         }
         return undefined
     }

@@ -8,7 +8,7 @@ import { EntityManager } from '../../../EntityManager'
 import { BuildingEntity } from '../../building/BuildingEntity'
 
 export class EatBarracksJob extends RaiderJob {
-    building: BuildingEntity
+    building?: BuildingEntity
     workplaces: PathTarget[]
 
     constructor(readonly entityMgr: EntityManager, building: BuildingEntity) {
@@ -29,7 +29,7 @@ export class EatBarracksJob extends RaiderJob {
         if (!this.raider) return
         this.raider.foodLevel += 0.25
         this.raider.worldMgr.ecs.getComponents(this.raider.entity).get(RaiderInfoComponent).setHungerIndicator(this.raider.foodLevel)
-        if (this.raider.foodLevel < 1) this.raider.setJob(new EatBarracksJob(this.entityMgr, this.building))
+        if (this.raider.foodLevel < 1 && this.building) this.raider.setJob(new EatBarracksJob(this.entityMgr, this.building))
     }
 
     getWorkActivity(): AnimationActivity {

@@ -1,5 +1,6 @@
 import { ResourceManager } from '../resource/ResourceManager'
 import { NerpScript } from './NerpScript'
+import { isNum } from '../core/Util'
 
 export class NerpParser {
     static parse(nerpScriptFile: string): NerpScript {
@@ -116,9 +117,7 @@ export class NerpParser {
     private static preProcess(expression: string): unknown {
         expression = expression.trim().replace(/^_/, '') // remove whitespace and leading underscore
         const number = parseInt(expression)
-        if (!isNaN(number)) {
-            return number
-        }
+        if (isNum(number)) return number
         const opSplit = expression.split(/ (=) | (!=) | (>) | (<) /).filter(e => e !== undefined)
         const brackets = expression.match(/^(.+)\((.+)\)$/)
         const spaceSplit = expression.split(' ')

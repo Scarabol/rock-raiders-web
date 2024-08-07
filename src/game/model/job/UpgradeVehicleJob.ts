@@ -10,7 +10,7 @@ import { GameState } from '../GameState'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
 
 export class UpgradeVehicleJob extends Job {
-    readonly workplace: PathTarget
+    readonly workplace?: PathTarget
 
     constructor(worldMgr: WorldManager, readonly vehicle: VehicleEntity, readonly upgrade: VehicleUpgrade) {
         super()
@@ -18,7 +18,7 @@ export class UpgradeVehicleJob extends Job {
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
-        if (!this.workplace.building.isPowered()) {
+        if (!this.workplace?.building?.isPowered()) {
             this.vehicle.upgrading = false
             return undefined
         }
@@ -34,7 +34,11 @@ export class UpgradeVehicleJob extends Job {
             super.onJobComplete(fulfiller)
             return
         }
-        const building = this.workplace.building
+        const building = this.workplace?.building
+        if (!building) {
+            super.onJobComplete(fulfiller)
+            return
+        }
         const primary = building.primarySurface
         const primaryPath = building.primaryPathSurface
         const opposite = building.worldMgr.sceneMgr.terrain.getSurface(2 * primaryPath.x - primary.x, 2 * primaryPath.y - primary.y)

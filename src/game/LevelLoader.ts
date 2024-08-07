@@ -36,7 +36,7 @@ export interface LevelConfData {
     disableStartTeleport: boolean
     disableEndTeleport: boolean
     objectList: Map<string, ObjectListEntryCfg>
-    reward: LevelRewardConfig
+    reward?: LevelRewardConfig
     oxygenRate: number
     erodeTriggerTimeMs: number
     erodeErodeTimeMs: number

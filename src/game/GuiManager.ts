@@ -44,6 +44,7 @@ export class GuiManager {
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_CREATE_POWER_PATH, () => {
+            if (!entityMgr.selection.surface) return
             entityMgr.selection.surface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING_SITE)
             BuildingSite.createImproveSurfaceSite(worldMgr, entityMgr.selection.surface)
             EventBroker.publish(new DeselectAll())
@@ -62,12 +63,15 @@ export class GuiManager {
         })
         EventBroker.subscribe(EventKey.COMMAND_FENCE_BEAMUP, () => {
             const fence = entityMgr.selection.fence
+            if (!fence) return
             EventBroker.publish(new GenericDeathEvent(fence.worldMgr.ecs.getComponents(fence.entity).get(PositionComponent)))
             fence.worldMgr.ecs.getComponents(fence.entity).get(SelectionFrameComponent)?.deselect()
             fence.worldMgr.ecs.removeComponent(fence.entity, SelectionFrameComponent)
             fence.worldMgr.entityMgr.removeEntity(fence.entity)
-            fence.targetSurface.fence = undefined
-            fence.targetSurface.fenceRequested = false
+            if (fence.targetSurface) {
+                fence.targetSurface.fence = undefined
+                fence.targetSurface.fenceRequested = false
+            }
             fence.worldMgr.ecs.addComponent(fence.entity, new BeamUpComponent(fence))
         })
         EventBroker.subscribe(EventKey.COMMAND_CREATE_DRILL_JOB, () => {
@@ -119,8 +123,8 @@ export class GuiManager {
         EventBroker.subscribe(EventKey.COMMAND_RAIDER_UPGRADE, () => {
             entityMgr.selection.raiders.forEach((r) => {
                 if (r.level >= r.stats.Levels) return
-                const closestToolstation = r.findShortestPath(entityMgr.getRaiderUpgradePathTarget())
-                if (closestToolstation) r.setJob(new UpgradeRaiderJob(closestToolstation.target.building))
+                const closestToolstation = r.findShortestPath(entityMgr.getRaiderUpgradePathTarget())?.target.building
+                if (closestToolstation) r.setJob(new UpgradeRaiderJob(closestToolstation))
             })
             EventBroker.publish(new DeselectAll())
         })
@@ -139,10 +143,10 @@ export class GuiManager {
             sceneMgr.setBuildModeSelection(event.entityType)
         })
         EventBroker.subscribe(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
-            sceneMgr.setBuildModeSelection(null)
+            sceneMgr.setBuildModeSelection(undefined)
         })
         EventBroker.subscribe(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
-            entityMgr.selection.surface.site?.cancelSite()
+            entityMgr.selection.surface?.site?.cancelSite()
         })
         EventBroker.subscribe(EventKey.COMMAND_VEHICLE_GET_MAN, () => {
             entityMgr.selection.vehicles.forEach((v) => {
@@ -189,6 +193,7 @@ export class GuiManager {
             if (sceneEntity) cameraControls.jumpTo(sceneEntity.getWorldPosition(new Vector3()))
         })
         EventBroker.subscribe(EventKey.COMMAND_REPAIR_LAVA, () => {
+            if (!entityMgr.selection.surface) return
             BuildingSite.createImproveSurfaceSite(worldMgr, entityMgr.selection.surface)
             EventBroker.publish(new DeselectAll())
         })

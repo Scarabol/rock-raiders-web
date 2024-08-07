@@ -61,7 +61,7 @@ export class ObjectListLoader {
     }
 
     private loadObjectEntry(olEntry: ObjectListEntryCfg, olKey: string) {
-        const entityType = getEntityTypeByName(olEntry.type ? olEntry.type.toLowerCase() : olEntry.type)
+        const entityType = getEntityTypeByName(olEntry.type?.toLowerCase() || '')
         // all object positions are off by one tile, because they start at 1 not 0
         const worldPos = new Vector2(olEntry.xPos, olEntry.yPos).addScalar(-1).multiplyScalar(TILESIZE)
         const headingRad = olEntry.heading ? degToRad(olEntry.heading) : 0

@@ -24,7 +24,7 @@ export class ChangeTooltip extends BaseEvent {
     constructor(
         public tooltipText: string,
         readonly timeoutText: number,
-        readonly tooltipSfx?: string,
+        readonly tooltipSfx: string = '',
         readonly timeoutSfx: number = 0,
         callback: () => Promise<SpriteImage> = () => {
             return TooltipSpriteBuilder.getTooltipSprite(this.tooltipText, 0)

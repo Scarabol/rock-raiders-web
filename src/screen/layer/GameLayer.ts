@@ -29,8 +29,8 @@ import { SaveGameManager } from '../../resource/SaveGameManager'
 import { SpriteImage } from '../../core/Sprite'
 
 export class GameLayer extends ScreenLayer {
-    private pointerDown: { x: number, y: number }
-    private readonly beforeUnloadListener = (event: BeforeUnloadEvent): string => {
+    private pointerDown?: { x: number, y: number }
+    private readonly beforeUnloadListener = (event: BeforeUnloadEvent): string | undefined => {
         if (DEV_MODE) return undefined
         // XXX save complete game state in local storage and allow page reload
         event.preventDefault()
@@ -83,8 +83,8 @@ export class GameLayer extends ScreenLayer {
 
     reset() {
         super.reset()
-        this.pointerDown = null
-        EventBroker.publish(new SelectionFrameChangeEvent(null))
+        this.pointerDown = undefined
+        EventBroker.publish(new SelectionFrameChangeEvent(undefined))
     }
 
     show() {
@@ -138,10 +138,10 @@ export class GameLayer extends ScreenLayer {
     private handlePointerUpEvent(event: GamePointerEvent) {
         const x = event.canvasX / (this.canvas.width / 2) - 1
         const y = -event.canvasY / (this.canvas.height / 2) + 1
-        const selection = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y))
-        if (selection.surface) {
+        const cursorTargetSurface = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y)).surface
+        if (cursorTargetSurface) {
             this.worldMgr.nerpRunner?.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
-                if (surfaces.includes(selection.surface)) {
+                if (surfaces.includes(cursorTargetSurface)) {
                     GameState.tutoBlockClicks.upsert(tutoBlockId, (current) => (current || 0) + 1)
                 }
             })
@@ -161,12 +161,13 @@ export class GameLayer extends ScreenLayer {
             this.cursorRelativePos.x = (event.canvasX / this.canvas.width) * 2 - 1
             this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
             if (this.worldMgr.sceneMgr.hasBuildModeSelection()) {
-                this.worldMgr.sceneMgr.setBuildModeSelection(null)
+                this.worldMgr.sceneMgr.setBuildModeSelection(undefined)
             } else if (this.worldMgr.entityMgr.selection.raiders.length > 0 || this.worldMgr.entityMgr.selection.vehicles.length > 0) {
                 const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
-                if (cursorTarget.surface) {
+                const cursorTargetSurface = cursorTarget.surface
+                if (cursorTargetSurface) {
                     this.worldMgr.nerpRunner?.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
-                        if (surfaces.includes(cursorTarget.surface)) {
+                        if (surfaces.includes(cursorTargetSurface)) {
                             GameState.tutoBlockClicks.upsert(tutoBlockId, (current) => (current || 0) + 1)
                         }
                     })
@@ -197,18 +198,18 @@ export class GameLayer extends ScreenLayer {
                 } else if (cursorTarget.material) {
                     this.worldMgr.entityMgr.selection.assignCarryJob(cursorTarget.material)
                     if (!this.worldMgr.entityMgr.selection.isEmpty()) EventBroker.publish(new DeselectAll())
-                } else if (cursorTarget.surface) {
-                    if (this.worldMgr.entityMgr.selection.canDrill(cursorTarget.surface)) {
-                        const drillJob = cursorTarget.surface.setupDrillJob()
-                        this.worldMgr.entityMgr.selection.assignDrillJob(drillJob)
-                    } else if (this.worldMgr.entityMgr.selection.canClear() && cursorTarget.surface.hasRubble()) {
-                        const clearJob = cursorTarget.surface.setupClearRubbleJob()
-                        this.worldMgr.entityMgr.selection.assignClearRubbleJob(clearJob)
+                } else if (cursorTargetSurface) {
+                    if (this.worldMgr.entityMgr.selection.canDrill(cursorTargetSurface)) {
+                        const drillJob = cursorTargetSurface.setupDrillJob()
+                        if (drillJob) this.worldMgr.entityMgr.selection.assignDrillJob(drillJob)
+                    } else if (this.worldMgr.entityMgr.selection.canClear() && cursorTargetSurface.hasRubble()) {
+                        const clearJob = cursorTargetSurface.setupClearRubbleJob()
+                        if (clearJob) this.worldMgr.entityMgr.selection.assignClearRubbleJob(clearJob)
                     } else if (this.worldMgr.entityMgr.selection.canMove()) {
-                        if (cursorTarget.surface.isWalkable()) {
-                            this.worldMgr.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(cursorTarget.surface.getRandomPosition())))
+                        if (cursorTargetSurface.isWalkable()) {
+                            this.worldMgr.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(cursorTargetSurface.getRandomPosition())))
                         }
-                        this.worldMgr.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(cursorTarget.surface.getCenterWorld2D())))
+                        this.worldMgr.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(cursorTargetSurface.getCenterWorld2D())))
                     }
                     if (!this.worldMgr.entityMgr.selection.isEmpty()) EventBroker.publish(new DeselectAll())
                 } else if (cursorTarget.raider || cursorTarget.building) {
@@ -240,8 +241,8 @@ export class GameLayer extends ScreenLayer {
             this.worldMgr.entityMgr.selection.set(selection)
             EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
         }
-        this.pointerDown = null
-        EventBroker.publish(new SelectionFrameChangeEvent(null))
+        this.pointerDown = undefined
+        EventBroker.publish(new SelectionFrameChangeEvent(undefined))
     }
 
     getEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number): GameSelection {

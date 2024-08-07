@@ -19,7 +19,7 @@ export class SaveGamePreferences { // this gets serialized
 export class SaveGameManager {
 
     static currentPreferences: SaveGamePreferences = new SaveGamePreferences()
-    static screenshots: Promise<HTMLCanvasElement>[] = []
+    static screenshots: Promise<HTMLCanvasElement | undefined>[] = []
     private static currentLevels: SaveGameLevel[] = []
     private static saveGames: SaveGame[] = [] // this gets serialized
 
@@ -49,11 +49,11 @@ export class SaveGameManager {
 
     static loadSaveGameScreenshots() {
         if (VERBOSE) console.log('Loading save game screenshots...')
-        this.screenshots = this.saveGames.map((s, index) => new Promise<HTMLCanvasElement>((resolve) => {
+        this.screenshots = this.saveGames.map((_, index) => new Promise<HTMLCanvasElement | undefined>((resolve) => {
             try {
                 const screenshot = localStorage.getItem(`screenshot${index}`)
                 if (!screenshot) {
-                    resolve(null)
+                    resolve(undefined)
                     return
                 }
                 const img = new Image()
@@ -61,13 +61,13 @@ export class SaveGameManager {
                     const canvas = document.createElement('canvas')
                     canvas.width = SAVE_GAME_SCREENSHOT_WIDTH
                     canvas.height = SAVE_GAME_SCREENSHOT_HEIGHT
-                    canvas.getContext('2d').drawImage(img, 0, 0)
+                    canvas.getContext('2d')?.drawImage(img, 0, 0)
                     resolve(canvas)
                 }
                 img.src = screenshot
             } catch (e) {
                 console.error('Could not load save game screenshot', e)
-                resolve(null)
+                resolve(undefined)
             }
         }))
     }
@@ -102,7 +102,7 @@ export class SaveGameManager {
         const canvas = document.createElement('canvas')
         canvas.width = SAVE_GAME_SCREENSHOT_WIDTH
         canvas.height = SAVE_GAME_SCREENSHOT_HEIGHT
-        canvas.getContext('2d').drawImage(screenshot, 0, 0, canvas.width, canvas.height)
+        canvas.getContext('2d')?.drawImage(screenshot, 0, 0, canvas.width, canvas.height)
         return canvas.toDataURL()
     }
 
