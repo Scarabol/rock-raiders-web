@@ -87,10 +87,10 @@ export class RewardFontsCfg extends BaseConfig {
 }
 
 export class RewardButtonCfg extends BaseConfig {
-    imgNormalFilepath?: string
-    imgHoverFilepath?: string
-    imgPressedFilepath?: string
-    imgDisabledFilepath?: string
+    imgNormalFilepath: string = ''
+    imgHoverFilepath: string = ''
+    imgPressedFilepath: string = ''
+    imgDisabledFilepath: string = ''
     x: number = 0
     y: number = 0
 
@@ -98,7 +98,12 @@ export class RewardButtonCfg extends BaseConfig {
         if (!Array.isArray(cfgObj) || cfgObj.length !== 6) {
             throw new Error(`Invalid number of args given: ${cfgObj}`)
         }
-        [this.imgNormalFilepath, this.imgHoverFilepath, this.imgPressedFilepath, this.imgDisabledFilepath, this.x, this.y] = cfgObj
+        this.imgNormalFilepath = cfgObj[0] || ''
+        this.imgHoverFilepath = cfgObj[1] || ''
+        this.imgPressedFilepath = cfgObj[2] || ''
+        this.imgDisabledFilepath = cfgObj[3] || ''
+        this.x = cfgObj[4] || 0
+        this.y = cfgObj[5] || 0
         return this
     }
 }

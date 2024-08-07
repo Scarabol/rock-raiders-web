@@ -20,8 +20,8 @@ export class DrillJob extends ShareableJob {
         this.workSoundVehicle = SAMPLE.SND_BIGDIGDRILL
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
-        if (!this.surface.isDigable()) return null
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
+        if (!this.surface.isDigable()) return undefined
         let digPositions = this.digPositionsByFulfiller.getOrUpdate(entity.entity, () => [])
         const surfaceDigPositions = this.surface.getDigPositions()
         if (digPositions.length < 1 ||

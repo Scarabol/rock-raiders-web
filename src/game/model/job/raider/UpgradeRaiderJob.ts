@@ -17,13 +17,14 @@ export class UpgradeRaiderJob extends RaiderJob {
         this.workplaces = building.getTrainingTargets()
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
-        if (!this.building.isPowered()) return null
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
+        if (!this.building.isPowered()) return undefined
         return entity.findShortestPath(this.workplaces)?.target
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
+        if (!this.raider) return
         if (this.raider.level < this.raider.stats.Levels) {
             this.raider.level++
             this.raider.worldMgr.ecs.getComponents(this.raider.entity).get(HealthComponent).rockFallDamage = GameConfig.instance.getRockFallDamage(this.raider.entityType, this.raider.level)

@@ -51,23 +51,23 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
     readonly worldMgr: WorldManager
     readonly entity: GameEntity
-    currentPath: TerrainPath
+    currentPath?: TerrainPath
     level: number = 0
-    job: Job
-    followUpJob: Job
-    workAudio: PositionalAudio
+    job?: Job
+    followUpJob?: Job
+    workAudio?: PositionalAudio
     stats: VehicleEntityStats
     sceneEntity: AnimatedSceneEntity
-    driver: Raider
-    callManJob: ManVehicleJob
-    engineSound: PositionalAudio
+    driver?: Raider
+    callManJob?: ManVehicleJob
+    engineSound?: PositionalAudio
     carriedItems: Set<MaterialEntity> = new Set()
-    carriedVehicle: VehicleEntity
+    carriedVehicle?: VehicleEntity
     upgrades: Set<VehicleUpgrade> = new Set()
     loadItemDelayMs: number = 0
     upgrading: boolean = false
     portering: boolean = false
-    carriedBy: GameEntity
+    carriedBy?: GameEntity
 
     constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand, readonly driverActivityRoute: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand) {
         this.entityType = entityType
@@ -463,7 +463,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     canClear(): boolean {
-        return !!this.stats.CanClearRubble
+        return this.stats.CanClearRubble
     }
 
     hasCapacity(): boolean {

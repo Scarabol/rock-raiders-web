@@ -18,8 +18,8 @@ import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
 
 export class CarryJob extends Job {
-    fulfiller: JobFulfiller
-    target: PathTarget
+    fulfiller?: JobFulfiller
+    target?: PathTarget
 
     constructor(readonly carryItem: MaterialEntity) {
         super()
@@ -34,7 +34,7 @@ export class CarryJob extends Job {
         }
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
         if (this.target && !(
             (this.target.building && !this.target.building.isPowered()) ||
             (this.target.site && (this.target.site.complete || this.target.site.canceled)) ||
@@ -112,7 +112,7 @@ export class CarryJob extends Job {
     getWorkActivity(): AnimationActivity {
         if (this.fulfiller?.entityType === EntityType.PILOT) {
             if (this.carryItem.entityType === EntityType.DEPLETED_CRYSTAL) return RaiderActivity.Recharge
-            const building = this.target.building?.entityType
+            const building = this.target?.building?.entityType
             return building === EntityType.POWER_STATION || building === EntityType.ORE_REFINERY ? RaiderActivity.Deposit : RaiderActivity.Place
         }
         return AnimEntityActivity.Stand
@@ -128,11 +128,11 @@ export class CarryJob extends Job {
 
     onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
-        const dropped = this.fulfiller.dropCarried(false)
+        const dropped = this.fulfiller?.dropCarried(false) || []
         dropped.forEach((droppedItem) => {
             droppedItem.carryJob.jobState = JobState.COMPLETE
-            droppedItem.setPosition(droppedItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
-            const targetBuilding = this.target.building
+            if (this.target) droppedItem.setPosition(droppedItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
+            const targetBuilding = this.target?.building
             if (targetBuilding) {
                 if (targetBuilding.entityType === EntityType.POWER_STATION || targetBuilding.entityType === EntityType.ORE_REFINERY) {
                     targetBuilding.pickupItem(droppedItem)
@@ -169,12 +169,12 @@ export class CarryJob extends Job {
             } else if (droppedItem.entityType === EntityType.DYNAMITE) {
                 if (droppedItem.targetSurface?.dynamiteJob === this) this.igniteDynamite()
             } else {
-                droppedItem.sceneEntity.addToScene(droppedItem.worldMgr.sceneMgr, null, null)
+                droppedItem.sceneEntity.addToScene(droppedItem.worldMgr.sceneMgr, undefined, undefined)
                 if (droppedItem.entityType === EntityType.BARRIER) {
                     droppedItem.sceneEntity.setAnimation(BarrierActivity.Expand, () => droppedItem.sceneEntity.setAnimation(BarrierActivity.Long))
                     droppedItem.sceneEntity.lookAt(droppedItem.getSurface().getCenterWorld())
                 }
-                this.target.site?.addItem(droppedItem)
+                this.target?.site?.addItem(droppedItem)
             }
         })
     }
@@ -198,7 +198,7 @@ export class CarryJob extends Job {
 
     unAssign(fulfiller: JobFulfiller) {
         if (this.fulfiller !== fulfiller) return
-        this.fulfiller = null
+        this.fulfiller = undefined
     }
 
     hasFulfiller(): boolean {

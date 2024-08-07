@@ -11,16 +11,16 @@ import { EventBroker } from '../../../../event/EventBroker'
 import { MoveJob } from '../MoveJob'
 
 export class TrainRaiderJob extends RaiderJob {
-    building: BuildingEntity
+    building?: BuildingEntity
     workplaces: PathTarget[]
 
-    constructor(readonly entityMgr: EntityManager, readonly training: RaiderTraining, building?: BuildingEntity) {
+    constructor(readonly entityMgr: EntityManager, readonly training: RaiderTraining, building?: BuildingEntity | undefined) {
         super()
         this.building = building
-        this.workplaces = this.building?.getTrainingTargets()
+        this.workplaces = this.building?.getTrainingTargets() || []
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
         if (!this.building?.isPowered()) this.workplaces = this.entityMgr.getTrainingSiteTargets(this.training)
         const target = entity.findShortestPath(this.workplaces)?.target
         this.building = target?.building
@@ -29,9 +29,10 @@ export class TrainRaiderJob extends RaiderJob {
 
     onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
+        if (!this.raider) return
         this.raider.addTraining(this.training)
         EventBroker.publish(new RaiderTrainingCompleteEvent(this.training))
-        if (!this.raider.followUpJob) {
+        if (!this.raider.followUpJob && this.building) {
             const walkableSurface = this.building.primaryPathSurface?.neighbors.find((n) => n.isWalkable())
             if (walkableSurface) this.raider.followUpJob = new MoveJob(walkableSurface.getRandomPosition())
         }

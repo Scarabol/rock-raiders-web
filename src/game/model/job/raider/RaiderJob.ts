@@ -2,7 +2,7 @@ import { Raider } from '../../raider/Raider'
 import { Job } from '../Job'
 
 export abstract class RaiderJob extends Job {
-    raider: Raider
+    raider?: Raider
 
     assign(raider: Raider) {
         if (this.raider === raider) return
@@ -12,7 +12,7 @@ export abstract class RaiderJob extends Job {
 
     unAssign(raider: Raider) {
         if (this.raider !== raider) return
-        this.raider = null
+        this.raider = undefined
     }
 
     hasFulfiller(): boolean {

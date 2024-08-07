@@ -1,18 +1,18 @@
 import { parseLabel } from './CfgHelper'
 
 export class BaseButtonCfg {
-    buttonType?: string
-    normalFile?: string
-    highlightFile?: string
-    pressedFile?: string
-    disabledFile?: string
-    relX?: number
-    relY?: number
-    width?: number
-    height?: number
-    tooltipKey?: string
-    tooltipText?: string
-    tooltipSfx?: string
+    buttonType: string = ''
+    normalFile: string = ''
+    highlightFile: string = ''
+    pressedFile: string = ''
+    disabledFile: string = ''
+    relX: number = 0
+    relY: number = 0
+    width: number = 0
+    height: number = 0
+    tooltipKey: string = ''
+    tooltipText: string = ''
+    tooltipSfx: string = ''
 }
 
 export class ButtonCfg extends BaseButtonCfg {
@@ -45,9 +45,9 @@ export class IconPanelBackButtonCfg extends BaseButtonCfg {
 }
 
 export class MenuItemCfg extends BaseButtonCfg {
-    tooltipDisabled?: string
-    tooltipDisabledSfx?: string
-    hotkey?: string
+    tooltipDisabled: string = ''
+    tooltipDisabledSfx: string = ''
+    hotkey: string
 
     constructor(cfgValue: any) {
         super()
@@ -55,12 +55,12 @@ export class MenuItemCfg extends BaseButtonCfg {
         if (cfgValue.length === 4) {
             [this.normalFile, this.disabledFile, this.pressedFile, hotkeyName] = cfgValue
         } else if (cfgValue.length === 6 || cfgValue.length === 7) { // XXX 7th element is boolean, but usage unknown
-            let tooltip: string | undefined, tooltipDisabled: string | undefined
+            let tooltip: string | undefined, tooltipDisabled: string[] | string | undefined
             ;[this.normalFile, this.disabledFile, this.pressedFile, tooltip, tooltipDisabled, hotkeyName] = cfgValue
-            ;[this.tooltipText, this.tooltipSfx] = Array.ensure(tooltip)
-            ;[this.tooltipDisabled, this.tooltipDisabledSfx] = Array.ensure(tooltipDisabled)
-            this.tooltipText = parseLabel(this.tooltipText)
-            this.tooltipDisabled = parseLabel(this.tooltipDisabled)
+            this.tooltipText = parseLabel((Array.isArray(tooltip) && tooltip[0]) || tooltip)
+            this.tooltipSfx = (Array.isArray(tooltip) && tooltip[1]) || ''
+            this.tooltipDisabled = parseLabel((Array.isArray(tooltipDisabled) && tooltipDisabled[0]) || tooltipDisabled)
+            this.tooltipDisabledSfx = (Array.isArray(tooltipDisabled) && tooltipDisabled[1]) || ''
         } else {
             console.error(`Unexpected menu item cfg value length: ${cfgValue.length}`)
         }

@@ -10,7 +10,7 @@ export class TeleportComponent extends AbstractGameComponent {
         readonly pathSurfaces: Surface[],
         readonly heading: number,
         readonly primaryPathSurface: Surface,
-        readonly waterPathSurface: Surface,
+        readonly waterPathSurface: Surface | undefined,
     ) {
         super()
     }

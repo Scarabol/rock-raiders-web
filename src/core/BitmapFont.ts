@@ -87,8 +87,8 @@ export class BitmapFont {
     constructor(readonly data: BitmapFontData) {
     }
 
-    createTextImageData(text: string, maxWidth?: number, autoCenter: boolean = true): ImageData {
-        if (!text) return null
+    createTextImageData(text: string, maxWidth?: number, autoCenter: boolean = true): ImageData | undefined {
+        if (!text) return undefined
         text = text.replace(/_/g, ' ')
         const rows = this.determineRows(text, maxWidth)
         const width = Math.max(1, ...(rows.map(r => r.width)))
@@ -113,9 +113,10 @@ export class BitmapFont {
         return result
     }
 
-    createTextImage(text: string, maxWidth?: number, autoCenter: boolean = true): SpriteImage {
-        if (!text) return null
+    createTextImage(text: string, maxWidth?: number, autoCenter: boolean = true): SpriteImage | undefined {
+        if (!text) return undefined
         const result = this.createTextImageData(text, maxWidth, autoCenter)
+        if (!result) return undefined
         const img = createContext(result.width, result.height)
         img.putImageData(result, 0, 0)
         return img.canvas

@@ -23,8 +23,9 @@ export class Button extends BaseElement {
     blink: boolean = false
     blinkInterval?: NodeJS.Timeout
 
-    constructor(btnCfg: BaseButtonCfg, blinking: boolean = false) {
+    constructor(btnCfgPart: Partial<BaseButtonCfg>, blinking: boolean = false) {
         super()
+        const btnCfg = Object.assign(new BaseButtonCfg(), btnCfgPart)
         this.buttonType = btnCfg.buttonType
         this.imgNormal = ResourceManager.getImageOrNull(btnCfg.normalFile)
         this.imgHover = ResourceManager.getImageOrNull(btnCfg.highlightFile)

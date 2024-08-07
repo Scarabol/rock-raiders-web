@@ -31,7 +31,7 @@ export const astar = {
      * @param {boolean} [options.closest] Specifies whether to return the path to the closest node if the target is unreachable.
      * @param {Function} [options.heuristic] Heuristic function (see astar.heuristics).
      */
-    search(graph: Graph, start: GridNode, end: GridNode, options: { closest?: boolean; heuristic?: Function } = null): GridNode[] {
+    search(graph: Graph, start: GridNode, end: GridNode, options?: { closest?: boolean; heuristic?: Function }): GridNode[] {
         graph.cleanDirty()
         options = options || {}
         const heuristic = options.heuristic || astar.heuristics.manhattan
@@ -133,7 +133,7 @@ export const astar = {
         node.h = 0
         node.visited = false
         node.closed = false
-        node.parent = null
+        node.parent = undefined
     },
 }
 
@@ -149,7 +149,7 @@ export class Graph {
      * @param {Object} [options]
      * @param {boolean} [options.diagonal] Specifies whether diagonal moves are allowed
      */
-    constructor(gridIn: number[][], options: { diagonal?: boolean } = null) {
+    constructor(gridIn: number[][], options?: { diagonal?: boolean }) {
         options = options || {}
         this.diagonal = !!options.diagonal
         for (let x = 0; x < gridIn.length; x++) {
@@ -270,7 +270,7 @@ class GridNode {
     closed: boolean
     visited: boolean
     g: number
-    parent: GridNode
+    parent?: GridNode
     f: number
 
     constructor(x: number, y: number, weight: number) {
@@ -318,6 +318,7 @@ class BinaryHeap {
         const result = this.content[0]
         // Get the element at the end of the array.
         const end = this.content.pop()
+        if (!end) throw new Error('Missing node! Expected content to have at least one')
         // If there are any elements left, put the end element at the
         // start, and let it bubble up.
         if (this.content.length > 0) {
@@ -333,6 +334,7 @@ class BinaryHeap {
         // When it is found, the process seen in 'pop' is repeated
         // to fill up the hole.
         const end = this.content.pop()
+        if (!end) throw new Error('Missing node! Expected content to have at least one')
 
         if (i !== this.content.length - 1) {
             this.content[i] = end
@@ -387,7 +389,7 @@ class BinaryHeap {
             const child2N = (n + 1) << 1
             const child1N = child2N - 1
             // This is used to store the new position of the element, if any.
-            let swap = null
+            let swap: number | null = null
             let child1Score: number
             // If the first child exists (is inside the array)...
             if (child1N < length) {

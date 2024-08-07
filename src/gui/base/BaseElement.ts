@@ -7,7 +7,7 @@ import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 import { EventBroker } from '../../event/EventBroker'
 
 export class BaseElement {
-    parent: BaseElement
+    parent?: BaseElement
     x: number = 0
     y: number = 0
     relX: number = 0
@@ -19,8 +19,8 @@ export class BaseElement {
     disabled: boolean = false
     hover: boolean = false
     pressed: boolean = false
-    pointerDown: { x: number, y: number }
-    onClick: (cx: number, cy: number) => void
+    pointerDown?: { x: number, y: number }
+    onClick?: (cx: number, cy: number) => void
 
     reset() {
         this.hidden = false
@@ -84,7 +84,7 @@ export class BaseElement {
         if (this.hover && this.pointerDown && (Math.abs(event.sx - this.pointerDown.x) > 5 || Math.abs(event.sy - this.pointerDown.y) > 5)) {
             this.onDrag(event.sx, event.sy)
         } else {
-            this.pointerDown = null
+            this.pointerDown = undefined
         }
     }
 
@@ -98,7 +98,7 @@ export class BaseElement {
     }
 
     onPointerDown(event: GuiPointerDownEvent): boolean {
-        this.pointerDown = null
+        this.pointerDown = undefined
         if (this.isInactive()) return false
         this.pointerDown = {x: event.sy, y: event.sy}
         const oldState = this.pressed
@@ -115,7 +115,7 @@ export class BaseElement {
     }
 
     onPointerUp(event: GuiPointerUpEvent): boolean {
-        this.pointerDown = null
+        this.pointerDown = undefined
         if (this.isInactive()) return false
         const inRect = this.isInRect(event.sx, event.sy)
         let stateChanged = false

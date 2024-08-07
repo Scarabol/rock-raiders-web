@@ -24,11 +24,11 @@ export class CompleteSurfaceJob extends ShareableJob {
         this.placedItems.forEach((placed) => placed.disposeFromWorld())
         const targetSurfaceType = this.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE ? SurfaceType.POWER_PATH : SurfaceType.GROUND
         this.surface.setSurfaceType(targetSurfaceType)
-        this.surface.site = null
+        this.surface.site = undefined
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
-        if (!this.surface.isWalkable()) return null
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
+        if (!this.surface.isWalkable()) return undefined
         return this.workplace
     }
 

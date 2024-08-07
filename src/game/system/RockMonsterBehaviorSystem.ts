@@ -62,7 +62,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             sceneEntity.removeAllCarried()
             let behaviorComponent = components.get(RockMonsterBehaviorComponent)
             if (behaviorComponent) {
-                behaviorComponent.boulder = null
+                behaviorComponent.boulder = undefined
                 behaviorComponent.changeToIdle()
                 behaviorComponent.state = RockMonsterBehaviorState.HIT_BY_LASER
             }
@@ -96,7 +96,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
                 if (components.has(EntityFrozenComponent) || components.has(EntityPushedComponent)) {
                     sceneEntity.removeAllCarried()
-                    behaviorComponent.boulder = null
+                    behaviorComponent.boulder = undefined
                     sceneEntity.setAnimation(AnimEntityActivity.Stand)
                     behaviorComponent.changeToIdle()
                     continue
@@ -168,7 +168,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             if (drivingVehicleCloseBy) {
                                 this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BoulderExplode, behaviorComponent.boulder.getWorldPosition(new Vector3()), behaviorComponent.boulder.rotation.y, false)
                                 sceneEntity.removeAllCarried()
-                                behaviorComponent.boulder = null
+                                behaviorComponent.boulder = undefined
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             } else if (!behaviorComponent.targetBuilding) {
                                 const closestBuilding = pathFinder.findClosestBuilding(rockyPos, this.worldMgr.entityMgr.buildings, stats, 1)
@@ -194,7 +194,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         const bulletEntity = this.ecs.addEntity()
                                         this.ecs.addComponent(bulletEntity, new BoulderComponent(EntityType.BOULDER, behaviorComponent.boulder, behaviorComponent.targetBuilding.entity, behaviorComponent.targetBuilding.buildingType, behaviorComponent.targetBuilding.level, targetLocation))
                                         this.worldMgr.entityMgr.addEntity(bulletEntity, EntityType.BOULDER)
-                                        behaviorComponent.boulder = null
+                                        behaviorComponent.boulder = undefined
                                         sceneEntity.setAnimation(AnimEntityActivity.Stand)
                                         behaviorComponent.changeToIdle()
                                     })

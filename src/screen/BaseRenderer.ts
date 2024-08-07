@@ -6,8 +6,8 @@ export class BaseRenderer {
     renderer?: WebGLRenderer
     renderInterval?: NodeJS.Timeout
     lastAnimationRequest?: number
-    scene: Scene
-    camera: Camera
+    scene?: Scene
+    camera?: Camera
 
     constructor(readonly redrawMs: number, readonly canvas: SpriteImage, readonly parameters: WebGLRendererParameters) {
         this.parameters.canvas = canvas
@@ -32,6 +32,7 @@ export class BaseRenderer {
     }
 
     render() {
+        if (!this.renderer || !this.scene || !this.camera) return
         this.renderer.render(this.scene, this.camera)
     }
 

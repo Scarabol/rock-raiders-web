@@ -12,7 +12,7 @@ export class RunPanicJob extends RaiderJob {
         this.runTarget = PathTarget.fromLocation(runTarget)
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
         return this.runTarget
     }
 

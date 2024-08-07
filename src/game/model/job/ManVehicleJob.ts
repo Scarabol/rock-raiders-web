@@ -28,21 +28,22 @@ export class ManVehicleJob extends RaiderJob {
         }
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
         if (this.vehicle.isInBeam()) {
             this.jobState = JobState.CANCELED
-            return null
+            return undefined
         } else if (this.vehicle.driver) {
             this.jobState = JobState.COMPLETE
-            return null
+            return undefined
         }
         return entity.findShortestPath(this.workplaces)?.target
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {
-        this.vehicle.addDriver(this.raider)
-        this.vehicle.callManJob = null
+        this.vehicle.callManJob = undefined
         super.onJobComplete(fulfiller)
+        if (!this.raider) return
+        this.vehicle.addDriver(this.raider)
         this.vehicle.unblockBuildingPowerPath()
     }
 
