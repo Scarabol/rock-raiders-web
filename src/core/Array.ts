@@ -24,6 +24,8 @@ declare global {
     // noinspection JSUnusedGlobalSymbols
     interface ArrayConstructor {
         ensure<T>(value: T | T[]): T[]
+
+        random<T>(value: [T, ...T[]]): T
     }
 }
 
@@ -68,7 +70,7 @@ Array.prototype.partition = function <T>(filter: (element: T) => boolean): [T[],
 }
 
 Array.prototype.random = function <T>(): T | undefined {
-    if (!this.length) return undefined
+    if (this.length < 1) return undefined
     return this[Math.randomInclusive(this.length - 1)]
 }
 
@@ -84,4 +86,8 @@ Array.prototype.shuffle = function <T>(): T[] {
 
 Array.ensure = function <T>(value: T | T[]): T[] {
     return (!value) ? [] : Array.isArray(value) ? value : [value]
+}
+
+Array.random = function <T>(value: [T, ...T[]]): T {
+    return value.random()!
 }

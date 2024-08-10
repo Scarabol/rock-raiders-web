@@ -99,7 +99,7 @@ export class Raider implements Updatable, JobFulfiller {
             this.scared = false
             this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture('bubbleIdle')
             if (this.idleCounter > 3000) {
-                const idleAnim = ['Activity_Waiting1', 'Activity_Waiting2', 'Activity_Waiting3', 'Activity_Waiting4'].random()
+                const idleAnim = Array.random(['Activity_Waiting1', 'Activity_Waiting2', 'Activity_Waiting3', 'Activity_Waiting4'])
                 this.idleCounter = 0
                 this.sceneEntity.setAnimation(idleAnim, () => {
                     this.sceneEntity.setAnimation(AnimEntityActivity.Stand)

@@ -61,7 +61,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                 behaviorComponent.state = SlugBehaviorState.LEECH
                                 behaviorComponent.targetBuilding = closestBuilding.obj
                             } else {
-                                const randomTarget = [positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) => n.isWalkable())].random().getRandomPosition()
+                                const randomTarget = Array.random([positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) => n.isWalkable())]).getRandomPosition()
                                 this.ecs.addComponent(entity, new WorldTargetComponent(randomTarget, SLUG_ENTER_DISTANCE_SQ))
                                 this.ecs.addComponent(entity, new HeadingComponent(randomTarget))
                             }
@@ -123,7 +123,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             if (path && path.locations.length > 0) {
                                 behaviorComponent.targetEnter = path.target
                             } else {
-                                const randomTarget = [positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) => n.isWalkable())].random().getRandomPosition()
+                                const randomTarget = Array.random([positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) => n.isWalkable())]).getRandomPosition()
                                 this.ecs.addComponent(entity, new WorldTargetComponent(randomTarget, SLUG_ENTER_DISTANCE_SQ))
                                 this.ecs.addComponent(entity, new HeadingComponent(randomTarget))
                             }
@@ -141,7 +141,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                 this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, SLUG_ENTER_DISTANCE_SQ))
                                 this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
                             } else {
-                                const randomTarget = [positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) => n.isWalkable())].random().getRandomPosition()
+                                const randomTarget = Array.random([positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) => n.isWalkable())]).getRandomPosition()
                                 this.ecs.addComponent(entity, new WorldTargetComponent(randomTarget, SLUG_ENTER_DISTANCE_SQ))
                                 this.ecs.addComponent(entity, new HeadingComponent(randomTarget))
                             }
