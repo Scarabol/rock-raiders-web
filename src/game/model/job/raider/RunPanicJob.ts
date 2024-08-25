@@ -3,6 +3,7 @@ import { JobFulfiller } from '../Job'
 import { PathTarget } from '../../PathTarget'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { Vector2 } from 'three'
+import { Raider } from '../../raider/Raider'
 
 export class RunPanicJob extends RaiderJob {
     runTarget: PathTarget
@@ -20,8 +21,8 @@ export class RunPanicJob extends RaiderJob {
         return 'bubbleFlee'
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
-        super.onJobComplete(fulfiller)
+    unAssign(raider: Raider) {
+        super.unAssign(raider)
         if (this.raider) this.raider.scared = false
     }
 }
