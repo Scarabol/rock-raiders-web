@@ -15,7 +15,7 @@ export interface TypedWorker<M> {
 }
 
 export class TypedWorkerFrontend<M, R> implements TypedWorker<M> {
-    constructor(readonly worker: Worker, onResponseFromWorker: (response: R) => any) {
+    constructor(readonly worker: Worker, onResponseFromWorker: (response: R) => void) {
         worker.onmessage = (event) => {
             onResponseFromWorker(event?.data)
         }
@@ -31,13 +31,13 @@ export class TypedWorkerFrontend<M, R> implements TypedWorker<M> {
 }
 
 export interface TypedWorkerBackend<M, R> {
-    onMessageFromFrontend: (message: M) => any
+    onMessageFromFrontend: (message: M) => void
 
     sendResponse(response: R, transfer?: Transferable[]): void
 }
 
 export class TypedWorkerThreaded<M, R> implements TypedWorkerBackend<M, R> {
-    onMessageFromFrontend: (message: M) => any = () => {
+    onMessageFromFrontend: (message: M) => void = () => {
         throw new Error('Not implemented')
     }
 
@@ -51,11 +51,11 @@ export class TypedWorkerThreaded<M, R> implements TypedWorkerBackend<M, R> {
 }
 
 export class TypedWorkerFallback<M, R> implements TypedWorker<M>, TypedWorkerBackend<M, R> {
-    onMessageFromFrontend: (message: M) => any = () => {
+    onMessageFromFrontend: (message: M) => void = () => {
         throw new Error('Not implemented')
     }
 
-    constructor(readonly onResponseFromWorker: (response: R) => any) {
+    constructor(readonly onResponseFromWorker: (response: R) => void) {
     }
 
     sendMessage(message: M, _transfer?: (Transferable | OffscreenCanvas)[]) {

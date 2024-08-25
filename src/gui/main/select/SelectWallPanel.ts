@@ -4,10 +4,10 @@ import { BuildingsChangedEvent, RaidersAmountChangedEvent, RaiderTrainingComplet
 import { EntityType } from '../../../game/model/EntityType'
 import { RaiderTraining } from '../../../game/model/raider/RaiderTraining'
 import { Panel } from '../../base/Panel'
-import { SelectBasePanel } from './SelectBasePanel'
+import { IconSubPanel } from '../IconSubPanel'
 import { GameConfig } from '../../../cfg/GameConfig'
 
-export class SelectWallPanel extends SelectBasePanel {
+export class SelectWallPanel extends IconSubPanel {
     isDrillable: boolean = false
     isReinforcable: boolean = false
     hasDemolition: boolean = false

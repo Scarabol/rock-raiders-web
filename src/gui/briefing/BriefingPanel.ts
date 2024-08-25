@@ -11,18 +11,18 @@ import { EventBroker } from '../../event/EventBroker'
 
 export class BriefingPanel extends Panel {
     cfg: BriefingPanelCfg
-    imgTitle: SpriteImage
+    imgTitle?: SpriteImage
     titleRelX: number = 0
     titleRelY: number = 0
     btnNext: Button
     btnBack: Button
-    imgBack: SpriteImage
-    imgParagraphList: SpriteImage[] = []
+    imgBack?: SpriteImage
+    imgParagraphList: (SpriteImage | undefined)[] = []
     paragraph: number = 0
     objectiveParagraphs: string[] = []
     objectiveSfxName: string = ''
     objectiveSfx?: AudioBufferSourceNode
-    onContinueMission: () => any = () => console.log('Start mission')
+    onContinueMission: () => void = () => console.log('Start mission')
 
     constructor() {
         super()
@@ -48,8 +48,8 @@ export class BriefingPanel extends Panel {
         this.imgBack = ResourceManager.getImageOrNull(objectiveBackImgCfg.filename)
         this.relX = this.xIn = objectiveBackImgCfg.x
         this.relY = this.yIn = objectiveBackImgCfg.y
-        this.width = this.imgBack.width
-        this.height = this.imgBack.height
+        this.width = this.imgBack?.width || 0
+        this.height = this.imgBack?.height || 0
         this.updatePosition()
         this.objectiveParagraphs = objectiveText?.split('\\a') || []
         this.objectiveSfxName = objectiveSfx

@@ -13,10 +13,10 @@ import { GuiButtonBlinkEvent } from '../../event/LocalEvents'
 
 export class Button extends BaseElement {
     buttonType: string
-    imgNormal: SpriteImage
-    imgHover: SpriteImage
-    imgPressed: SpriteImage
-    imgDisabled: SpriteImage
+    imgNormal?: SpriteImage
+    imgHover?: SpriteImage
+    imgPressed?: SpriteImage
+    imgDisabled?: SpriteImage
     tooltip: string
     tooltipSfx: string
     hoverFrame: boolean = false

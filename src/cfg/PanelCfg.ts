@@ -18,18 +18,18 @@ export class PanelCfg extends BaseConfig {
 }
 
 export class PanelsCfg extends BaseConfig {
-    panelRadar?: PanelCfg
-    panelRadarFill?: PanelCfg
-    panelRadarOverlay?: PanelCfg
-    panelMessages?: PanelCfg
-    panelMessagesSide?: PanelCfg
-    panelCrystalSideBar?: PanelCfg
-    panelTopPanel?: PanelCfg
-    panelInformation?: PanelCfg
-    panelPriorityList?: PanelCfg
-    panelCameraControl?: PanelCfg
-    panelInfoDock?: PanelCfg
-    panelEncyclopedia?: PanelCfg
+    panelRadar: PanelCfg = new PanelCfg()
+    panelRadarFill: PanelCfg = new PanelCfg()
+    panelRadarOverlay: PanelCfg = new PanelCfg()
+    panelMessages: PanelCfg = new PanelCfg()
+    panelMessagesSide: PanelCfg = new PanelCfg()
+    panelCrystalSideBar: PanelCfg = new PanelCfg()
+    panelTopPanel: PanelCfg = new PanelCfg()
+    panelInformation: PanelCfg = new PanelCfg()
+    panelPriorityList: PanelCfg = new PanelCfg()
+    panelCameraControl: PanelCfg = new PanelCfg()
+    panelInfoDock: PanelCfg = new PanelCfg()
+    panelEncyclopedia: PanelCfg = new PanelCfg()
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         return new PanelCfg().setFromCfgObj(cfgValue)

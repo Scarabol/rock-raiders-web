@@ -129,6 +129,7 @@ export class ScreenMaster {
         const maxLayerHeight = layers.reduce((h, l) => Math.max(h, l.height), 0)
         const canvas = createCanvas(maxLayerWidth, maxLayerHeight)
         const context = canvas.getContext('2d')
+        if (!context) throw new Error('Could not get context for canvas')
         layers.forEach((c) => context.drawImage(c, 0, 0))
         return canvas
     }

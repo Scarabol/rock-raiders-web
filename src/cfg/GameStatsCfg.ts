@@ -899,7 +899,9 @@ export class PathStats extends BaseConfig {
     CostRefinedOre: number = 1
 }
 
-export class GameStatsCfg extends BaseConfig {
+export class GameStatsCfg implements Record<string, BaseConfig> {
+    [x: string]: BaseConfig
+
     pilot = new PilotStats()
     rockMonster = new RockMonsterStats()
     smallSpider = new SmallSpiderStats()
@@ -940,12 +942,4 @@ export class GameStatsCfg extends BaseConfig {
     laserShot = new LaserShotStats()
     electricFence = new ElectricFenceStats()
     path = new PathStats()
-
-    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if (objKey.toLowerCase() === unifiedKey) {
-            this[objKey].setFromCfgObj(cfgValue)
-            return true
-        }
-        return false
-    }
 }

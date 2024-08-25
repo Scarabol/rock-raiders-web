@@ -1,9 +1,9 @@
 import { BeamUpFence } from '../../../event/GuiCommand'
 import { Panel } from '../../base/Panel'
-import { SelectBasePanel } from './SelectBasePanel'
+import { IconSubPanel } from '../IconSubPanel'
 import { GameConfig } from '../../../cfg/GameConfig'
 
-export class SelectFencePanel extends SelectBasePanel {
+export class SelectFencePanel extends IconSubPanel {
     constructor(onBackPanel: Panel) {
         super(1, onBackPanel)
         const beamUpFence = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteElectricFence')

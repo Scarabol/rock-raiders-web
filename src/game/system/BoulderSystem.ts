@@ -8,7 +8,7 @@ import { EntityType } from '../model/EntityType'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { WorldManager } from '../WorldManager'
-import { WeaponTypeCfg } from '../../cfg/WeaponTypesCfg'
+import { WeaponTypeCfg } from '../../cfg/WeaponTypeCfg'
 
 export class BoulderSystem extends AbstractGameSystem {
     readonly componentsRequired: Set<Function> = new Set([BoulderComponent])
@@ -16,7 +16,7 @@ export class BoulderSystem extends AbstractGameSystem {
 
     constructor(readonly worldMgr: WorldManager) {
         super()
-        this.boulderStats = GameConfig.instance.weaponTypes.get('boulder')
+        this.boulderStats = GameConfig.instance.weaponTypes.boulder
     }
 
     update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {

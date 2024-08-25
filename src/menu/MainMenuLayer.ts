@@ -191,7 +191,7 @@ export class MainMenuLayer extends ScaledLayer {
         return this.items.some((item) => item.needsRedraw)
     }
 
-    set onItemAction(callback: (item: MainMenuBaseItem) => any) {
+    set onItemAction(callback: (item: MainMenuBaseItem) => void) {
         this.items.forEach((item) => item.onPressed = () => callback(item))
     }
 

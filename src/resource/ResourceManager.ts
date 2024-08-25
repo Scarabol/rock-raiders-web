@@ -92,7 +92,12 @@ export class ResourceManager {
         if (!animatedCursorData) {
             const imgData = this.getImageData(cursorImageName)
             const cursorImage = createCanvas(imgData.width, imgData.height)
-            cursorImage.getContext('2d').putImageData(imgData, 0, 0)
+            const context = cursorImage.getContext('2d')
+            if (!context) {
+                console.warn('Could not get context to draw cursor on canvas')
+            } else {
+                context.putImageData(imgData, 0, 0)
+            }
             animatedCursorData = new AnimatedCursorData([cursorImage])
             cachePutData(cursorImageName, animatedCursorData).then()
         }
@@ -136,7 +141,7 @@ export class ResourceManager {
         })
     }
 
-    static getTexture(textureFilepath: string): Texture | null {
+    static getTexture(textureFilepath: string): Texture | undefined {
         if (!textureFilepath) {
             throw new Error(`textureFilepath must not be undefined, null or empty - was ${textureFilepath}`)
         }
@@ -150,7 +155,7 @@ export class ResourceManager {
             if (VERBOSE || !['teofoilreflections.jpg', 'wingbase3.bmp', 'a_side.bmp', 'a_top.bmp', 'sand.bmp', 'display.bmp'].includes(textureFilepath)) {
                 console.warn(`Could not find texture ${textureFilepath}`)
             }
-            return null
+            return undefined
         }
         // without repeat wrapping some entities are not fully textured
         const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
@@ -210,7 +215,7 @@ class ResourceManagerTextureLoader extends LWOBTextureLoader {
         this.meshPath = meshPath
     }
 
-    load(textureFilename: string, onLoad: (textures: Texture[]) => any): void {
+    load(textureFilename: string, onLoad: (textures: Texture[]) => void): void {
         onLoad(this.loadFromResourceManager(textureFilename))
     }
 

@@ -1,9 +1,9 @@
 import { CancelBuilding } from '../../../event/GuiCommand'
 import { Panel } from '../../base/Panel'
-import { SelectBasePanel } from './SelectBasePanel'
+import { IconSubPanel } from '../IconSubPanel'
 import { GameConfig } from '../../../cfg/GameConfig'
 
-export class SelectSitePanel extends SelectBasePanel {
+export class SelectSitePanel extends IconSubPanel {
     constructor(onBackPanel: Panel) {
         super(1, onBackPanel)
         const cancelBuilding = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_CancelConstruction')

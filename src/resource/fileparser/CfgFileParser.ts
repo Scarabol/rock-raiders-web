@@ -8,11 +8,14 @@ const enum PARSING_STATE {
     INSIDE_VALUE,
 }
 
+type CfgValueType = string | number | boolean
+type CfgValue = CfgValueType | CfgValue[]
+
 export class CfgFileParser {
     static parse(buffer: Uint8Array): object {
         const root = {}
-        const ancestry: object[] = []
-        let activeObject: object = root
+        const ancestry: Record<string, unknown>[] = []
+        let activeObject: Record<string, unknown> = root
         let isComment = false
         let parsingState: PARSING_STATE = PARSING_STATE.LOOKING_FOR_KEY
         let key = ''
@@ -60,7 +63,7 @@ export class CfgFileParser {
                         const encoded = key !== 'FullName' ? value.replaceAll('Å', '|') : value // Revert decoding if not (German) level name
                         const parsed = CfgFileParser.parseValue(encoded, key !== 'FullName')
                         if (activeObject.hasOwnProperty(key)) {
-                            activeObject[key].push(parsed)
+                            (activeObject[key] as unknown[]).push(parsed)
                         } else {
                             activeObject[key] = [parsed]
                         }
@@ -72,9 +75,10 @@ export class CfgFileParser {
             }
         }
 
-        const stack: Record<string, unknown>[] = [root]
+        const stack: Record<string, object>[] = [root]
         while (stack.length > 0) {
-            const obj: Record<string, unknown> = stack.pop()
+            const obj = stack.pop()
+            if (!obj) break
             Object.entries(obj).forEach(([key, val]) => {
                 if (Array.isArray(val)) {
                     if (val.length === 1) {
@@ -83,14 +87,14 @@ export class CfgFileParser {
                         val.forEach((sub) => stack.push(sub))
                     }
                 } else if (Object.keys(val).length > 1) {
-                    stack.push(val as Record<string, unknown>)
+                    stack.push(val as Record<string, object>)
                 }
             })
         }
 
         const entries = Object.values(root)
         if (entries.length > 1 && VERBOSE) console.warn(`Config file contains (${entries.length}) objects! Will proceed with first object '${Object.keys(root)[0]}' only`)
-        const result = entries[0] as Record<string, unknown>
+        const result = entries[0] as Record<string, object>
 
         // apply some patches here
         Object.values(result['Levels']).forEach((levelConf) => {
@@ -110,14 +114,14 @@ export class CfgFileParser {
                 levelConf['TextureSet'] = textureSet[1]
             }
         })
-        const dependencies = result['Dependencies']
+        const dependencies = result['Dependencies'] as Record<string, unknown[]>
         Object.keys(dependencies).forEach((key) => {
             const flatDeps: unknown[][] = []
             dependencies[key].forEach((d) => {
                 if (Array.isArray(d)) {
                     flatDeps.push(...d)
                 } else {
-                    flatDeps.push(d)
+                    flatDeps.push(d as unknown[])
                 }
             })
             dependencies[key] = flatDeps.reduce((result, value, index, array) => {
@@ -129,36 +133,34 @@ export class CfgFileParser {
         return result
     }
 
-    static parseValue(val, isNoLevelName: boolean) {
-        function splitShrink(sep) {
-            val = val.split(sep).filter(val => val !== '').map(val => CfgFileParser.parseValue(val, isNoLevelName))
-            if (val.length === 0) {
-                val = ''
-            } else if (val.length === 1) {
-                val = val[0]
-            }
+    static parseValue(input: string, isNoLevelName: boolean): CfgValue {
+        const num = Number(input)
+        if (!isNaN(num)) return num
+        let val: CfgValue = input.toString().replace(/\\/g, '/')
+        const lVal = val.toLowerCase()
+        if (lVal === 'true') return true
+        if (lVal === 'false') return false
+        if (lVal === 'null') return ''
+        const hasReference = val.includes('::') // XXX actually these are references to other paths in the cfg file
+        if (val.includes(':') && !hasReference && isNoLevelName) { // XXX Dependencies uses separator , over : however icon panel entries use : over , and French/Spanish use both characters in their level names
+            val = CfgFileParser.splitShrink(val, /:+/, isNoLevelName)
+        } else if (val.includes(',') && isNoLevelName) {
+            val = CfgFileParser.splitShrink(val, ',', isNoLevelName)
+        } else if (val.includes('|')) {
+            val = CfgFileParser.splitShrink(val, '|', isNoLevelName)
+        } else if (hasReference) {
+            val = val.split(/:+/)[1]
         }
+        return val
+    }
 
-        const num = Number(val)
-        if (isNaN(num)) {
-            val = val.toString().replace(/\\/g, '/')
-            const lVal = val.toLowerCase()
-            if (lVal === 'true') return true
-            if (lVal === 'false') return false
-            if (lVal === 'null') return ''
-            const hasReference = val.includes('::') // XXX actually these are references to other paths in the cfg file
-            if (val.includes(':') && !hasReference && isNoLevelName) { // XXX Dependencies uses separator , over : however icon panel entries use : over , and French/Spanish use both characters in their level names
-                splitShrink.call(this, /:+/)
-            } else if (val.includes(',') && isNoLevelName) {
-                splitShrink.call(this, ',')
-            } else if (val.includes('|')) {
-                splitShrink.call(this, '|')
-            } else if (hasReference) {
-                val = val.split(/:+/)[1]
-            }
-            return val
-        } else {
-            return num
+    private static splitShrink(value: string, sep: string | RegExp, isNoLevelName: boolean): CfgValue {
+        const result = value.split(sep).filter((v) => v !== '').map((v) => CfgFileParser.parseValue(v, isNoLevelName))
+        if (result.length === 0) {
+            return ''
+        } else if (result.length === 1) {
+            return result[0]
         }
+        return result
     }
 }

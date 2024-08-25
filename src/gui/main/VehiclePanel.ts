@@ -1,21 +1,22 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { RequestedVehiclesChanged } from '../../event/WorldEvents'
-import { EntityType } from '../../game/model/EntityType'
+import { EntityType, VehicleEntityType } from '../../game/model/EntityType'
 import { Panel } from '../base/Panel'
 import { IconPanelButtonLabel } from './IconPanelButtonLabel'
 import { IconSubPanel } from './IconSubPanel'
 import { GameConfig } from '../../cfg/GameConfig'
 
-abstract class VehiclePanel extends IconSubPanel {
+export class VehiclePanel extends IconSubPanel {
     requestedVehiclesByType: Map<EntityType, number> = new Map()
     btnLabelByType: Map<EntityType, IconPanelButtonLabel> = new Map()
 
-    protected constructor(numOfItems: number, onBackPanel: Panel) {
-        super(numOfItems, onBackPanel)
+    constructor(vehicleEntities: VehicleEntityType[], onBackPanel: Panel) {
+        super(vehicleEntities.length, onBackPanel)
         this.registerEventListener(EventKey.REQUESTED_VEHICLES_CHANGED, (event: RequestedVehiclesChanged) => {
             this.requestedVehiclesByType.set(event.vehicle, event.numRequested)
             this.btnLabelByType.get(event.vehicle)?.setLabel(event.numRequested)
         })
+        vehicleEntities.forEach((v) => this.addVehicleMenuItem(v))
     }
 
     addVehicleMenuItem(entityType: EntityType) {
@@ -29,28 +30,5 @@ abstract class VehiclePanel extends IconSubPanel {
         item.tooltipDisabled = item.tooltip
         item.tooltipDisabledSfx = item.tooltipSfx
         this.btnLabelByType.set(entityType, item.addChild(new IconPanelButtonLabel()))
-    }
-}
-
-export class SmallVehiclePanel extends VehiclePanel {
-    constructor(onBackPanel: Panel) {
-        super(6, onBackPanel)
-        this.addVehicleMenuItem(EntityType.HOVERBOARD)
-        this.addVehicleMenuItem(EntityType.SMALL_DIGGER)
-        this.addVehicleMenuItem(EntityType.SMALL_TRUCK)
-        this.addVehicleMenuItem(EntityType.SMALL_CAT)
-        this.addVehicleMenuItem(EntityType.SMALL_MLP)
-        this.addVehicleMenuItem(EntityType.SMALL_HELI)
-    }
-}
-
-export class LargeVehiclePanel extends VehiclePanel {
-    constructor(onBackPanel: Panel) {
-        super(5, onBackPanel)
-        this.addVehicleMenuItem(EntityType.BULLDOZER)
-        this.addVehicleMenuItem(EntityType.WALKER_DIGGER)
-        this.addVehicleMenuItem(EntityType.LARGE_MLP)
-        this.addVehicleMenuItem(EntityType.LARGE_DIGGER)
-        this.addVehicleMenuItem(EntityType.LARGE_CAT)
     }
 }

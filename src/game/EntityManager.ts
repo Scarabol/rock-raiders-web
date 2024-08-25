@@ -144,7 +144,7 @@ export class EntityManager {
     }
 
     getGetToolTargets(): PathTarget[] {
-        return this.getPoweredBuildingByStatsProperty('ToolStore').map((b) => b.getToolPathTarget)
+        return this.getPoweredBuildingByStatsProperty('ToolStore').map((b) => b.getToolPathTarget).filter((b) => !!b)
     }
 
     private getPoweredBuildingByStatsProperty(statsKey: keyof BuildingEntityStats) {
@@ -152,7 +152,7 @@ export class EntityManager {
     }
 
     getBuildingCarryPathTargets(entityType: EntityType): PathTarget[] {
-        return this.getBuildingsByType(entityType).map((b) => b.carryPathTarget)
+        return this.getBuildingsByType(entityType).map((b) => b.carryPathTarget).filter((b) => !!b)
     }
 
     getRaiderUpgradePathTarget(): PathTarget[] {
@@ -253,7 +253,7 @@ export class EntityManager {
         })
     }
 
-    private static removeInRect<T extends Raider | BuildingEntity | MaterialEntity | VehicleEntity>(listing: T[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: T) => any) {
+    private static removeInRect<T extends Raider | BuildingEntity | MaterialEntity | VehicleEntity>(listing: T[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: T) => void) {
         return listing.filter((e) => {
             const pos = e.getPosition2D()
             const discovered = pos.x >= minX && pos.x < maxX && pos.y >= minZ && pos.y < maxZ
@@ -265,7 +265,7 @@ export class EntityManager {
         })
     }
 
-    private removeInRectNew(listing: GameEntity[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: GameEntity) => any) {
+    private removeInRectNew(listing: GameEntity[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: GameEntity) => void) {
         return listing.filter((e) => {
             const pos = this.worldMgr.ecs.getComponents(e).get(PositionComponent).position
             const discovered = pos.x >= minX && pos.x < maxX && pos.z >= minZ && pos.z < maxZ

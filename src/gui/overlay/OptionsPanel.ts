@@ -3,8 +3,8 @@ import { MenuBasePanel } from './MenuBasePanel'
 import { setupOptionsLayer } from './OptionsLayerUtil'
 
 export class OptionsPanel extends MenuBasePanel {
-    onContinueMission: () => any = () => console.log('continue mission')
-    onRepeatBriefing: () => any = () => console.log('repeat mission briefing')
+    onContinueMission: () => void = () => console.log('continue mission')
+    onRepeatBriefing: () => void = () => console.log('repeat mission briefing')
 
     constructor(cfg: MenuCfg, width: number, height: number) {
         super(cfg)

@@ -27,12 +27,12 @@ export class RaiderInfoComponent extends AbstractGameComponent {
     setBubbleTexture(textureName: keyof BubblesCfg) {
         if (!textureName) return
         const textureFilepath = GameConfig.instance.bubbles[textureName] as string
-        this.bubbleSprite.material.map = textureFilepath ? ResourceManager.getTexture(textureFilepath) : null
+        this.bubbleSprite.material.map = textureFilepath ? ResourceManager.getTexture(textureFilepath) ?? null : null
         if (textureName !== 'bubbleIdle') this.bubbleSprite.showDelayMs = 1000
     }
 
     setHungerIndicator(hungerLevel: number) {
-        this.hungerSprite.material.map = ResourceManager.getTexture(this.getHungerTextureName(hungerLevel))
+        this.hungerSprite.material.map = ResourceManager.getTexture(this.getHungerTextureName(hungerLevel)) ?? null
     }
 
     private getHungerTextureName(hungerLevel: number) {

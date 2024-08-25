@@ -54,11 +54,11 @@ export type MapRendererResponse = {
 }
 
 export class MapRendererWorker {
-    surfaceContext?: SpriteContext
-    entityContext?: SpriteContext
-    monsterContext?: SpriteContext
-    materialContext?: SpriteContext
-    geoScanContext?: SpriteContext
+    surfaceContext: SpriteContext | null = null
+    entityContext: SpriteContext | null = null
+    monsterContext: SpriteContext | null = null
+    materialContext: SpriteContext | null = null
+    geoScanContext: SpriteContext | null = null
     blocked: Set<MapMarkerType> = new Set()
     markedDirty: Map<MapMarkerType, MapRendererEntitiesRenderMessage> = new Map()
 
@@ -68,11 +68,11 @@ export class MapRendererWorker {
 
     processMessage(msg: MapRendererMessage) {
         if (msg.type === MapRendererWorkerRequestType.MAP_RENDERER_INIT) {
-            this.surfaceContext = msg.terrainSprite.getContext('2d') as SpriteContext
-            this.monsterContext = msg.monsterSprite.getContext('2d') as SpriteContext
-            this.materialContext = msg.materialSprite.getContext('2d') as SpriteContext
-            this.geoScanContext = msg.geoScanSprite.getContext('2d') as SpriteContext
-            this.entityContext = msg.entitySprite.getContext('2d') as SpriteContext
+            this.surfaceContext = msg.terrainSprite.getContext('2d')
+            this.monsterContext = msg.monsterSprite.getContext('2d')
+            this.materialContext = msg.materialSprite.getContext('2d')
+            this.geoScanContext = msg.geoScanSprite.getContext('2d')
+            this.entityContext = msg.entitySprite.getContext('2d')
         } else {
             switch (msg.type) {
                 case MapRendererWorkerRequestType.MAP_RENDER_TERRAIN:
@@ -102,7 +102,7 @@ export class MapRendererWorker {
         }
     }
 
-    private redrawEntitiesContext(msg: MapRendererEntitiesRenderMessage, context: SpriteContext | undefined, rectColor: string, rectSize: number) {
+    private redrawEntitiesContext(msg: MapRendererEntitiesRenderMessage, context: SpriteContext | null, rectColor: string, rectSize: number) {
         if (!context) return
         if (this.blocked.has(msg.mapMarkerType)) {
             this.markedDirty.set(msg.mapMarkerType, msg)

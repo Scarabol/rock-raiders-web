@@ -1,6 +1,6 @@
-import { BaseConfig } from './BaseConfig'
+export class BubblesCfg implements Record<string, string> {
+    [x: string]: string
 
-export class BubblesCfg extends BaseConfig {
     bubbleCantDo: string = ''
     bubbleIdle: string = ''
     bubbleCollectCrystal: string = ''

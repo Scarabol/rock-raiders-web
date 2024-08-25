@@ -52,7 +52,7 @@ export class PriorityListPanel extends Panel {
         let btnCount = 0
         let updated = false
         priorityList.forEach((prioEntry, btnIndex) => {
-            const prioButton: Button = this.prioByName.get(prioEntry.key)
+            const prioButton = this.prioByName.get(prioEntry.key)
             if (!prioButton) {
                 if (VERBOSE) console.warn(`Could not find button for priority "${PriorityIdentifier[prioEntry.key]}"`)
                 return
@@ -64,7 +64,7 @@ export class PriorityListPanel extends Panel {
             prioButton.relY = this.prioPositions[btnCount].y
             prioButton.updatePosition()
             prioButton.onClick = (cx: number, cy: number) => {
-                prioButton.hover = this.prioByName.get(priorityList[0].key).isInRect(cx, cy)
+                prioButton.hover = !!this.prioByName.get(priorityList[0].key)?.isInRect(cx, cy)
                 GameState.priorityList.pushToTop(btnIndex)
             }
             btnCount++

@@ -5,10 +5,10 @@ import { setupOptionsLayer } from './OptionsLayerUtil'
 import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class PausePanel extends MenuBasePanel {
-    onContinueGame: () => any = () => console.log('continue mission')
-    onRepeatBriefing: () => any = () => console.log('repeat mission briefing')
-    onAbortGame: () => any = () => console.log('abort mission')
-    onRestartGame: () => any = () => console.log('restart mission')
+    onContinueGame: () => void = () => console.log('continue mission')
+    onRepeatBriefing: () => void = () => console.log('repeat mission briefing')
+    onAbortGame: () => void = () => console.log('abort mission')
+    onRestartGame: () => void = () => console.log('restart mission')
 
     constructor(cfg: MenuCfg, width: number, height: number) {
         super(cfg)
