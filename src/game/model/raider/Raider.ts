@@ -538,7 +538,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     canBeScared() {
-        return !this.isInBeam() && !this.slipped && !this.scared && !(GameState.alarmMode && this.hasWeapon()) && !this.thrown && !this.vehicle
+        return !this.isInBeam() && !this.slipped && !this.vehicle && !this.scared && !this.thrown && !this.resting && !(GameState.alarmMode && this.hasWeapon())
     }
 
     maxTools(): number {
