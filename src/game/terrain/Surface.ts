@@ -127,7 +127,7 @@ export class Surface {
                 const neighbor = this.terrain.getSurface(this.x + x, this.y + y)
                 touched.set(`${neighbor.x}#${neighbor.y}`, neighbor)
                 if (neighbor.discovered && !first) continue
-                if ((x === 0 || y === 0) && neighbor.surfaceType.floor) {
+                if ((x === 0 || y === 0) && (neighbor.surfaceType.floor || neighbor.surfaceType === SurfaceType.HIDDEN_CAVERN || neighbor.surfaceType === SurfaceType.HIDDEN_SLUG_HOLE)) {
                     caveFound = caveFound || !neighbor.discovered
                     const neighborCaveFound = neighbor.discoverNeighbors(false, walls, touched) // XXX refactor this remove recursion
                     caveFound = caveFound || neighborCaveFound
