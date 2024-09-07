@@ -48,37 +48,38 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.x - Late game features
 
-- after picking up shovel or completing training, raider should leave toolstation to first floor in negative x direction
 - implement clickOnly... methods for tutorials
 - disable all non-flashing UI elements in tutorial mode
 - implement NERP methods to complete last tutorial
 
 ### v0.9.x - Polishing
 
+- When building is started while material is carried, this material is not dropped to be used on building
+- Forbidding collection of ores or crystals stops building projects too
+- Allow raider in alarm mode to be moved by player
+- Primary building path is not correct for Tutorial01 toolstation
 - Use same team for all missions and add names to raiders
-- Auto switch from portrait to landscape mode in fullscreen
 - Background music and soundtrack (needs files from ISO-File)
 
 ### v1.0.0 - Final Release
 
 - Fix all remaining bugs
 
+### v1.1.0 - Minor Fixes And Improvements
+
+- Auto switch from portrait to landscape mode in fullscreen
+- Add option to read/write savegames from URL
+
 ## Known Issues
 
 ### Important
 
-- When building is started while material is carried, this material is not dropped to be used on building
-- Forbidding collection of ores or crystals stops building projects too
 - Damage and blow up buildings with lava erosion
-
-### Nice to have
-
-- Allow raider in alarm mode to be moved by player
-- Add rotation speed to entities and play turnLeft, turnRight animations
-- Add option to read/write savegames from URL
 
 ### Cosmetics
 
+- One can hear rockies snoring behind walls in Level17
+- Add rotation speed to entities and play turnLeft, turnRight animations
 - Advisor not shown in tutorials near icon panel
 - Surface object pointer in tutorials removes surface highlight color as in original
 - Lava rockies texture not using correct UV coordinates
@@ -86,7 +87,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add tiny rockies running around after crumbling
 - Raider scene entity position/rotation not correct when thrown by rocky
 - Two buttons in priority list can be hovered/pressed/released at the same time
-- Roof mesh is not added as ceiling to scene
+- Roof mesh is not added as ceiling to scene in FPV and shoulder view
 - Use pro-meshes to render high-detail walls in first person and shoulder view
 - Bats don't appear in flocks
 - Camera frustum not shown as wireframe on radar map panel
