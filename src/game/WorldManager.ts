@@ -100,7 +100,6 @@ export class WorldManager {
         this.ecs.reset()
         this.jobSupervisor.reset()
         this.gameTimeMs = 0
-        // load nerp script
         this.nerpRunner = new NerpRunner(this, levelConf.nerpScript, levelConf.nerpMessages)
         this.firstUnpause = true
         const gameSpeedIndex = Math.round(SaveGameManager.currentPreferences.gameSpeed * 5)
@@ -108,7 +107,12 @@ export class WorldManager {
         this.crystalsQuota = levelConf.reward?.quota?.crystals || 0
     }
 
+    start() {
+        this.nerpRunner.start()
+    }
+
     stop() {
+        this.nerpRunner.stop()
         this.stopLoop()
     }
 
@@ -128,7 +132,6 @@ export class WorldManager {
         updateSafe(this.entityMgr, elapsedGameTimeMs)
         updateSafe(this.sceneMgr, elapsedGameTimeMs)
         updateSafe(this.jobSupervisor, elapsedGameTimeMs)
-        updateSafe(this.nerpRunner, UPDATE_INTERVAL_MS)
         this.checkCrystalFailure()
     }
 

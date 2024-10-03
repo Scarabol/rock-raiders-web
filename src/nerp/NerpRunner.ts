@@ -30,7 +30,7 @@ import { MaterialSpawner } from '../game/factory/MaterialSpawner'
 import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseEvent } from '../event/EventTypeMap'
 import { RaiderTrainings } from '../game/model/raider/RaiderTraining'
-import { isNum } from '../core/Util'
+import { clearIntervalSafe, isNum } from '../core/Util'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -73,8 +73,7 @@ export class NerpRunner {
 
     readonly registers = new Array(8).fill(0)
     readonly timers = new Array(4).fill(0)
-    timer: number = 0
-    halted: boolean = false
+    interval?: NodeJS.Timeout
     programCounter: number = 0
     // more state variables and switches
     messagePermit: boolean = true
@@ -99,10 +98,9 @@ export class NerpRunner {
             this.messageTimerMs = 0
             this.messageSfx?.stop()
             this.messageSfx = undefined
-            this.timer += NERP_EXECUTION_INTERVAL
         })
         EventBroker.subscribe(EventKey.GAME_RESULT_STATE, () => {
-            this.halted = true
+            this.stop()
         })
         EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
             this.objectiveShowing = event.isShowing ? 1 : 0
@@ -131,13 +129,12 @@ export class NerpRunner {
         })
     }
 
-    update(elapsedMs: number) {
-        this.timer += elapsedMs
-        this.messageTimerMs = this.messageTimerMs > 0 ? this.messageTimerMs - elapsedMs : 0
-        while (this.timer >= 0) {
-            this.timer -= NERP_EXECUTION_INTERVAL
-            this.execute()
-        }
+    start() {
+        this.interval = setInterval(() => this.execute(), NERP_EXECUTION_INTERVAL)
+    }
+
+    stop() {
+        this.interval = clearIntervalSafe(this.interval)
     }
 
     /**
@@ -267,12 +264,8 @@ export class NerpRunner {
         })
     }
 
-    /**
-     * This is used to make messages come up/not come up.
-     * @param blockMessages
-     */
-    setMessagePermit(blockMessages: number) {
-        this.messagePermit = !blockMessages
+    setMessagePermit(allowMessages: number) {
+        this.messagePermit = !!allowMessages
     }
 
     setBuildingsUpgradeLevel(typeName: EntityType, level: number) {
@@ -906,10 +899,10 @@ export class NerpRunner {
     }
 
     execute() {
-        if (this.halted) return
         try {
+            this.messageTimerMs = this.messageTimerMs > 0 ? this.messageTimerMs - NERP_EXECUTION_INTERVAL : 0
             if (NerpRunner.debug) console.log(`Starting execution with registers set to ${this.registers}`)
-            for (this.programCounter = 0; this.programCounter < this.script.statements.length && !this.halted; this.programCounter++) {
+            for (this.programCounter = 0; this.programCounter < this.script.statements.length; this.programCounter++) {
                 const statement = this.script.statements[this.programCounter]
                 if (NerpRunner.debug) {
                     console.log(`${this.programCounter}: ${this.script.lines[this.programCounter]}`)
@@ -925,7 +918,7 @@ export class NerpRunner {
             }
             console.error(e)
             console.error('FATAL ERROR! Script execution failed! You can NOT win anymore!')
-            this.halted = true
+            this.stop()
         }
     }
 

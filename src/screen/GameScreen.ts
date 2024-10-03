@@ -144,6 +144,7 @@ export class GameScreen {
         this.sceneMgr.startScene().then(() => {
             this.screenMaster.loadingLayer.hide()
         })
+        this.worldMgr.start()
     }
 
     hide() {
