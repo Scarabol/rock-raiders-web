@@ -109,7 +109,7 @@ export class GameScreen {
                         const tutoBlock = this.sceneMgr.terrain.surfaces[x][y]
                         tutoBlock.mesh.objectPointer = new ObjectPointer()
                         this.sceneMgr.scene.add(tutoBlock.mesh.objectPointer)
-                        this.worldMgr.nerpRunner?.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(tutoBlock)
+                        this.worldMgr.nerpRunner.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(tutoBlock)
                     }
                 }
             }

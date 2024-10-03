@@ -101,7 +101,7 @@ export class WorldManager {
         this.jobSupervisor.reset()
         this.gameTimeMs = 0
         // load nerp script
-        if (levelConf.nerpScript) this.nerpRunner = new NerpRunner(this, levelConf.nerpScript, levelConf.nerpMessages)
+        this.nerpRunner = new NerpRunner(this, levelConf.nerpScript, levelConf.nerpMessages)
         this.firstUnpause = true
         const gameSpeedIndex = Math.round(SaveGameManager.currentPreferences.gameSpeed * 5)
         this.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
