@@ -140,7 +140,7 @@ export class GameLayer extends ScreenLayer {
         const y = -event.canvasY / (this.canvas.height / 2) + 1
         const cursorTargetSurface = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y)).surface
         if (cursorTargetSurface) {
-            this.worldMgr.nerpRunner?.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
+            this.worldMgr.nerpRunner.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
                 if (surfaces.includes(cursorTargetSurface)) {
                     GameState.tutoBlockClicks.upsert(tutoBlockId, (current) => (current || 0) + 1)
                 }
@@ -166,7 +166,7 @@ export class GameLayer extends ScreenLayer {
                 const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
                 const cursorTargetSurface = cursorTarget.surface
                 if (cursorTargetSurface) {
-                    this.worldMgr.nerpRunner?.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
+                    this.worldMgr.nerpRunner.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
                         if (surfaces.includes(cursorTargetSurface)) {
                             GameState.tutoBlockClicks.upsert(tutoBlockId, (current) => (current || 0) + 1)
                         }
