@@ -23,7 +23,7 @@ export class Button extends BaseElement {
     blink: boolean = false
     blinkInterval?: NodeJS.Timeout
 
-    constructor(btnCfgPart: Partial<BaseButtonCfg>, blinking: boolean = false) {
+    constructor(btnCfgPart: Partial<BaseButtonCfg>, readonly blinkingByDefault: boolean = false) {
         super()
         const btnCfg = Object.assign(new BaseButtonCfg(), btnCfgPart)
         this.buttonType = btnCfg.buttonType
@@ -39,7 +39,7 @@ export class Button extends BaseElement {
         this.tooltipSfx = btnCfg.tooltipSfx
         this.updatePosition()
         this.onClick = () => console.log(`button pressed: ${this.buttonType}`)
-        if (blinking) this.startBlinking()
+        if (blinkingByDefault) this.startBlinking()
         EventBroker.subscribe(EventKey.GUI_BUTTON_BLINK, (event: GuiButtonBlinkEvent) => {
             if (this.buttonType !== event.buttonType) return
             if (event.blinking) {
@@ -48,6 +48,10 @@ export class Button extends BaseElement {
                 if (this.blinkInterval) this.stopBlinking()
             }
         })
+    }
+
+    private static ignoreUndefinedMax(...numbers: (number | undefined)[]): number {
+        return Math.max(...numbers.map((n) => n || 0))
     }
 
     private startBlinking() {
@@ -64,8 +68,13 @@ export class Button extends BaseElement {
         this.notifyRedraw()
     }
 
-    private static ignoreUndefinedMax(...numbers: (number | undefined)[]): number {
-        return Math.max(...numbers.map((n) => n || 0))
+    reset() {
+        super.reset()
+        if (this.blinkingByDefault) {
+            this.startBlinking()
+        } else {
+            this.stopBlinking()
+        }
     }
 
     onHoverStart(): void {
