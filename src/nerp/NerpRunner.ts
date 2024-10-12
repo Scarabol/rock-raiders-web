@@ -48,6 +48,7 @@ export class NerpRunner {
         {iconName: 'goBack', buttonType: 'InterfaceBackButton', eventKey: EventKey.GUI_GO_BACK_BUTTON_CLICKED},
         {iconName: 'teleport', buttonType: 'Interface_MenuItem_TeleportMan'},
         {iconName: 'layPath', buttonType: 'Interface_MenuItem_LayPath', eventKey: EventKey.COMMAND_CREATE_POWER_PATH},
+        {iconName: 'placeFence', buttonType: 'Interface_MenuItem_PlaceFence', eventKey: EventKey.COMMAND_PLACE_FENCE},
         {iconName: 'mount', buttonType: 'Interface_MenuItem_GetIn', eventKey: EventKey.COMMAND_VEHICLE_GET_MAN},
         {iconName: 'dismount', buttonType: 'Interface_MenuItem_GetOut', eventKey: EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT},
         {iconName: 'upgradeBuilding', buttonType: 'Interface_MenuItem_UpgradeBuilding', eventKey: EventKey.COMMAND_UPGRADE_BUILDING},
@@ -62,10 +63,12 @@ export class NerpRunner {
         {iconName: 'getTool', buttonType: 'Interface_MenuItem_GetTool'},
         {iconName: 'getPusher', buttonType: 'Interface_MenuItem_GetPusherGun'}, // XXX Complete list and track all tool types here
         {iconName: 'getSonicBlaster', buttonType: 'Interface_MenuItem_GetBirdScarer'},
+        {iconName: 'dropSonicBlaster', buttonType: 'Interface_MenuItem_DropBirdScarer'},
         {iconName: 'train', buttonType: 'Interface_MenuItem_TrainSkill', eventKey: EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED},
         {iconName: 'trainDriver', buttonType: 'Interface_MenuItem_TrainDriver'}, // XXX Complete list and track all raider trainings here
         {iconName: 'trainSailor', buttonType: 'Interface_MenuItem_TrainSailor'},
         {iconName: 'trainPilot', buttonType: 'Interface_MenuItem_TrainPilot'},
+        {iconName: 'callToArms', buttonType: 'PanelButton_TopPanel_CallToArms'},
     ]
 
     static debug = false
@@ -827,7 +830,7 @@ export class NerpRunner {
                 console.warn(`Could not flash icon "${iconName}"`)
             }
         }
-        const setIconClickedMatch = methodName.match(/^Set(.+?)(?:Icon)?Clicked$/)
+        const setIconClickedMatch = methodName.match(/^Set(.+?)(?:Icon)?(?:Button)?Clicked$/)
         if (setIconClickedMatch) {
             const iconName = setIconClickedMatch[1]
             const iconClickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
@@ -838,7 +841,7 @@ export class NerpRunner {
                 console.warn(`Could not set icon "${iconName}" clicked`)
             }
         }
-        const getIconClickedMatch = methodName.match(/^Get(.+?)(?:Icon)?Clicked$/)
+        const getIconClickedMatch = methodName.match(/^Get(.+?)(?:Icon)?(?:Button)?Clicked$/)
         if (getIconClickedMatch) {
             const iconName = getIconClickedMatch[1]
             const iconClickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
@@ -930,8 +933,8 @@ export class NerpRunner {
     private checkSyntax(statement: any) {
         const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.equalsIgnoreCase(statement.invoke))
         const flashIconMatch = statement.invoke?.match(/^Flash(.+)Icon$/)
-        const setIconClickedMatch = statement.invoke?.match(/^Set(.+?)(?:Icon)?Clicked$/)
-        const getIconClickedMatch = statement.invoke?.match(/^Get(.+?)(?:Icon)?Clicked$/)
+        const setIconClickedMatch = statement.invoke?.match(/^Set(.+?)(?:Icon)?(?:Button)?Clicked$/)
+        const getIconClickedMatch = statement.invoke?.match(/^Get(.+?)(?:Icon)?(?:Button)?Clicked$/)
         if (!statement.label &&
             !statement.jump &&
             !statement.comparator &&
