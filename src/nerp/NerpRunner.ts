@@ -137,6 +137,9 @@ export class NerpRunner {
             const iconName = RaiderTrainings.toStatsProperty(event.training).toLowerCase()
             this.iconClicked.upsert(iconName, (current) => (current || 0) + 1)
         })
+        EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event) => {
+            this.iconClicked.upsert('callToArms'.toLowerCase(), (current) => (current || 0) + 1)
+        })
     }
 
     start() {
