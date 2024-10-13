@@ -795,9 +795,8 @@ export class NerpRunner {
         return this.worldMgr.entityMgr.vehicles.count((v) => v.entityType === EntityType.LARGE_DIGGER && !!v.driver)
     }
 
-    setMonsterAttackPowerStation(args: any[]): void {
-        // TODO Only used in tutorials
-        console.warn('NERP function "setMonsterAttackPowerStation" not yet implemented', args)
+    setMonsterAttackPowerStation(state: number): void {
+        GameState.monsterAttackPowerStation = state === 1
     }
 
     setMonsterAttackNowT(args: any[]): void {

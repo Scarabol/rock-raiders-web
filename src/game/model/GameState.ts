@@ -21,6 +21,7 @@ export class GameState {
     static priorityList: PriorityList = new PriorityList()
     static tutoBlockClicks: Map<number, number> = new Map()
     static noMultiSelect: boolean = false
+    static monsterAttackPowerStation: boolean = false
 
     static reset() {
         this.numCrystal = this.getDevParam('numCrystal', 0)
@@ -40,6 +41,7 @@ export class GameState {
         this.priorityList = new PriorityList()
         this.tutoBlockClicks = new Map()
         this.noMultiSelect = false
+        this.monsterAttackPowerStation = false
     }
 
     static getDevParam(paramName: string, fallback: number): number {
