@@ -54,7 +54,7 @@ export class Button extends BaseElement {
         return Math.max(...numbers.map((n) => n || 0))
     }
 
-    private startBlinking() {
+    startBlinking() {
         this.stopBlinking()
         this.blinkInterval = setInterval(() => {
             this.blink = !this.blink

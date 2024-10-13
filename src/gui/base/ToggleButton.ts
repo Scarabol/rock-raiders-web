@@ -9,6 +9,10 @@ export class ToggleButton extends Button {
         this.toggleState = false
     }
 
+    startBlinking() {
+        // Toggle buttons should not blink
+    }
+
     onPointerMove(event: GuiHoverEvent): void {
         const inRect = this.isInRect(event.sx, event.sy)
         if (inRect && !this.hover) this.onHoverStart()
