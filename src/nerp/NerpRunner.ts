@@ -31,6 +31,7 @@ import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseEvent } from '../event/EventTypeMap'
 import { RaiderTrainings } from '../game/model/raider/RaiderTraining'
 import { clearIntervalSafe, isNum } from '../core/Util'
+import { RaiderTools } from '../game/model/raider/RaiderTool'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -125,6 +126,12 @@ export class NerpRunner {
         EventBroker.subscribe(EventKey.COMMAND_SELECT_BUILD_MODE, (event) => {
             const iconConfig = NerpRunner.iconClickedConfig.find((c) => c.buttonType.toLowerCase() === event.entityType.toLowerCase())
             if (iconConfig) this.iconClicked.upsert(iconConfig.iconName.toLowerCase(), (current) => (current || 0) + 1)
+        })
+        EventBroker.subscribe(EventKey.COMMAND_PICK_TOOL, (event) => {
+            const itemKey = RaiderTools.toInterfaceItemKey(event.tool)
+            const iconClickedEntry = NerpRunner.iconClickedConfig.find((cfg) => cfg.buttonType.toLowerCase() === itemKey.toLowerCase())
+            if (!iconClickedEntry) return
+            this.iconClicked.upsert(iconClickedEntry.iconName.toLowerCase(), (current) => (current || 0) + 1)
         })
         EventBroker.subscribe(EventKey.COMMAND_TRAIN_RAIDER, (event) => {
             const iconName = RaiderTrainings.toStatsProperty(event.training).toLowerCase()
