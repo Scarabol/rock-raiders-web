@@ -68,7 +68,10 @@ export class MainPanel extends Panel {
             this.publishEvent(new GuiButtonClicked(EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED))
         }
         const getToolPanel = this.addSubPanel(new GetToolPanel(selectRaiderPanel))
-        selectRaiderPanel.getToolItem.onClick = () => selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
+        selectRaiderPanel.getToolItem.onClick = () => {
+            selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
+            this.publishEvent(new GuiButtonClicked(EventKey.GUI_GET_TOOL_BUTTON_CLICKED))
+        }
         const selectVehicleEmptyPanel = this.addSubPanel(new SelectVehicleEmptyPanel(this.mainPanel))
         const selectVehicleManedPanel = this.addSubPanel(new SelectVehicleManedPanel(this.mainPanel))
         const upgradeVehiclePanel = this.addSubPanel(new UpgradeVehiclePanel(selectVehicleManedPanel))

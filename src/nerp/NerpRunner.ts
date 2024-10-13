@@ -60,7 +60,7 @@ export class NerpRunner {
         {iconName: 'gunStation', buttonType: EntityType.GUNSTATION.toLowerCase()},
         {iconName: 'vehicleTransport', buttonType: EntityType.TELEPORT_BIG.toLowerCase()},
         {iconName: 'dynamite', buttonType: 'Interface_MenuItem_Dynamite'},
-        {iconName: 'getTool', buttonType: 'Interface_MenuItem_GetTool'},
+        {iconName: 'getTool', buttonType: 'Interface_MenuItem_GetTool', eventKey: EventKey.GUI_GET_TOOL_BUTTON_CLICKED},
         {iconName: 'getPusher', buttonType: 'Interface_MenuItem_GetPusherGun'}, // XXX Complete list and track all tool types here
         {iconName: 'getSonicBlaster', buttonType: 'Interface_MenuItem_GetBirdScarer'},
         {iconName: 'dropSonicBlaster', buttonType: 'Interface_MenuItem_DropBirdScarer'},
