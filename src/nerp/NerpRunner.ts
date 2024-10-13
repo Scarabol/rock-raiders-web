@@ -389,9 +389,19 @@ export class NerpRunner {
         this.worldMgr.sceneMgr.birdViewControls.lockOnObject(sceneEntity)
     }
 
-    cameraLockOnMonster(args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "cameraLockOnMonster" not yet implemented', args)
+    cameraLockOnMonster(monster: number) {
+        if (monster < 1) return
+        const entity = this.worldMgr.entityMgr.rockMonsters[monster - 1]
+        if (!entity) {
+            console.warn(`Invalid monster entity index ${monster} given`, this.worldMgr.entityMgr.rockMonsters)
+            return
+        }
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+        if (!sceneEntity) {
+            console.warn(`Given entity ${entity} has no scene entity to jump to`)
+            return
+        }
+        this.worldMgr.sceneMgr.birdViewControls.lockOnObject(sceneEntity)
     }
 
     setMessage(messageNumber: number, arrowDisabled: number) {
