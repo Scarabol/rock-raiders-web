@@ -18,7 +18,7 @@ export class FollowerRenderer extends WebGLRenderer {
     static readonly MAX_FPS = 30
     readonly camera: Camera
     readonly composer: EffectComposer
-    trackEntity: GameEntity
+    trackEntity?: GameEntity
     started: boolean = false
     renderInterval?: NodeJS.Timeout
     lastAnimationRequest?: number
@@ -54,13 +54,14 @@ export class FollowerRenderer extends WebGLRenderer {
         this.renderInterval = clearIntervalSafe(this.renderInterval)
         if (!this.trackEntity) return
         this.renderInterval = setInterval(() => {
+            if (!this.trackEntity) {
+                this.resetTracking()
+                return
+            }
             const components = this.ecs.getComponents(this.trackEntity)
             const lookAtPosition = components?.get(AnimatedSceneEntityComponent)?.sceneEntity?.getWorldPosition(new Vector3())
             if (components?.has(BeamUpComponent) || !lookAtPosition) {
-                this.trackEntity = null
-                this.clear()
-                this.renderInterval = clearIntervalSafe(this.renderInterval)
-                EventBroker.publish(new FollowerSetCanvasEvent(null))
+                this.resetTracking()
                 return
             }
             this.angle += Math.PI / 180 / FollowerRenderer.MAX_FPS * 5
@@ -71,6 +72,13 @@ export class FollowerRenderer extends WebGLRenderer {
             this.lastAnimationRequest = requestAnimationFrame(() => this.composer.render())
         }, 1000 / FollowerRenderer.MAX_FPS)
         EventBroker.publish(new FollowerSetCanvasEvent(this.canvas))
+    }
+
+    private resetTracking() {
+        this.trackEntity = undefined
+        this.clear()
+        this.renderInterval = clearIntervalSafe(this.renderInterval)
+        EventBroker.publish(new FollowerSetCanvasEvent(undefined))
     }
 
     dispose() {

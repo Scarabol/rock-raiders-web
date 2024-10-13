@@ -34,7 +34,7 @@ export class GameScreen {
     readonly sceneMgr: SceneManager
     readonly entityMgr: EntityManager
     readonly guiMgr: GuiManager
-    levelConf: LevelConfData
+    levelConf?: LevelConfData
 
     constructor(readonly screenMaster: ScreenMaster) {
         this.worldMgr = new WorldManager()
@@ -80,12 +80,14 @@ export class GameScreen {
     }
 
     restartLevel() {
+        if (!this.levelConf) throw new Error('No level config given')
         this.hide()
         EventBroker.publish(new LevelSelectedEvent(this.levelConf))
         EventBroker.publish(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
     }
 
     private setupAndStartLevel() {
+        if (!this.levelConf) throw new Error('No level config given')
         console.log(`Starting level ${this.levelConf.levelName} - ${this.levelConf.fullName}`)
         document.title = `${this.levelConf.fullName} - Rock Raiders Web`
         const params = new URLSearchParams(window.location.search)
@@ -160,8 +162,9 @@ export class GameScreen {
     }
 
     async startEndgameSequence(resultState: GameResultState) {
+        if (!this.levelConf) throw new Error('No level config given')
         const numMaxAirRaiders = this.levelConf.oxygenRate ? this.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT : MAX_RAIDER_BASE
-        const canvas = resultState === GameResultState.COMPLETE ? await this.screenMaster.createScreenshot() : null
+        const canvas = resultState === GameResultState.COMPLETE ? await this.screenMaster.createScreenshot() : undefined
         const result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, numMaxAirRaiders, this.worldMgr.gameTimeSeconds, canvas)
         if (resultState === GameResultState.COMPLETE) SaveGameManager.setLevelScore(this.levelConf.levelName, result.score)
         if (!this.levelConf.disableEndTeleport) await this.worldMgr.teleportEnd()

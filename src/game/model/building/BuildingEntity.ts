@@ -45,14 +45,14 @@ export class BuildingEntity {
     level: number = 0
     powerSwitch: boolean = true
     primarySurface: Surface
-    secondarySurface: Surface
-    primaryPathSurface: Surface
-    secondaryPathSurface: Surface
-    waterPathSurface: Surface
+    secondarySurface?: Surface
+    primaryPathSurface?: Surface
+    secondaryPathSurface?: Surface
+    waterPathSurface?: Surface
     energized: boolean = false
-    getToolPathTarget: PathTarget
-    carryPathTarget: PathTarget
-    engineSound: PositionalAudio
+    getToolPathTarget?: PathTarget
+    carryPathTarget?: PathTarget
+    engineSound?: PositionalAudio
     surfaces: Surface[] = []
     pathSurfaces: Surface[] = []
 
@@ -88,7 +88,7 @@ export class BuildingEntity {
             return TooltipSpriteBuilder.getTooltipSprite(objectName, healthComponent.health)
         }))
         if (entityType === EntityType.GUNSTATION) {
-            const weaponCfg = GameConfig.instance.weaponTypes.get('BigLazer'.toLowerCase())
+            const weaponCfg = GameConfig.instance.weaponTypes.bigLazer
             this.worldMgr.ecs.addComponent(this.entity, new LaserBeamTurretComponent(weaponCfg))
         }
     }

@@ -100,10 +100,10 @@ export class ButtonPriorityListCfg extends BaseConfig {
 }
 
 export class ButtonCameraControlCfg extends BaseConfig {
-    panelButtonCameraControlZoomIn?: ButtonCfg
-    panelButtonCameraControlZoomOut?: ButtonCfg
-    panelButtonCameraControlCycleBuildings?: ButtonCfg
-    panelButtonCameraControlRotate?: ButtonCfg
+    panelButtonCameraControlZoomIn: ButtonCfg = new BaseButtonCfg()
+    panelButtonCameraControlZoomOut: ButtonCfg = new BaseButtonCfg()
+    panelButtonCameraControlCycleBuildings: ButtonCfg = new BaseButtonCfg()
+    panelButtonCameraControlRotate: ButtonCfg = new BaseButtonCfg()
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)

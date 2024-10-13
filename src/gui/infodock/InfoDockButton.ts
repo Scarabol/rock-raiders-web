@@ -36,7 +36,7 @@ export class InfoDockButton extends Button {
         return new Promise<void>((resolve) => this.updateAnimation(targetX, targetY, resolve))
     }
 
-    private updateAnimation(targetX: number, targetY: number, onDone: () => any) { // TODO refactor: almost equal with code for Panel
+    private updateAnimation(targetX: number, targetY: number, onDone: () => void) { // TODO refactor: almost equal with code for Panel
         const diffX = targetX - this.relX
         const diffY = targetY - this.relY
         if (Math.abs(diffX) <= this.animationSpeedX && Math.abs(diffY) <= this.animationSpeedY) {

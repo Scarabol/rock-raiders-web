@@ -1,6 +1,6 @@
 import { Vector2 } from 'three'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
-import { EntityType } from '../EntityType'
+import { EntityType, LARGE_VEHICLE_TYPES, SMALL_VEHICLE_TYPES, WATER_VEHICLE_TYPES } from '../EntityType'
 import { GameConfig } from '../../../cfg/GameConfig'
 
 export class BuildingType {
@@ -17,17 +17,17 @@ export class BuildingType {
     ) {
     }
 
-    static from(entityType: EntityType): BuildingType | undefined {
+    static from(entityType: EntityType): BuildingType {
         switch (entityType) {
             case EntityType.TOOLSTATION:
                 return new BuildingType(entityType, GameConfig.instance.stats.toolStation, 'Buildings/Toolstation')
                     .addTeleport(EntityType.PILOT)
             case EntityType.TELEPORT_PAD:
                 return new BuildingType(entityType, GameConfig.instance.stats.teleportPad, 'Buildings/Teleports')
-                    .addTeleport(EntityType.PILOT, EntityType.HOVERBOARD, EntityType.SMALL_TRUCK, EntityType.SMALL_DIGGER, EntityType.SMALL_MLP, EntityType.SMALL_HELI) // XXX evaluate stats UseSmallTeleporter
+                    .addTeleport(EntityType.PILOT, ...SMALL_VEHICLE_TYPES)
             case EntityType.DOCKS:
                 return new BuildingType(entityType, GameConfig.instance.stats.docks, 'Buildings/Docks')
-                    .setPrimaryPowerPath(0, -1).setWaterPathSurface(0, 1).addTeleport(EntityType.SMALL_CAT, EntityType.LARGE_CAT) // XXX evaluate stats UseWaterTeleporter
+                    .setPrimaryPowerPath(0, -1).setWaterPathSurface(0, 1).addTeleport(...WATER_VEHICLE_TYPES)
             case EntityType.POWER_STATION:
                 return new BuildingType(entityType, GameConfig.instance.stats.powerStation, 'Buildings/Powerstation')
                     .setSecondaryBuildingPart(-1, 0)
@@ -47,10 +47,9 @@ export class BuildingType {
             case EntityType.TELEPORT_BIG:
                 return new BuildingType(entityType, GameConfig.instance.stats.teleportBig, 'Buildings/BIGTeleport')
                     .setSecondaryBuildingPart(0, 1).setPrimaryPowerPath(-1, 0).setSecondaryPowerPath(-1, 1)
-                    .addTeleport(EntityType.BULLDOZER, EntityType.WALKER_DIGGER, EntityType.LARGE_MLP, EntityType.LARGE_DIGGER) // XXX evaluate stats UseLargeTeleporter
+                    .addTeleport(...LARGE_VEHICLE_TYPES)
             default:
-                if (entityType) console.error(`EntityType (${entityType}) is not a BuildingType`)
-                return undefined
+                throw new Error(`EntityType (${entityType}) is not a BuildingType`)
         }
     }
 

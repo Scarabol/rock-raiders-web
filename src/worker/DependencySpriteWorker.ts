@@ -87,7 +87,7 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
                         const upgradeName = upgradeNames[s.level - 1]
                         if (upgradeName) {
                             const minLevelImg = tooltipFont.createTextImage(upgradeName)
-                            dependencySprite.drawImage(minLevelImg, posX + 3, (totalHeight - s.img.height) / 2 + 3)
+                            if (minLevelImg) dependencySprite.drawImage(minLevelImg, posX + 3, (totalHeight - s.img.height) / 2 + 3)
                         }
                     }
                     posX += s.img.width

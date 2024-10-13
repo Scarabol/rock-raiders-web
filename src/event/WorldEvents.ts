@@ -9,7 +9,7 @@ import { BaseEvent } from './EventTypeMap'
 import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { Surface } from '../game/terrain/Surface'
 import { GameEntity } from '../game/ECS'
-import { WeaponTypeCfg } from '../cfg/WeaponTypesCfg'
+import { WeaponTypeCfg } from '../cfg/WeaponTypeCfg'
 
 export abstract class JobEvent extends BaseEvent {
     job: Job

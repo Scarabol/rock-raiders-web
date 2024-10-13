@@ -88,7 +88,7 @@ export class IconPanelButton extends Button {
     onRedraw(context: SpriteContext) {
         super.onRedraw(context)
         if (this.showDependencies && this.dependencyTooltipImage) {
-            context.drawImage(this.dependencyTooltipImage, this.x - this.dependencyTooltipImage.width, this.y + (this.imgNormal.height - this.dependencyTooltipImage.height) / 2)
+            context.drawImage(this.dependencyTooltipImage, this.x - this.dependencyTooltipImage.width, this.y + (this.height - this.dependencyTooltipImage.height) / 2)
         }
     }
 

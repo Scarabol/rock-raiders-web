@@ -17,7 +17,7 @@ export class RadarPanel extends Panel {
     readonly btnTagged: Button
     readonly btnZoomIn: Button
     readonly btnZoomOut: Button
-    lastView: BaseElement
+    lastView?: BaseElement
 
     constructor(panelCfg: PanelCfg, panelFillCfg: PanelCfg, panelOverlayCfg: PanelCfg, buttonsCfg: ButtonRadarCfg) {
         super(panelCfg)
@@ -50,7 +50,7 @@ export class RadarPanel extends Panel {
         this.btnZoomOut.hidden = this.map.hidden
     }
 
-    toggleState(onDone: () => any = null) {
+    toggleState(onDone?: () => void) {
         super.toggleState(() => {
             if (!this.movedIn && this.lastView) {
                 this.lastView.hidden = false

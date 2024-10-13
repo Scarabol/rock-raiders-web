@@ -89,10 +89,10 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         }))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
         if (entityType === EntityType.SMALL_MLP) {
-            const weaponCfg = GameConfig.instance.weaponTypes.get('SmallLazer'.toLowerCase())
+            const weaponCfg = GameConfig.instance.weaponTypes.smallLazer
             this.worldMgr.ecs.addComponent(this.entity, new LaserBeamTurretComponent(weaponCfg))
         } else if (entityType === EntityType.LARGE_MLP || entityType === EntityType.LARGE_DIGGER) {
-            const weaponCfg = GameConfig.instance.weaponTypes.get('BigLazer'.toLowerCase())
+            const weaponCfg = GameConfig.instance.weaponTypes.bigLazer
             this.worldMgr.ecs.addComponent(this.entity, new LaserBeamTurretComponent(weaponCfg))
         }
     }

@@ -85,7 +85,12 @@ export class TooltipLayer extends ScreenLayer {
         this.tooltipCanvas.height = Math.round(tooltipImg.height * scale)
         this.tooltipCanvas.style.position = 'absolute'
         this.tooltipCanvas.style.zIndex = `${this.zIndex + 10}`
-        this.tooltipCanvas.getContext('2d').drawImage(tooltipImg, 0, 0, this.tooltipCanvas.width, this.tooltipCanvas.height)
+        const context = this.tooltipCanvas.getContext('2d')
+        if (!context) {
+            console.warn('Could not get context for tooltip canvas')
+        } else {
+            context.drawImage(tooltipImg, 0, 0, this.tooltipCanvas.width, this.tooltipCanvas.height)
+        }
         this.updateTooltipCanvasPosition()
     }
 

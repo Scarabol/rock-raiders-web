@@ -18,12 +18,12 @@ export class RandomMoveBehaviorSystem extends AbstractGameSystem {
                 const positionComponent = components.get(PositionComponent)
                 if (!positionComponent.isDiscovered()) continue
                 const statsComponent = components.get(MovableStatsComponent)
-                const targetSurface = [...positionComponent.surface.neighbors.filter((n) =>
+                const targetSurface = Array.random([positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) =>
                     (!n.wallType || statsComponent.enterWall)
                     && (!n.surfaceType.floor || statsComponent.crossLand)
                     && (n.surfaceType !== SurfaceType.LAVA5 || statsComponent.crossLava)
-                    && (n.surfaceType !== SurfaceType.WATER || statsComponent.crossWater))
-                    , positionComponent.surface].random()
+                    && (n.surfaceType !== SurfaceType.WATER || statsComponent.crossWater)
+                )])
                 const targetLocation = targetSurface.getRandomPosition()
                 this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, 1))
                 this.ecs.addComponent(entity, new HeadingComponent(targetLocation))

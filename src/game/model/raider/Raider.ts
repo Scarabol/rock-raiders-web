@@ -405,21 +405,21 @@ export class Raider implements Updatable, JobFulfiller {
             {
                 tool: RaiderTool.LASER,
                 damage: stats.LaserDamage,
-                weaponStats: GameConfig.instance.weaponTypes.get('lasershot'),
+                weaponStats: GameConfig.instance.weaponTypes.laserShot,
                 bulletType: EntityType.LASER_SHOT,
                 misc: GameConfig.instance.miscObjects.LaserShot
             },
             {
                 tool: RaiderTool.FREEZER_GUN,
                 damage: stats.FreezerDamage,
-                weaponStats: GameConfig.instance.weaponTypes.get('freezer'),
+                weaponStats: GameConfig.instance.weaponTypes.freezer,
                 bulletType: EntityType.FREEZER_SHOT,
                 misc: GameConfig.instance.miscObjects.Freezer
             },
             {
                 tool: RaiderTool.PUSHER_GUN,
                 damage: stats.PusherDamage,
-                weaponStats: GameConfig.instance.weaponTypes.get('pusher'),
+                weaponStats: GameConfig.instance.weaponTypes.pusher,
                 bulletType: EntityType.PUSHER_SHOT,
                 misc: GameConfig.instance.miscObjects.Pusher
             },

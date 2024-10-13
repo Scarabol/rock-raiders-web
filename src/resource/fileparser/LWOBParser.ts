@@ -518,7 +518,7 @@ export class LWOBParser {
 }
 
 export class LWOBTextureLoader extends Loader {
-    load(textureFilename: string, onLoad: (textures: Texture[]) => any): void {
+    load(textureFilename: string, onLoad: (textures: Texture[]) => void): void {
     }
 }
 

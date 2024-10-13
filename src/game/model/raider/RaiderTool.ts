@@ -25,4 +25,27 @@ export class RaiderTools {
     static toToolTipIconName(tool: RaiderTool): string {
         return tool.replace('_', '').toLowerCase()
     }
+
+    static toInterfaceItemKey(tool: RaiderTool): string {
+        switch (tool) {
+            case RaiderTool.DRILL:
+                return 'Interface_MenuItem_GetDrill'
+            case RaiderTool.SHOVEL:
+                return 'Interface_MenuItem_GetSpade'
+            case RaiderTool.HAMMER:
+                return 'Interface_MenuItem_GetHammer'
+            case RaiderTool.SPANNER:
+                return 'Interface_MenuItem_GetSpanner'
+            case RaiderTool.FREEZER_GUN:
+                return 'Interface_MenuItem_GetFreezerGun'
+            case RaiderTool.LASER:
+                return 'Interface_MenuItem_GetLaser'
+            case RaiderTool.PUSHER_GUN:
+                return 'Interface_MenuItem_GetPusherGun'
+            case RaiderTool.BIRD_SCARER:
+                return 'Interface_MenuItem_GetBirdScarer'
+            default:
+                throw new Error(`Unexpected raider tool given: ${tool}`)
+        }
+    }
 }

@@ -13,7 +13,7 @@ export class IconSubPanel extends Panel {
     backBtn: Button
     iconPanelButtons: IconPanelButton[] = []
 
-    constructor(numOfItems: number, onBackPanel: Panel = null) {
+    constructor(numOfItems: number, onBackPanel?: Panel) {
         super()
         if (onBackPanel) {
             this.backBtn = this.addChild(new Button(GameConfig.instance.interfaceBackButton))
@@ -22,7 +22,7 @@ export class IconSubPanel extends Panel {
                 EventBroker.publish(new GuiButtonClicked(EventKey.GUI_GO_BACK_BUTTON_CLICKED))
             }
         }
-        const frameImgCfg = GameConfig.instance.interfaceSurroundImages.cfgByNumItems[numOfItems]
+        const frameImgCfg = GameConfig.instance.interfaceSurroundImages[numOfItems]
         this.img = onBackPanel ? ResourceManager.getImage(frameImgCfg.imgName) : ResourceManager.getImage(frameImgCfg.imgNameWoBackName)
         this.xOut = -this.img.width
     }
@@ -34,7 +34,7 @@ export class IconSubPanel extends Panel {
         return menuItem
     }
 
-    toggleState(onDone: () => any = null) {
+    toggleState(onDone?: () => void) {
         super.toggleState(onDone)
         if (this.movedIn) {
             this.iconPanelButtons.forEach((button) => button.showDependencies = false)

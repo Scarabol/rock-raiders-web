@@ -2,7 +2,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { CameraViewMode, ChangeCameraEvent } from '../../event/GuiCommand'
 import { BuildingsChangedEvent, GuiButtonClicked, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { RequestedRaidersChanged } from '../../event/WorldEvents'
-import { EntityType } from '../../game/model/EntityType'
+import { EntityType, LARGE_VEHICLE_TYPES, SMALL_VEHICLE_TYPES } from '../../game/model/EntityType'
 import { MAX_RAIDER_REQUEST } from '../../params'
 import { Panel } from '../base/Panel'
 import { BuildingPanel } from './BuildingPanel'
@@ -20,7 +20,7 @@ import { SelectVehicleEmptyPanel } from './select/SelectVehicleEmptyPanel'
 import { SelectVehicleManedPanel } from './select/SelectVehicleManedPanel'
 import { SelectWallPanel } from './select/SelectWallPanel'
 import { TrainRaiderPanel } from './TrainRaiderPanel'
-import { LargeVehiclePanel, SmallVehiclePanel } from './VehiclePanel'
+import { VehiclePanel } from './VehiclePanel'
 import { UpgradeVehiclePanel } from './UpgradeVehiclePanel'
 import { ChangeCameraPanel } from './select/ChangeCameraPanel'
 import { GameConfig } from '../../cfg/GameConfig'
@@ -53,8 +53,8 @@ export class MainPanel extends Panel {
         this.mainPanel.movedIn = false
 
         const buildingPanel = this.addSubPanel(new BuildingPanel(this.mainPanel))
-        const smallVehiclePanel = this.addSubPanel(new SmallVehiclePanel(this.mainPanel))
-        const largeVehiclePanel = this.addSubPanel(new LargeVehiclePanel(this.mainPanel))
+        const smallVehiclePanel = this.addSubPanel(new VehiclePanel(SMALL_VEHICLE_TYPES, this.mainPanel))
+        const largeVehiclePanel = this.addSubPanel(new VehiclePanel(LARGE_VEHICLE_TYPES, this.mainPanel))
         this.selectWallPanel = this.addSubPanel(new SelectWallPanel(this.mainPanel))
         this.selectFloorPanel = this.addSubPanel(new SelectFloorPanel(this.mainPanel))
         this.selectRubblePanel = this.addSubPanel(new SelectRubblePanel(this.mainPanel))

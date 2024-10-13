@@ -61,7 +61,12 @@ export class SaveGameManager {
                     const canvas = document.createElement('canvas')
                     canvas.width = SAVE_GAME_SCREENSHOT_WIDTH
                     canvas.height = SAVE_GAME_SCREENSHOT_HEIGHT
-                    canvas.getContext('2d')?.drawImage(img, 0, 0)
+                    const context = canvas.getContext('2d')
+                    if (!context) {
+                        console.warn('Missing context to draw save game thumbnail on canvas')
+                    } else {
+                        context.drawImage(img, 0, 0)
+                    }
                     resolve(canvas)
                 }
                 img.src = screenshot
@@ -102,7 +107,12 @@ export class SaveGameManager {
         const canvas = document.createElement('canvas')
         canvas.width = SAVE_GAME_SCREENSHOT_WIDTH
         canvas.height = SAVE_GAME_SCREENSHOT_HEIGHT
-        canvas.getContext('2d')?.drawImage(screenshot, 0, 0, canvas.width, canvas.height)
+        const context = canvas.getContext('2d')
+        if (!context) {
+            console.warn('Missing context to draw save game thumbnail on canvas')
+        } else {
+            context.drawImage(screenshot, 0, 0, canvas.width, canvas.height)
+        }
         return canvas.toDataURL()
     }
 

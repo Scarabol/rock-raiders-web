@@ -821,9 +821,9 @@ export class NerpRunner {
         const flashIconMatch = methodName.match(/^Flash(.+)Icon$/)
         if (flashIconMatch) {
             const iconName = flashIconMatch[1]
-            const iconCLickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
-            if (iconCLickedEntry) {
-                EventBroker.publish(new GuiButtonBlinkEvent(iconCLickedEntry.buttonType, methodArgs[0] === 1))
+            const iconClickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
+            if (iconClickedEntry) {
+                EventBroker.publish(new GuiButtonBlinkEvent(iconClickedEntry.buttonType, methodArgs[0] === 1))
                 return
             } else {
                 console.warn(`Could not flash icon "${iconName}"`)
@@ -832,9 +832,9 @@ export class NerpRunner {
         const setIconClickedMatch = methodName.match(/^Set(.+?)(?:Icon)?Clicked$/)
         if (setIconClickedMatch) {
             const iconName = setIconClickedMatch[1]
-            const iconCLickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
-            if (iconCLickedEntry) {
-                this.iconClicked.set(iconCLickedEntry.iconName.toLowerCase(), methodArgs[0])
+            const iconClickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
+            if (iconClickedEntry) {
+                this.iconClicked.set(iconClickedEntry.iconName.toLowerCase(), methodArgs[0])
                 return
             } else {
                 console.warn(`Could not set icon "${iconName}" clicked`)
@@ -843,9 +843,9 @@ export class NerpRunner {
         const getIconClickedMatch = methodName.match(/^Get(.+?)(?:Icon)?Clicked$/)
         if (getIconClickedMatch) {
             const iconName = getIconClickedMatch[1]
-            const iconCLickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
-            if (iconCLickedEntry) {
-                return this.iconClicked.getOrUpdate(iconCLickedEntry.iconName.toLowerCase(), () => 0)
+            const iconClickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
+            if (iconClickedEntry) {
+                return this.iconClicked.getOrUpdate(iconClickedEntry.iconName.toLowerCase(), () => 0)
             } else {
                 console.warn(`Could not get icon "${iconName}" clicked`)
             }

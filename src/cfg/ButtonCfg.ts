@@ -36,11 +36,16 @@ export class InfoButtonCfg extends BaseButtonCfg {
 }
 
 export class IconPanelBackButtonCfg extends BaseButtonCfg {
-    constructor(cfgValue: any) {
-        super();
-        [this.width, this.height, this.highlightFile, this.pressedFile, this.tooltipText] = cfgValue // Interface back button
+    constructor() {
+        super()
         this.relX = 4
         this.relY = 14
+        this.width = 28
+        this.height = 28
+    }
+
+    setFromValue(cfgValue: [number, number, string, string, string, string]) {
+        [this.width, this.height, this.highlightFile, this.pressedFile, this.tooltipText] = cfgValue
     }
 }
 

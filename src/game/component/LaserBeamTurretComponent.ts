@@ -1,5 +1,5 @@
 import { AbstractGameComponent } from '../ECS'
-import { WeaponTypeCfg } from '../../cfg/WeaponTypesCfg'
+import { WeaponTypeCfg } from '../../cfg/WeaponTypeCfg'
 
 export class LaserBeamTurretComponent extends AbstractGameComponent {
     fireDelay: number = 0

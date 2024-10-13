@@ -19,11 +19,12 @@ import { MiscObjectsCfg } from './MiscObjectsCfg'
 import { RockFallStyle } from './RockFallStyle'
 import { EntityType, getEntityTypeByName } from '../game/model/EntityType'
 import { ObjInfoCfg } from './ObjInfoCfg'
-import { WeaponTypeCfg } from './WeaponTypesCfg'
+import { WeaponTypeCfg } from './WeaponTypeCfg'
 import { SamplesCfg } from './SamplesCfg'
-import { InterfaceSurroundImagesCfg } from './InterfaceSurroundImagesCfg'
+import { InterfaceSurroundImagesEntryCfg } from './InterfaceSurroundImagesCfg'
 import { AdvisorPositionCfg, AdvisorTypeCfg } from './AdvisorCfg'
 import { Cursor } from '../resource/Cursor'
+import { VERBOSE } from '../params'
 
 export type EntityDependency = { entityType: EntityType, minLevel: number, itemKey: string }
 export type EntityDependencyChecked = EntityDependency & { isOk: boolean }
@@ -43,9 +44,9 @@ export class GameConfig extends BaseConfig {
     panelRotationControl: PanelRotationControlCfg = new PanelRotationControlCfg()
     panels: PanelsCfg = new PanelsCfg()
     buttons: ButtonsCfg = new ButtonsCfg()
-    interfaceBackButton?: IconPanelBackButtonCfg
+    interfaceBackButton: IconPanelBackButtonCfg = new IconPanelBackButtonCfg()
     interfaceBuildImages: Map<string, MenuItemCfg> = new Map()
-    interfaceSurroundImages?: InterfaceSurroundImagesCfg
+    interfaceSurroundImages: InterfaceSurroundImagesEntryCfg[] = []
     priorityImages: PriorityButtonsCfg = new PriorityButtonsCfg()
     prioritiesImagePositions: PrioritiesImagePositionsCfg = new PrioritiesImagePositionsCfg()
     miscObjects: MiscObjectsCfg = new MiscObjectsCfg()
@@ -61,7 +62,17 @@ export class GameConfig extends BaseConfig {
     objTtSFXs: Map<string, string> = new Map()
     advisor: Map<string, AdvisorTypeCfg> = new Map()
     advisorPositions640x480: Map<string, AdvisorPositionCfg> = new Map()
-    weaponTypes: Map<string, WeaponTypeCfg> = new Map()
+    weaponTypes = new class implements Record<string, WeaponTypeCfg> {
+        [x: string]: WeaponTypeCfg
+
+        smallLazer = new WeaponTypeCfg()
+        bigLazer = new WeaponTypeCfg()
+        boulder = new WeaponTypeCfg()
+        pusher = new WeaponTypeCfg()
+        laserShot = new WeaponTypeCfg()
+        freezer = new WeaponTypeCfg()
+        rockFallIn = new WeaponTypeCfg()
+    }
     dependencies: Map<EntityType, EntityDependency[]> = new Map()
     levels: LevelsCfg = new LevelsCfg()
     tooltips: Map<string, string> = new Map()
@@ -99,17 +110,27 @@ export class GameConfig extends BaseConfig {
         } else if ('Buttons640x480'.equalsIgnoreCase(unifiedKey)) {
             this.buttons.setFromCfgObj(cfgValue)
         } else if ('InterfaceBackButton'.equalsIgnoreCase(unifiedKey)) {
-            this.interfaceBackButton = new IconPanelBackButtonCfg(cfgValue)
+            this.interfaceBackButton.setFromValue(cfgValue)
         } else if ('InterfaceBuildImages'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.interfaceBuildImages.set(cfgKey.toLowerCase(), new MenuItemCfg(value)))
         } else if ('InterfaceSurroundImages'.equalsIgnoreCase(unifiedKey)) {
-            this.interfaceSurroundImages = new InterfaceSurroundImagesCfg(cfgValue)
+            Object.entries(cfgValue).forEach(([num, cfg]) => {
+                const [imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2] = cfg as [string, number, number, number, number, string, number, number]
+                this.interfaceSurroundImages[Number(num)] = {imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2}
+            })
         } else if ('PriorityImages'.equalsIgnoreCase(unifiedKey)) {
             this.priorityImages.setFromCfgObj(cfgValue)
         } else if ('PrioritiesImagePositions'.equalsIgnoreCase(unifiedKey)) {
             this.prioritiesImagePositions.setFromCfgObj(cfgValue)
         } else if ('Bubbles'.equalsIgnoreCase(unifiedKey)) {
-            this.bubbles.setFromCfgObj(cfgValue)
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
+                const bubblesKey = Object.keys(this.bubbles).find((k) => k.equalsIgnoreCase(cfgKey?.replace('_', '')))
+                if (bubblesKey) {
+                    this.bubbles[bubblesKey] = (value as string)?.toLowerCase()
+                } else {
+                    console.warn(`Unexpected key (${cfgKey}) given`)
+                }
+            })
         } else if ('RockFallStyles'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.rockFallStyles.set(cfgKey.toLowerCase(), new RockFallStyle(value)))
         } else if ('TextMessagesWithImages'.equalsIgnoreCase(unifiedKey)) {
@@ -125,7 +146,14 @@ export class GameConfig extends BaseConfig {
         } else if ('InfoMessages'.equalsIgnoreCase(unifiedKey)) {
             this.infoMessages.setFromCfgObj(cfgValue)
         } else if ('Stats'.equalsIgnoreCase(unifiedKey)) {
-            this.stats.setFromCfgObj(cfgValue)
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
+                const statsKey = Object.keys(this.stats).find((k) => k.equalsIgnoreCase(cfgKey?.replace('-', '')))
+                if (statsKey) {
+                    this.stats[statsKey].setFromCfgObj(value)
+                } else {
+                    console.warn(`Unexpected key (${cfgKey}) given`)
+                }
+            })
         } else if ('ObjTtSFXs'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objTtSFXs.set(cfgKey.toLowerCase(), value as string))
         } else if ('Advisor'.equalsIgnoreCase(unifiedKey)) {
@@ -133,7 +161,14 @@ export class GameConfig extends BaseConfig {
         } else if ('AdvisorPositions640x480'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.advisorPositions640x480.set(cfgKey.toLowerCase(), new AdvisorPositionCfg(value)))
         } else if ('WeaponTypes'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.weaponTypes.set(cfgKey.toLowerCase(), new WeaponTypeCfg().setFromCfgObj(value)))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
+                const weaponTypeKey = Object.keys(this.weaponTypes).find((k) => k.equalsIgnoreCase(cfgKey))
+                if (weaponTypeKey) {
+                    this.weaponTypes[weaponTypeKey].setFromCfgObj(value)
+                } else if (VERBOSE) {
+                    console.warn(`Unexpected weapon type key (${cfgKey}) given`)
+                }
+            })
         } else if ('Dependencies'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => {
                 if (!cfgKey.toLowerCase().startsWith('AlwaysCheck:'.toLowerCase())) {
@@ -177,7 +212,7 @@ export class GameConfig extends BaseConfig {
     }
 
     getRockFallDamage(entityType: EntityType, level: number = 0): number {
-        return this.weaponTypes.get('rockfallin')?.damageByEntityType.get(entityType)?.[level] || 0
+        return this.weaponTypes.rockFallIn.damageByEntityType.get(entityType)?.[level] || 0
     }
 
     getAllLevels(): LevelEntryCfg[] {

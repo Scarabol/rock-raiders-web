@@ -15,7 +15,7 @@ export class MenuCycleItem extends BaseElement {
 
     labelX: number = 0
     state: boolean = false
-    onStateChanged: (state: boolean) => any = (state) => console.log(`TODO: cycle item clicked; state: ${state}`)
+    onStateChanged: (state: boolean) => void = (state) => console.log(`TODO: cycle item clicked; state: ${state}`)
 
     constructor(menuCfg: MenuEntryCfg, itemCfg: MenuCycleItemCfg) {
         super()
