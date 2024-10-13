@@ -8,7 +8,7 @@
 import { WorldManager } from '../game/WorldManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
-import { GameState } from '../game/model/GameState'
+import { ClickOnly, GameState } from '../game/model/GameState'
 import { NerpScript } from './NerpScript'
 import { DEV_MODE, NERP_EXECUTION_INTERVAL } from '../params'
 import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, RequestedRaidersChanged } from '../event/WorldEvents'
@@ -526,18 +526,8 @@ export class NerpRunner {
         EventBroker.publish(new MaterialAmountChanged())
     }
 
-    /**
-     * Tutorial01
-     * - Raider should pick up shovel to clear rubble, but not automatically start clearing it
-     * - Once job assigned by player, raider should continue and clear rubble
-     * Tutorial02
-     * - Raider should start drilling when drill job created
-     * Tutorial03
-     * - Raider should pick shovel and start clearing rubble
-     */
     disallowAll() {
-        // TODO Only used in tutorials
-        console.warn('Disallow allow not yet implemented')
+        GameState.clickOnly = ClickOnly.NONE
     }
 
     getPoweredPowerStationsBuilt() {
@@ -647,29 +637,26 @@ export class NerpRunner {
     }
 
     /**
-     * Tutorial01
+     * Only used in tutorials
      * - Allow to select only raiders
      */
     clickOnlyObjects() {
-        // TODO Only used in tutorials
-        console.warn('NERP function "clickOnlyObjects" not yet implemented')
+        GameState.clickOnly = ClickOnly.OBJECTS
     }
 
     /**
-     * Tutorial01
+     * Only used in tutorials
      * - Allow to select only surfaces
      */
     clickOnlyMap() {
-        // TODO Only used in tutorials
-        console.warn('NERP function "clickOnlyMap" not yet implemented')
+        GameState.clickOnly = ClickOnly.MAP
     }
 
     /**
-     * Tutorial08
+     * Only used in Tutorial08
      */
     clickOnlyCallToArms() {
-        // TODO Only used in tutorials
-        console.warn('NERP function "clickOnlyMap" not yet implemented')
+        GameState.clickOnly = ClickOnly.CALL_TO_ARMS
     }
 
     setCallToArms(args: any[]) {

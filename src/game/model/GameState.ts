@@ -2,6 +2,14 @@ import { Vector2 } from 'three'
 import { PriorityList } from '../../gui/toppanel/PriorityList'
 import { BRICK_ORE_VALUE, DEV_MODE } from '../../params'
 
+export enum ClickOnly {
+    ANY,
+    NONE,
+    MAP,
+    OBJECTS,
+    CALL_TO_ARMS,
+}
+
 export class GameState {
     static numCrystal: number = 0
     static numOre: number = 0
@@ -22,6 +30,7 @@ export class GameState {
     static tutoBlockClicks: Map<number, number> = new Map()
     static noMultiSelect: boolean = false
     static monsterAttackPowerStation: boolean = false
+    static clickOnly: ClickOnly = ClickOnly.ANY
 
     static reset() {
         this.numCrystal = this.getDevParam('numCrystal', 0)
@@ -42,6 +51,7 @@ export class GameState {
         this.tutoBlockClicks = new Map()
         this.noMultiSelect = false
         this.monsterAttackPowerStation = false
+        this.clickOnly = ClickOnly.ANY
     }
 
     static getDevParam(paramName: string, fallback: number): number {

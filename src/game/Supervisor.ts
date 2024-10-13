@@ -18,6 +18,17 @@ import { EventBroker } from '../event/EventBroker'
 import { GameState } from './model/GameState'
 import { SurfaceType } from './terrain/SurfaceType'
 
+/**
+ * Tutorial01
+ * - Raider should pick up shovel to clear rubble, but not automatically start clearing it
+ * - Once job assigned by player, raider should continue and clear rubble
+ * Tutorial02
+ * - Raider should start drilling when drill job created
+ * Tutorial03
+ * - Raider should pick shovel and start clearing rubble
+ * Tutorial08
+ * - Raider should not pick crystal until moved to same surface
+ */
 export class Supervisor {
     jobs: Job[] = []
     priorityIndexList: PriorityIdentifier[] = []

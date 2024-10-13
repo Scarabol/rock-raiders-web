@@ -11,6 +11,7 @@ import { EntityType } from '../game/model/EntityType'
 import { SceneSelectionComponent, SceneSelectionUserData } from '../game/component/SceneSelectionComponent'
 import { GameEntity } from '../game/ECS'
 import { SelectionFrameComponent } from '../game/component/SelectionFrameComponent'
+import { ClickOnly, GameState } from '../game/model/GameState'
 
 export interface CursorTarget {
     raider?: Raider
@@ -34,11 +35,11 @@ export class SelectionRaycaster {
     getSelectionByRay(origin: Vector2): GameSelection {
         const raycaster = new SceneRaycaster(this.worldMgr, origin)
         const selection = new GameSelection()
-        selection.raiders.push(...raycaster.getEntities(this.worldMgr.entityMgr.raiders.filter((r) => !r.vehicle), false))
-        if (selection.isEmpty()) selection.vehicles.push(...raycaster.getEntities(this.worldMgr.entityMgr.vehicles, true))
-        if (selection.isEmpty()) selection.building = raycaster.getEntities(this.worldMgr.entityMgr.buildings, true)[0]
-        if (selection.isEmpty()) selection.fence = raycaster.getEntities(this.worldMgr.entityMgr.placedFences, false)[0]
-        if (selection.isEmpty() && this.terrain) selection.surface = raycaster.getSurfaceIntersection(this.worldMgr.sceneMgr.floorGroup.children)?.surface
+        if (GameState.clickOnly === ClickOnly.ANY || GameState.clickOnly === ClickOnly.OBJECTS) selection.raiders.push(...raycaster.getEntities(this.worldMgr.entityMgr.raiders.filter((r) => !r.vehicle), false))
+        if (selection.isEmpty() && (GameState.clickOnly === ClickOnly.ANY || GameState.clickOnly === ClickOnly.OBJECTS)) selection.vehicles.push(...raycaster.getEntities(this.worldMgr.entityMgr.vehicles, true))
+        if (selection.isEmpty() && (GameState.clickOnly === ClickOnly.ANY || GameState.clickOnly === ClickOnly.OBJECTS)) selection.building = raycaster.getEntities(this.worldMgr.entityMgr.buildings, true)[0]
+        if (selection.isEmpty() && (GameState.clickOnly === ClickOnly.ANY || GameState.clickOnly === ClickOnly.OBJECTS)) selection.fence = raycaster.getEntities(this.worldMgr.entityMgr.placedFences, false)[0]
+        if (selection.isEmpty() && this.terrain && (GameState.clickOnly === ClickOnly.ANY || GameState.clickOnly === ClickOnly.MAP)) selection.surface = raycaster.getSurfaceIntersection(this.worldMgr.sceneMgr.floorGroup.children)?.surface
         return selection
     }
 
