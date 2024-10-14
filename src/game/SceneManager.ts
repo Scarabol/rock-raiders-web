@@ -86,7 +86,7 @@ export class SceneManager implements Updatable {
 
         this.torchLightCursor = new TorchLightCursor()
         this.scene.add(this.torchLightCursor)
-        this.birdViewControls.unlockCamera()
+        this.birdViewControls.reset()
         this.birdViewControls.addEventListener('change', this.torchLightCursor.changeListener)
 
         this.buildMarker = new BuildPlacementMarker(this.worldMgr)
