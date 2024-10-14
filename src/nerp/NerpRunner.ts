@@ -513,7 +513,8 @@ export class NerpRunner {
      * - Raider should pick shovel and start clearing rubble
      */
     disallowAll() {
-        GameState.disallowAll = true
+        // TODO Only used in tutorials
+        console.warn('Disallow allow not yet implemented')
     }
 
     getPoweredPowerStationsBuilt() {

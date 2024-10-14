@@ -129,6 +129,7 @@ export class GameScreen {
         const crystalsInLevel = this.sceneMgr.terrain.countCrystals() + crystalsInVehicles + crystalsInBuildings + crystalsDropped
         GameState.totalCrystals = Math.max(this.levelConf?.reward?.quota?.crystals || 0, crystalsInLevel) // Level 20 has only 17 crystals but quota of 20
         GameState.numTotalOres = this.sceneMgr.terrain.countOres()
+        GameState.noMultiSelect = this.levelConf.noMultiSelect
         this.show()
     }
 
