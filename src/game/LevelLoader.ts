@@ -43,6 +43,7 @@ export interface LevelConfData {
     erodeLockTimeMs: number
     emergeCreature: MonsterEntityType
     emergeTimeOutMs: number
+    noMultiSelect: boolean
 }
 
 export class LevelLoader {
@@ -87,7 +88,8 @@ export class LevelLoader {
             erodeErodeTimeMs: levelConf.erodeErodeTime * 1000,
             erodeLockTimeMs: levelConf.erodeLockTime * 1000,
             emergeCreature: getMonsterEntityTypeByName(levelConf.emergeCreature),
-            emergeTimeOutMs: levelConf.emergeTimeOut / 1500 * 60 * 1000 // 1500 specifies 1 minute
+            emergeTimeOutMs: levelConf.emergeTimeOut / 1500 * 60 * 1000, // 1500 specifies 1 minute
+            noMultiSelect: levelConf.noMultiSelect,
         }
     }
 

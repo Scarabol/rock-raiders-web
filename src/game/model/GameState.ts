@@ -20,7 +20,7 @@ export class GameState {
     static monsterCongregation?: Vector2
     static priorityList: PriorityList = new PriorityList()
     static tutoBlockClicks: Map<number, number> = new Map()
-    static disallowAll: boolean = false
+    static noMultiSelect: boolean = false
 
     static reset() {
         this.numCrystal = this.getDevParam('numCrystal', 0)
@@ -39,7 +39,7 @@ export class GameState {
         this.monsterCongregation = undefined
         this.priorityList = new PriorityList()
         this.tutoBlockClicks = new Map()
-        this.disallowAll = false
+        this.noMultiSelect = false
     }
 
     static getDevParam(paramName: string, fallback: number): number {
