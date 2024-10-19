@@ -527,15 +527,19 @@ export class NerpRunner {
 
     getRecordObjectAtTutorial(tutoBlockId: number): number {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        return this.worldMgr.entityMgr.recordedEntities.findIndex((entity): boolean => {
+            const surface = this.worldMgr.ecs.getComponents(entity).get(PositionComponent).surface
+            return tutoBlocks.some((tutoBlock) => surface === tutoBlock)
+        }) + 1
+    }
+
+    getRecordObjectAmountAtTutorial(tutoBlockId: number): number {
+        const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         const recordedEntities = this.worldMgr.entityMgr.recordedEntities
         return recordedEntities.count((entity): boolean => {
             const surface = this.worldMgr.ecs.getComponents(entity).get(PositionComponent).surface
             return tutoBlocks.some((tutoBlock) => surface === tutoBlock)
         })
-    }
-
-    getRecordObjectAmountAtTutorial(tutoBlockId: number): number {
-        return this.getRecordObjectAtTutorial(tutoBlockId) // XXX Just an alias?
     }
 
     /**
