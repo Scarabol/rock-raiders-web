@@ -35,6 +35,7 @@ import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 import { TeleportComponent } from '../../component/TeleportComponent'
 import { LaserBeamTurretComponent } from '../../component/LaserBeamTurretComponent'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
+import { SurfaceType } from '../../terrain/SurfaceType'
 
 export class BuildingEntity {
     readonly carriedItems: MaterialEntity[] = []
@@ -308,7 +309,7 @@ export class BuildingEntity {
             const pathOffset = this.buildingType.primaryPowerPath.clone().multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
-            if (surface.surfaceType.floor) { // Does not apply for toolstation in tutorial07
+            if (surface.surfaceType.floor || surface.surfaceType === SurfaceType.HIDDEN_CAVERN) {
                 this.primaryPathSurface = surface
                 this.surfaces.push(this.primaryPathSurface)
                 this.pathSurfaces.push(this.primaryPathSurface)
