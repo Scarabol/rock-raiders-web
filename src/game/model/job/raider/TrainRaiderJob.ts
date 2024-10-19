@@ -9,6 +9,7 @@ import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
 import { EventBroker } from '../../../../event/EventBroker'
 import { MoveJob } from '../MoveJob'
+import { SurfaceType } from '../../../terrain/SurfaceType'
 
 export class TrainRaiderJob extends RaiderJob {
     building?: BuildingEntity
@@ -33,8 +34,13 @@ export class TrainRaiderJob extends RaiderJob {
         this.raider.addTraining(this.training)
         EventBroker.publish(new RaiderTrainingCompleteEvent(this.training))
         if (!this.raider.followUpJob && this.building) {
-            const walkableSurface = this.building.primaryPathSurface?.neighbors.find((n) => n.isWalkable())
-            if (walkableSurface) this.raider.followUpJob = new MoveJob(walkableSurface.getRandomPosition())
+            const pathSurface = this.building.primaryPathSurface?.neighbors.find((n) => n.surfaceType === SurfaceType.POWER_PATH)
+            if (pathSurface) {
+                this.raider.followUpJob = new MoveJob(pathSurface.getRandomPosition())
+            } else {
+                const walkableSurface = this.building.primaryPathSurface?.neighbors.find((n) => n.isWalkable())
+                if (walkableSurface) this.raider.followUpJob = new MoveJob(walkableSurface.getRandomPosition())
+            }
         }
     }
 

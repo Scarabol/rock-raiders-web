@@ -6,6 +6,7 @@ import { RaiderJob } from './RaiderJob'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
 import { MoveJob } from '../MoveJob'
+import { SurfaceType } from '../../../terrain/SurfaceType'
 
 export class GetToolJob extends RaiderJob {
     entityMgr: EntityManager
@@ -33,8 +34,13 @@ export class GetToolJob extends RaiderJob {
         if (!this.raider.followUpJob) {
             const building = this.raider.getSurface().building
             if (building) {
-                const walkableSurface = building.primaryPathSurface?.neighbors.find((n) => n.isWalkable())
-                if (walkableSurface) this.raider.followUpJob = new MoveJob(walkableSurface.getRandomPosition())
+                const pathSurface = building.primaryPathSurface?.neighbors.find((n) => n.surfaceType === SurfaceType.POWER_PATH)
+                if (pathSurface) {
+                    this.raider.followUpJob = new MoveJob(pathSurface.getRandomPosition())
+                } else {
+                    const walkableSurface = building.primaryPathSurface?.neighbors.find((n) => n.isWalkable())
+                    if (walkableSurface) this.raider.followUpJob = new MoveJob(walkableSurface.getRandomPosition())
+                }
             }
         }
     }
