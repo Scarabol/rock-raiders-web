@@ -36,6 +36,7 @@ export class HealthBarSprite extends Sprite implements Updatable {
         this.textureContext.fillStyle = rgbToHtmlHex(GameConfig.instance.objInfo.healthBarRGB)
         this.textureContext.fillRect(this.activeArea.x, this.activeArea.y, this.activeArea.w, this.activeArea.h)
         this.material.map = new CanvasTexture(this.textureContext.canvas)
+        this.visible = false
     }
 
     setTargetStatus(targetStatus: number) {
