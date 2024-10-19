@@ -382,14 +382,6 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
     private doIdle(behaviorComponent: RockMonsterBehaviorComponent, pathFinder: PathFinder, rockyPos: Vector2, stats: MonsterEntityStats, entity: number, crystals: MaterialEntity[]) {
         if (behaviorComponent.boulder) {
             behaviorComponent.state = RockMonsterBehaviorState.BOULDER_ATTACK
-        } else if (GameState.monsterCongregation && GameState.monsterCongregation.distanceToSquared(rockyPos) > TILESIZE) {
-            const path = pathFinder.findShortestPath(rockyPos, [PathTarget.fromLocation(GameState.monsterCongregation)], stats, 1)
-            if (path && path.locations.length > 0) {
-                const targetLocation = path.locations[0]
-                this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, 1))
-                this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
-                return
-            }
         } else if (behaviorComponent.numCrystalsEaten < stats.Capacity && crystals.length > 0) {
             const closestCrystal = pathFinder.findClosestObj(rockyPos, crystals, stats, 1)
             if (closestCrystal) {
@@ -397,6 +389,14 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 behaviorComponent.targetCrystal = closestCrystal.obj
             } else {
                 behaviorComponent.state = Math.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
+            }
+        } else if (GameState.monsterCongregation && GameState.monsterCongregation.distanceToSquared(rockyPos) > TILESIZE) {
+            const path = pathFinder.findShortestPath(rockyPos, [PathTarget.fromLocation(GameState.monsterCongregation)], stats, 1)
+            if (path && path.locations.length > 0) {
+                const targetLocation = path.locations[0]
+                this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, 1))
+                this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
+                return
             }
         } else {
             behaviorComponent.state = Math.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
