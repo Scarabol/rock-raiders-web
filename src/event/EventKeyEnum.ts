@@ -23,6 +23,7 @@ export enum EventKey {
     GUI_BUTTON_BLINK = 'gui-button-blink',
     GUI_GO_BACK_BUTTON_CLICKED = 'gui-button-clicked',
     GUI_BUILD_BUILDING_BUTTON_CLICKED = 'gui-button-clicked',
+    GUI_GET_TOOL_BUTTON_CLICKED = 'gui-button-clicked',
     GUI_TRAIN_RAIDER_BUTTON_CLICKED = 'gui-button-clicked',
     ADVANCE_AFTER_REWARDS = 'advance-after-rewards',
 

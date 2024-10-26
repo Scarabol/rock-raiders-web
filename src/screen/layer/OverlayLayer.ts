@@ -4,7 +4,6 @@ import { ScaledLayer } from './ScreenLayer'
 import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
 import { OptionsPanel } from '../../gui/overlay/OptionsPanel'
 import { PausePanel } from '../../gui/overlay/PausePanel'
-import { DEV_MODE } from '../../params'
 import { ChangeCursor, HideTooltip } from '../../event/GuiCommand'
 import { Panel } from '../../gui/base/Panel'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
@@ -84,7 +83,7 @@ export class OverlayLayer extends ScaledLayer {
         const objectiveSfx = `Stream_Objective_Levels::${levelConf.levelName}`.toLowerCase()
         this.panelBriefing.setup(GameConfig.instance.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage640x480, objectiveSfx)
         this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
-        this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
+        this.setActivePanel(this.panelBriefing)
     }
 
     showResultBriefing(result: GameResultState, levelConf: LevelConfData, onContinue: () => void) {
@@ -128,7 +127,7 @@ export class OverlayLayer extends ScaledLayer {
     reset(): void {
         this.rootElement.reset()
         this.panels.forEach((p) => p.reset())
-        this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
+        this.setActivePanel(this.panelBriefing)
     }
 
     addPanel<T extends Panel>(panel: T): T {

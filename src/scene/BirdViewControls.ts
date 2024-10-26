@@ -72,6 +72,14 @@ export class BirdViewControls extends MapControls {
         })
     }
 
+    reset() {
+        this.enabled = true
+        this.moveTarget = undefined
+        this.lockedObject = undefined
+        this.shakeTimeout = 0
+        this.bumpTimeout = 0
+    }
+
     zoom(zoom: number) {
         if (!this.enabled) return
         this.domElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 120 * zoom, deltaMode: 0}))
@@ -126,13 +134,14 @@ export class BirdViewControls extends MapControls {
 
     updateControlsSafe(elapsedMs: number) {
         try {
-            if (this.lockedObject) this.moveTarget = this.lockedObject.getWorldPosition(new Vector3())
-            if (this.moveTarget) {
-                if (this.target.distanceToSquared(this.moveTarget) < 1) {
+            let moveTarget = this.moveTarget
+            if (this.lockedObject) moveTarget = this.lockedObject.getWorldPosition(new Vector3())
+            if (moveTarget) {
+                if (this.target.distanceToSquared(moveTarget) < 1) {
                     this.moveTarget = undefined
                     this.updateEnabled()
                 } else {
-                    const nextCameraTargetPos = this.target.clone().add(this.moveTarget.clone().sub(this.target)
+                    const nextCameraTargetPos = this.target.clone().add(moveTarget.clone().sub(this.target)
                         .clampLength(0, GameConfig.instance.main.CameraSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL))
                     this.jumpTo(nextCameraTargetPos)
                 }
@@ -178,7 +187,6 @@ export class BirdViewControls extends MapControls {
 
     unlockCamera() {
         this.lockedObject = undefined
-        this.moveTarget = undefined
         this.updateEnabled()
     }
 

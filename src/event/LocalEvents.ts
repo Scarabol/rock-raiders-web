@@ -250,7 +250,7 @@ export class GuiButtonBlinkEvent extends BaseEvent {
 }
 
 export class GuiButtonClicked extends BaseEvent {
-    constructor(eventKey: EventKey.GUI_GO_BACK_BUTTON_CLICKED | EventKey.GUI_BUILD_BUILDING_BUTTON_CLICKED | EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED) {
+    constructor(eventKey: EventKey.GUI_GO_BACK_BUTTON_CLICKED | EventKey.GUI_BUILD_BUILDING_BUTTON_CLICKED | EventKey.GUI_GET_TOOL_BUTTON_CLICKED | EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED) {
         super(eventKey)
     }
 }

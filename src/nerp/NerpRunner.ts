@@ -31,6 +31,7 @@ import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseEvent } from '../event/EventTypeMap'
 import { RaiderTrainings } from '../game/model/raider/RaiderTraining'
 import { clearIntervalSafe, isNum } from '../core/Util'
+import { RaiderTools } from '../game/model/raider/RaiderTool'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -48,6 +49,7 @@ export class NerpRunner {
         {iconName: 'goBack', buttonType: 'InterfaceBackButton', eventKey: EventKey.GUI_GO_BACK_BUTTON_CLICKED},
         {iconName: 'teleport', buttonType: 'Interface_MenuItem_TeleportMan'},
         {iconName: 'layPath', buttonType: 'Interface_MenuItem_LayPath', eventKey: EventKey.COMMAND_CREATE_POWER_PATH},
+        {iconName: 'placeFence', buttonType: 'Interface_MenuItem_PlaceFence', eventKey: EventKey.COMMAND_PLACE_FENCE},
         {iconName: 'mount', buttonType: 'Interface_MenuItem_GetIn', eventKey: EventKey.COMMAND_VEHICLE_GET_MAN},
         {iconName: 'dismount', buttonType: 'Interface_MenuItem_GetOut', eventKey: EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT},
         {iconName: 'upgradeBuilding', buttonType: 'Interface_MenuItem_UpgradeBuilding', eventKey: EventKey.COMMAND_UPGRADE_BUILDING},
@@ -59,13 +61,15 @@ export class NerpRunner {
         {iconName: 'gunStation', buttonType: EntityType.GUNSTATION.toLowerCase()},
         {iconName: 'vehicleTransport', buttonType: EntityType.TELEPORT_BIG.toLowerCase()},
         {iconName: 'dynamite', buttonType: 'Interface_MenuItem_Dynamite'},
-        {iconName: 'getTool', buttonType: 'Interface_MenuItem_GetTool'},
+        {iconName: 'getTool', buttonType: 'Interface_MenuItem_GetTool', eventKey: EventKey.GUI_GET_TOOL_BUTTON_CLICKED},
         {iconName: 'getPusher', buttonType: 'Interface_MenuItem_GetPusherGun'}, // XXX Complete list and track all tool types here
         {iconName: 'getSonicBlaster', buttonType: 'Interface_MenuItem_GetBirdScarer'},
+        {iconName: 'dropSonicBlaster', buttonType: 'Interface_MenuItem_DropBirdScarer'},
         {iconName: 'train', buttonType: 'Interface_MenuItem_TrainSkill', eventKey: EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED},
         {iconName: 'trainDriver', buttonType: 'Interface_MenuItem_TrainDriver'}, // XXX Complete list and track all raider trainings here
         {iconName: 'trainSailor', buttonType: 'Interface_MenuItem_TrainSailor'},
         {iconName: 'trainPilot', buttonType: 'Interface_MenuItem_TrainPilot'},
+        {iconName: 'callToArms', buttonType: 'PanelButton_TopPanel_CallToArms'},
     ]
 
     static debug = false
@@ -123,9 +127,18 @@ export class NerpRunner {
             const iconConfig = NerpRunner.iconClickedConfig.find((c) => c.buttonType.toLowerCase() === event.entityType.toLowerCase())
             if (iconConfig) this.iconClicked.upsert(iconConfig.iconName.toLowerCase(), (current) => (current || 0) + 1)
         })
+        EventBroker.subscribe(EventKey.COMMAND_PICK_TOOL, (event) => {
+            const itemKey = RaiderTools.toInterfaceItemKey(event.tool)
+            const iconClickedEntry = NerpRunner.iconClickedConfig.find((cfg) => cfg.buttonType.toLowerCase() === itemKey.toLowerCase())
+            if (!iconClickedEntry) return
+            this.iconClicked.upsert(iconClickedEntry.iconName.toLowerCase(), (current) => (current || 0) + 1)
+        })
         EventBroker.subscribe(EventKey.COMMAND_TRAIN_RAIDER, (event) => {
             const iconName = RaiderTrainings.toStatsProperty(event.training).toLowerCase()
             this.iconClicked.upsert(iconName, (current) => (current || 0) + 1)
+        })
+        EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event) => {
+            this.iconClicked.upsert('callToArms'.toLowerCase(), (current) => (current || 0) + 1)
         })
     }
 
@@ -376,9 +389,19 @@ export class NerpRunner {
         this.worldMgr.sceneMgr.birdViewControls.lockOnObject(sceneEntity)
     }
 
-    cameraLockOnMonster(args: any[]) {
-        // TODO Only used in tutorials
-        console.warn('NERP function "cameraLockOnMonster" not yet implemented', args)
+    cameraLockOnMonster(monster: number) {
+        if (monster < 1) return
+        const entity = this.worldMgr.entityMgr.rockMonsters[monster - 1]
+        if (!entity) {
+            console.warn(`Invalid monster entity index ${monster} given`, this.worldMgr.entityMgr.rockMonsters)
+            return
+        }
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+        if (!sceneEntity) {
+            console.warn(`Given entity ${entity} has no scene entity to jump to`)
+            return
+        }
+        this.worldMgr.sceneMgr.birdViewControls.lockOnObject(sceneEntity)
     }
 
     setMessage(messageNumber: number, arrowDisabled: number) {
@@ -772,9 +795,8 @@ export class NerpRunner {
         return this.worldMgr.entityMgr.vehicles.count((v) => v.entityType === EntityType.LARGE_DIGGER && !!v.driver)
     }
 
-    setMonsterAttackPowerStation(args: any[]): void {
-        // TODO Only used in tutorials
-        console.warn('NERP function "setMonsterAttackPowerStation" not yet implemented', args)
+    setMonsterAttackPowerStation(state: number): void {
+        GameState.monsterAttackPowerStation = state === 1
     }
 
     setMonsterAttackNowT(args: any[]): void {
@@ -827,7 +849,7 @@ export class NerpRunner {
                 console.warn(`Could not flash icon "${iconName}"`)
             }
         }
-        const setIconClickedMatch = methodName.match(/^Set(.+?)(?:Icon)?Clicked$/)
+        const setIconClickedMatch = methodName.match(/^Set(.+?)(?:Icon)?(?:Button)?Clicked$/)
         if (setIconClickedMatch) {
             const iconName = setIconClickedMatch[1]
             const iconClickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
@@ -838,7 +860,7 @@ export class NerpRunner {
                 console.warn(`Could not set icon "${iconName}" clicked`)
             }
         }
-        const getIconClickedMatch = methodName.match(/^Get(.+?)(?:Icon)?Clicked$/)
+        const getIconClickedMatch = methodName.match(/^Get(.+?)(?:Icon)?(?:Button)?Clicked$/)
         if (getIconClickedMatch) {
             const iconName = getIconClickedMatch[1]
             const iconClickedEntry = NerpRunner.iconClickedConfig.find((c) => c.iconName.toLowerCase() === iconName.toLowerCase())
@@ -930,8 +952,8 @@ export class NerpRunner {
     private checkSyntax(statement: any) {
         const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.equalsIgnoreCase(statement.invoke))
         const flashIconMatch = statement.invoke?.match(/^Flash(.+)Icon$/)
-        const setIconClickedMatch = statement.invoke?.match(/^Set(.+?)(?:Icon)?Clicked$/)
-        const getIconClickedMatch = statement.invoke?.match(/^Get(.+?)(?:Icon)?Clicked$/)
+        const setIconClickedMatch = statement.invoke?.match(/^Set(.+?)(?:Icon)?(?:Button)?Clicked$/)
+        const getIconClickedMatch = statement.invoke?.match(/^Get(.+?)(?:Icon)?(?:Button)?Clicked$/)
         if (!statement.label &&
             !statement.jump &&
             !statement.comparator &&

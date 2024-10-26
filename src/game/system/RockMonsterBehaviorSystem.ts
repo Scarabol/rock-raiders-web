@@ -88,6 +88,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         const drivingVehiclePositions = this.worldMgr.entityMgr.vehicles
             .filter((v) => v.sceneEntity.currentAnimation === AnimEntityActivity.Route)
             .map((v) => this.ecs.getComponents(v.entity).get(PositionComponent).getPosition2D())
+        const monsterTargetBuildings = GameState.monsterAttackPowerStation ? this.worldMgr.entityMgr.buildings.filter((b) => b.entityType === EntityType.POWER_STATION) : this.worldMgr.entityMgr.buildings
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)
@@ -171,13 +172,13 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 behaviorComponent.boulder = undefined
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             } else if (!behaviorComponent.targetBuilding) {
-                                const closestBuilding = pathFinder.findClosestBuilding(rockyPos, this.worldMgr.entityMgr.buildings, stats, 1)
+                                const closestBuilding = pathFinder.findClosestBuilding(rockyPos, monsterTargetBuildings, stats, 1)
                                 if (closestBuilding) {
                                     behaviorComponent.targetBuilding = closestBuilding.obj
                                 } else {
                                     behaviorComponent.state = RockMonsterBehaviorState.GO_HOME
                                 }
-                            } else if (this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).has(BeamUpComponent) || !this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
+                            } else if (this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).has(BeamUpComponent) || !monsterTargetBuildings.includes(behaviorComponent.targetBuilding)) {
                                 behaviorComponent.changeToIdle()
                             } else {
                                 const targetBuildingSurface = behaviorComponent.targetBuilding.buildingSurfaces.find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_BOULDER_THROW_DISTANCE_SQ)
@@ -253,13 +254,13 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 if (raiderInGrabRange) {
                                     this.throwRaider(behaviorComponent, entity, sceneEntity, raiderInGrabRange, positionComponent)
                                 } else if (!behaviorComponent.targetBuilding) {
-                                    const closestBuilding = pathFinder.findClosestBuilding(rockyPos, this.worldMgr.entityMgr.buildings, stats, 1)
+                                    const closestBuilding = pathFinder.findClosestBuilding(rockyPos, monsterTargetBuildings, stats, 1)
                                     if (closestBuilding) {
                                         behaviorComponent.targetBuilding = closestBuilding.obj
                                     } else {
                                         behaviorComponent.state = RockMonsterBehaviorState.GO_HOME
                                     }
-                                } else if (this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).has(BeamUpComponent) || !this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
+                                } else if (this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).has(BeamUpComponent) || !monsterTargetBuildings.includes(behaviorComponent.targetBuilding)) {
                                     behaviorComponent.changeToIdle()
                                 } else {
                                     const targetBuildingSurface = behaviorComponent.targetBuilding.buildingSurfaces.find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_MELEE_ATTACK_DISTANCE_SQ)
