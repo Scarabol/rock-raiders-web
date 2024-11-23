@@ -22,11 +22,12 @@ import { SAMPLE } from '../../audio/Sample'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
+import { EventKey } from '../../event/EventKeyEnum'
 
 export class GuiBaseLayer extends ScaledLayer {
     readonly rootElement: BaseElement
     readonly panels: Panel[] = []
-    layerScale = 1 // XXX Scaled panel crystal side bar does not fit
+    layerScale = 1 // XXX Scaled panel crystal sidebar does not fit
 
     constructor() {
         super()
@@ -58,6 +59,9 @@ export class GuiBaseLayer extends ScaledLayer {
             const gameEvent = new GameWheelEvent(event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             return this.animationFrame.isOpaque(gameEvent.canvasX, gameEvent.canvasY)
+        })
+        EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {
+            this.animationFrame.notifyRedraw()
         })
     }
 
