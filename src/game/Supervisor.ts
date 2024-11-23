@@ -23,6 +23,7 @@ export class Supervisor {
     priorityIndexList: PriorityIdentifier[] = []
     assignJobsTimer: number = 0
     checkClearRubbleTimer: number = 0
+    autoClearRubble: boolean = true
 
     constructor(readonly worldMgr: WorldManager) {
         EventBroker.subscribe(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
@@ -45,6 +46,7 @@ export class Supervisor {
             this.jobs = []
             this.assignJobsTimer = 0
             this.checkClearRubbleTimer = 0
+            this.autoClearRubble = event.levelConf.levelName.toLowerCase() !== 'tutorial01'
         })
     }
 
@@ -60,7 +62,7 @@ export class Supervisor {
         const availableJobs: Job[] = []
         this.jobs = this.jobs.filter((j) => {
             const result = j.jobState === JobState.INCOMPLETE
-            if (result && !j.hasFulfiller() && GameState.priorityList.isEnabled(j.priorityIdentifier)) {
+            if (result && !j.hasFulfiller() && GameState.priorityList.isEnabled(j.priorityIdentifier) && (this.autoClearRubble || j.priorityIdentifier !== PriorityIdentifier.CLEARING)) {
                 availableJobs.push(j)
             }
             return result
@@ -219,7 +221,7 @@ export class Supervisor {
                             const clearRubbleJob = surface.setupClearRubbleJob()
                             if (!clearRubbleJob || clearRubbleJob.hasFulfiller()) continue
                             if (raider.hasTool(clearRubbleJob.requiredTool)) {
-                                if (GameState.priorityList.isEnabled(PriorityIdentifier.CLEARING) && raider.findShortestPath(clearRubbleJob.lastRubblePositions)) {
+                                if (GameState.priorityList.isEnabled(PriorityIdentifier.CLEARING) && this.autoClearRubble && raider.findShortestPath(clearRubbleJob.lastRubblePositions)) {
                                     raider.setJob(clearRubbleJob)
                                 }
                                 return
