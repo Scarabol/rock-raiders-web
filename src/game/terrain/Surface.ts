@@ -175,7 +175,7 @@ export class Surface {
     }
 
     addDrillTimeProgress(drillTimeSeconds: number, elapsedMs: number, drillPosition: Vector2) {
-        if (this.drillProgress >= 1 || drillTimeSeconds < 1) return
+        if (this.drillProgress >= 1 || drillTimeSeconds <= 0) return
         const drillProgress = elapsedMs / (drillTimeSeconds * 1000)
         this.addDrillProgress(drillProgress, drillPosition)
     }
