@@ -122,7 +122,7 @@ export class GuiManager {
         })
         EventBroker.subscribe(EventKey.COMMAND_RAIDER_UPGRADE, () => {
             entityMgr.selection.raiders.forEach((r) => {
-                if (r.level >= r.stats.Levels) return
+                if (r.level >= r.stats.Levels - 1) return
                 const closestToolstation = r.findShortestPath(entityMgr.getRaiderUpgradePathTarget())?.target.building
                 if (closestToolstation) r.setJob(new UpgradeRaiderJob(closestToolstation))
             })
