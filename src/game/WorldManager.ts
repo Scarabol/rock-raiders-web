@@ -98,7 +98,6 @@ export class WorldManager {
 
     setup(levelConf: LevelConfData) {
         this.ecs.reset()
-        this.jobSupervisor.reset()
         this.gameTimeMs = 0
         this.nerpRunner = new NerpRunner(this, levelConf.nerpScript, levelConf.nerpMessages)
         this.firstUnpause = true

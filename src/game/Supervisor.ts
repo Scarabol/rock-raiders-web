@@ -41,10 +41,11 @@ export class Supervisor {
             })
             this.priorityIndexList = GameState.priorityList.current.map((p) => p.key)
         })
-    }
-
-    reset() {
-        this.jobs = []
+        EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event) => {
+            this.jobs = []
+            this.assignJobsTimer = 0
+            this.checkClearRubbleTimer = 0
+        })
     }
 
     update(elapsedMs: number) {
@@ -214,7 +215,7 @@ export class Supervisor {
                     for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
                         for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
                             const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
-                            if (!(surface?.hasRubble()) || !surface?.discovered) continue
+                            if (!surface?.hasRubble() || !surface?.discovered) continue
                             const clearRubbleJob = surface.setupClearRubbleJob()
                             if (!clearRubbleJob || clearRubbleJob.hasFulfiller()) continue
                             if (raider.hasTool(clearRubbleJob.requiredTool)) {
