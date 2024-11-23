@@ -38,6 +38,7 @@ export class InfoButtonCfg extends BaseButtonCfg {
 export class IconPanelBackButtonCfg extends BaseButtonCfg {
     constructor() {
         super()
+        this.buttonType = 'InterfaceBackButton'
         this.relX = 4
         this.relY = 14
         this.width = 28
