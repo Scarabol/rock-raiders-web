@@ -32,6 +32,7 @@ import { BaseEvent } from '../event/EventTypeMap'
 import { RaiderTrainings } from '../game/model/raider/RaiderTraining'
 import { clearIntervalSafe, isNum } from '../core/Util'
 import { RaiderTools } from '../game/model/raider/RaiderTool'
+import { JobState } from '../game/model/job/JobState'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -681,7 +682,8 @@ export class NerpRunner {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((t) => {
             for (let c = 0; c < numOfCrystals; c++) {
-                MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, t.getRandomPosition(), Math.random() * 2 * Math.PI)
+                const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, t.getRandomPosition(), Math.random() * 2 * Math.PI)
+                if (crystal.carryJob) crystal.carryJob.jobState = JobState.CANCELED
             }
         })
     }
