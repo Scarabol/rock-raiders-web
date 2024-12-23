@@ -70,7 +70,7 @@ export class SelectionChanged extends BaseEvent {
         this.isReinforcable = !!entityMgr.selection.surface?.isReinforcable()
         this.canPlaceFence = !!entityMgr.selection.surface?.canPlaceFence()
         this.someCarries = entityMgr.selection.raiders.some((r) => !!r.carries)
-        this.everyHasMaxLevel = entityMgr.selection.raiders.every((r) => r.level >= r.stats.Levels)
+        this.everyHasMaxLevel = entityMgr.selection.raiders.every((r) => r.level >= r.stats.maxLevel)
         RaiderTrainings.values.forEach((training) => this.canDoTraining.set(training, entityMgr.hasTrainingSite(training) && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
         RaiderTools.values.forEach((tool) => this.everyHasTool.set(tool, entityMgr.selection.raiders.every((r) => r.hasTool(tool))))
         VehicleUpgrades.values.forEach((upgrade) => this.canInstallUpgrade.set(upgrade, entityMgr.selection.vehicles.some((v) => v.canUpgrade(upgrade))))

@@ -25,7 +25,7 @@ export class UpgradeRaiderJob extends RaiderJob {
     onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         if (!this.raider) return
-        if (this.raider.level < this.raider.stats.Levels) {
+        if (this.raider.level < this.raider.stats.maxLevel) {
             this.raider.level++
             this.raider.worldMgr.ecs.getComponents(this.raider.entity).get(HealthComponent).rockFallDamage = GameConfig.instance.getRockFallDamage(this.raider.entityType, this.raider.level)
         }

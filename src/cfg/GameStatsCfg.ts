@@ -82,6 +82,10 @@ export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats
     MaxCarry: number[] = []
     DamageCausesCallToArms: boolean = false
     FunctionCoef: number[] = []
+
+    get maxLevel(): number {
+        return this.Levels - 1
+    }
 }
 
 export class MonsterEntityStats extends BaseConfig implements MovableEntityStats {
@@ -188,10 +192,13 @@ export class PilotStats extends BaseConfig implements MovableEntityStats, PickSp
         }
         return super.assignValue(objKey, unifiedKey, cfgValue)
     }
+
+    get maxLevel(): number {
+        return this.Levels - 1
+    }
 }
 
 export class RockMonsterStats extends MonsterEntityStats {
-    Levels: number = 1
     RouteSpeed: number[] = [0.8]
     TrackDist: number = 50.0
     CollRadius: number = 10.0
@@ -234,7 +241,6 @@ export class RockMonsterStats extends MonsterEntityStats {
 }
 
 export class SmallSpiderStats extends MonsterEntityStats {
-    Levels: number = 1
     RouteSpeed: number[] = [2.0]
     TrackDist: number = 10.0
     CollRadius: number = 0.0
@@ -252,7 +258,6 @@ export class SmallSpiderStats extends MonsterEntityStats {
 }
 
 export class BatStats extends MonsterEntityStats {
-    Levels: number = 1
     RouteSpeed: number[] = [1.0]
     TrackDist: number = 10.0
     CollRadius: number = 10.0
@@ -279,7 +284,6 @@ export class BatStats extends MonsterEntityStats {
 }
 
 export class TinyRMStats extends MonsterEntityStats {
-    Levels: number = 1
     RouteSpeed: number[] = [1.2]
     TrackDist: number = 10.0
     CollRadius: number = 0.0
@@ -295,7 +299,6 @@ export class TinyRMStats extends MonsterEntityStats {
 }
 
 export class TinyIMStats extends MonsterEntityStats {
-    Levels: number = 1
     RouteSpeed: number[] = [1.2]
     TrackDist: number = 10.0
     CollRadius: number = 0.0
@@ -311,7 +314,6 @@ export class TinyIMStats extends MonsterEntityStats {
 }
 
 export class SlugStats extends MonsterEntityStats {
-    Levels: number = 1
     RouteSpeed: number[] = [0.3]
     TrackDist: number = 10.0
     CollRadius: number = 3.0
@@ -335,7 +337,6 @@ export class SlugStats extends MonsterEntityStats {
 }
 
 export class LavaMonsterStats extends MonsterEntityStats {
-    Levels: number = 1
     RouteSpeed: number[] = [0.8]
     TrackDist: number = 50.0
     CollRadius: number = 10.0
@@ -379,7 +380,6 @@ export class LavaMonsterStats extends MonsterEntityStats {
 }
 
 export class IceMonsterStats extends MonsterEntityStats {
-    Levels: number = 1
     RouteSpeed: number[] = [0.8]
     TrackDist: number = 50.0
     CollRadius: number = 10.0
@@ -422,7 +422,6 @@ export class IceMonsterStats extends MonsterEntityStats {
 }
 
 export class HoverboardStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No drill or carry)
-    Levels: number = 8
     RouteSpeed: number[] = [3.0, 3.0, 5.0, 5.0, 3.0, 3.0, 5.0, 5.0]
     SurveyRadius: number[] = [0, 0, 0, 0, 4, 4, 4, 4]
     TrackDist: number = 50.0
@@ -441,7 +440,6 @@ export class HoverboardStats extends VehicleEntityStats { // [Carry][Scan][Speed
 }
 
 export class SmallHeliStats extends VehicleEntityStats {
-    Levels: number = 1
     RouteSpeed: number[] = [2.50]
     TrackDist: number = 50.0
     CollRadius: number = 10.0
@@ -459,7 +457,6 @@ export class SmallHeliStats extends VehicleEntityStats {
 }
 
 export class SmallMlpStats extends VehicleEntityStats {
-    Levels: number = 4
     RouteSpeed: number[] = [0.50, 0.50, 0.50, 0.50]
     TrackDist: number = 50.0
     CollRadius: number = 12.0
@@ -478,7 +475,6 @@ export class SmallMlpStats extends VehicleEntityStats {
 }
 
 export class SmallCatStats extends VehicleEntityStats {
-    Levels: number = 3
     RouteSpeed: number[] = [2.0, 3.0, 4.0]
     TrackDist: number = 50.0
     CollRadius: number = 12.0
@@ -497,7 +493,6 @@ export class SmallCatStats extends VehicleEntityStats {
 }
 
 export class SmallDiggerStats extends VehicleEntityStats {
-    Levels: number = 8
     RouteSpeed: number[] = [2.0, 2.0, 4.0, 4.0, 2.0, 2.0, 4.0, 4.0]
     SoilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     LooseDrillTime: number[] = [2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0]
@@ -523,7 +518,6 @@ export class SmallDiggerStats extends VehicleEntityStats {
 }
 
 export class SmallTruckStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No drill)
-    Levels: number = 16
     RouteSpeed: number[] = [2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0]
     MaxCarry: number[] = [3, 3, 3, 3, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6]
     CarryStart: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3]
@@ -545,7 +539,6 @@ export class SmallTruckStats extends VehicleEntityStats { // [Carry][Scan][Speed
 }
 
 export class BulldozerStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No drill)
-    Levels: number = 16
     RouteSpeed: number[] = [0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8]
     MaxCarry: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2]
     SurveyRadius: number[] = [0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5]
@@ -566,7 +559,6 @@ export class BulldozerStats extends VehicleEntityStats { // [Carry][Scan][Speed]
 }
 
 export class WalkerDiggerStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No carry)
-    Levels: number = 8
     RouteSpeed: number[] = [0.50, 0.50, 0.80, 0.80, 0.50, 0.50, 0.80, 0.80]
     SoilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     LooseDrillTime: number[] = [0.80, 0.40, 0.80, 0.40, 0.80, 0.40, 0.80, 0.40]
@@ -593,7 +585,6 @@ export class WalkerDiggerStats extends VehicleEntityStats { // [Carry][Scan][Spe
 }
 
 export class LargeDiggerStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No carry or scan)
-    Levels: number = 4
     RouteSpeed: number[] = [0.30, 0.30, 0.60, 0.60]
     SoilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0]
     LooseDrillTime: number[] = [0.40, 0.20, 0.40, 0.20]
@@ -620,7 +611,6 @@ export class LargeDiggerStats extends VehicleEntityStats { // [Carry][Scan][Spee
 }
 
 export class LargeCatStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill] (No carry) (Drill???)
-    Levels: number = 1
     RouteSpeed: number[] = [1.50]
     SurveyRadius: number[] = []
     TrackDist: number = 80.0
@@ -638,7 +628,6 @@ export class LargeCatStats extends VehicleEntityStats { // [Carry][Scan][Speed][
 }
 
 export class LargeHeliStats extends VehicleEntityStats {
-    Levels: number = 3
     RouteSpeed: number[] = [0.30, 0.40, 0.50]
     TrackDist: number = 80.0
     CollRadius: number = 0.0
@@ -649,7 +638,6 @@ export class LargeHeliStats extends VehicleEntityStats {
 }
 
 export class LargeMlpStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No carry or speed) (Doesn't have drills, just lasers)
-    Levels: number = 8
     RouteSpeed: number[] = [0.40, 0.40, 0.40, 0.40, 0.40, 0.40, 0.40, 0.40]
     SurveyRadius: number[] = [0, 0, 0, 0, 5, 5, 5, 5]
     TrackDist: number = 80.0
@@ -841,7 +829,6 @@ export class UpgradeStats extends BuildingEntityStats {
 }
 
 export class PowerCrystalStats extends BaseConfig {
-    Levels: number = 1
     TrackDist: number = 20.0
     CollRadius: number = 0
     CollHeight: number = 2.0
@@ -849,7 +836,6 @@ export class PowerCrystalStats extends BaseConfig {
 }
 
 export class ProcessedOreStats extends BaseConfig {
-    Levels: number = 1
     TrackDist: number = 20.0
     CollRadius: number = 0
     CollHeight: number = 2.0
@@ -857,7 +843,6 @@ export class ProcessedOreStats extends BaseConfig {
 }
 
 export class OreStats extends BaseConfig {
-    Levels: number = 1
     TrackDist: number = 20.0
     CollRadius: number = 0
     CollHeight: number = 2.0
@@ -865,27 +850,22 @@ export class OreStats extends BaseConfig {
 }
 
 export class BoulderStats extends BaseConfig {
-    Levels: number = 1
     CollRadius: number = 2.0
 }
 
 export class PusherStats extends BaseConfig {
-    Levels: number = 1
     CollRadius: number = 1.0
 }
 
 export class FreezerStats extends BaseConfig {
-    Levels: number = 1
     CollRadius: number = 1.0
 }
 
 export class LaserShotStats extends BaseConfig {
-    Levels: number = 1
     ColRadius: number = 1.0
 }
 
 export class ElectricFenceStats extends BaseConfig {
-    Levels: number = 1
     TrackDist: number = 50.0
     CollRadius: number = 5.0
     CollHeight: number = 18.0
@@ -894,7 +874,6 @@ export class ElectricFenceStats extends BaseConfig {
 }
 
 export class PathStats extends BaseConfig {
-    Levels: number = 1
     CostOre: number = 2
     CostRefinedOre: number = 1
 }

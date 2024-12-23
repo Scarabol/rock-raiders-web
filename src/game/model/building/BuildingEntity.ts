@@ -149,10 +149,6 @@ export class BuildingEntity {
         return this.isReady() && this.powerSwitch && (this.stats.SelfPowered || this.stats.PowerBuilding || this.energized)
     }
 
-    hasMaxLevel(): boolean {
-        return this.level >= this.stats.Levels - 1
-    }
-
     upgrade() {
         if (!this.canUpgrade()) return
         if (GameState.numBrick >= GameConfig.instance.main.buildingUpgradeCostStuds) {
@@ -172,7 +168,7 @@ export class BuildingEntity {
     }
 
     setLevel(level: number) {
-        if (this.level == level || level > this.stats.Levels - 1) return
+        if (this.level == level || level > this.stats.maxLevel) return
         this.level = level
         EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
@@ -203,11 +199,11 @@ export class BuildingEntity {
     }
 
     canUpgrade() {
-        return !this.hasMaxLevel() && (GameState.numOre >= GameConfig.instance.main.buildingUpgradeCostOre || GameState.numBrick >= GameConfig.instance.main.buildingUpgradeCostStuds)
+        return !(this.level >= this.stats.maxLevel) && (GameState.numOre >= GameConfig.instance.main.buildingUpgradeCostOre || GameState.numBrick >= GameConfig.instance.main.buildingUpgradeCostStuds)
     }
 
     missingOreForUpgrade(): number {
-        return this.hasMaxLevel() ? 0 : Math.max(0, GameConfig.instance.main.buildingUpgradeCostOre - GameState.numOre)
+        return this.level >= this.stats.maxLevel ? 0 : Math.max(0, GameConfig.instance.main.buildingUpgradeCostOre - GameState.numOre)
     }
 
     spawnMaterials(type: EntityType, quantity: number) {
