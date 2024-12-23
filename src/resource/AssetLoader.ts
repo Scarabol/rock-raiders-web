@@ -103,7 +103,7 @@ export class AssetLoader {
     }
 
     async loadWavAsset(path: string) {
-        let buffer: ArrayBufferLike | undefined
+        let buffer: ArrayBuffer | undefined
         const errors: unknown[] = []
         try {
             buffer = this.vfs.getFile(path).toBuffer()

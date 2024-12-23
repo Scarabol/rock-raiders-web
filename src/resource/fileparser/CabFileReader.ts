@@ -1,5 +1,5 @@
 export class CabFileReader {
-    readonly dataView: DataView
+    readonly dataView: DataView<ArrayBuffer>
     offset: number = 0
 
     constructor(buffer: ArrayBuffer) {

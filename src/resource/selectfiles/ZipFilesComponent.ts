@@ -125,7 +125,7 @@ export class ZipFilesComponent implements SelectFilesComponent {
                     onprogress: (progress: number, total: number): undefined => {
                         this.setProgress(`Extracting "${e.filename}"...`, progress, total)
                     }
-                }))?.buffer
+                }))?.buffer as ArrayBuffer // Workaround forhttps://github.com/gildas-lormeau/zip.js/issues/549
                 if (!buffer) throw new Error(`Could not read file buffer for ${lFileName}`)
                 vfs.registerFile(VirtualFile.fromBuffer(lFileName, buffer))
                 await cachePutData(lFileName, buffer)
@@ -134,7 +134,7 @@ export class ZipFilesComponent implements SelectFilesComponent {
             let progress = 0
             await Promise.all(dataEntries.map(async (e) => {
                 const lFileName = e.filename.replace('Rock Raiders/', '').toLowerCase()
-                const buffer = (await e.getData?.(new Uint8ArrayWriter()))?.buffer
+                const buffer = (await e.getData?.(new Uint8ArrayWriter()))?.buffer as ArrayBuffer // Workaround forhttps://github.com/gildas-lormeau/zip.js/issues/549
                 if (!buffer) throw new Error(`Could not read file buffer for ${lFileName}`)
                 vfs.registerFile(VirtualFile.fromBuffer(lFileName, buffer))
                 await cachePutData(lFileName, buffer)

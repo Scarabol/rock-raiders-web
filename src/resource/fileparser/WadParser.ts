@@ -2,7 +2,7 @@ import { ObjectListEntryCfg } from '../../cfg/ObjectListEntryCfg'
 import { VirtualFile } from './VirtualFile'
 
 export class WadParser {
-    static parseFileList(dataView: DataView): VirtualFile[] {
+    static parseFileList(dataView: DataView<ArrayBuffer>): VirtualFile[] {
         const textDecoder = new TextDecoder()
         let pos = dataView.byteOffset
         if (textDecoder.decode(new Uint8Array(dataView.buffer, pos, 4)) !== 'WWAD') {

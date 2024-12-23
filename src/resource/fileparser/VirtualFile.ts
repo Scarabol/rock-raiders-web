@@ -4,10 +4,10 @@ export class VirtualFile {
     private buffer?: ArrayBuffer
     private text?: string
 
-    private constructor(readonly fileName: string, private view: DataView) {
+    private constructor(readonly fileName: string, private view: DataView<ArrayBuffer>) {
     }
 
-    static fromView(fileName: string, view: DataView): VirtualFile {
+    static fromView(fileName: string, view: DataView<ArrayBuffer>): VirtualFile {
         this.assertArgs(fileName, view)
         return new VirtualFile(fileName, view)
     }
@@ -37,7 +37,7 @@ export class VirtualFile {
         return new Uint8Array(this.view.buffer, this.view.byteOffset, this.view.byteLength)
     }
 
-    toDataView(): DataView {
+    toDataView(): DataView<ArrayBuffer> {
         return new DataView(this.view.buffer, this.view.byteOffset, this.view.byteLength)
     }
 
