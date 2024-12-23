@@ -21,14 +21,14 @@
   },
   "homepage": "https://github.com/scarabol/rock-raiders-web#readme",
   "devDependencies": {
-    "@types/node": "^22.7.5",
+    "@types/node": "^22.10.2",
     "@types/offscreencanvas": "^2019.7.3",
     "@types/pako": "^2.0.3",
-    "@types/three": "^0.169.0",
-    "@zip.js/zip.js": "^2.7.52",
+    "@types/three": "^0.171.0",
+    "@zip.js/zip.js": "^2.7.54",
     "pako": "^2.1.0",
-    "three": "^0.169.0",
+    "three": "^0.171.0",
     "typescript": "^5.6.3",
-    "vite": "^5.4.8"
+    "vite": "^6.0.5"
   }
 }
