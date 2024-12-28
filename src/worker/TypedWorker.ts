@@ -19,6 +19,9 @@ export class TypedWorkerFrontend<M, R> implements TypedWorker<M> {
         worker.onmessage = (event) => {
             onResponseFromWorker(event?.data)
         }
+        worker.onerror = (event) => {
+            console.error(`Unexpected error event in worker`, event)
+        }
     }
 
     sendMessage(message: M, transfer?: (Transferable | OffscreenCanvas)[]) {

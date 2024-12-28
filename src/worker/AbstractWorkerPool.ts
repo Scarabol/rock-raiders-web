@@ -18,25 +18,23 @@ export abstract class AbstractWorkerPool<M, R> {
             return this
         }
         for (let c = 0; c < poolSize; c++) {
-            setTimeout(() => {
-                const worker = this.createTypedWorker()
-                this.allWorkers.add(worker)
-                if (setupMessage) {
-                    this.lastRequestId++
-                    const message: WorkerRequestMessage<M> = {workerRequestHash: `message-${this.lastRequestId}`, request: setupMessage}
-                    worker.sendMessage(message)
-                    this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(() => this.sendBroadcasts(worker))
-                } else {
-                    this.sendBroadcasts(worker)
-                }
-            })
+            const worker = this.createTypedWorker()
+            this.allWorkers.add(worker)
+            if (setupMessage) {
+                this.lastRequestId++
+                const message: WorkerRequestMessage<M> = {workerRequestHash: `message-${this.lastRequestId}`, request: setupMessage}
+                worker.sendMessage(message)
+                this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(() => this.sendBroadcasts(worker))
+            } else {
+                this.sendBroadcasts(worker)
+            }
         }
         return this
     }
 
     private sendBroadcasts(worker: TypedWorker<WorkerRequestMessage<M>>) {
+        if (this.allWorkers.size < 1) throw new Error('No workers, has pool been started?')
         this.broadcastHistory.forEach((broadcast) => {
-            this.lastRequestId++
             this.lastRequestId++
             const message: WorkerRequestMessage<M> = {workerRequestHash: `message-${this.lastRequestId}`, request: broadcast}
             worker.sendMessage(message)
@@ -63,6 +61,7 @@ export abstract class AbstractWorkerPool<M, R> {
     }
 
     protected processMessage(request: M & { hash?: string }): Promise<R> {
+        if (this.allWorkers.size < 1) throw new Error('No workers, has pool been started?')
         let workerRequestHash = request.hash
         if (!workerRequestHash) {
             this.lastRequestId++
@@ -80,6 +79,7 @@ export abstract class AbstractWorkerPool<M, R> {
     }
 
     protected broadcast(broadcast: M): Promise<R>[] {
+        if (this.allWorkers.size < 1) throw new Error('No workers, has pool been started?')
         this.broadcastHistory.add(broadcast)
         const result: Promise<R>[] = []
         this.allWorkers.forEach((worker) => {
