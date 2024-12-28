@@ -1,4 +1,4 @@
-import { CabFileReader } from './CabFileReader'
+import { ByteStreamReader } from '../../core/ByteStreamReader'
 import Pako from 'pako'
 import { cacheGetData } from '../AssetCacheHelper'
 import { VirtualFile } from './VirtualFile'
@@ -25,25 +25,25 @@ export class CabFile {
     static readonly FILE_COMPRESSED = 4
     static readonly FILE_INVALID = 8
 
-    readonly volumeReader: CabFileReader
+    readonly volumeReader: ByteStreamReader
     readonly lowerFilePathNameToFile: Map<string, CabFileEntry> = new Map<string, CabFileEntry>()
 
     constructor(readonly cabHeaderContent: ArrayBuffer, cabVolumeContent: ArrayBuffer, readonly verbose: boolean = false) {
-        this.volumeReader = new CabFileReader(cabVolumeContent)
+        this.volumeReader = new ByteStreamReader(new DataView(cabVolumeContent))
     }
 
     parse(): this {
         this.lowerFilePathNameToFile.clear()
-        const reader = new CabFileReader(this.cabHeaderContent)
-        const signature = reader.readUint32()
+        const reader = new ByteStreamReader(new DataView(this.cabHeaderContent))
+        const signature = reader.read32()
         if (signature !== CabFile.CAB_SIGNATURE) throw new Error(`File signature ${signature.toString(16)} does not match ${CabFile.CAB_SIGNATURE.toString(16)}`)
-        const version = reader.readUint32()
+        const version = reader.read32()
         if (this.verbose) console.log('version', version)
-        const volumeInfo = reader.readUint32()
+        const volumeInfo = reader.read32()
         if (this.verbose) console.log('volumeInfo', volumeInfo)
-        const cabDescriptorOffset = reader.readUint32()
+        const cabDescriptorOffset = reader.read32()
         if (this.verbose) console.log('cabDescriptorOffset', cabDescriptorOffset)
-        const cabDescriptorSize = reader.readUint32()
+        const cabDescriptorSize = reader.read32()
         if (this.verbose) console.log('cabDescriptorSize', cabDescriptorSize)
         const majorVersion = CabFile.versionToMajorVersion(version)
         if (this.verbose) console.log('majorVersion', majorVersion)
@@ -51,17 +51,17 @@ export class CabFile {
 
         // getCabDescriptor
         reader.seek(cabDescriptorOffset + 0xc)
-        const fileTableOffset = reader.readUint32()
+        const fileTableOffset = reader.read32()
         if (this.verbose) console.log('fileTableOffset', fileTableOffset)
         reader.skip(4)
-        const fileTableSize = reader.readUint32()
+        const fileTableSize = reader.read32()
         if (this.verbose) console.log('fileTableSize', fileTableSize)
-        const fileTableSize2 = reader.readUint32()
+        const fileTableSize2 = reader.read32()
         if (this.verbose) console.log('fileTableSize2', fileTableSize2)
-        const directoryCount = reader.readUint32()
+        const directoryCount = reader.read32()
         reader.skip(8)
-        const fileCount = reader.readUint32()
-        const fileTableOffset2 = reader.readUint32()
+        const fileCount = reader.read32()
+        const fileTableOffset2 = reader.read32()
         if (this.verbose) console.log('fileTableOffset2', fileTableOffset2)
 
         // assert((p - (header->data + header->common.cab_descriptor_offset)) == 0x30);
@@ -79,7 +79,7 @@ export class CabFile {
 
         const fileGroupOffsets: number[] = []
         for (let c = 0; c < CabFile.MAX_FILE_GROUP_COUNT; c++) {
-            fileGroupOffsets[c] = reader.readUint32()
+            fileGroupOffsets[c] = reader.read32()
         }
         if (this.verbose) console.log('fileGroupOffsets', fileGroupOffsets)
 
@@ -89,7 +89,7 @@ export class CabFile {
         reader.seek(cabDescriptorOffset + fileTableOffset)
         const fileOffsetsTable: number[] = []
         for (let c = 0; c < (directoryCount + fileCount); c++) {
-            fileOffsetsTable[c] = reader.readUint32()
+            fileOffsetsTable[c] = reader.read32()
         }
 
         // XXX Parse components from header
@@ -101,18 +101,18 @@ export class CabFile {
             const list = {nameOffset: 0, descriptorOffset: 0, nextOffset: fileGroupOffsets[c]}
             while (list.nextOffset) {
                 reader.seek(cabDescriptorOffset + list.nextOffset)
-                list.nameOffset = reader.readUint32()
-                list.descriptorOffset = reader.readUint32()
-                list.nextOffset = reader.readUint32()
+                list.nameOffset = reader.read32()
+                list.descriptorOffset = reader.read32()
+                list.nextOffset = reader.read32()
                 if (this.verbose) console.log('File group descriptor offset: ', list.descriptorOffset.toString(16))
                 reader.seek(cabDescriptorOffset + list.descriptorOffset)
-                const nameOffset = reader.readUint32()
+                const nameOffset = reader.read32()
                 reader.seek(cabDescriptorOffset + nameOffset)
-                const name = reader.readString()
+                const name = reader.readStringNull()
                 if (this.verbose) console.log(`File group name "${name}"`)
                 reader.seek(cabDescriptorOffset + list.descriptorOffset + 4 + 0x48)
-                const firstFile = reader.readUint32()
-                const lastFile = reader.readUint32()
+                const firstFile = reader.read32()
+                const lastFile = reader.read32()
                 fileGroups.push({name, firstFile, lastFile})
             }
         }
@@ -124,13 +124,13 @@ export class CabFile {
                 const fileDescriptorOffset = cabDescriptorOffset + fileTableOffset + fileOffsetsTable[directoryCount + i]
                 reader.seek(fileDescriptorOffset)
                 if (this.verbose) console.log(`File descriptor offset ${i}: ${fileDescriptorOffset.toString(16)}`)
-                const nameOffset = reader.readUint32()
+                const nameOffset = reader.read32()
                 if (!nameOffset) {
                     if (this.verbose) console.error('No name offset given')
                     continue
                 }
-                const directoryIndex = reader.readUint32()
-                const flags = reader.readUint16()
+                const directoryIndex = reader.read32()
+                const flags = reader.read16()
                 const compressed = !!(flags & CabFile.FILE_COMPRESSED)
                 if (!compressed) {
                     if (this.verbose) console.log('file is not compressed')
@@ -138,19 +138,19 @@ export class CabFile {
                     if (this.verbose) console.error('Invalid file skipped')
                     continue
                 }
-                const expandedSize = reader.readUint32()
-                const compressedSize = reader.readUint32()
+                const expandedSize = reader.read32()
+                const compressedSize = reader.read32()
                 reader.skip(0x14)
-                const dataOffset = reader.readUint32()
+                const dataOffset = reader.read32()
                 if (!dataOffset) {
                     if (this.verbose) console.error('No data offset given')
                     continue
                 }
                 reader.seek(cabDescriptorOffset + fileTableOffset + fileOffsetsTable[directoryIndex])
-                const dirname = reader.readString()
+                const dirname = reader.readStringNull()
                 if (this.verbose) console.log('dirname', dirname)
                 reader.seek(cabDescriptorOffset + fileTableOffset + nameOffset)
-                const filename = reader.readString()
+                const filename = reader.readStringNull()
                 if (this.verbose) console.log('filename', filename)
                 const filePathName = [fileGroup.name, dirname, filename]
                     .filter((s) => !!s)
@@ -223,10 +223,10 @@ export class CabFile {
         let bytesLeft = file.compressedSize // TODO Which size to use for uncompressed files?
         if (this.verbose) console.log('bytesLeft', bytesLeft)
         while (bytesLeft > 0) {
-            const chunkSize = this.volumeReader.readUint16()
+            const chunkSize = this.volumeReader.read16()
             if (this.verbose) console.log('chunkSize', chunkSize)
             bytesLeft -= 2
-            const chunkBuffer = new Uint8Array(this.volumeReader.readBuffer(chunkSize))
+            const chunkBuffer = this.volumeReader.readBytes(chunkSize)
             if (this.verbose) console.log('chunkBuffer', chunkBuffer)
             if (file.compressed) {
                 const inflated = Pako.inflate(chunkBuffer, {raw: true})

@@ -1,5 +1,4 @@
 import { AudioContext, AudioListener, PositionalAudio } from 'three'
-import { Sample } from './Sample'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventKey } from '../event/EventKeyEnum'
 import { NerpRunner } from '../nerp/NerpRunner'
@@ -31,10 +30,6 @@ export class SoundManager {
             SoundManager.sfxAudioTarget.disconnect()
         }
         return SoundManager.sfxAudioTarget
-    }
-
-    static playSample(sample: Sample, isVoice: boolean) {
-        this.playSound(sample, isVoice)
     }
 
     static playSound(soundName: string, isVoice: boolean): AudioBufferSourceNode | undefined {

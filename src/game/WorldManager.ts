@@ -46,7 +46,7 @@ export class WorldManager {
     readonly jobSupervisor: Supervisor = new Supervisor(this)
     sceneMgr: SceneManager
     entityMgr: EntityManager
-    nerpRunner: NerpRunner
+    nerpRunner?: NerpRunner
     powerGrid: PowerGrid
     gameLoopInterval?: NodeJS.Timeout
     gameTimeMs: number = 0
@@ -92,7 +92,7 @@ export class WorldManager {
         EventBroker.subscribe(EventKey.LOCATION_RAIDER_DISCOVERED, () => GameState.hiddenObjectsFound++)
         EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
             GameState.alarmMode = event.alarmState
-            if (GameState.alarmMode) SoundManager.playSample(SAMPLE.SFX_Siren, false)
+            if (GameState.alarmMode) SoundManager.playSound(SAMPLE.SFX_Siren, false)
         })
     }
 
@@ -107,11 +107,11 @@ export class WorldManager {
     }
 
     start() {
-        this.nerpRunner.start()
+        this.nerpRunner?.start()
     }
 
     stop() {
-        this.nerpRunner.stop()
+        this.nerpRunner?.stop()
         this.stopLoop()
     }
 

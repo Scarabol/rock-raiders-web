@@ -198,7 +198,7 @@ export class GuiManager {
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_PLAY_SOUND, (event: PlaySoundEvent) => {
-            SoundManager.playSample(event.sample, event.isVoice)
+            SoundManager.playSound(event.sample, event.isVoice)
         })
         EventBroker.subscribe(EventKey.COMMAND_REMOVE_SELECTION, () => {
             EventBroker.publish(new DeselectAll())

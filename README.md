@@ -66,10 +66,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Known Issues
 
-### Important
-
-- Damage and blow up buildings with lava erosion
-
 ### Cosmetics
 
 - One can hear rockies snoring behind walls in Level17
@@ -117,6 +113,7 @@ npm run dev
 
 * [three.js](https://github.com/mrdoob/three.js) - Web based 3D Engine
 * [IDB-Keyval](https://github.com/jakearchibald/idb-keyval) - Indexed cache handling helper
+* [zip.js](https://github.com/gildas-lormeau/zip.js) - JavaScript library to zip and unzip files
 
 ### Media
 

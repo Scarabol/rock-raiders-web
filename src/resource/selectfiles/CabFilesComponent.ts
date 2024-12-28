@@ -16,8 +16,12 @@ export class CabFilesComponent extends AbstractFormFilesComponent {
         if (files.length !== 2) throw new Error(`Unexpected number of files (${files.length}) given`)
         const cabHeader = await files[0].arrayBuffer()
         const cabVolume = await files[1].arrayBuffer()
+        console.time('Parsing CAB files')
         const cabFile = new CabFile(cabHeader, cabVolume, false).parse()
+        console.timeEnd('Parsing CAB files')
+        console.time('Unpack CAB files')
         const allFiles = await cabFile.loadAllFiles()
+        console.timeEnd('Unpack CAB files')
         await Promise.all(allFiles.map(async (f) => {
             await cachePutData(f.fileName.toLowerCase(), f.toBuffer())
             vfs.registerFile(f)

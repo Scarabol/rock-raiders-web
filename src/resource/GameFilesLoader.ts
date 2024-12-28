@@ -42,8 +42,8 @@ export class GameFilesLoader {
                 this.modal.show()
             }
         } catch (e) {
-            console.error('Error reading files files from cache', e)
-            this.loadingLayer.setLoadingMessage('Error reading files files from cache')
+            console.error('Error reading files from cache', e)
+            this.loadingLayer.setLoadingMessage('Error reading files from cache')
             this.modal.show()
         }
         return this.onDonePromise

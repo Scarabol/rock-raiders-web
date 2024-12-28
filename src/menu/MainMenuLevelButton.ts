@@ -36,7 +36,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = () => {
-            SoundManager.playSample(SAMPLE.SFX_ButtonPressed, false)
+            SoundManager.playSound(SAMPLE.SFX_ButtonPressed, false)
             callback()
         }
     }

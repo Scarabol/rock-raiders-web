@@ -31,7 +31,7 @@ export class RockWipeLayer extends ScreenLayer {
     show() {
         super.show()
         this.group.resetAnimation()
-        SoundManager.playSample(SAMPLE.SFX_RockWipe, false)
+        SoundManager.playSound(SAMPLE.SFX_RockWipe, false)
         this.renderer.startRendering(this.scene).then()
         this.groupUpdateInterval = clearIntervalSafe(this.groupUpdateInterval)
         this.groupUpdateInterval = setInterval(() => {

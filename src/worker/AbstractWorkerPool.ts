@@ -50,9 +50,9 @@ export abstract class AbstractWorkerPool<M, R> {
 
     private createTypedWorker(): TypedWorker<WorkerRequestMessage<M>> {
         try {
-            const wadWorker: TypedWorkerFrontend<WorkerRequestMessage<M>, WorkerResponseMessage<R>> = new TypedWorkerFrontend(this.createWorker(),
-                (r: WorkerResponseMessage<R>) => this.onWorkerResponse(wadWorker, r))
-            return wadWorker
+            const workerFrontend: TypedWorkerFrontend<WorkerRequestMessage<M>, WorkerResponseMessage<R>> = new TypedWorkerFrontend(this.createWorker(),
+                (r: WorkerResponseMessage<R>) => this.onWorkerResponse(workerFrontend, r))
+            return workerFrontend
         } catch (e) {
             console.warn('Could not setup threaded worker!\nUsing fallback to main thread, expect reduced performance.', e)
             const wadWorker: TypedWorkerFallback<WorkerRequestMessage<M>, WorkerResponseMessage<R>> = new TypedWorkerFallback(

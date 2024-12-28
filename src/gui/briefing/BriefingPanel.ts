@@ -42,6 +42,8 @@ export class BriefingPanel extends Panel {
         this.hidden = true
         this.setParagraph(0)
         this.objectiveSfxName = ''
+        this.objectiveSfx?.stop()
+        this.objectiveSfx = undefined
     }
 
     setup(dialogTitle: string, objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg, objectiveSfx: string) {
@@ -53,6 +55,8 @@ export class BriefingPanel extends Panel {
         this.updatePosition()
         this.objectiveParagraphs = objectiveText?.split('\\a') || []
         this.objectiveSfxName = objectiveSfx
+        this.objectiveSfx?.stop()
+        this.objectiveSfx = undefined
         BitmapFontWorkerPool.instance.createTextImage(this.cfg.titleFontName, dialogTitle).then((textImage) => {
             this.imgTitle = textImage
             this.notifyRedraw()
@@ -90,6 +94,7 @@ export class BriefingPanel extends Panel {
         super.show()
         this.setParagraph(0)
         if (this.objectiveSfxName) {
+            this.objectiveSfx?.stop()
             this.objectiveSfx = SoundManager.playSound(this.objectiveSfxName, false)
             this.objectiveSfx?.addEventListener('ended', () => EventBroker.publish(new ShowMissionAdvisorEvent(false)))
         }
@@ -102,6 +107,7 @@ export class BriefingPanel extends Panel {
     hide() {
         super.hide()
         this.objectiveSfx?.stop()
+        this.objectiveSfx = undefined
         this.publishEvent(new SetSpaceToContinueEvent(false))
         this.publishEvent(new ShowMissionBriefingEvent(false))
     }

@@ -15,9 +15,9 @@ import { EventBroker } from '../event/EventBroker'
 import { LevelLoader } from '../game/LevelLoader'
 
 export class MainMenuScreen {
-    menuLayers: ScaledLayer[] = []
-    creditsLayer: MainMenuCreditsLayer
-    rockWipeLayer: RockWipeLayer
+    readonly menuLayers: ScaledLayer[] = []
+    readonly creditsLayer: MainMenuCreditsLayer
+    readonly rockWipeLayer: RockWipeLayer
 
     constructor(readonly screenMaster: ScreenMaster) {
         GameConfig.instance.menu.mainMenuFull.menus.forEach((menuCfg) => {
