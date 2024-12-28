@@ -8,11 +8,11 @@ export abstract class AbstractFormFilesComponent implements SelectFilesComponent
     onFilesLoaded: (vfs: VirtualFileSystem) => void = () => {
     }
 
-    protected constructor(args: { labelText: string, btnText: string, fileNames: string[] }) {
+    protected constructor(args: { labelHTML: string, btnText: string, fileNames: string[] }) {
         this.element = document.createElement('form')
         this.element.classList.add('select-files-option')
         const label = this.element.appendChild(document.createElement('div'))
-        label.innerText = args.labelText
+        label.innerHTML = args.labelHTML
         const fileSelectInputs = args.fileNames.map((fileName) => {
             const fileSelect = new FileSelectComponent(fileName)
             this.element.appendChild(fileSelect.label)

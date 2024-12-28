@@ -6,7 +6,7 @@ import { cachePutData } from '../AssetCacheHelper'
 export class WadFilesComponent extends AbstractFormFilesComponent {
     constructor() {
         super({
-            labelText: 'Use local WAD files usually seen with mods:',
+            labelHTML: 'Use local WAD files, usually seen with mods:',
             btnText: 'Start with WAD files',
             fileNames: ['RR0.wad', 'RR1.wad'],
         })

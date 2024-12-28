@@ -6,7 +6,7 @@ import { cachePutData } from '../AssetCacheHelper'
 export class CabFilesComponent extends AbstractFormFilesComponent {
     constructor() {
         super({
-            labelText: 'Use local CAB files usually seen on CD with installer:',
+            labelHTML: 'Use local CAB files, usually seen on CD with installer:',
             btnText: 'Start with CAB files',
             fileNames: ['data1.hdr', 'data1.cab'],
         })

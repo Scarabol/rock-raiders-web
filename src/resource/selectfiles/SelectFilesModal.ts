@@ -3,6 +3,7 @@ import { ZipFilesComponent } from './ZipFilesComponent'
 import { WadFilesComponent } from './WadFilesComponent'
 import { CabFilesComponent } from './CabFilesComponent'
 import { VirtualFileSystem } from '../fileparser/VirtualFileSystem'
+import { IsoFilesComponent } from './IsoFilesComponent'
 
 export class SelectFilesModal {
     readonly rootElement: HTMLElement
@@ -22,6 +23,7 @@ export class SelectFilesModal {
         const optionList = content.appendChild(document.createElement('ol'))
         ;[
             new ZipFilesComponent(),
+            new IsoFilesComponent(),
             new WadFilesComponent(),
             new CabFilesComponent(),
         ].forEach((c) => {

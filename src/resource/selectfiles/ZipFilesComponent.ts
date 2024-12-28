@@ -27,7 +27,7 @@ export class ZipFilesComponent implements SelectFilesComponent {
 
     constructor() {
         const description = this.element.appendChild(document.createElement('div'))
-        description.innerHTML = 'Use game files hosted on <a href="https://archive.org/details/LEGORockRaiders-gamefiles-Eng">archive.org</a> <b>(recommended)</b>:'
+        description.innerHTML = 'Use game files hosted on <a href="https://archive.org/details/LEGORockRaiders-gamefiles-Eng">archive.org</a> <b>(easy setup, no music/videos)</b>:'
         this.content = this.element.appendChild(document.createElement('div'))
         this.btnContainer = this.content.appendChild(document.createElement('div'))
         this.btnContainer.classList.add('select-button-container')

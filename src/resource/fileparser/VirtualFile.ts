@@ -22,7 +22,6 @@ export class VirtualFile {
     private static assertArgs(fileName: string, view: DataView | ArrayBuffer) {
         if (!fileName) throw new Error('No filename given')
         if (!view) throw new Error(`No data given for"${fileName}"`)
-        else if (view.byteLength < 1) throw new Error(`Invalid data given "${fileName}" with length of ${view.byteLength} bytes`)
     }
 
     /**
