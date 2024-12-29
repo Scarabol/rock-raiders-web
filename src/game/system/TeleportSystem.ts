@@ -88,6 +88,7 @@ export class TeleportSystem extends AbstractGameSystem {
                             healthComponent = raider.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
                             raider.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.OxygenCoef))
                             const infoComp = raider.worldMgr.ecs.addComponent(raider.entity, new RaiderInfoComponent(raider.sceneEntity))
+                            this.worldMgr.sceneMgr.addSprite(infoComp.bubbleSprite)
                             infoComp.setHungerIndicator((raider as Raider).foodLevel)
                         } else {
                             healthComponent = raider.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 24, 14, raider.sceneEntity, false, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
