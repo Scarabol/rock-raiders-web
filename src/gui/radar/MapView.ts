@@ -85,7 +85,7 @@ export class MapView extends BaseElement {
             const entities = this.entitiesByOrder.getOrUpdate(event.mapMarkerType, () => new Map())
             switch (event.change) {
                 case MapMarkerChange.UPDATE:
-                    if (event.position && event.radius) entities.set(event.entity, {x: event.position?.x, z: event.position?.z, r: event.radius})
+                    if (event.position) entities.set(event.entity, {x: event.position.x, z: event.position.z, r: event.radius ?? 0})
                     break
                 case MapMarkerChange.REMOVE:
                     entities.delete(event.entity)
