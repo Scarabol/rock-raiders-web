@@ -13,11 +13,14 @@ import { RockWipeLayer } from '../menu/RockWipeLayer'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { LevelLoader } from '../game/LevelLoader'
+import { SoundManager } from '../audio/SoundManager'
+import { SAMPLE } from '../audio/Sample'
 
 export class MainMenuScreen {
     readonly menuLayers: ScaledLayer[] = []
     readonly creditsLayer: MainMenuCreditsLayer
     readonly rockWipeLayer: RockWipeLayer
+    sfxAmbientLoop?: AudioBufferSourceNode
 
     constructor(readonly screenMaster: ScreenMaster) {
         GameConfig.instance.menu.mainMenuFull.menus.forEach((menuCfg) => {
@@ -67,6 +70,8 @@ export class MainMenuScreen {
     }
 
     dispose() {
+        this.sfxAmbientLoop?.stop()
+        this.sfxAmbientLoop = undefined
         this.menuLayers.forEach((l) => this.screenMaster.removeLayer(l))
         this.menuLayers.length = 0
         this.screenMaster.removeLayer(this.rockWipeLayer)
@@ -93,6 +98,10 @@ export class MainMenuScreen {
     }
 
     showMainMenu(index: number = 0) {
+        if (!this.sfxAmbientLoop) {
+            this.sfxAmbientLoop = SoundManager.playSound(SAMPLE.SFX_AmbientMusicLoop, false)
+            this.sfxAmbientLoop.loop = true
+        }
         const oldIndex = this.menuLayers.findIndex((m) => m.active)
         let timeout = 0
         if (oldIndex === 0 || (index === 0 && oldIndex > 0)) {
@@ -123,6 +132,8 @@ export class MainMenuScreen {
     selectLevel(levelName: string | undefined) {
         try {
             if (!levelName) return
+            this.sfxAmbientLoop?.stop()
+            this.sfxAmbientLoop = undefined
             const levelConf = LevelLoader.fromName(levelName) // Get config first in case of error
             this.screenMaster.loadingLayer.show()
             this.menuLayers.forEach((m) => m.hide())

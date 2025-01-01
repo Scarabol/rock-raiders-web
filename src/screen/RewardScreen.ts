@@ -18,6 +18,8 @@ import { imgDataToCanvas } from '../core/ImageHelper'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
+import { SoundManager } from '../audio/SoundManager'
+import { SAMPLE } from '../audio/Sample'
 
 export class RewardScreen {
     readonly cfg: RewardCfg
@@ -41,6 +43,7 @@ export class RewardScreen {
     resultText: string = ''
     resultValues: (SpriteImage | undefined)[] = []
     screenshot?: HTMLCanvasElement
+    sfxAmbientLoop?: AudioBufferSourceNode
 
     constructor(readonly screenMaster: ScreenMaster) {
         this.cfg = GameConfig.instance.reward
@@ -81,7 +84,12 @@ export class RewardScreen {
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer('RewardDescriptionLayer'), 620)
         this.btnLayer = screenMaster.addLayer(new ScaledLayer('RewardButtonLayer'), 650)
         this.btnSave = new RewardScreenButton(this.cfg.saveButton, 'ToolTip_Reward_Save')
-        this.btnSave.onPressed = () => this.saveGameLayer.show()
+        this.btnSave.onPressed = () => {
+            this.sfxAmbientLoop?.stop()
+            this.sfxAmbientLoop = SoundManager.playSound(SAMPLE.SFX_AmbientMusicLoop, false)
+            this.sfxAmbientLoop.loop = true
+            this.saveGameLayer.show()
+        }
         this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton, 'ToolTip_Reward_Advance')
         this.btnAdvance.onPressed = () => this.onAdvancePressed()
         this.btnLayer.addEventListener('pointermove', (event: PointerEvent): boolean => {
@@ -134,6 +142,9 @@ export class RewardScreen {
         this.saveGameLayer.onItemAction = (item: MainMenuBaseItem) => {
             if (item.actionName.equalsIgnoreCase('next')) {
                 this.saveGameLayer.hide()
+                this.sfxAmbientLoop?.stop()
+                this.sfxAmbientLoop = SoundManager.playSound(SAMPLE.SFX_MusicLoop, false)
+                this.sfxAmbientLoop.loop = true
             } else if (item.actionName.toLowerCase().startsWith('save_game_')) {
                 if (SaveGameManager.hasSaveGame(item.targetIndex)) {
                     this.overwriteLayer.overwritePanel.setIndex(item.targetIndex)
@@ -141,11 +152,17 @@ export class RewardScreen {
                         SaveGameManager.saveGame(item.targetIndex, this.screenshot)
                         this.overwriteLayer.hide()
                         this.saveGameLayer.hide()
+                        this.sfxAmbientLoop?.stop()
+                        this.sfxAmbientLoop = SoundManager.playSound(SAMPLE.SFX_MusicLoop, false)
+                        this.sfxAmbientLoop.loop = true
                     }
                     this.overwriteLayer.show()
                 } else {
                     SaveGameManager.saveGame(item.targetIndex, this.screenshot)
                     this.saveGameLayer.hide()
+                    this.sfxAmbientLoop?.stop()
+                    this.sfxAmbientLoop = SoundManager.playSound(SAMPLE.SFX_MusicLoop, false)
+                    this.sfxAmbientLoop.loop = true
                 }
             } else {
                 console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
@@ -161,6 +178,8 @@ export class RewardScreen {
     }
 
     dispose() {
+        this.sfxAmbientLoop?.stop()
+        this.sfxAmbientLoop = undefined
         this.screenMaster.removeLayer(this.backgroundLayer)
         this.screenMaster.removeLayer(this.resultsLayer)
         this.screenMaster.removeLayer(this.descriptionTextLayer)
@@ -170,6 +189,8 @@ export class RewardScreen {
     }
 
     onAdvancePressed() {
+        this.sfxAmbientLoop?.stop()
+        this.sfxAmbientLoop = undefined
         this.backgroundLayer.hide()
         this.resultsLayer.hide()
         this.descriptionTextLayer.hide()
@@ -181,6 +202,10 @@ export class RewardScreen {
 
     showGameResult(result: GameResult) {
         console.log('Your game result', result)
+        if (!this.sfxAmbientLoop) {
+            this.sfxAmbientLoop = SoundManager.playSound(SAMPLE.SFX_MusicLoop, false)
+            this.sfxAmbientLoop.loop = true
+        }
         BitmapFontWorkerPool.instance.createTextImage(this.cfg.titleFont, result.levelFullName)
             .then((textImage) => this.levelFullNameImg = textImage)
         this.btnSave.disabled = result.state !== GameResultState.COMPLETE
