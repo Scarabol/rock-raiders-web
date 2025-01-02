@@ -1,4 +1,4 @@
-import { PositionalAudio } from 'three'
+import { Object3D, PositionalAudio } from 'three'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { SceneMesh } from './SceneMesh'
@@ -10,7 +10,7 @@ export class SceneAudioMesh extends SceneMesh {
 
     update(elapsedMs: number) {
         const sfxVolume = SaveGameManager.getSfxVolume()
-        if (sfxVolume <= 0) return
+        if (sfxVolume <= 0 || !this.isVisible()) return
         const sfxName = this.userData.sfxNameAnimation || ''
         if (!sfxName || (this.lastSfxName === sfxName && this.audioNode?.isPlaying)) return
         this.lastSfxName = sfxName
@@ -29,6 +29,15 @@ export class SceneAudioMesh extends SceneMesh {
         this.audioNode.setBuffer(audioBuffer)
         this.audioNode.play()
         SoundManager.playingAudio.add(this.audioNode)
+    }
+
+    private isVisible(): boolean {
+        if (!this.visible) return false
+        let parent: Object3D = this.parent
+        while (parent?.visible) {
+            parent = parent.parent
+        }
+        return !!parent?.visible
     }
 
     dispose() {

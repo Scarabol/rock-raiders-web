@@ -68,7 +68,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Cosmetics
 
-- One can hear rockies snoring behind walls in Level17
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Advisor not shown in tutorials near icon panel
 - Surface object pointer in tutorials removes surface highlight color as in original
