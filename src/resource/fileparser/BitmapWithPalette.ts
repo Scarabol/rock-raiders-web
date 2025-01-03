@@ -625,13 +625,16 @@ export class BitmapWithPalette extends ImageData {
 
     applyAlphaByIndex(alphaIndex: number): BitmapWithPalette {
         if (alphaIndex || alphaIndex === 0) {
-            const alphaColor = this.palette?.[alphaIndex] // XXX fails for a102_bigtyre.bmp
+            const fallbackColor = {red: this.data[0], green: this.data[1], blue: this.data[2]} // XXX color not in palette for a102_bigtyre.bmp or a277_head_stud.bmp
+            const alphaColor = this.palette?.[alphaIndex] ?? fallbackColor
             if (alphaColor) {
                 const data = this.data
                 for (let c = 0; c < data.length; c += 4) {
                     data[c + 3] = alphaColor.red === data[c] && alphaColor.green === data[c + 1] && alphaColor.blue === data[c + 2] ? 0 : 255
                 }
             }
+        } else {
+            console.warn(`Invalid alpha index (${alphaIndex}) given`)
         }
         return this
     }
