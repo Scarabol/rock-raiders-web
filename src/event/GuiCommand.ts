@@ -50,18 +50,6 @@ export class PlaySoundEvent extends BaseEvent {
     }
 }
 
-export class RemoveSelection extends BaseEvent {
-    constructor() {
-        super(EventKey.COMMAND_REMOVE_SELECTION)
-    }
-}
-
-export class CancelBuildMode extends BaseEvent {
-    constructor() {
-        super(EventKey.COMMAND_CANCEL_BUILD_MODE)
-    }
-}
-
 export class SelectBuildMode extends BaseEvent {
     entityType: EntityType
 

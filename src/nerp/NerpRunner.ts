@@ -259,11 +259,12 @@ export class NerpRunner {
         // 0 = 0x00 allow any click anywhere anytime
         // 3 = 0x11 disallow invalid clicks
         // 4095 = 0x111111111111 set all flags? (seen in Tutorial01 level)
-        if (value !== 0) { // holds for all known levels
+        if (value === 4095) {
             // TODO Only used in tutorials
-            console.warn('NERP function "setTutorialFlags" not yet implemented', value)
-        } else {
+        } else if (value === 0) {
             // TODO Reset all flags?
+        } else {
+            console.warn('NERP function "setTutorialFlags" not yet implemented', value)
         }
     }
 
@@ -527,18 +528,8 @@ export class NerpRunner {
         EventBroker.publish(new MaterialAmountChanged())
     }
 
-    /**
-     * Tutorial01
-     * - Raider should pick up shovel to clear rubble, but not automatically start clearing it
-     * - Once job assigned by player, raider should continue and clear rubble
-     * Tutorial02
-     * - Raider should start drilling when drill job created
-     * Tutorial03
-     * - Raider should pick shovel and start clearing rubble
-     */
     disallowAll() {
         // TODO Only used in tutorials
-        console.warn('Disallow allow not yet implemented')
     }
 
     getPoweredPowerStationsBuilt() {

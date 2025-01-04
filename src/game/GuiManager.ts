@@ -142,7 +142,7 @@ export class GuiManager {
         EventBroker.subscribe(EventKey.COMMAND_SELECT_BUILD_MODE, (event: SelectBuildMode) => {
             sceneMgr.setBuildModeSelection(event.entityType)
         })
-        EventBroker.subscribe(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
+        EventBroker.subscribe(EventKey.GUI_GO_BACK_BUTTON_CLICKED, () => {
             sceneMgr.setBuildModeSelection(undefined)
         })
         EventBroker.subscribe(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
@@ -200,9 +200,6 @@ export class GuiManager {
         EventBroker.subscribe(EventKey.COMMAND_PLAY_SOUND, (event: PlaySoundEvent) => {
             SoundManager.playSound(event.sample, event.isVoice)
         })
-        EventBroker.subscribe(EventKey.COMMAND_REMOVE_SELECTION, () => {
-            EventBroker.publish(new DeselectAll())
-        })
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             SaveGameManager.savePreferences()
             SoundManager.setupSfxAudioTarget()
@@ -250,9 +247,17 @@ export class GuiManager {
             if (event.viewMode === CameraViewMode.BIRD) {
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraBird)
             } else if (event.viewMode === CameraViewMode.FPV) {
+                if (!entity.sceneEntity.camFPVJoint) {
+                    console.warn('Entity does not have FPV joint')
+                    return
+                }
                 entity.sceneEntity.camFPVJoint.add(worldMgr.sceneMgr.cameraFPV)
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraFPV)
             } else if (event.viewMode === CameraViewMode.SHOULDER) {
+                if (!entity.sceneEntity.camShoulderJoint) {
+                    console.warn('Entity does not have shoulder joint')
+                    return
+                }
                 entity.sceneEntity.camShoulderJoint.add(worldMgr.sceneMgr.cameraShoulder)
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraShoulder)
             }
