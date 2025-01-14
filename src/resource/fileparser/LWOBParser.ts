@@ -141,7 +141,6 @@ export class LWOBParser {
             )
         }
         this.vertices = new Float32Array(vertices)
-        this.uvs = new Float32Array(vertices.length / 3 * 2) // x/y UV coords per vertex
     }
 
     parseSurfaceNames(chunkSize: number): void {
@@ -151,7 +150,8 @@ export class LWOBParser {
 
     parsePolygons(chunkSize: number): void {
         let offset = 0
-        let currentIndex = 0
+        const vertices = []
+        const uvs = []
         const indices = []
         while (offset < chunkSize) {
             const numIndices = this.lwoReader.readUint16()
@@ -161,51 +161,63 @@ export class LWOBParser {
             }
             const materialIndex = this.lwoReader.readUint16() - 1
             this.geometry.addGroup(indices.length, (numIndices - 2) * 3, materialIndex)
+            const faceUvs = this.uvData?.uvs[this.geometry.groups.length - 1] ?? []
+            const addVert = (vertIndex: number, faceUvIndex: number = -1) => {
+                for (let i = 0; i < 3; i++) {
+                    vertices.push(this.vertices[vertIndex * 3 + i] ?? 0)
+                }
+                uvs.push(
+                    faceUvs[faceUvIndex * 2 + 0] ?? 0,
+                    1 - (faceUvs[faceUvIndex * 2 + 1] ?? 1),
+                )
+                indices.push(indices.length)
+            }
             switch (numIndices) {
                 case 3:
-                    indices[currentIndex++] = faceIndices[2]
-                    indices[currentIndex++] = faceIndices[1]
-                    indices[currentIndex++] = faceIndices[0]
+                    addVert(faceIndices[2], 2)
+                    addVert(faceIndices[1], 1)
+                    addVert(faceIndices[0], 0)
                     break
                 case 4: // split quad face into two triangles
-                    // XXX Splitting the face here, breaks the UV mapping for previous triangles, see mphead.lwo
-                    indices[currentIndex++] = faceIndices[2]
-                    indices[currentIndex++] = faceIndices[1]
-                    indices[currentIndex++] = faceIndices[0]
-                    indices[currentIndex++] = faceIndices[3]
-                    indices[currentIndex++] = faceIndices[2]
-                    indices[currentIndex++] = faceIndices[0]
+                    addVert(faceIndices[2], 2)
+                    addVert(faceIndices[1], 1)
+                    addVert(faceIndices[0], 0)
+                    addVert(faceIndices[3], 3)
+                    addVert(faceIndices[2], 2)
+                    addVert(faceIndices[0], 0)
                     break
                 case 5: // split face into triangles
-                    indices[currentIndex++] = faceIndices[2]
-                    indices[currentIndex++] = faceIndices[1]
-                    indices[currentIndex++] = faceIndices[0]
-                    indices[currentIndex++] = faceIndices[4]
-                    indices[currentIndex++] = faceIndices[2]
-                    indices[currentIndex++] = faceIndices[0]
-                    indices[currentIndex++] = faceIndices[3]
-                    indices[currentIndex++] = faceIndices[2]
-                    indices[currentIndex++] = faceIndices[4]
+                    addVert(faceIndices[2], 2)
+                    addVert(faceIndices[1], 1)
+                    addVert(faceIndices[0], 0)
+                    addVert(faceIndices[4], 4)
+                    addVert(faceIndices[2], 2)
+                    addVert(faceIndices[0], 0)
+                    addVert(faceIndices[3], 3)
+                    addVert(faceIndices[2], 2)
+                    addVert(faceIndices[4], 4)
                     break
                 case 6:
-                    indices[currentIndex++] = faceIndices[3]
-                    indices[currentIndex++] = faceIndices[1]
-                    indices[currentIndex++] = faceIndices[0]
-                    indices[currentIndex++] = faceIndices[3]
-                    indices[currentIndex++] = faceIndices[2]
-                    indices[currentIndex++] = faceIndices[1]
-                    indices[currentIndex++] = 0 // XXX ??? ok: 0, 3 in [0, 25]
-                    indices[currentIndex++] = faceIndices[3]
-                    indices[currentIndex++] = faceIndices[0]
-                    indices[currentIndex++] = 3 // XXX ??? ok: 0, 3 in [0, 25]
-                    indices[currentIndex++] = faceIndices[3]
-                    indices[currentIndex++] = faceIndices[0]
+                    addVert(faceIndices[3], 3)
+                    addVert(faceIndices[1], 1)
+                    addVert(faceIndices[0], 0)
+                    addVert(faceIndices[3], 3)
+                    addVert(faceIndices[2], 2)
+                    addVert(faceIndices[1], 1)
+                    addVert(0) // XXX ??? ok: 0, 3 in [0, 25]
+                    addVert(faceIndices[3], 3)
+                    addVert(faceIndices[0], 0)
+                    addVert(3) // XXX ??? ok: 0, 3 in [0, 25]
+                    addVert(faceIndices[3], 3)
+                    addVert(faceIndices[0], 0)
                     break
                 default:
                     console.warn(`Expected face with 3, 4, 5 or 6 indices but got ${numIndices} instead`)
             }
             offset += 2 + (numIndices * 2) + 2
         }
+        this.vertices = new Float32Array(vertices)
+        this.uvs = new Float32Array(uvs)
         this.indices = new Uint16Array(indices)
         if (this.verbose) console.log('indices', this.indices)
     }
@@ -450,7 +462,8 @@ export class LWOBParser {
             }
         }
 
-        const textureName = this.uvData?.mapNames[materialIndex]
+        const uvIndex = this.uvData?.names.findIndex((name) => name === materialName)
+        const textureName = this.uvData?.mapNames[uvIndex]
         if (textureName && textureName.toLowerCase() !== 'null') {
             this.textureLoader.load(textureName.toLowerCase(), (t) => material.setTextures(t))
         } else {
