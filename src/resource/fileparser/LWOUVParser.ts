@@ -5,8 +5,7 @@ import { degToRad } from 'three/src/math/MathUtils'
 export class UVData {
     names: string[] = []
     mapNames: string[] = []
-    uvs: number[] = []
-    rotations: Vector3[] = []
+    uvs: number[][] = []
 }
 
 export class LWOUVParser {
@@ -49,13 +48,14 @@ export class LWOUVParser {
             if (this.verbose) console.log('tupleLine', tupleLine)
             fileIndex++
             const [uvIndex, uvLength] = tupleLine.split(' ').map((n) => parseInt(n))
+            result.uvs[uvIndex] = []
             if (this.verbose) console.log(`tuple index is ${uvIndex} and length is ${uvLength}`)
             for (let t = 0; t < uvLength; t++) {
                 const uvLine = lines[fileIndex]
                 if (this.verbose) console.log(uvLine)
                 const [u, v, w] = uvLine.split(' ').map((n) => parseFloat(n))
                 if (w !== 0) console.warn(`Unexpected non zero third UV value w = ${w} given`)
-                result.uvs.push(u, v)
+                result.uvs[uvIndex].push(u, v)
                 fileIndex++
             }
         }
@@ -68,14 +68,13 @@ export class LWOUVParser {
                 console.error(`Unexpected tuple length ${tupleLength}`)
                 continue
             }
-            const rotation = lines[fileIndex] // XXX Is it actual rotation? Numbers look like angle in degree
-            result.rotations.push(new Vector3(...rotation.split(' ').map((n) => degToRad(parseFloat(n)))))
+            // OXRot OYRot OZRot
             fileIndex++
-            // const unknown0 = lines[fileIndex] // XXX Mostly 0,0,0 maybe translation/center
+            // XRotation YRotation ZRotation
             fileIndex++
-            // const unknown1 = lines[fileIndex]
+            // XPosition YPosition ZPosition
             fileIndex++
-            // const unknown2 = lines[fileIndex]
+            // XScale YScale ZScale
             fileIndex++
         }
         if (this.verbose) console.log(result)
