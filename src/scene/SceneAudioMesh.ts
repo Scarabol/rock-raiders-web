@@ -32,12 +32,11 @@ export class SceneAudioMesh extends SceneMesh {
     }
 
     private isVisible(): boolean {
-        if (!this.visible) return false
-        let parent: Object3D = this.parent
-        while (parent?.visible) {
-            parent = parent.parent
+        let hiddenObj: Object3D | null = this
+        while (hiddenObj?.visible) {
+            hiddenObj = hiddenObj.parent
         }
-        return !!parent?.visible
+        return !hiddenObj
     }
 
     dispose() {
