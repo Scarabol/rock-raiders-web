@@ -36,6 +36,7 @@ export class Supervisor {
     assignJobsTimer: number = 0
     checkClearRubbleTimer: number = 0
     autoClearRubble: boolean = true
+    scanUnclearedRubble: boolean = true
 
     constructor(readonly worldMgr: WorldManager) {
         EventBroker.subscribe(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
@@ -59,12 +60,13 @@ export class Supervisor {
             this.assignJobsTimer = 0
             this.checkClearRubbleTimer = 0
             this.autoClearRubble = event.levelConf.levelName.toLowerCase() !== 'tutorial01'
+            this.scanUnclearedRubble = event.levelConf.levelName.toLowerCase() !== 'tutorial08'
         })
     }
 
     update(elapsedMs: number) {
         this.assignJobs(elapsedMs)
-        this.checkUnclearedRubble(elapsedMs)
+        if (this.scanUnclearedRubble) this.checkUnclearedRubble(elapsedMs)
     }
 
     assignJobs(elapsedMs: number) {
