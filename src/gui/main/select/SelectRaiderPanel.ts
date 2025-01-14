@@ -4,10 +4,10 @@ import { BuildingsChangedEvent, SelectionChanged } from '../../../event/LocalEve
 import { EntityType } from '../../../game/model/EntityType'
 import { Panel } from '../../base/Panel'
 import { IconPanelButton } from '../IconPanelButton'
-import { SelectBasePanel } from './SelectBasePanel'
+import { IconSubPanel } from '../IconSubPanel'
 import { GameConfig } from '../../../cfg/GameConfig'
 
-export class SelectRaiderPanel extends SelectBasePanel {
+export class SelectRaiderPanel extends IconSubPanel {
     getToolItem: IconPanelButton
     trainItem: IconPanelButton
 

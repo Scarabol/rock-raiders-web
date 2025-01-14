@@ -26,6 +26,9 @@ import { SurfaceType } from './terrain/SurfaceType'
  * - Raider should start drilling when drill job created
  * Tutorial03
  * - Raider should pick shovel and start clearing rubble
+ * Tutorial08
+ * - Raider should not pick up shovel for clearing
+ * - Raider should not pick crystal until moved to same surface
  */
 export class Supervisor {
     jobs: Job[] = []

@@ -9,15 +9,12 @@ import { EventBroker } from '../../event/EventBroker'
 import { GuiBackButtonClicked } from '../../event/LocalEvents'
 
 export class IconSubPanel extends Panel {
-    backBtn: Button
     iconPanelButtons: IconPanelButton[] = []
 
     constructor(numOfItems: number, onBackPanel?: Panel) {
         super()
         if (onBackPanel) {
-            this.backBtn = this.addChild(new Button(GameConfig.instance.interfaceBackButton))
-            this.backBtn.onClick = () => {
-                this.toggleState(() => onBackPanel.toggleState())
+            this.addChild(new Button(GameConfig.instance.interfaceBackButton)).onClick = () => {
                 EventBroker.publish(new GuiBackButtonClicked())
             }
         }

@@ -2,10 +2,10 @@ import { EventKey } from '../../../event/EventKeyEnum'
 import { VehicleBeamUp, VehicleCallMan } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { Panel } from '../../base/Panel'
-import { SelectBasePanel } from './SelectBasePanel'
+import { IconSubPanel } from '../IconSubPanel'
 import { GameConfig } from '../../../cfg/GameConfig'
 
-export class SelectVehicleEmptyPanel extends SelectBasePanel {
+export class SelectVehicleEmptyPanel extends IconSubPanel {
     vehicleHasJob: boolean = false
 
     constructor(onBackPanel: Panel) {

@@ -144,6 +144,7 @@ export class GuiManager {
         })
         EventBroker.subscribe(EventKey.GUI_GO_BACK_BUTTON_CLICKED, () => {
             sceneMgr.setBuildModeSelection(undefined)
+            EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
             entityMgr.selection.surface?.site?.cancelSite()

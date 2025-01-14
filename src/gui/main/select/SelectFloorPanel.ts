@@ -2,11 +2,11 @@ import { EventKey } from '../../../event/EventKeyEnum'
 import { CreatePowerPath, MakeRubble, PlaceFence } from '../../../event/GuiCommand'
 import { RaidersAmountChangedEvent, SelectionChanged } from '../../../event/LocalEvents'
 import { Panel } from '../../base/Panel'
-import { SelectBasePanel } from './SelectBasePanel'
+import { IconSubPanel } from '../IconSubPanel'
 import { EntityType } from '../../../game/model/EntityType'
 import { GameConfig } from '../../../cfg/GameConfig'
 
-export class SelectFloorPanel extends SelectBasePanel {
+export class SelectFloorPanel extends IconSubPanel {
     isGround: boolean = false
     hasRaider: boolean = false
     isPowerPath: boolean = false

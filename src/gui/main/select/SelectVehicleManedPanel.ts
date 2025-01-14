@@ -2,11 +2,11 @@ import { EventKey } from '../../../event/EventKeyEnum'
 import { CameraViewMode, ChangeCameraEvent, VehicleBeamUp, VehicleDriverGetOut, VehicleLoad, VehicleUnload } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { Panel } from '../../base/Panel'
-import { SelectBasePanel } from './SelectBasePanel'
+import { IconSubPanel } from '../IconSubPanel'
 import { IconPanelButton } from '../IconPanelButton'
 import { GameConfig } from '../../../cfg/GameConfig'
 
-export class SelectVehicleManedPanel extends SelectBasePanel {
+export class SelectVehicleManedPanel extends IconSubPanel {
     readonly upgradeItem: IconPanelButton
     noVehicleWithCarried: boolean = false
     someVehicleCanLoad: boolean = false

@@ -2,11 +2,11 @@ import { EventKey } from '../../../event/EventKeyEnum'
 import { CreateClearRubbleJob, PlaceFence } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { Panel } from '../../base/Panel'
-import { SelectBasePanel } from './SelectBasePanel'
+import { IconSubPanel } from '../IconSubPanel'
 import { EntityType } from '../../../game/model/EntityType'
 import { GameConfig } from '../../../cfg/GameConfig'
 
-export class SelectRubblePanel extends SelectBasePanel {
+export class SelectRubblePanel extends IconSubPanel {
     hasRubble: boolean = false
     canPlaceFence: boolean = false
 

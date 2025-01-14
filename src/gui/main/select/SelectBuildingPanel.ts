@@ -3,12 +3,12 @@ import { BeamUpBuilding, ChangeBuildingPowerState, ChangeTooltip, RepairBuilding
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { Panel } from '../../base/Panel'
 import { IconPanelToggleButton } from '../IconPanelToggleButton'
-import { SelectBasePanel } from './SelectBasePanel'
+import { IconSubPanel } from '../IconSubPanel'
 import { TOOLTIP_DELAY_SFX } from '../../../params'
 import { GameConfig } from '../../../cfg/GameConfig'
 import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 
-export class SelectBuildingPanel extends SelectBasePanel {
+export class SelectBuildingPanel extends IconSubPanel {
     buildingNeedsRepair: boolean = false
     buildingCanSwitchPower: boolean = false
     buildingPowerSwitchState: boolean = false

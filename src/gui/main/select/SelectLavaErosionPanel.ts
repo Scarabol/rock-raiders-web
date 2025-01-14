@@ -2,10 +2,10 @@ import { EventKey } from '../../../event/EventKeyEnum'
 import { RepairLava } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { Panel } from '../../base/Panel'
-import { SelectBasePanel } from './SelectBasePanel'
+import { IconSubPanel } from '../IconSubPanel'
 import { GameConfig } from '../../../cfg/GameConfig'
 
-export class SelectLavaErosionPanel extends SelectBasePanel {
+export class SelectLavaErosionPanel extends IconSubPanel {
     private hasRepairLava: boolean = false
 
     constructor(onBackPanel: Panel) {
