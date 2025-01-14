@@ -249,9 +249,27 @@ export class GuiButtonBlinkEvent extends BaseEvent {
     }
 }
 
-export class GuiButtonClicked extends BaseEvent {
-    constructor(eventKey: EventKey.GUI_GO_BACK_BUTTON_CLICKED | EventKey.GUI_BUILD_BUILDING_BUTTON_CLICKED | EventKey.GUI_GET_TOOL_BUTTON_CLICKED | EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED) {
-        super(eventKey)
+export class GuiBackButtonClicked extends BaseEvent {
+    constructor() {
+        super(EventKey.GUI_GO_BACK_BUTTON_CLICKED)
+    }
+}
+
+export class GuiBuildButtonClicked extends BaseEvent {
+    constructor() {
+        super(EventKey.GUI_BUILD_BUILDING_BUTTON_CLICKED)
+    }
+}
+
+export class GuiGetToolButtonClicked extends BaseEvent {
+    constructor() {
+        super(EventKey.GUI_GET_TOOL_BUTTON_CLICKED)
+    }
+}
+
+export class GuiTrainRaiderButtonClicked extends BaseEvent {
+    constructor() {
+        super(EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED)
     }
 }
 

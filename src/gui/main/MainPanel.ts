@@ -1,6 +1,6 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { CameraViewMode, ChangeCameraEvent } from '../../event/GuiCommand'
-import { BuildingsChangedEvent, GuiButtonClicked, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType, ShowMissionBriefingEvent } from '../../event/LocalEvents'
+import { BuildingsChangedEvent, GuiBuildButtonClicked, GuiGetToolButtonClicked, GuiTrainRaiderButtonClicked, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { RequestedRaidersChanged } from '../../event/WorldEvents'
 import { EntityType, LARGE_VEHICLE_TYPES, SMALL_VEHICLE_TYPES } from '../../game/model/EntityType'
 import { MAX_RAIDER_REQUEST } from '../../params'
@@ -65,12 +65,12 @@ export class MainPanel extends Panel {
         const trainRaiderPanel = this.addSubPanel(new TrainRaiderPanel(selectRaiderPanel))
         selectRaiderPanel.trainItem.onClick = () => {
             selectRaiderPanel.toggleState(() => trainRaiderPanel.toggleState())
-            this.publishEvent(new GuiButtonClicked(EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED))
+            this.publishEvent(new GuiTrainRaiderButtonClicked())
         }
         const getToolPanel = this.addSubPanel(new GetToolPanel(selectRaiderPanel))
         selectRaiderPanel.getToolItem.onClick = () => {
             selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
-            this.publishEvent(new GuiButtonClicked(EventKey.GUI_GET_TOOL_BUTTON_CLICKED))
+            this.publishEvent(new GuiGetToolButtonClicked())
         }
         const selectVehicleEmptyPanel = this.addSubPanel(new SelectVehicleEmptyPanel(this.mainPanel))
         const selectVehicleManedPanel = this.addSubPanel(new SelectVehicleManedPanel(this.mainPanel))
@@ -96,7 +96,7 @@ export class MainPanel extends Panel {
         buildingItem.isDisabled = () => false
         buildingItem.onClick = () => {
             this.mainPanel.toggleState(() => buildingPanel.toggleState())
-            EventBroker.publish(new GuiButtonClicked(EventKey.GUI_BUILD_BUILDING_BUTTON_CLICKED))
+            EventBroker.publish(new GuiBuildButtonClicked())
         }
         const smallVehicleItem = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_BuildSmallVehicle')
         smallVehicleItem.isDisabled = () => false
