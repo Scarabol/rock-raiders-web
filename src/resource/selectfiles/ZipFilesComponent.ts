@@ -17,19 +17,17 @@ export class ZipFilesComponent implements SelectFilesComponent {
         '🇫🇷': 'French',
     }
 
-    readonly element: HTMLElement = document.createElement('div')
+    readonly label: HTMLElement = document.createElement('div')
+    readonly panel: HTMLElement = document.createElement('div')
     readonly progressByUrl: Map<string, HTMLProgressElement> = new Map<string, HTMLProgressElement>()
-    readonly content: HTMLElement
     readonly btnContainer: HTMLElement
     readonly buttons: HTMLButtonElement[] = []
     onFilesLoaded: (vfs: VirtualFileSystem) => void = () => {
     }
 
     constructor() {
-        const description = this.element.appendChild(document.createElement('div'))
-        description.innerHTML = 'Use game files hosted on <a href="https://archive.org/details/LEGORockRaiders-gamefiles-Eng">archive.org</a> <b>(one-click-setup, no music/videos)</b>:'
-        this.content = this.element.appendChild(document.createElement('div'))
-        this.btnContainer = this.content.appendChild(document.createElement('div'))
+        this.label.innerHTML = 'Use game files hosted on <a href="https://archive.org/details/LEGORockRaiders-gamefiles-Eng">archive.org</a> <b>(one-click-setup, no music/videos)</b>:'
+        this.btnContainer = this.panel.appendChild(document.createElement('div'))
         this.btnContainer.classList.add('select-button-container')
         Object.entries(ZipFilesComponent.languages).forEach(([flag, language]) => {
             const btn = this.btnContainer.appendChild(document.createElement('button'))
@@ -44,14 +42,14 @@ export class ZipFilesComponent implements SelectFilesComponent {
     async onLanguageSelected(language: string) {
         try {
             this.buttons.forEach((btn) => btn.disabled = true)
-            this.content.replaceChildren()
+            this.panel.replaceChildren()
             const zipFileContent = await this.downloadZipFile(language)
             const vfs = new VirtualFileSystem()
             await this.readZipFile(vfs, zipFileContent)
             this.onFilesLoaded(vfs)
         } finally {
             this.buttons.forEach((btn) => btn.disabled = false)
-            this.content.replaceChildren(this.btnContainer)
+            this.panel.replaceChildren(this.btnContainer)
         }
     }
 
@@ -77,7 +75,7 @@ export class ZipFilesComponent implements SelectFilesComponent {
 
     setProgress(name: string, done: number, total: number): void {
         const progress = this.progressByUrl.getOrUpdate(name, () => {
-            const parent = this.content.appendChild(document.createElement('div'))
+            const parent = this.panel.appendChild(document.createElement('div'))
             parent.classList.add('select-files-progress')
             const label = parent.appendChild(document.createElement('label'))
             label.innerText = name

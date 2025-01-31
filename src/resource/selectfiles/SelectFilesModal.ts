@@ -20,17 +20,33 @@ export class SelectFilesModal {
         const hints = content.appendChild(document.createElement('div'))
         hints.appendChild(document.createElement('b')).innerText = 'Game resources not included!'
         hints.appendChild(document.createElement('div')).innerText = 'Select an option below to start:'
-        const optionList = content.appendChild(document.createElement('ol'))
+        const optionList = content.appendChild(document.createElement('div'))
+        optionList.classList.add('select-files-accordion')
         ;[
             new ZipFilesComponent(),
             new IsoFilesComponent(),
             new WadFilesComponent(),
             new CabFilesComponent(),
-        ].forEach((c) => {
-            const option = optionList.appendChild(document.createElement('li'))
+        ].forEach((c, index) => {
             c.onFilesLoaded = this.onFilesLoaded.bind(this)
-            option.appendChild(c.element)
+            this.addOption(optionList, c, index)
         })
+    }
+
+    private addOption(optionList: HTMLElement, c: { label: HTMLElement, panel: HTMLElement }, index: number) {
+        const option = optionList.appendChild(document.createElement('div'))
+        option.classList.add('select-files-accordion-option')
+        const input = option.appendChild(document.createElement('input'))
+        input.type = 'radio'
+        input.name = 'select-files-accordion'
+        input.id = `select-files-accordion-option-${index}`
+        input.checked = index === 0
+        input.style.display = 'none'
+        const label = option.appendChild(document.createElement('label'))
+        label.htmlFor = input.id
+        label.appendChild(c.label)
+        c.panel.classList.add('select-files-accordion-panel')
+        option.appendChild(c.panel)
     }
 
     show(): void {

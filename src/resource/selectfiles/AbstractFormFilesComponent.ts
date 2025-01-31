@@ -3,24 +3,25 @@ import { FileSelectComponent } from './FileSelectComponent'
 import { VirtualFileSystem } from '../fileparser/VirtualFileSystem'
 
 export abstract class AbstractFormFilesComponent implements SelectFilesComponent {
-    readonly element: HTMLElement
+    readonly label: HTMLElement
+    readonly panel: HTMLElement
 
     onFilesLoaded: (vfs: VirtualFileSystem) => void = () => {
     }
 
     protected constructor(args: { labelHTML: string, btnText: string, fileNames: string[] }) {
-        this.element = document.createElement('form')
-        this.element.classList.add('select-files-option')
-        const label = this.element.appendChild(document.createElement('div'))
-        label.innerHTML = args.labelHTML
+        this.label = document.createElement('div')
+        this.label.innerHTML = args.labelHTML
+        this.panel = document.createElement('form')
+        this.panel.classList.add('select-files-option')
         const fileSelectInputs = args.fileNames.map((fileName) => {
             const fileSelect = new FileSelectComponent(fileName)
-            this.element.appendChild(fileSelect.label)
+            this.panel.appendChild(fileSelect.label)
             return fileSelect.input
         })
-        const btnStart = this.element.appendChild(document.createElement('button'))
+        const btnStart = this.panel.appendChild(document.createElement('button'))
         btnStart.innerText = args.btnText
-        this.element.addEventListener('submit', async (e) => {
+        this.panel.addEventListener('submit', async (e) => {
             try {
                 e.preventDefault()
                 btnStart.disabled = true
