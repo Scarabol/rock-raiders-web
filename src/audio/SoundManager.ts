@@ -18,37 +18,46 @@ export class SoundManager {
         })
         this.playingAudio.clear()
         EventBroker.subscribe(EventKey.PAUSE_GAME, () => this.playingAudio.forEach((a) => a.pause())) // XXX What if audio was paused for other reasons
-        EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => this.playingAudio.forEach((a) => a.play()))
+        EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => this.playingAudio.forEach((a) => !a.isPlaying && a.play()))
     }
 
     static setupSfxAudioTarget(): GainNode {
-        SoundManager.sfxAudioTarget = SoundManager.sfxAudioTarget || AudioContext.getContext().createGain()
-        SoundManager.sfxAudioTarget.gain.value = SaveGameManager.getSfxVolume()
+        this.sfxAudioTarget = this.sfxAudioTarget || AudioContext.getContext().createGain()
+        this.sfxAudioTarget.gain.value = SaveGameManager.getSfxVolume()
         if (SaveGameManager.currentPreferences.toggleSfx) {
-            SoundManager.sfxAudioTarget.connect(AudioContext.getContext().destination)
+            this.sfxAudioTarget.connect(AudioContext.getContext().destination)
         } else {
-            SoundManager.sfxAudioTarget.disconnect()
+            this.sfxAudioTarget.disconnect()
         }
-        return SoundManager.sfxAudioTarget
+        return this.sfxAudioTarget
     }
 
-    static playSound(soundName: string, isVoice: boolean): AudioBufferSourceNode | undefined {
-        if (isVoice && this.skipVoiceLines) return undefined
-        this.skipVoiceLines = isVoice
+    static playVoice(soundName: string): AudioBufferSourceNode | undefined {
+        if (this.skipVoiceLines) return undefined
+        this.skipVoiceLines = true
+        const sound = this.playSfxSound(soundName)
+        sound.addEventListener('ended', () => {
+            setTimeout(() => {
+                this.skipVoiceLines = false
+            }, NerpRunner.timeAddedAfterSample)
+        })
+        return sound
+    }
+
+    static playLoopSound(soundName: string): AudioBufferSourceNode | undefined {
+        const sound = this.playSfxSound(soundName)
+        if (sound) sound.loop = true
+        return sound
+    }
+
+    static playSfxSound(soundName: string): AudioBufferSourceNode | undefined {
         try {
             const audioBuffer = this.getSoundBuffer(soundName)
             if (!audioBuffer) return undefined
             const source = AudioContext.getContext().createBufferSource()
             source.buffer = audioBuffer
-            source.connect(SoundManager.setupSfxAudioTarget())
+            source.connect(this.setupSfxAudioTarget())
             source.start()
-            if (isVoice) {
-                source.addEventListener('ended', () => {
-                    setTimeout(() => {
-                        this.skipVoiceLines = false
-                    }, NerpRunner.timeAddedAfterSample)
-                })
-            }
             return source
         } catch (e) {
             console.error(`Could not play sound ${soundName}`, e)

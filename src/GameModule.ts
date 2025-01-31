@@ -27,11 +27,11 @@ export class GameModule {
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             screenMaster.onWindowResize()
         })
-        SoundManager.init()
         SaveGameManager.loadPreferences()
         SaveGameManager.loadSaveGames()
         SaveGameManager.loadSaveGameScreenshots()
         if (DEV_MODE) SaveGameManager.loadGame(0)
+        SoundManager.init()
         this.tooltipLayer = screenMaster.addLayer(new TooltipLayer(), 1000)
         this.mainMenuScreen = new MainMenuScreen(screenMaster)
         this.gameScreen = new GameScreen(screenMaster)

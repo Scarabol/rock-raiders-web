@@ -31,7 +31,7 @@ export class RewardScreenButton extends MainMenuBaseItem {
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = () => {
-            SoundManager.playSound(SAMPLE.SFX_ButtonPressed, false)
+            SoundManager.playSfxSound(SAMPLE.SFX_ButtonPressed)
             callback()
         }
     }

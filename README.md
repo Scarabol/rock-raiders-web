@@ -54,15 +54,12 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Implement clickOnly... methods for tutorials and disable all non-flashing UI elements in tutorial mode
 - Use same team for all missions and add names to raiders
 - Background music and soundtrack (needs files from ISO-File)
+- Auto switch from portrait to landscape mode in fullscreen
+- Add option to read/write savegames from URL
 
 ### v1.0.0 - Final Release
 
 - Fix all remaining bugs
-
-### v1.1.0 - Minor Fixes And Improvements
-
-- Auto switch from portrait to landscape mode in fullscreen
-- Add option to read/write savegames from URL
 
 ## Known Issues
 
@@ -70,8 +67,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Advisor not shown in tutorials near icon panel
-- Surface object pointer in tutorials removes surface highlight color as in original
-- Lava rockies texture not using correct UV coordinates
 - Orange smoke column above lava tiles missing
 - Add tiny rockies running around after crumbling
 - Raider scene entity position/rotation not correct when thrown by rocky
@@ -80,6 +75,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Use pro-meshes to render high-detail walls in first person and shoulder view
 - Bats don't appear in flocks
 - Camera frustum not shown as wireframe on radar map panel
+- Surface object pointer in tutorials removes surface highlight color as in original
 
 ## Technical Debt
 

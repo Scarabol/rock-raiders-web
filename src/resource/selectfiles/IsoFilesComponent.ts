@@ -6,7 +6,7 @@ import { cachePutData } from '../AssetCacheHelper'
 export class IsoFilesComponent extends AbstractFormFilesComponent {
     constructor() {
         super({
-            labelHTML: 'Use local CD provided as ISO file <b>(no background music)</b>:',
+            labelHTML: 'Use local ISO file, usually seen as CD image <b>(no music)</b>:',
             btnText: 'Start with ISO file',
             fileNames: ['Rock Raiders.iso'],
         })

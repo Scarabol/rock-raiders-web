@@ -6,6 +6,7 @@ import { JobFulfiller } from '../Job'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { HealthComponent } from '../../../component/HealthComponent'
 import { GameConfig } from '../../../../cfg/GameConfig'
+import { DEV_MODE } from '../../../../params'
 
 export class UpgradeRaiderJob extends RaiderJob {
     building: BuildingEntity
@@ -36,7 +37,7 @@ export class UpgradeRaiderJob extends RaiderJob {
     }
 
     getExpectedTimeLeft(): number {
-        return 30000 // XXX adjust upgrade time
+        return DEV_MODE ? 2000 : 30000 // XXX balance upgrade time
     }
 
     getJobBubble(): keyof BubblesCfg {

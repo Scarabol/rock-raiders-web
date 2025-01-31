@@ -34,7 +34,7 @@ export class TooltipLayer extends ScreenLayer {
             }, event.timeoutText)
             const tooltipSfx = event.tooltipSfx
             if (!DEV_MODE && tooltipSfx) {
-                this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSound(tooltipSfx, true), event.timeoutSfx)
+                this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playVoice(tooltipSfx), event.timeoutSfx)
             }
         })
         EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_HIDE, (event: HideTooltip) => {

@@ -95,7 +95,7 @@ export class BriefingPanel extends Panel {
         this.setParagraph(0)
         if (this.objectiveSfxName) {
             this.objectiveSfx?.stop()
-            this.objectiveSfx = SoundManager.playSound(this.objectiveSfxName, false)
+            this.objectiveSfx = SoundManager.playSfxSound(this.objectiveSfxName)
             this.objectiveSfx?.addEventListener('ended', () => EventBroker.publish(new ShowMissionAdvisorEvent(false)))
         }
         this.btnNext.hidden = this.paragraph >= this.objectiveParagraphs.length - 1

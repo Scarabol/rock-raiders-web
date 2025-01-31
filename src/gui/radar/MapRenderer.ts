@@ -62,7 +62,7 @@ export class MapRenderer {
         return new Promise((resolve) => {
             const requestId = generateUUID()
             this.resolveCallbackById.set(requestId, resolve)
-            this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_ENTITIES, mapMarkerType: mapMarkerType, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, entities: entities})
+            this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_ENTITIES, requestId: requestId, mapMarkerType: mapMarkerType, offset: offset, surfaceRectSize: surfaceRectSize, entities: entities})
         })
     }
 }

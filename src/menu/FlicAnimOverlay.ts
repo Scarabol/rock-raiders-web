@@ -23,7 +23,7 @@ export class FlicAnimOverlay {
         this.stop()
         return new Promise((resolve) => {
             this.animIndex = 0
-            if (this.sfxName) this.sfx = SoundManager.playSound(this.sfxName, false)
+            if (this.sfxName) this.sfx = SoundManager.playSfxSound(this.sfxName)
             this.trigger(resolve)
         })
     }

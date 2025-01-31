@@ -420,7 +420,7 @@ export class NerpRunner {
         }
         let sampleLength = this.timeForNoSample / 1000
         if (!DEV_MODE && msg.snd) {
-            this.messageSfx = SoundManager.playSound(msg.snd, true) || this.messageSfx
+            this.messageSfx = SoundManager.playVoice(msg.snd) || this.messageSfx
             sampleLength = this.messageSfx?.buffer?.duration || sampleLength
         }
         const sampleTimeoutMs = sampleLength * this.sampleLengthMultiplier + NerpRunner.timeAddedAfterSample

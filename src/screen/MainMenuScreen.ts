@@ -98,10 +98,7 @@ export class MainMenuScreen {
     }
 
     showMainMenu(index: number = 0) {
-        if (!this.sfxAmbientLoop) {
-            this.sfxAmbientLoop = SoundManager.playSound(SAMPLE.SFX_AmbientMusicLoop, false)
-            this.sfxAmbientLoop.loop = true
-        }
+        if (!this.sfxAmbientLoop) this.sfxAmbientLoop = SoundManager.playLoopSound(SAMPLE.SFX_AmbientMusicLoop)
         const oldIndex = this.menuLayers.findIndex((m) => m.active)
         let timeout = 0
         if (oldIndex === 0 || (index === 0 && oldIndex > 0)) {

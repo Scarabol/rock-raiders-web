@@ -199,7 +199,11 @@ export class GuiManager {
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_PLAY_SOUND, (event: PlaySoundEvent) => {
-            SoundManager.playSound(event.sample, event.isVoice)
+            if (event.isVoice) {
+                SoundManager.playVoice(event.sample)
+            } else {
+                SoundManager.playSfxSound(event.sample)
+            }
         })
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             SaveGameManager.savePreferences()

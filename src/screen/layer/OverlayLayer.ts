@@ -16,6 +16,7 @@ import { GameResultEvent, RestartGameEvent } from '../../event/WorldEvents'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
+import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class OverlayLayer extends ScaledLayer {
     rootElement: BaseElement
@@ -83,7 +84,7 @@ export class OverlayLayer extends ScaledLayer {
         const objectiveSfx = `Stream_Objective_Levels::${levelConf.levelName}`.toLowerCase()
         this.panelBriefing.setup(GameConfig.instance.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage640x480, objectiveSfx)
         this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
-        this.setActivePanel(this.panelBriefing)
+        this.setActivePanel(SaveGameManager.currentPreferences.skipBriefings ? null : this.panelBriefing)
     }
 
     showResultBriefing(result: GameResultState, levelConf: LevelConfData, onContinue: () => void) {
@@ -127,7 +128,7 @@ export class OverlayLayer extends ScaledLayer {
     reset(): void {
         this.rootElement.reset()
         this.panels.forEach((p) => p.reset())
-        this.setActivePanel(this.panelBriefing)
+        this.setActivePanel(SaveGameManager.currentPreferences.skipBriefings ? null : this.panelBriefing)
     }
 
     addPanel<T extends Panel>(panel: T): T {

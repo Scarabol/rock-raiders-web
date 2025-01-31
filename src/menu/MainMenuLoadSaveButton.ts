@@ -51,7 +51,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = async () => {
-            SoundManager.playSound(SAMPLE.SFX_ButtonPressed, false)
+            SoundManager.playSfxSound(SAMPLE.SFX_ButtonPressed)
             await this.overlay?.play()
             callback()
         }

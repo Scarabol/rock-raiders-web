@@ -19,7 +19,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
     constructor(
         readonly layer: MainMenuLayer,
         readonly levelConf: LevelEntryCfg,
-        readonly allLevels: boolean,
+        readonly onlyTutorials: boolean,
     ) {
         super(levelConf.frontEndX, levelConf.frontEndY)
         this.actionName = 'selectlevel'
@@ -31,12 +31,12 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
         this.imgCross = ResourceManager.getImage(imgCross)
         this.width = Math.max(this.imgActive.width, this.imgInactive.width, this.imgCross.width)
         this.height = Math.max(this.imgActive.height, this.imgInactive.height, this.imgCross.height)
-        this.disabled = this.allLevels && this.levelConf.isLocked()
+        this.disabled = this.onlyTutorials && this.levelConf.isLocked()
     }
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = () => {
-            SoundManager.playSound(SAMPLE.SFX_ButtonPressed, false)
+            SoundManager.playSfxSound(SAMPLE.SFX_ButtonPressed)
             callback()
         }
     }
@@ -59,7 +59,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
 
     reset() {
         super.reset()
-        this.disabled = this.allLevels && this.levelConf.isLocked()
+        this.disabled = this.onlyTutorials && this.levelConf.isLocked()
         this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
     }
 

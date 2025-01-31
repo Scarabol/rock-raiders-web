@@ -92,7 +92,7 @@ export class WorldManager {
         EventBroker.subscribe(EventKey.LOCATION_RAIDER_DISCOVERED, () => GameState.hiddenObjectsFound++)
         EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
             GameState.alarmMode = event.alarmState
-            if (GameState.alarmMode) SoundManager.playSound(SAMPLE.SFX_Siren, false)
+            if (GameState.alarmMode) SoundManager.playSfxSound(SAMPLE.SFX_Siren)
         })
     }
 

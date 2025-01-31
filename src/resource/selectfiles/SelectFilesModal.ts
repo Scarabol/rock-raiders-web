@@ -19,7 +19,7 @@ export class SelectFilesModal {
         content.classList.add('select-files-content')
         const hints = content.appendChild(document.createElement('div'))
         hints.appendChild(document.createElement('b')).innerText = 'Game resources not included!'
-        hints.appendChild(document.createElement('div')).innerText = 'Use one option below to select game resources before start.'
+        hints.appendChild(document.createElement('div')).innerText = 'Select an option below to start:'
         const optionList = content.appendChild(document.createElement('ol'))
         ;[
             new ZipFilesComponent(),
