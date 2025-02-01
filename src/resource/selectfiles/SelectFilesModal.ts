@@ -4,6 +4,7 @@ import { WadFilesComponent } from './WadFilesComponent'
 import { CabFilesComponent } from './CabFilesComponent'
 import { VirtualFileSystem } from '../fileparser/VirtualFileSystem'
 import { IsoFilesComponent } from './IsoFilesComponent'
+import { CueBinFilesComponent } from './CueBinFilesComponent'
 
 export class SelectFilesModal {
     readonly rootElement: HTMLElement
@@ -24,6 +25,7 @@ export class SelectFilesModal {
         optionList.classList.add('select-files-accordion')
         ;[
             new ZipFilesComponent(),
+            new CueBinFilesComponent(),
             new IsoFilesComponent(),
             new WadFilesComponent(),
             new CabFilesComponent(),
