@@ -153,6 +153,10 @@ export class SaveGameManager {
     static getSfxVolume(): number {
         return this.currentPreferences.toggleSfx ? this.currentPreferences.volumeSfx : 0
     }
+
+    static getMusicVolume(): number {
+        return this.currentPreferences.toggleMusic ? this.currentPreferences.volumeMusic : 0
+    }
 }
 
 export class SaveGame { // this gets serialized

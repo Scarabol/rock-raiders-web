@@ -15,7 +15,6 @@ export function setupOptionsLayer(optionsLayer: MenuLayer, onRepeatBriefing: () 
         optionsLayer.publishEvent(new ChangePreferences())
     }
     const volumeMusicSlider = optionsLayer.itemsSlider[2]
-    volumeMusicSlider.disabled = true // TODO Implement background music
     volumeMusicSlider.onValueChanged = (value) => {
         SaveGameManager.currentPreferences.volumeMusic = value
         optionsLayer.publishEvent(new ChangePreferences())

@@ -12,6 +12,7 @@ import { TooltipLayer } from './screen/layer/TooltipLayer'
 import { EventKey } from './event/EventKeyEnum'
 import { ChangeCursor } from './event/GuiCommand'
 import { CursorManager } from './screen/CursorManager'
+import { MusicManager } from './audio/MusicManager'
 
 export class GameModule {
     readonly tooltipLayer: TooltipLayer
@@ -32,6 +33,7 @@ export class GameModule {
         SaveGameManager.loadSaveGameScreenshots()
         if (DEV_MODE) SaveGameManager.loadGame(0)
         SoundManager.init()
+        MusicManager.init()
         this.tooltipLayer = screenMaster.addLayer(new TooltipLayer(), 1000)
         this.mainMenuScreen = new MainMenuScreen(screenMaster)
         this.gameScreen = new GameScreen(screenMaster)
@@ -62,5 +64,7 @@ export class GameModule {
         this.mainMenuScreen.dispose()
         this.gameScreen.dispose()
         this.rewardScreen.dispose()
+        // TODO Stop all SFX sound too
+        MusicManager.stopTracks()
     }
 }

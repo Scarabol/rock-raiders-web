@@ -23,8 +23,11 @@ export class PausePanel extends MenuBasePanel {
         wallDetailsToggle.disabled = true // TODO Implement wall details with pro meshes
         wallDetailsToggle.setState(SaveGameManager.currentPreferences.wallDetails)
         const musicToggle = advOptions.itemsCycle[1]
-        musicToggle.disabled = true // TODO Implement background music
         musicToggle.setState(SaveGameManager.currentPreferences.toggleMusic)
+        musicToggle.onStateChanged = (state) => {
+            SaveGameManager.currentPreferences.toggleMusic = state
+            this.publishEvent(new ChangePreferences())
+        }
         const sfxToggle = advOptions.itemsCycle[2]
         sfxToggle.setState(SaveGameManager.currentPreferences.toggleSfx)
         sfxToggle.onStateChanged = (state) => {

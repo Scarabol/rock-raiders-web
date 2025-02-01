@@ -53,7 +53,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Allow raider in alarm mode to be moved by player
 - Implement clickOnly... methods for tutorials and disable all non-flashing UI elements in tutorial mode
 - Use same team for all missions and add names to raiders
-- Background music and soundtrack (needs files from ISO-File)
 - Auto switch from portrait to landscape mode in fullscreen
 - Add option to read/write savegames from URL
 
