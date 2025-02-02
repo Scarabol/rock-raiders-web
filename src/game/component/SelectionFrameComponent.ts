@@ -18,8 +18,7 @@ export class SelectionFrameComponent extends AbstractGameComponent {
     private addSelectionFrame(parentObj: Object3D, pickSphereDiameter: number, pickSphereCenter: Vector3, hexColor: string) {
         const selectionFrame = new SelectionFrameSprite(pickSphereDiameter, hexColor)
         selectionFrame.position.copy(pickSphereCenter)
-        const selectionFrameSize = pickSphereDiameter * 3 / 4
-        selectionFrame.scale.set(selectionFrameSize, selectionFrameSize, selectionFrameSize)
+        selectionFrame.scale.setScalar(pickSphereDiameter * 3 / 4)
         selectionFrame.visible = false
         parentObj.add(selectionFrame)
         return selectionFrame

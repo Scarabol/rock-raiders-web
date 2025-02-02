@@ -10,6 +10,7 @@ import { JobFulfiller } from '../Job'
 import { EventBroker } from '../../../../event/EventBroker'
 import { MoveJob } from '../MoveJob'
 import { SurfaceType } from '../../../terrain/SurfaceType'
+import { DEV_MODE } from '../../../../params'
 
 export class TrainRaiderJob extends RaiderJob {
     building?: BuildingEntity
@@ -49,7 +50,7 @@ export class TrainRaiderJob extends RaiderJob {
     }
 
     getExpectedTimeLeft(): number {
-        return 10000 // XXX adjust training time
+        return DEV_MODE ? 2000 : 10000 // XXX balance training time
     }
 
     getJobBubble(): keyof BubblesCfg {

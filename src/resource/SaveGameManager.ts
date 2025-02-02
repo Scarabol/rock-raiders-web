@@ -18,11 +18,10 @@ export class SaveGamePreferences { // this gets serialized
 }
 
 export class SaveGameManager {
-
     static currentPreferences: SaveGamePreferences = new SaveGamePreferences()
     static screenshots: Promise<HTMLCanvasElement | undefined>[] = []
-    private static currentLevels: SaveGameLevel[] = []
     private static saveGames: SaveGame[] = [] // this gets serialized
+    private static currentLevels: SaveGameLevel[] = []
 
     static loadPreferences() {
         try {
@@ -83,9 +82,8 @@ export class SaveGameManager {
     }
 
     static getOverallGameProgress(index: number): number {
-        const saveGame = this.saveGames[index]
-        if (!saveGame) return 0
-        const levelNameList = saveGame.levels.filter((l) => l.levelName.toLowerCase().startsWith('level'))
+        const levels = this.saveGames[index]?.levels ?? []
+        const levelNameList = levels.filter((l) => l.levelName.toLowerCase().startsWith('level'))
         return new Set(levelNameList).size * 100 / NUM_OF_LEVELS_TO_COMPLETE_GAME
     }
 
@@ -159,17 +157,17 @@ export class SaveGameManager {
     }
 }
 
-export class SaveGame { // this gets serialized
-    levels: SaveGameLevel[] = []
+class SaveGame { // this gets serialized
+    levels?: SaveGameLevel[] = []
 }
 
-export class SaveGameLevel { // this gets serialized
-    levelName: string = ''
-    levelScore: number = 0
+class SaveGameLevel { // this gets serialized
+    levelName?: string = ''
+    levelScore?: number = 0
 
-    constructor(levelName: string, levelScore: number) {
-        this.levelName = levelName
-        this.levelScore = levelScore
+    constructor(levelName: string | undefined, levelScore: number | undefined) {
+        this.levelName = levelName || ''
+        this.levelScore = levelScore || 0
     }
 
     static copy(other: SaveGameLevel): SaveGameLevel {

@@ -26,7 +26,7 @@ export class SideBarLabel extends BaseElement {
     onRedraw(context: SpriteContext) {
         if (this.hidden) return
         context.textAlign = 'center'
-        context.font = 'bold 10px Arial'
+        context.font = 'bold 10px sans-serif'
         context.fillStyle = '#fff'
         context.fillText(this.label, this.x + this.width / 2, this.y + this.height - 2)
         super.onRedraw(context)

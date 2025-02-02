@@ -11,7 +11,7 @@ import { GuiBackButtonClicked } from '../../event/LocalEvents'
 export class IconSubPanel extends Panel {
     iconPanelButtons: IconPanelButton[] = []
 
-    constructor(numOfItems: number, onBackPanel?: Panel) {
+    constructor(numOfItems: number, onBackPanel: Panel | undefined) {
         super()
         if (onBackPanel) {
             this.addChild(new Button(GameConfig.instance.interfaceBackButton)).onClick = () => {

@@ -14,10 +14,10 @@ export class LoadingLayer extends ScaledLayer {
         this.animationFrame.onRedraw = (context) => {
             context.fillStyle = 'black'
             context.fillRect(0, 0, this.fixedWidth, this.fixedHeight)
-            context.font = '24px Arial'
+            context.font = '24px sans-serif'
             context.fillStyle = 'white'
             context.fillText('Initializing Rock Raiders Web...', 20, this.fixedHeight - 50)
-            context.font = '18px Arial'
+            context.font = '18px sans-serif'
             context.fillStyle = 'white'
             context.fillText(text, 20, this.fixedHeight - 20)
         }

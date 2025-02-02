@@ -3,7 +3,7 @@ import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnu
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { DeselectAll, SelectionChanged, SelectionFrameChangeEvent } from '../../event/LocalEvents'
-import { JobCreateEvent, MonsterEmergeEvent, ShootLaserEvent } from '../../event/WorldEvents'
+import { JobCreateEvent, MaterialAmountChanged, MonsterEmergeEvent, ShootLaserEvent } from '../../event/WorldEvents'
 import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
 import { DEV_MODE, FPV_ENTITY_TURN_SPEED } from '../../params'
@@ -305,24 +305,30 @@ export class GameLayer extends ScreenLayer {
             this.worldMgr.sceneMgr.entityTurnSpeed = 0
         } else if (['ArrowUp', 'w', 'ArrowDown', 's'].some((k) => event.key === k)) {
             this.worldMgr.sceneMgr.entityMoveMultiplier = 0
-        } else if (DEV_MODE && this.worldMgr.entityMgr.selection.surface) {
-            if (event.key === 'c') {
-                this.worldMgr.entityMgr.selection.surface.collapse()
-                EventBroker.publish(new DeselectAll())
-                return true
-            } else if (event.key === 'f') {
-                const surface = this.worldMgr.entityMgr.selection.surface
-                if (!surface.surfaceType.floor) {
-                    const fallInTarget = surface.neighbors.find((n) => n.isWalkable() && !n.surfaceType.hasErosion)
-                    if (fallInTarget) this.worldMgr.sceneMgr.terrain.createFallIn(surface, fallInTarget)
+        } else if (DEV_MODE) {
+            if (this.worldMgr.entityMgr.selection.surface) {
+                if (event.key === 'c') {
+                    this.worldMgr.entityMgr.selection.surface.collapse()
+                    EventBroker.publish(new DeselectAll())
+                    return true
+                } else if (event.key === 'f') {
+                    const surface = this.worldMgr.entityMgr.selection.surface
+                    if (!surface.surfaceType.floor) {
+                        const fallInTarget = surface.neighbors.find((n) => n.isWalkable() && !n.surfaceType.hasErosion)
+                        if (fallInTarget) this.worldMgr.sceneMgr.terrain.createFallIn(surface, fallInTarget)
+                    }
+                    EventBroker.publish(new DeselectAll())
+                    return true
+                } else if (event.key === 'm') {
+                    const surface = this.worldMgr.entityMgr.selection.surface
+                    if (surface.wallType === WALL_TYPE.WALL) {
+                        EventBroker.publish(new MonsterEmergeEvent(surface))
+                    }
                 }
-                EventBroker.publish(new DeselectAll())
-                return true
-            } else if (event.key === 'm') {
-                const surface = this.worldMgr.entityMgr.selection.surface
-                if (surface.wallType === WALL_TYPE.WALL) {
-                    EventBroker.publish(new MonsterEmergeEvent(surface))
-                }
+            }
+            if (event.key === 'h') {
+                GameState.numCrystal += 50
+                EventBroker.publish(new MaterialAmountChanged())
             }
         }
         return false

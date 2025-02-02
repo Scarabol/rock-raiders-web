@@ -22,7 +22,7 @@ export class IconPanelButtonLabel extends BaseElement {
     onRedraw(context: SpriteContext) {
         if (this.hidden) return
         context.textAlign = 'left'
-        context.font = 'bold 10px Arial'
+        context.font = 'bold 10px sans-serif'
         context.fillStyle = this.disabled || (this.parent && this.parent.disabled) ? '#444' : '#fff'
         context.fillText(this.label, this.x, this.y)
         super.onRedraw(context)

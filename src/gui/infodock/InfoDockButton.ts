@@ -58,7 +58,7 @@ export class InfoDockButton extends Button {
         super.onRedraw(context)
         if (this.hidden) return
         context.textAlign = 'left'
-        context.font = 'bold 10px Arial'
+        context.font = 'bold 10px sans-serif'
         context.fillStyle = '#fff'
         context.fillText(this.messages.length.toString(), this.x + 2, this.y + this.height / 2 + 2)
     }

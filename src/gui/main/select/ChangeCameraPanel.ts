@@ -6,7 +6,7 @@ export class ChangeCameraPanel extends IconSubPanel {
     cameraViewMode?: CameraViewMode
 
     constructor() {
-        super(3)
+        super(3, undefined)
         const birdViewItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoTopView')
         birdViewItem.isDisabled = () => this.cameraViewMode === CameraViewMode.BIRD
         birdViewItem.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.BIRD))
