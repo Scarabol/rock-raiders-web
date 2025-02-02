@@ -50,7 +50,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - When building is started while material is carried, this material is not dropped to be used on building
 - Forbidding collection of ores or crystals stops building projects too
-- Allow raider in alarm mode to be moved by player
 - Implement clickOnly... methods for tutorials and disable all non-flashing UI elements in tutorial mode
 - Use same team for all missions and add names to raiders
 - Auto switch from portrait to landscape mode in fullscreen

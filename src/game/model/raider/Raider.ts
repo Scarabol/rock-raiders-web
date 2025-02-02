@@ -91,7 +91,7 @@ export class Raider implements Updatable, JobFulfiller {
             return
         }
         if (this.slipped || this.isInBeam() || this.thrown || this.selected || this.resting) return
-        if (GameState.alarmMode && this.hasWeapon()) {
+        if (GameState.alarmMode && this.hasWeapon() && !this.job?.doOnAlarm) {
             this.fight(elapsedMs)
             return
         }

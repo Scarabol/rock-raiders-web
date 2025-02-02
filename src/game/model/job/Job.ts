@@ -36,6 +36,7 @@ export abstract class Job {
     priorityIdentifier: PriorityIdentifier = PriorityIdentifier.NONE
     workSoundRaider?: Sample
     workSoundVehicle?: Sample
+    doOnAlarm: boolean = false
 
     abstract assign(fulfiller: JobFulfiller): void
 

@@ -9,6 +9,7 @@ export class MoveJob extends Job {
     constructor(readonly location: Vector2) {
         super()
         this.target = PathTarget.fromLocation(location)
+        this.doOnAlarm = true
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
