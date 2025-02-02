@@ -50,6 +50,7 @@ export class Surface {
     drillProgress: number = 0
 
     readonly mesh: SurfaceMesh
+    readonly roofMesh: SurfaceMesh
     wallType: WALL_TYPE = WALL_TYPE.FLOOR
     needsMeshUpdate: boolean = false
 
@@ -85,6 +86,9 @@ export class Surface {
         // proMesh.scale.setScalar(1 / TILESIZE)
         // this.terrain.floorGroup.add(proMesh)
         this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
+        this.roofMesh = new SurfaceMesh(x, y, {})
+        this.roofMesh.position.y = 3
+        this.roofMesh.scale.y *= -1 // flip mesh upside down
     }
 
     private updateObjectName() {
@@ -357,6 +361,7 @@ export class Surface {
         if (wallType === WALL_TYPE.WALL && topLeft.high === bottomRight.high) wallType = WALL_TYPE.WEIRD_CREVICE
         this.wallType = wallType
         this.mesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
+        this.roofMesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
         if (this.wallType !== WALL_TYPE.WALL) {
             this.cancelReinforceJobs()
             const emergeComponent = this.worldMgr.ecs.getComponents(this.entity).get(EmergeComponent)
@@ -396,6 +401,7 @@ export class Surface {
         }
         const textureFilepath = this.terrain.levelConf.textureBasename + suffix + '.bmp'
         this.mesh.setTexture(textureFilepath, rotation)
+        this.roofMesh.setTexture(this.terrain.levelConf.roofTexture, rotation)
     }
 
     private determinePowerPathTextureNameSuffixAndRotation(rotation: number, suffix: string) {
@@ -524,6 +530,7 @@ export class Surface {
 
     disposeFromWorld() {
         this.mesh?.dispose()
+        this.roofMesh?.dispose()
     }
 
     get neighbors(): Surface[] {

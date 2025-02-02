@@ -15,6 +15,7 @@ export interface LevelConfData {
     fullName: string
     generateSpiders: boolean
     textureBasename: string
+    roofTexture: string
     rockFallStyle: RockFallStyle
     fallinMultiplier: number
     mapWidth: number
@@ -63,6 +64,7 @@ export class LevelLoader {
             mapWidth: terrainMap.width,
             mapHeight: terrainMap.height,
             textureBasename: GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet).textureBasename,
+            roofTexture: GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet).roofTexture,
             rockFallStyle: rockFallStyle,
             fallinMultiplier: levelConf.fallinMultiplier,
             terrainMap: this.checkMap(levelConf.terrainMap, terrainMap.width, terrainMap.height),

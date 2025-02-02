@@ -44,6 +44,7 @@ export class SceneManager implements Updatable {
     ambientLight: LeveledAmbientLight
     terrain: Terrain
     floorGroup: Group
+    roofGroup: Group
     torchLightCursor: TorchLightCursor
     buildMarker: BuildPlacementMarker
     followerRenderer: FollowerRenderer
@@ -80,6 +81,7 @@ export class SceneManager implements Updatable {
         const isBirdView = camera === this.cameraBird
         if (this.torchLightCursor) this.torchLightCursor.visible = isBirdView
         this.birdViewControls.disabled = !isBirdView
+        if (this.roofGroup) this.roofGroup.visible = !isBirdView
         this.cameraActive = camera
         this.cameraActive.add(SoundManager.sceneAudioListener)
         this.renderer.camera = camera
@@ -102,12 +104,17 @@ export class SceneManager implements Updatable {
 
         this.floorGroup = new Group()
         this.floorGroup.scale.setScalar(TILESIZE)
+        this.roofGroup = new Group()
+        this.roofGroup.visible = false
+        this.roofGroup.scale.setScalar(TILESIZE)
         if (DEV_MODE) this.floorGroup.add(new AxesHelper())
         this.terrain = TerrainLoader.loadTerrain(levelConf, this.worldMgr)
         this.terrain.forEachSurface((s) => {
             this.floorGroup.add(s.mesh)
+            this.roofGroup.add(s.roofMesh)
         })
         this.scene.add(this.floorGroup)
+        this.scene.add(this.roofGroup)
 
         const followerCanvas = createCanvas(158, 158)
         this.followerRenderer = new FollowerRenderer(followerCanvas, this.scene, this.worldMgr.ecs)

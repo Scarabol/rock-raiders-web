@@ -153,10 +153,11 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addAsset(this.assetLoader.loadAVI, gameConfig.main.creditsBackAVI, true)
         this.addAsset(this.assetLoader.loadCreditsFile, gameConfig.main.creditsTextFile)
         this.addAsset(this.assetLoader.loadFontImageAsset, 'Interface/Fonts/RSFont.bmp')
-        // spaces
+        // surface textures
         this.addTextureFolder('World/WorldTextures/IceSplit/Ice')
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava')
         this.addTextureFolder('World/WorldTextures/RockSplit/Rock')
+        gameConfig.textures.textureSetByName.forEach((s) => this.addAsset(this.assetLoader.loadWadTexture, s.roofTexture))
         // TODO Load pro meshes for high wall details
         // Array.from(gameConfig.textures.textureSetByName.values()).forEach((set) => {
         //     this.assetLoader.wad0File.filterEntryNames(`${set.meshBasename}.*.lwo`).forEach((meshName) => {
