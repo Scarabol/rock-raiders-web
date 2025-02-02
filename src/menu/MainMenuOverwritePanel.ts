@@ -29,8 +29,8 @@ export class MainMenuOverwritePanel extends MainMenuBaseItem {
         })
     }
 
-    setIndex(savegameIndex: number) {
-        const text = GameConfig.instance.menu.overwrite.text.replaceAll('%d', savegameIndex.toString())
+    setIndex(saveGameIndex: number) {
+        const text = GameConfig.instance.menu.overwrite.text.replaceAll('%d', (saveGameIndex + 1).toString())
         BitmapFontWorkerPool.instance.createTextImage('Interface/Fonts/MbriefFont.bmp', text, GameConfig.instance.dialog.textWindow.w).then((img) => {
             this.textImg = img
             const dialogCfg = GameConfig.instance.dialog
