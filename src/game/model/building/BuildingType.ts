@@ -1,6 +1,6 @@
 import { Vector2 } from 'three'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
-import { EntityType, LARGE_VEHICLE_TYPES, SMALL_VEHICLE_TYPES, WATER_VEHICLE_TYPES } from '../EntityType'
+import { EntityType } from '../EntityType'
 import { GameConfig } from '../../../cfg/GameConfig'
 
 export class BuildingType {
@@ -24,10 +24,10 @@ export class BuildingType {
                     .addTeleport(EntityType.PILOT)
             case EntityType.TELEPORT_PAD:
                 return new BuildingType(entityType, GameConfig.instance.stats.teleportPad, 'Buildings/Teleports')
-                    .addTeleport(EntityType.PILOT, ...SMALL_VEHICLE_TYPES)
+                    .addTeleport(EntityType.PILOT, EntityType.HOVERBOARD, EntityType.SMALL_DIGGER, EntityType.SMALL_TRUCK, EntityType.SMALL_MLP, EntityType.SMALL_HELI)
             case EntityType.DOCKS:
                 return new BuildingType(entityType, GameConfig.instance.stats.docks, 'Buildings/Docks')
-                    .setPrimaryPowerPath(0, -1).setWaterPathSurface(0, 1).addTeleport(...WATER_VEHICLE_TYPES)
+                    .setPrimaryPowerPath(0, -1).setWaterPathSurface(0, 1).addTeleport(EntityType.SMALL_CAT, EntityType.LARGE_CAT)
             case EntityType.POWER_STATION:
                 return new BuildingType(entityType, GameConfig.instance.stats.powerStation, 'Buildings/Powerstation')
                     .setSecondaryBuildingPart(-1, 0)
@@ -47,7 +47,7 @@ export class BuildingType {
             case EntityType.TELEPORT_BIG:
                 return new BuildingType(entityType, GameConfig.instance.stats.teleportBig, 'Buildings/BIGTeleport')
                     .setSecondaryBuildingPart(0, 1).setPrimaryPowerPath(-1, 0).setSecondaryPowerPath(-1, 1)
-                    .addTeleport(...LARGE_VEHICLE_TYPES)
+                    .addTeleport(EntityType.BULLDOZER, EntityType.WALKER_DIGGER, EntityType.LARGE_MLP, EntityType.LARGE_DIGGER)
             default:
                 throw new Error(`EntityType (${entityType}) is not a BuildingType`)
         }

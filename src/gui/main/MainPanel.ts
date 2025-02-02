@@ -2,7 +2,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { CameraViewMode, ChangeCameraEvent } from '../../event/GuiCommand'
 import { BuildingsChangedEvent, GuiBuildButtonClicked, GuiGetToolButtonClicked, GuiTrainRaiderButtonClicked, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { RequestedRaidersChanged } from '../../event/WorldEvents'
-import { EntityType, LARGE_VEHICLE_TYPES, SMALL_VEHICLE_TYPES } from '../../game/model/EntityType'
+import { EntityType } from '../../game/model/EntityType'
 import { MAX_RAIDER_REQUEST } from '../../params'
 import { Panel } from '../base/Panel'
 import { BuildingPanel } from './BuildingPanel'
@@ -53,8 +53,8 @@ export class MainPanel extends Panel {
         this.mainPanel.movedIn = false
 
         const buildingPanel = this.addSubPanel(new BuildingPanel(this.mainPanel))
-        const smallVehiclePanel = this.addSubPanel(new VehiclePanel(SMALL_VEHICLE_TYPES, this.mainPanel))
-        const largeVehiclePanel = this.addSubPanel(new VehiclePanel(LARGE_VEHICLE_TYPES, this.mainPanel))
+        const smallVehiclePanel = this.addSubPanel(new VehiclePanel([EntityType.HOVERBOARD, EntityType.SMALL_DIGGER, EntityType.SMALL_TRUCK, EntityType.SMALL_CAT, EntityType.SMALL_MLP, EntityType.SMALL_HELI], this.mainPanel))
+        const largeVehiclePanel = this.addSubPanel(new VehiclePanel([EntityType.BULLDOZER, EntityType.WALKER_DIGGER, EntityType.LARGE_MLP, EntityType.LARGE_DIGGER, EntityType.LARGE_CAT], this.mainPanel))
         this.selectWallPanel = this.addSubPanel(new SelectWallPanel(this.mainPanel))
         this.selectFloorPanel = this.addSubPanel(new SelectFloorPanel(this.mainPanel))
         this.selectRubblePanel = this.addSubPanel(new SelectRubblePanel(this.mainPanel))
