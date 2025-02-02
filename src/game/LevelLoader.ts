@@ -45,6 +45,7 @@ export interface LevelConfData {
     emergeCreature: MonsterEntityType
     emergeTimeOutMs: number
     noMultiSelect: boolean
+    fogColor: [number, number, number]
 }
 
 export class LevelLoader {
@@ -92,6 +93,7 @@ export class LevelLoader {
             emergeCreature: getMonsterEntityTypeByName(levelConf.emergeCreature),
             emergeTimeOutMs: levelConf.emergeTimeOut / 1500 * 60 * 1000, // 1500 specifies 1 minute
             noMultiSelect: levelConf.noMultiSelect,
+            fogColor: this.checkRGB(levelConf.fogColourRGB),
         }
     }
 
@@ -103,5 +105,9 @@ export class LevelLoader {
             return undefined
         }
         return map.level
+    }
+
+    static checkRGB(rgbInput: number[] | undefined): [number, number, number] {
+        return rgbInput?.length === 3 ? rgbInput as [number, number, number] : [0, 0, 0]
     }
 }

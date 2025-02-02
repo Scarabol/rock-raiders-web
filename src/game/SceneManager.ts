@@ -1,4 +1,4 @@
-import { AxesHelper, Group, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
+import { AxesHelper, Color, FogExp2, Group, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
 import { LevelConfData } from './LevelLoader'
 import { BirdViewControls } from '../scene/BirdViewControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
@@ -27,6 +27,7 @@ import { AnimEntityActivity, RaiderActivity } from './model/anim/AnimationActivi
 import { Raider } from './model/raider/Raider'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { CameraFrustumUpdater } from '../scene/CameraFrustumUpdater'
+import { ColorRGB } from '../scene/ColorRGB'
 
 export class SceneManager implements Updatable {
     static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
@@ -82,6 +83,7 @@ export class SceneManager implements Updatable {
         if (this.torchLightCursor) this.torchLightCursor.visible = isBirdView
         this.birdViewControls.disabled = !isBirdView
         if (this.roofGroup) this.roofGroup.visible = !isBirdView
+        this.scene.fog = isBirdView ? undefined : new FogExp2(this.scene.background as Color, 0.007)
         this.cameraActive = camera
         this.cameraActive.add(SoundManager.sceneAudioListener)
         this.renderer.camera = camera
@@ -89,6 +91,7 @@ export class SceneManager implements Updatable {
 
     setupScene(levelConf: LevelConfData) {
         this.scene.clear()
+        this.scene.background = new ColorRGB(levelConf.fogColor) // fog color must be equal to scene background to avoid "holes" in fog at max rendering distance
         this.ambientLight = new LeveledAmbientLight()
         this.ambientLight.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
         this.scene.add(this.ambientLight)

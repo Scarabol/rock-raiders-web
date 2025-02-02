@@ -42,7 +42,7 @@ export class LevelEntryCfg extends BaseConfig {
     useRoof: string = ''
     selBoxHeight: number = 10
     fpRotLightRGB: number[] = [0, 0, 0]
-    fogColourRGB: number[] = [0, 0, 0]
+    fogColourRGB: [r: number, g: number, b: number] = [0, 0, 0]
     highFogColourRGB: number[] = [0, 0, 0]
     fogRate: number = 0
     fallinMultiplier: number = 0 // time in seconds that is multiplied with fall in map value to get time between fall ins

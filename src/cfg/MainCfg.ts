@@ -39,7 +39,7 @@ export class MainCfg extends BaseConfig {
     // CDTracks = 3
     // TopSpotRGB = 127:127:127
     // TrackSpotRGB = 000:255:000
-    ambientRGB: number[] = [10, 10, 10]
+    ambientRGB: [r: number, g: number, b: number] = [10, 10, 10]
     // FPLightRGB = 127:127:127
     powerCrystalRGB: [r: number, g: number, b: number] = [0, 1, 0]
     unpoweredCrystalRGB: [r: number, g: number, b: number] = [1, 0, 1]
