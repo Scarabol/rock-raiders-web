@@ -31,9 +31,14 @@ export class SelectBuildingPanel extends IconSubPanel {
         upgradeItem.isDisabled = () => !this.buildingCanUpgrade
         upgradeItem.onClick = () => this.publishEvent(new UpgradeBuilding())
         upgradeItem.showTooltipDisabled = () => {
-            const event: ChangeTooltip = new ChangeTooltip(upgradeItem.tooltipDisabled, 0, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX, () => {
-                return TooltipSpriteBuilder.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, this.buildingMissingOreForUpgrade)
-            })
+            let event: ChangeTooltip
+            if (this.buildingMissingOreForUpgrade) {
+                event = new ChangeTooltip(upgradeItem.tooltipDisabled, 0, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX, () => {
+                    return TooltipSpriteBuilder.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, this.buildingMissingOreForUpgrade)
+                })
+            } else {
+                event = new ChangeTooltip(upgradeItem.tooltipDisabled, 0, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX)
+            }
             this.publishEvent(event)
         }
         const deleteBuildingItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteBuilding')
