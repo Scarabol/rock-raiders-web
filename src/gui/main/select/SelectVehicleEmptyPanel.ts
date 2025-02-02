@@ -9,7 +9,7 @@ export class SelectVehicleEmptyPanel extends IconSubPanel {
     vehicleHasJob: boolean = false
 
     constructor(onBackPanel: Panel) {
-        super(2, onBackPanel)
+        super(2, onBackPanel, true)
         const manVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GetIn')
         manVehicleItem.onClick = () => this.publishEvent(new VehicleCallMan())
         manVehicleItem.isDisabled = () => this.vehicleHasJob

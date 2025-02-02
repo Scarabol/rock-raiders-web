@@ -6,15 +6,20 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { GameConfig } from '../../cfg/GameConfig'
 import { SpriteContext } from '../../core/Sprite'
 import { EventBroker } from '../../event/EventBroker'
-import { GuiBackButtonClicked } from '../../event/LocalEvents'
+import { DeselectAll, GuiBackButtonClicked } from '../../event/LocalEvents'
 
 export class IconSubPanel extends Panel {
     iconPanelButtons: IconPanelButton[] = []
 
-    constructor(numOfItems: number, onBackPanel: Panel | undefined) {
+    constructor(numOfItems: number, onBackPanel: Panel | undefined, deselectAll: boolean) {
         super()
         if (onBackPanel) {
             this.addChild(new Button(GameConfig.instance.interfaceBackButton)).onClick = () => {
+                if (deselectAll) {
+                    this.publishEvent(new DeselectAll())
+                } else {
+                    this.toggleState(() => onBackPanel.toggleState())
+                }
                 EventBroker.publish(new GuiBackButtonClicked())
             }
         }

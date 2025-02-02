@@ -16,7 +16,7 @@ export class SelectBuildingPanel extends IconSubPanel {
     buildingMissingOreForUpgrade: number = 0
 
     constructor(onBackPanel: Panel) {
-        super(4, onBackPanel)
+        super(4, onBackPanel, true)
         const repairBuildingItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_Repair')
         repairBuildingItem.isDisabled = () => !this.buildingNeedsRepair
         repairBuildingItem.onClick = () => this.publishEvent(new RepairBuilding())

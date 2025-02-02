@@ -11,7 +11,7 @@ export class VehiclePanel extends IconSubPanel {
     btnLabelByType: Map<EntityType, IconPanelButtonLabel> = new Map()
 
     constructor(vehicleEntities: VehicleEntityType[], onBackPanel: Panel) {
-        super(vehicleEntities.length, onBackPanel)
+        super(vehicleEntities.length, onBackPanel, false)
         this.registerEventListener(EventKey.REQUESTED_VEHICLES_CHANGED, (event: RequestedVehiclesChanged) => {
             this.requestedVehiclesByType.set(event.vehicle, event.numRequested)
             this.btnLabelByType.get(event.vehicle)?.setLabel(event.numRequested)

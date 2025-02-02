@@ -6,7 +6,7 @@ import { GameConfig } from '../../cfg/GameConfig'
 
 export class BuildingPanel extends IconSubPanel {
     constructor(onBackPanel: Panel) {
-        super(10, onBackPanel)
+        super(10, onBackPanel, false)
         this.addBuildMenuItem(EntityType.TOOLSTATION)
         this.addBuildMenuItem(EntityType.TELEPORT_PAD)
         this.addBuildMenuItem(EntityType.DOCKS)

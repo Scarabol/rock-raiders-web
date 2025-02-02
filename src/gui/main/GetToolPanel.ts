@@ -13,7 +13,7 @@ export class GetToolPanel extends IconSubPanel {
     everyHasTool: Map<RaiderTool, boolean> = new Map()
 
     constructor(onBackPanel: Panel) {
-        super(8, onBackPanel)
+        super(8, onBackPanel, false)
         this.addGetToolItem(RaiderTool.DRILL)
         this.addGetToolItem(RaiderTool.SHOVEL)
         this.addGetToolItem(RaiderTool.HAMMER)

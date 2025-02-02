@@ -71,6 +71,9 @@ export class SceneManager implements Updatable {
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             this.ambientLight?.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
         })
+        EventBroker.subscribe(EventKey.GUI_GO_BACK_BUTTON_CLICKED, () => {
+            this.setBuildModeSelection(undefined)
+        })
     }
 
     setActiveCamera(camera: PerspectiveCamera) {

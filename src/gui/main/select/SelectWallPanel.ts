@@ -15,7 +15,7 @@ export class SelectWallPanel extends IconSubPanel {
     hasToolstationLevel2: boolean = false
 
     constructor(onBackPanel: Panel) {
-        super(4, onBackPanel)
+        super(4, onBackPanel, true)
         const itemDrill = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_Dig')
         itemDrill.isDisabled = () => !this.isDrillable
         itemDrill.onClick = () => this.publishEvent(new CreateDrillJob())

@@ -17,7 +17,7 @@ export class SelectRaiderPanel extends IconSubPanel {
     hasBirdScarer: boolean = false
 
     constructor(onBackPanel: Panel) {
-        super(10, onBackPanel)
+        super(10, onBackPanel, true)
         const feedItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GoFeed')
         feedItem.isDisabled = () => false
         feedItem.onClick = () => this.publishEvent(new RaiderEat())

@@ -10,7 +10,7 @@ export class TrainRaiderPanel extends IconSubPanel {
     canDoTraining: Map<RaiderTraining, boolean> = new Map()
 
     constructor(onBackPanel: Panel) {
-        super(6, onBackPanel)
+        super(6, onBackPanel, false)
         this.addTrainingItem('Interface_MenuItem_TrainDriver', RaiderTraining.DRIVER)
         this.addTrainingItem('Interface_MenuItem_TrainEngineer', RaiderTraining.ENGINEER)
         this.addTrainingItem('Interface_MenuItem_TrainGeologist', RaiderTraining.GEOLOGIST)

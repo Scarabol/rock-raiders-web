@@ -47,7 +47,7 @@ export class MainPanel extends Panel {
         this.xIn = 640 + 95
         this.relY = this.yOut = this.yIn = 9
         this.movedIn = false
-        this.mainPanel = this.addSubPanel(new IconSubPanel(4, undefined))
+        this.mainPanel = this.addSubPanel(new IconSubPanel(4, undefined, false))
         this.mainPanel.relX = this.mainPanel.xOut
         this.mainPanel.relY = this.mainPanel.yOut
         this.mainPanel.movedIn = false

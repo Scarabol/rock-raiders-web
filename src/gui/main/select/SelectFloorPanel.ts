@@ -13,7 +13,7 @@ export class SelectFloorPanel extends IconSubPanel {
     canPlaceFence: boolean = false
 
     constructor(onBackPanel: Panel) {
-        super(3, onBackPanel)
+        super(3, onBackPanel, true)
         const pathItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_LayPath')
         pathItem.addDependencyCheck(EntityType.POWER_PATH)
         pathItem.onClick = () => this.publishEvent(new CreatePowerPath())

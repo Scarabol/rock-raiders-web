@@ -11,7 +11,7 @@ export class SelectRubblePanel extends IconSubPanel {
     canPlaceFence: boolean = false
 
     constructor(onBackPanel: Panel) {
-        super(2, onBackPanel)
+        super(2, onBackPanel, true)
         const clearRubbleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_ClearRubble')
         clearRubbleItem.isDisabled = () => !this.hasRubble
         clearRubbleItem.onClick = () => this.publishEvent(new CreateClearRubbleJob())

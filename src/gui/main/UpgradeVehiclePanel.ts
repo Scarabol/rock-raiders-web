@@ -10,7 +10,7 @@ export class UpgradeVehiclePanel extends IconSubPanel {
     canInstallUpgrade: Map<VehicleUpgrade, boolean> = new Map()
 
     constructor(onBackPanel: Panel) {
-        super(4, onBackPanel)
+        super(4, onBackPanel, false)
         this.addUpgradeItem('Interface_MenuItem_UpgardeCarry', VehicleUpgrade.CARRY)
         this.addUpgradeItem('Interface_MenuItem_UpgardeScan', VehicleUpgrade.SCAN)
         this.addUpgradeItem('Interface_MenuItem_UpgradeEngine', VehicleUpgrade.SPEED)

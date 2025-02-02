@@ -14,7 +14,7 @@ export class SelectVehicleManedPanel extends IconSubPanel {
     noVehicleWithDriver: boolean = false
 
     constructor(onBackPanel: Panel) {
-        super(7, onBackPanel)
+        super(7, onBackPanel, true)
         const unloadVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UnLoadVehicle')
         unloadVehicleItem.isDisabled = () => this.noVehicleWithCarried
         unloadVehicleItem.onClick = () => this.publishEvent(new VehicleUnload())
