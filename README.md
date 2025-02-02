@@ -73,7 +73,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Roof mesh is not added as ceiling to scene in FPV and shoulder view
 - Use pro-meshes to render high-detail walls in first person and shoulder view
 - Bats don't appear in flocks
-- Camera frustum not shown as wireframe on radar map panel
 - Surface object pointer in tutorials removes surface highlight color as in original
 
 ## Technical Debt

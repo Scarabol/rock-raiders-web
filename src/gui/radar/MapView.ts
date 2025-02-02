@@ -1,7 +1,7 @@
 import { createCanvas } from '../../core/ImageHelper'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
-import { FollowerSetLookAtEvent, InitRadarMap, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
+import { FollowerSetLookAtEvent, InitRadarMap, UpdateRadarCamera, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { MapMarkerChange, MapMarkerType } from '../../game/component/MapMarkerComponent'
 import { BaseElement } from '../base/BaseElement'
 import { MapSurfaceRect } from './MapSurfaceRect'
@@ -12,6 +12,7 @@ import { TILESIZE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../par
 import { EventBroker } from '../../event/EventBroker'
 import { CURSOR } from '../../resource/Cursor'
 import { Vector2 } from 'three'
+import { MapRendererCameraRect } from '../../worker/MapRendererWorker'
 
 export class MapView extends BaseElement {
     readonly mapRenderer: MapRenderer
@@ -20,6 +21,7 @@ export class MapView extends BaseElement {
     readonly monsterSprite: SpriteImage
     readonly materialSprite: SpriteImage
     readonly geoScanSprite: SpriteImage
+    readonly cameraSprite: SpriteImage
     readonly offset: { x: number, y: number } = {x: 0, y: 0}
     readonly surfaceMap: MapSurfaceRect[][] = []
     entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number, r: number }>> = new Map()
@@ -31,6 +33,7 @@ export class MapView extends BaseElement {
     lastSurface?: MapSurfaceRect
     lastEntity?: GameEntity
     entityBelowCursor?: GameEntity
+    cameraRect?: MapRendererCameraRect
 
     constructor() {
         super()
@@ -41,7 +44,8 @@ export class MapView extends BaseElement {
         this.monsterSprite = createCanvas(this.width, this.height)
         this.materialSprite = createCanvas(this.width, this.height)
         this.geoScanSprite = createCanvas(this.width, this.height)
-        this.mapRenderer = new MapRenderer(this.surfaceSprite, this.entitySprite, this.monsterSprite, this.materialSprite, this.geoScanSprite)
+        this.cameraSprite = createCanvas(this.width, this.height)
+        this.mapRenderer = new MapRenderer(this.surfaceSprite, this.entitySprite, this.monsterSprite, this.materialSprite, this.geoScanSprite, this.cameraSprite)
         this.relX = 15
         this.relY = 15
         this.onClick = (cx: number, cy: number) => {
@@ -93,6 +97,10 @@ export class MapView extends BaseElement {
             }
             this.mapRenderer.redrawEntities(this.offset, event.mapMarkerType, this.surfaceRectSize, Array.from(entities.values())).then(() => this.notifyRedraw())
         })
+        this.registerEventListener(EventKey.UPDATE_RADAR_CAMERA, (event: UpdateRadarCamera) => {
+            this.cameraRect = event.cameraRect
+            this.mapRenderer.redrawCamera(this.offset, this.surfaceRectSize, this.cameraRect).then(() => this.notifyRedraw())
+        })
     }
 
     zoomIn(): void {
@@ -120,6 +128,7 @@ export class MapView extends BaseElement {
             this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MONSTER, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MONSTER, () => new Map()).values())),
             this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MATERIAL, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MATERIAL, () => new Map()).values())),
             this.mapRenderer.redrawEntities(this.offset, MapMarkerType.SCANNER, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.SCANNER, () => new Map()).values())),
+            this.mapRenderer.redrawCamera(this.offset, this.surfaceRectSize, this.cameraRect),
         ]).then(() => this.notifyRedraw())
     }
 
@@ -131,6 +140,7 @@ export class MapView extends BaseElement {
         context.drawImage(this.monsterSprite, this.x, this.y)
         context.drawImage(this.materialSprite, this.x, this.y)
         context.drawImage(this.geoScanSprite, this.x, this.y)
+        context.drawImage(this.cameraSprite, this.x, this.y)
     }
 
     isInRect(sx: number, sy: number): boolean {

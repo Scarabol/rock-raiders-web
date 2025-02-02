@@ -3,6 +3,7 @@ import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { MAP_MAX_UPDATE_INTERVAL, MAP_PANEL_SURFACE_RECT_MARGIN, TILESIZE } from '../params'
 import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { MapMarkerType } from '../game/component/MapMarkerComponent'
+import { Vector2 } from 'three'
 
 export enum MapRendererWorkerRequestType {
     RESPONSE_MAP_RENDERER = 1, // start with 1 for truthiness safety
@@ -10,6 +11,7 @@ export enum MapRendererWorkerRequestType {
     MAP_RENDER_TERRAIN,
     MAP_RENDER_SURFACE,
     MAP_RENDER_ENTITIES,
+    MAP_RENDER_CAMERA,
 }
 
 type MapRendererInitMessage = {
@@ -19,6 +21,7 @@ type MapRendererInitMessage = {
     monsterSprite: SpriteImage
     materialSprite: SpriteImage
     geoScanSprite: SpriteImage
+    cameraSprite: SpriteImage
 }
 
 type MapRendererTerrainRenderMessage = {
@@ -46,7 +49,22 @@ type MapRendererEntitiesRenderMessage = {
     entities: { x: number, z: number, r: number }[]
 }
 
-export type MapRendererMessage = MapRendererInitMessage | MapRendererTerrainRenderMessage | MapRendererSurfaceRenderMessage | MapRendererEntitiesRenderMessage
+type MapRendererCameraRenderMessage = {
+    type: MapRendererWorkerRequestType.MAP_RENDER_CAMERA
+    requestId: string
+    offset: { x: number, y: number }
+    surfaceRectSize: number
+    rect: MapRendererCameraRect
+}
+
+export type MapRendererCameraRect = {
+    topLeft: { x: number, z: number }
+    topRight: { x: number, z: number }
+    bottomRight: { x: number, z: number }
+    bottomLeft: { x: number, z: number }
+}
+
+export type MapRendererMessage = MapRendererInitMessage | MapRendererTerrainRenderMessage | MapRendererSurfaceRenderMessage | MapRendererEntitiesRenderMessage | MapRendererCameraRenderMessage
 
 export type MapRendererResponse = {
     type: MapRendererWorkerRequestType.RESPONSE_MAP_RENDERER
@@ -59,6 +77,7 @@ export class MapRendererWorker {
     monsterContext: SpriteContext | null = null
     materialContext: SpriteContext | null = null
     geoScanContext: SpriteContext | null = null
+    cameraContext: SpriteContext | null = null
     blocked: Set<MapMarkerType> = new Set()
     markedDirty: Map<MapMarkerType, MapRendererEntitiesRenderMessage> = new Map()
 
@@ -73,6 +92,7 @@ export class MapRendererWorker {
             this.materialContext = msg.materialSprite.getContext('2d')
             this.geoScanContext = msg.geoScanSprite.getContext('2d')
             this.entityContext = msg.entitySprite.getContext('2d')
+            this.cameraContext = msg.cameraSprite.getContext('2d')
         } else {
             switch (msg.type) {
                 case MapRendererWorkerRequestType.MAP_RENDER_TERRAIN:
@@ -96,6 +116,9 @@ export class MapRendererWorker {
                             this.redrawGeoScanContext(msg)
                             break
                     }
+                    break
+                case MapRendererWorkerRequestType.MAP_RENDER_CAMERA:
+                    this.redrawCamera(msg.offset, msg.surfaceRectSize, msg.rect)
                     break
             }
             this.worker.sendResponse({type: MapRendererWorkerRequestType.RESPONSE_MAP_RENDERER, requestId: msg.requestId})
@@ -170,6 +193,49 @@ export class MapRendererWorker {
             this.surfaceContext.fillStyle = surfaceRect.surfaceColor
             this.surfaceContext.fillRect(surfaceX, surfaceY, rectSize, rectSize)
         }
+    }
+
+    private redrawCamera(offset: { x: number, y: number }, surfaceRectSize: number, rect: MapRendererCameraRect) {
+        if (!this.cameraContext || !rect) return
+        this.cameraContext.clearRect(0, 0, this.cameraContext.canvas.width, this.cameraContext.canvas.height)
+        // draw camera frustum
+        this.cameraContext.beginPath()
+        const [topLeft, topRight, bottomRight, bottomLeft] = [rect.topLeft, rect.topRight, rect.bottomRight, rect.bottomLeft]
+            .map((s) => (new Vector2(s.x, s.z).multiplyScalar(surfaceRectSize / TILESIZE).sub(offset)))
+        this.cameraContext.moveTo(topLeft.x, topLeft.y)
+        this.cameraContext.lineTo(topRight.x, topRight.y)
+        this.cameraContext.lineTo(bottomRight.x, bottomRight.y)
+        this.cameraContext.lineTo(bottomLeft.x, bottomLeft.y)
+        this.cameraContext.closePath()
+        this.cameraContext.strokeStyle = '#ccc'
+        this.cameraContext.lineWidth = 0.5
+        this.cameraContext.stroke()
+        // draw arrow inside of frustum
+        this.cameraContext.beginPath()
+        const topMid = topRight.clone().sub(topLeft).multiplyScalar(0.5).add(topLeft)
+        const bottomMid = bottomRight.clone().sub(bottomLeft).multiplyScalar(0.5).add(bottomLeft)
+        const topDown = bottomMid.clone().sub(topMid)
+        const arrowTip = topDown.clone().multiplyScalar(0.15).add(topMid)
+        this.cameraContext.moveTo(arrowTip.x, arrowTip.y)
+        const midLeft = bottomLeft.clone().sub(topLeft).multiplyScalar(0.5).add(topLeft)
+        const midRight = bottomRight.clone().sub(topRight).multiplyScalar(0.5).add(topRight)
+        const mid = midRight.clone().sub(midLeft)
+        const tipRight = mid.clone().multiplyScalar(0.65).add(midLeft)
+        const shaftRight = mid.clone().multiplyScalar(0.55).add(midLeft)
+        const shaftBottomRight = topDown.clone().multiplyScalar(0.425).add(shaftRight)
+        const tipLeft = mid.clone().multiplyScalar(0.35).add(midLeft)
+        const shaftLeft = mid.clone().multiplyScalar(0.45).add(midLeft)
+        const shaftBottomLeft = topDown.clone().multiplyScalar(0.425).add(shaftLeft)
+        this.cameraContext.lineTo(tipRight.x, tipRight.y)
+        this.cameraContext.lineTo(shaftRight.x, shaftRight.y)
+        this.cameraContext.lineTo(shaftBottomRight.x, shaftBottomRight.y)
+        this.cameraContext.lineTo(shaftBottomLeft.x, shaftBottomLeft.y)
+        this.cameraContext.lineTo(shaftLeft.x, shaftLeft.y)
+        this.cameraContext.lineTo(tipLeft.x, tipLeft.y)
+        this.cameraContext.closePath()
+        this.cameraContext.strokeStyle = '#ccc'
+        this.cameraContext.lineWidth = 0.5
+        this.cameraContext.stroke()
     }
 }
 

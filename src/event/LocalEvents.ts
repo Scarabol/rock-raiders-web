@@ -17,6 +17,7 @@ import { HealthComponent } from '../game/component/HealthComponent'
 import { Rect } from '../core/Rect'
 import { BaseEvent } from './EventTypeMap'
 import { SpriteImage } from '../core/Sprite'
+import { MapRendererCameraRect } from '../worker/MapRendererWorker'
 
 export enum SelectPanelType {
     NONE,
@@ -192,6 +193,12 @@ export class UpdateRadarSurface extends BaseEvent {
 export class UpdateRadarEntityEvent extends BaseEvent {
     constructor(readonly mapMarkerType: MapMarkerType, readonly entity: GameEntity, readonly change: MapMarkerChange, readonly position?: { x: number, z: number }, readonly radius?: number) {
         super(EventKey.UPDATE_RADAR_ENTITY)
+    }
+}
+
+export class UpdateRadarCamera extends BaseEvent {
+    constructor(readonly cameraRect: MapRendererCameraRect) {
+        super(EventKey.UPDATE_RADAR_CAMERA)
     }
 }
 

@@ -26,6 +26,7 @@ import { PathFinder } from './terrain/PathFinder'
 import { AnimEntityActivity, RaiderActivity } from './model/anim/AnimationActivity'
 import { Raider } from './model/raider/Raider'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
+import { CameraFrustumUpdater } from '../scene/CameraFrustumUpdater'
 
 export class SceneManager implements Updatable {
     static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
@@ -60,6 +61,9 @@ export class SceneManager implements Updatable {
         this.renderer = new SceneRenderer(canvas)
         this.birdViewControls = new BirdViewControls(this.cameraBird, canvas)
         if (!DEV_MODE) this.birdViewControls.addEventListener('change', () => this.forceCameraBirdAboveFloor())
+        const frustumUpdater = new CameraFrustumUpdater(this.cameraBird)
+        frustumUpdater.onCameraMoved()
+        this.birdViewControls.addEventListener('change', () => frustumUpdater.onCameraMoved())
         this.setActiveCamera(this.cameraBird)
         EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
             this.setActiveCamera(this.cameraBird) // TODO Only reset camera, when camera parent is affected
