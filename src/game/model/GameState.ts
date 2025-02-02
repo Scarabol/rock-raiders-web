@@ -22,6 +22,7 @@ export class GameState {
     static tutoBlockClicks: Map<number, number> = new Map()
     static noMultiSelect: boolean = false
     static monsterAttackPowerStation: boolean = false
+    static isBirdView: boolean = true
 
     static reset() {
         this.numCrystal = this.getDevParam('numCrystal', 0)
@@ -42,6 +43,7 @@ export class GameState {
         this.tutoBlockClicks = new Map()
         this.noMultiSelect = false
         this.monsterAttackPowerStation = false
+        this.isBirdView = true
     }
 
     static getDevParam(paramName: string, fallback: number): number {

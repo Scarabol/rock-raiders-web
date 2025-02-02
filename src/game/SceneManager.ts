@@ -79,11 +79,11 @@ export class SceneManager implements Updatable {
     }
 
     setActiveCamera(camera: PerspectiveCamera) {
-        const isBirdView = camera === this.cameraBird
-        if (this.torchLightCursor) this.torchLightCursor.visible = isBirdView
-        this.birdViewControls.disabled = !isBirdView
-        if (this.roofGroup) this.roofGroup.visible = !isBirdView
-        this.scene.fog = isBirdView ? undefined : new FogExp2(this.scene.background as Color, 0.007)
+        GameState.isBirdView = camera === this.cameraBird
+        if (this.torchLightCursor) this.torchLightCursor.visible = GameState.isBirdView
+        this.birdViewControls.disabled = !GameState.isBirdView
+        if (this.roofGroup) this.roofGroup.visible = !GameState.isBirdView
+        this.scene.fog = GameState.isBirdView ? undefined : new FogExp2(this.scene.background as Color, 0.007)
         this.cameraActive = camera
         this.cameraActive.add(SoundManager.sceneAudioListener)
         this.renderer.camera = camera

@@ -21,7 +21,7 @@ export class RaiderInfoComponent extends AbstractGameComponent {
         this.hungerSprite.position.y = 16 - GameConfig.instance.objInfo.hungerImagesPosition[1] / 4
         this.hungerSprite.scale.setScalar(4)
         parent.add(this.hungerSprite)
-        this.hungerSprite.visible = GameState.showObjInfo
+        this.hungerSprite.visible = GameState.showObjInfo && GameState.isBirdView
     }
 
     setBubbleTexture(textureName: keyof BubblesCfg) {
@@ -63,6 +63,6 @@ class BubbleSprite extends Sprite implements Updatable {
     }
 
     updateVisibleState() {
-        this.visible = GameState.showObjInfo || this.showDelayMs > 0
+        this.visible = (GameState.showObjInfo || this.showDelayMs > 0) && GameState.isBirdView
     }
 }

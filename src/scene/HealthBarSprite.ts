@@ -44,14 +44,14 @@ export class HealthBarSprite extends Sprite implements Updatable {
         if (this.targetStatus === nextStatus) return
         this.targetStatus = nextStatus
         this.visibleTimeout = 3000
-        this.visible = true
+        this.visible = GameState.isBirdView
     }
 
     update(elapsedMs: number) {
         if (this.visibleTimeout > 0) {
             this.visibleTimeout -= elapsedMs
         } else {
-            this.visible = GameState.showObjInfo && this.canBeShownPermanently
+            this.visible = GameState.showObjInfo && this.canBeShownPermanently && GameState.isBirdView
             this.visibleTimeout = 0
         }
         if (this.targetStatus === this.actualStatus) return

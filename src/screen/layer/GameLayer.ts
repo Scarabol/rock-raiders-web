@@ -298,7 +298,7 @@ export class GameLayer extends ScreenLayer {
             this.worldMgr.entityMgr.raiders.forEach((r) => {
                 const infoComponent = r.worldMgr.ecs.getComponents(r.entity).get(RaiderInfoComponent)
                 infoComponent.bubbleSprite.updateVisibleState()
-                infoComponent.hungerSprite.visible = GameState.showObjInfo
+                infoComponent.hungerSprite.visible = GameState.showObjInfo && GameState.isBirdView
             })
             return true
         } else if (['ArrowLeft', 'a', 'ArrowRight', 'd'].some((k) => event.key === k)) {

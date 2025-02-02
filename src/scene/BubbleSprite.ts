@@ -1,6 +1,7 @@
 import { Sprite, SpriteMaterial } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { ResourceManager } from '../resource/ResourceManager'
+import { GameState } from '../game/model/GameState'
 
 export class BubbleSprite extends Sprite implements Updatable {
     enabled: boolean = false
@@ -19,7 +20,7 @@ export class BubbleSprite extends Sprite implements Updatable {
 
     update(elapsedMs: number) {
         this.blinkDelay = (this.blinkDelay + elapsedMs) % 1000
-        this.visible = this.enabled && this.blinkDelay < 500
+        this.visible = this.enabled && this.blinkDelay < 500 && GameState.isBirdView
     }
 
     setEnabled(enabled: boolean) {
