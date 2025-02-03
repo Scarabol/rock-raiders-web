@@ -35,6 +35,7 @@ export class MainPanel extends Panel {
     selectRubblePanel: SelectRubblePanel
     selectSitePanel: SelectSitePanel
     selectLavaErosionPanel: SelectLavaErosionPanel
+    selectRaiderPanel: SelectRaiderPanel
 
     numRequestedRaiders: number = 0
     hasRaiderTeleport: boolean = false
@@ -61,15 +62,15 @@ export class MainPanel extends Panel {
         this.selectSitePanel = this.addSubPanel(new SelectSitePanel(this.mainPanel))
         this.selectLavaErosionPanel = this.addSubPanel(new SelectLavaErosionPanel(this.mainPanel))
         const selectBuildingPanel = this.addSubPanel(new SelectBuildingPanel(this.mainPanel))
-        const selectRaiderPanel = this.addSubPanel(new SelectRaiderPanel(this.mainPanel))
-        const trainRaiderPanel = this.addSubPanel(new TrainRaiderPanel(selectRaiderPanel))
-        selectRaiderPanel.trainItem.onClick = () => {
-            selectRaiderPanel.toggleState(() => trainRaiderPanel.toggleState())
+        this.selectRaiderPanel = this.addSubPanel(new SelectRaiderPanel(this.mainPanel))
+        const trainRaiderPanel = this.addSubPanel(new TrainRaiderPanel(this.selectRaiderPanel))
+        this.selectRaiderPanel.trainItem.onClick = () => {
+            this.selectRaiderPanel.toggleState(() => trainRaiderPanel.toggleState())
             this.publishEvent(new GuiTrainRaiderButtonClicked())
         }
-        const getToolPanel = this.addSubPanel(new GetToolPanel(selectRaiderPanel))
-        selectRaiderPanel.getToolItem.onClick = () => {
-            selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
+        const getToolPanel = this.addSubPanel(new GetToolPanel(this.selectRaiderPanel))
+        this.selectRaiderPanel.getToolItem.onClick = () => {
+            this.selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
             this.publishEvent(new GuiGetToolButtonClicked())
         }
         const selectVehicleEmptyPanel = this.addSubPanel(new SelectVehicleEmptyPanel(this.mainPanel))
@@ -107,7 +108,7 @@ export class MainPanel extends Panel {
 
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             this.lastSelectionEvent = event
-            if (event.selectPanelType === SelectPanelType.RAIDER) this.selectSubPanel(selectRaiderPanel)
+            if (event.selectPanelType === SelectPanelType.RAIDER) this.selectSubPanel(this.selectRaiderPanel)
             else if (event.selectPanelType === SelectPanelType.VEHICLE) this.selectSubPanel(event.noVehicleWithDriver ? selectVehicleEmptyPanel : selectVehicleManedPanel)
             else if (event.selectPanelType === SelectPanelType.BUILDING) this.selectSubPanel(selectBuildingPanel)
             else if (event.selectPanelType === SelectPanelType.SURFACE) this.onSelectedSurfaceChange(event.isFloor, event.hasRubble, event.isSite, event.hasErosion)
@@ -130,7 +131,7 @@ export class MainPanel extends Panel {
             cameraViewPanel.cameraViewMode = event.viewMode
             cameraViewPanel.updateAllButtonStates()
             if (event.viewMode === CameraViewMode.BIRD) {
-                if (this.lastSelectionEvent?.selectPanelType === SelectPanelType.RAIDER) this.selectSubPanel(selectRaiderPanel)
+                if (this.lastSelectionEvent?.selectPanelType === SelectPanelType.RAIDER) this.selectSubPanel(this.selectRaiderPanel)
                 else if (this.lastSelectionEvent?.selectPanelType === SelectPanelType.VEHICLE) this.selectSubPanel(this.lastSelectionEvent.noVehicleWithDriver ? selectVehicleEmptyPanel : selectVehicleManedPanel)
                 else {
                     console.warn('Unexpected state', this.lastSelectionEvent)

@@ -3,7 +3,7 @@ import { EntityManager } from '../../../EntityManager'
 import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
-import { RaiderTraining } from '../../raider/RaiderTraining'
+import { RaiderTraining, RaiderTrainings } from '../../raider/RaiderTraining'
 import { RaiderJob } from './RaiderJob'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
@@ -11,6 +11,7 @@ import { EventBroker } from '../../../../event/EventBroker'
 import { MoveJob } from '../MoveJob'
 import { SurfaceType } from '../../../terrain/SurfaceType'
 import { DEV_MODE } from '../../../../params'
+import { GameState } from '../../GameState'
 
 export class TrainRaiderJob extends RaiderJob {
     building?: BuildingEntity
@@ -34,6 +35,7 @@ export class TrainRaiderJob extends RaiderJob {
         if (!this.raider) return
         this.raider.addTraining(this.training)
         EventBroker.publish(new RaiderTrainingCompleteEvent(this.training))
+        GameState.raiderSaveGameMap.get(this.raider.entity).trainings.add(RaiderTrainings.toStatsProperty(this.training))
         if (!this.raider.followUpJob && this.building) {
             const pathSurface = this.building.primaryPathSurface?.neighbors.find((n) => n.surfaceType === SurfaceType.POWER_PATH)
             if (pathSurface) {

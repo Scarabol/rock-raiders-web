@@ -20,12 +20,14 @@ import { EntityType } from '../game/model/EntityType'
 import { AdvisorLayer } from './layer/AdvisorLayer'
 import { EventBroker } from '../event/EventBroker'
 import { ObjectPointer } from '../scene/ObjectPointer'
+import { NamingLayer } from './layer/NamingLayer'
 
 export class GameScreen {
     readonly worldMgr: WorldManager
     readonly gameLayer: GameLayer
     readonly selectionFrameLayer: SelectionFrameLayer
     readonly advisorLayer: AdvisorLayer
+    readonly namingLayer: NamingLayer
     readonly guiTopLeftLayer: GuiTopLeftLayer
     readonly guiTopRightLayer: GuiTopRightLayer
     readonly guiBottomRightLayer: GuiBottomRightLayer
@@ -43,6 +45,7 @@ export class GameScreen {
         this.screenMaster.onGlobalMouseLeaveEvent = this.gameLayer.onGlobalMouseLeaveEvent.bind(this.gameLayer)
         this.selectionFrameLayer = screenMaster.addLayer(new SelectionFrameLayer(), 510)
         this.advisorLayer = screenMaster.addLayer(new AdvisorLayer(), 515)
+        this.namingLayer = screenMaster.addLayer(new NamingLayer(this), 518)
         this.guiTopLeftLayer = screenMaster.addLayer(new GuiTopLeftLayer(), 520)
         this.guiTopRightLayer = screenMaster.addLayer(new GuiTopRightLayer(), 521)
         this.guiBottomRightLayer = screenMaster.addLayer(new GuiBottomRightLayer(), 522)
@@ -72,6 +75,7 @@ export class GameScreen {
         this.screenMaster.removeLayer(this.gameLayer)
         this.screenMaster.removeLayer(this.selectionFrameLayer)
         this.screenMaster.removeLayer(this.advisorLayer)
+        this.screenMaster.removeLayer(this.namingLayer)
         this.screenMaster.removeLayer(this.guiTopLeftLayer)
         this.screenMaster.removeLayer(this.guiTopRightLayer)
         this.screenMaster.removeLayer(this.guiBottomRightLayer)
@@ -99,6 +103,7 @@ export class GameScreen {
         this.guiTopRightLayer.reset()
         this.guiBottomRightLayer.reset()
         this.guiBottomLeftLayer.reset()
+        GameState.unassignedTeam = [...SaveGameManager.currentTeam]
         this.worldMgr.setup(this.levelConf)
         this.sceneMgr.setupScene(this.levelConf)
         if (this.levelConf.blockPointersMap) {
@@ -137,6 +142,7 @@ export class GameScreen {
         this.gameLayer.show()
         this.selectionFrameLayer.show()
         this.advisorLayer.show()
+        this.namingLayer.show()
         this.guiTopLeftLayer.show()
         this.guiTopRightLayer.show()
         this.guiBottomRightLayer.show()
@@ -157,6 +163,7 @@ export class GameScreen {
         this.guiTopRightLayer.hide()
         this.guiBottomRightLayer.hide()
         this.guiBottomLeftLayer.hide()
+        this.namingLayer.hide()
         this.advisorLayer.hide()
         this.selectionFrameLayer.hide()
         this.gameLayer.hide()

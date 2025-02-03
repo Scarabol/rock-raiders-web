@@ -9,6 +9,7 @@ import { GameConfig } from '../../../../cfg/GameConfig'
 import { DEV_MODE } from '../../../../params'
 import { SurfaceType } from '../../../terrain/SurfaceType'
 import { MoveJob } from '../MoveJob'
+import { GameState } from '../../GameState'
 
 export class UpgradeRaiderJob extends RaiderJob {
     building: BuildingEntity
@@ -31,6 +32,7 @@ export class UpgradeRaiderJob extends RaiderJob {
         if (this.raider.level < this.raider.stats.maxLevel) {
             this.raider.level++
             this.raider.worldMgr.ecs.getComponents(this.raider.entity).get(HealthComponent).rockFallDamage = GameConfig.instance.getRockFallDamage(this.raider.entityType, this.raider.level)
+            GameState.raiderSaveGameMap.get(this.raider.entity).level = this.raider.level
             if (!this.raider.followUpJob && this.building) {
                 const pathSurface = this.building.primaryPathSurface?.neighbors.find((n) => n.surfaceType === SurfaceType.POWER_PATH)
                 if (pathSurface) {

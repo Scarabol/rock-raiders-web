@@ -25,6 +25,8 @@ import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/
 import { SlugBehaviorComponent, SlugBehaviorState } from './component/SlugBehaviorComponent'
 import { EventBroker } from '../event/EventBroker'
 import { BuildingEntityStats } from '../cfg/GameStatsCfg'
+import { GameState } from './model/GameState'
+import { SaveGameManager, SaveGameRaider } from '../resource/SaveGameManager'
 
 export interface VehicleTarget {
     entity: GameEntity
@@ -398,5 +400,41 @@ export class EntityManager {
             return false
         })
         return result
+    }
+
+    addRaiderToTeam(raider: Raider): SaveGameRaider {
+        let unassigned = GameState.unassignedTeam.shift()
+        if (!unassigned) {
+            unassigned = new SaveGameRaider('', 0, [])
+            SaveGameManager.currentTeam.push(unassigned)
+        }
+        GameState.raiderSaveGameMap.set(raider.entity, unassigned)
+        raider.level = unassigned.level || 0
+        ;(unassigned.trainings ?? []).map((t) => {
+            switch (t.toLowerCase()) {
+                case 'TrainDriver'.toLowerCase():
+                    raider.addTraining(RaiderTraining.DRIVER)
+                    break
+                case 'TrainRepair'.toLowerCase():
+                    raider.addTraining(RaiderTraining.ENGINEER)
+                    break
+                case 'TrainScanner'.toLowerCase():
+                    raider.addTraining(RaiderTraining.GEOLOGIST)
+                    break
+                case 'TrainPilot'.toLowerCase():
+                    raider.addTraining(RaiderTraining.PILOT)
+                    break
+                case 'TrainSailor'.toLowerCase():
+                    raider.addTraining(RaiderTraining.SAILOR)
+                    break
+                case 'TrainDynamite'.toLowerCase():
+                    raider.addTraining(RaiderTraining.DEMOLITION)
+                    break
+                default:
+                    console.warn(`Unexpected raider training "${t}" given`)
+                    break
+            }
+        })
+        return unassigned
     }
 }

@@ -20,6 +20,7 @@ export class SaveGamePreferences { // this gets serialized
 export class SaveGameManager {
     static currentPreferences: SaveGamePreferences = new SaveGamePreferences()
     static screenshots: Promise<HTMLCanvasElement | undefined>[] = []
+    static currentTeam: SaveGameRaider[] = []
     private static saveGames: SaveGame[] = [] // this gets serialized
     private static currentLevels: SaveGameLevel[] = []
 
@@ -95,6 +96,7 @@ export class SaveGameManager {
     static saveGame(index: number, screenshot: HTMLCanvasElement) {
         this.saveGames[index] = this.saveGames[index] || new SaveGame()
         this.saveGames[index].levels = this.currentLevels.map((l) => SaveGameLevel.copy(l)) // deep copy required, otherwise changes are reflected
+        this.saveGames[index].team = this.currentTeam.map((t) => SaveGameRaider.copy(t)) // deep copy required, otherwise changes are reflected
         localStorage.setItem('savegames', JSON.stringify(this.saveGames))
         this.screenshots[index] = Promise.resolve(screenshot)
         localStorage.setItem(`screenshot${index}`, this.createSaveGameThumbnail(screenshot))
@@ -117,6 +119,7 @@ export class SaveGameManager {
 
     static loadGame(index: number): boolean {
         this.currentLevels = this.saveGames[index]?.levels ?? []
+        this.currentTeam = this.saveGames[index]?.team ?? []
         if (VERBOSE) console.log('game progress loaded', this.currentLevels)
         return true
     }
@@ -159,6 +162,7 @@ export class SaveGameManager {
 
 class SaveGame { // this gets serialized
     levels?: SaveGameLevel[] = []
+    team?: SaveGameRaider[] = []
 }
 
 class SaveGameLevel { // this gets serialized
@@ -172,5 +176,21 @@ class SaveGameLevel { // this gets serialized
 
     static copy(other: SaveGameLevel): SaveGameLevel {
         return new SaveGameLevel(other.levelName, other.levelScore)
+    }
+}
+
+export class SaveGameRaider { // this gets serialized
+    name?: string = ''
+    level?: number = 0
+    trainings?: string[] = []
+
+    constructor(name: string | undefined, level: number | undefined, trainings: string[] | undefined) {
+        this.name = name || ''
+        this.level = level || 0
+        this.trainings = [...(trainings || [])]
+    }
+
+    static copy(other: SaveGameRaider): SaveGameRaider {
+        return new SaveGameRaider(other.name, other.level, other.trainings)
     }
 }

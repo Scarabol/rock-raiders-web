@@ -13,6 +13,7 @@ import { VehicleEntity } from './vehicle/VehicleEntity'
 import { SelectionFrameComponent } from '../component/SelectionFrameComponent'
 import { VehicleUpgrade } from './vehicle/VehicleUpgrade'
 import { UpgradeVehicleJob } from './job/UpgradeVehicleJob'
+import { GameEntity } from '../ECS'
 
 export class GameSelection {
     surface?: Surface
@@ -200,5 +201,13 @@ export class GameSelection {
     getPrimarySelected(): Raider | VehicleEntity {
         // TODO Allow for primary (green) and secondary (yellow) selected entities
         return this.raiders[0] ?? this.vehicles[0]
+    }
+
+    hasOnlyOneRaider(): GameEntity | undefined {
+        if (!this.surface && !this.building && this.raiders.length === 1 && this.vehicles.length === 0 && !this.fence && !this.doubleSelect) {
+            return this.raiders[0].entity
+        } else {
+            return undefined
+        }
     }
 }

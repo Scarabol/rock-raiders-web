@@ -1,6 +1,8 @@
 import { Vector2 } from 'three'
 import { PriorityList } from '../../gui/toppanel/PriorityList'
 import { BRICK_ORE_VALUE, DEV_MODE } from '../../params'
+import { GameEntity } from '../ECS'
+import { SaveGameRaider } from '../../resource/SaveGameManager'
 
 export class GameState {
     static numCrystal: number = 0
@@ -23,6 +25,8 @@ export class GameState {
     static noMultiSelect: boolean = false
     static monsterAttackPowerStation: boolean = false
     static isBirdView: boolean = true
+    static unassignedTeam: SaveGameRaider[] = []
+    static raiderSaveGameMap: Map<GameEntity, SaveGameRaider> = new Map()
 
     static reset() {
         this.numCrystal = this.getDevParam('numCrystal', 0)
@@ -44,6 +48,8 @@ export class GameState {
         this.noMultiSelect = false
         this.monsterAttackPowerStation = false
         this.isBirdView = true
+        this.unassignedTeam.length = 0
+        this.raiderSaveGameMap = new Map()
     }
 
     static getDevParam(paramName: string, fallback: number): number {

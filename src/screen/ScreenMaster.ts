@@ -23,7 +23,7 @@ export class ScreenMaster {
             this.getActiveLayersSorted()?.[0]?.canvas?.focus() // always focus topmost
         })
         // in case topmost layer does not listen for event, it reaches game-canvas-container as fallback dispatch from here
-        ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'wheel', 'mousemove', 'mouseleave'].forEach((eventType) => {
+        ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'keypress', 'wheel', 'mousemove', 'mouseleave'].forEach((eventType) => {
             HTML_GAME_CANVAS_CONTAINER.addEventListener(eventType, (event) => {
                 event.stopPropagation()
                 this.dispatchEvent(event)

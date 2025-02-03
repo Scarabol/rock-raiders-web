@@ -39,6 +39,7 @@ import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
 import { TooltipComponent } from '../../component/TooltipComponent'
 import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
+import { SelectionNameComponent } from '../../component/SelectionNameComponent'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -72,11 +73,13 @@ export class Raider implements Updatable, JobFulfiller {
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         const objectKey = this.entityType.toLowerCase()
-        const objectName = GameConfig.instance.objectNamesCfg.get(objectKey)
+        const teamMember = this.worldMgr.entityMgr.addRaiderToTeam(this)
+        const raiderName = teamMember.name || GameConfig.instance.objectNamesCfg.get(EntityType.PILOT) || 'Rock Raider'
         const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey) || ''
-        if (objectName) this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, sfxKey, () => {
-            return TooltipSpriteBuilder.getRaiderTooltipSprite(objectName, this.maxTools(), this.tools, this.trainings)
+        this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, raiderName, sfxKey, () => {
+            return TooltipSpriteBuilder.getRaiderTooltipSprite(raiderName, this.maxTools(), this.tools, this.trainings)
         }))
+        this.worldMgr.ecs.addComponent(this.entity, new SelectionNameComponent(this.sceneEntity)).setName(teamMember.name)
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 
@@ -122,6 +125,7 @@ export class Raider implements Updatable, JobFulfiller {
         const components = this.worldMgr.ecs.getComponents(this.entity)
         EventBroker.publish(new GenericDeathEvent(components.get(PositionComponent)))
         components.get(SelectionFrameComponent)?.deselect()
+        components.get(SelectionNameComponent)?.setVisible(false)
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.entity, MapMarkerChange.REMOVE))
@@ -285,7 +289,9 @@ export class Raider implements Updatable, JobFulfiller {
 
     select(): boolean {
         if (!this.isSelectable()) return false
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
+        const components = this.worldMgr.ecs.getComponents(this.entity)
+        components.get(SelectionFrameComponent)?.select()
+        components.get(SelectionNameComponent)?.setVisible(true)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         this.workAudio = SoundManager.stopAudio(this.workAudio)
         return true
@@ -296,7 +302,9 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     deselect() {
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+        const components = this.worldMgr.ecs.getComponents(this.entity)
+        components.get(SelectionFrameComponent)?.deselect()
+        components.get(SelectionNameComponent)?.setVisible(false)
     }
 
     isSelectable(): boolean {
