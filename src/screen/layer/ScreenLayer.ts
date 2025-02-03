@@ -28,7 +28,7 @@ export class ScreenLayer {
         this.eventListener.add(eventType)
         this.canvas.addEventListener(eventType, (event) => {
             event.stopPropagation()
-            const consumed = listener(event)
+            const consumed = this.active && listener(event)
             if (!consumed) this.screenMaster.dispatchEvent(event, this.zIndex)
             if (eventType === 'mousemove') this.screenMaster.onGlobalMouseMoveEvent(event as PointerEvent)
             else if (eventType === 'mouseleave') this.screenMaster.onGlobalMouseLeaveEvent(event as PointerEvent)
