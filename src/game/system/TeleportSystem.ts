@@ -73,35 +73,35 @@ export class TeleportSystem extends AbstractGameSystem {
                     const worldPosition = new Vector2(0, -TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(teleport.primaryPathSurface.getCenterWorld2D())
                     const walkOutPos = teleport.primaryPathSurface.getRandomPosition()
                     teleport.operating = true
-                    const floorPosition = raider.worldMgr.sceneMgr.getFloorPosition(worldPosition)
-                    const surface = raider.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(floorPosition)
-                    const positionComponent = raider.worldMgr.ecs.addComponent(raider.entity, new PositionComponent(floorPosition, surface))
+                    const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPosition)
+                    const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(floorPosition)
+                    const positionComponent = this.worldMgr.ecs.addComponent(raider.entity, new PositionComponent(floorPosition, surface))
                     raider.sceneEntity.position.copy(floorPosition)
                     raider.sceneEntity.position.y += positionComponent.floorOffset
                     raider.sceneEntity.rotation.y = heading
                     raider.sceneEntity.visible = surface.discovered
-                    raider.worldMgr.sceneMgr.addSceneEntity(raider.sceneEntity)
+                    this.worldMgr.sceneMgr.addSceneEntity(raider.sceneEntity)
                     raider.sceneEntity.setAnimation(AnimEntityActivity.TeleportIn, () => {
                         raider.sceneEntity.setAnimation(AnimEntityActivity.Stand)
                         let healthComponent: HealthComponent
                         if (raider.entityType === EntityType.PILOT) {
-                            healthComponent = raider.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
-                            raider.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.OxygenCoef))
-                            const infoComp = raider.worldMgr.ecs.addComponent(raider.entity, new RaiderInfoComponent(raider.sceneEntity))
+                            healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
+                            this.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.OxygenCoef))
+                            const infoComp = this.worldMgr.ecs.addComponent(raider.entity, new RaiderInfoComponent(raider.sceneEntity))
                             this.worldMgr.sceneMgr.addSprite(infoComp.bubbleSprite)
                             infoComp.setHungerIndicator((raider as Raider).foodLevel)
                         } else {
-                            healthComponent = raider.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 24, 14, raider.sceneEntity, false, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
+                            healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 24, 14, raider.sceneEntity, false, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
                         }
-                        raider.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
-                        raider.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
-                        const sceneSelectionComponent = raider.worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
-                        raider.worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, raider.stats))
+                        this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
+                        this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
+                        const sceneSelectionComponent = this.worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
+                        this.worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, raider.stats))
                         if (walkOutPos) raider.setJob(new MoveJob(walkOutPos))
                         this.worldMgr.entityMgr.raidersInBeam.remove(raider)
                         this.worldMgr.entityMgr.raiders.push(raider)
-                        EventBroker.publish(new RaidersAmountChangedEvent(raider.worldMgr.entityMgr))
-                        raider.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
+                        EventBroker.publish(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
+                        this.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
                         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, raider.entity, MapMarkerChange.UPDATE, floorPosition))
                         teleport.operating = false
                     })

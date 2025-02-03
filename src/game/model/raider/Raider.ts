@@ -509,10 +509,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.trainings.add(training)
         if (training === RaiderTraining.GEOLOGIST) {
             const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
-            if (scannerRange) {
-                const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
-                this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(positionComponent, scannerRange))
-            }
+            if (scannerRange) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(scannerRange))
         }
     }
 

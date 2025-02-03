@@ -262,7 +262,7 @@ export class BuildingEntity {
                 const components = this.worldMgr.ecs.getComponents(this.entity)
                 if (!components.has(ScannerComponent)) {
                     const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
-                    if (scannerRange > 0 && this.primarySurface) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(components.get(PositionComponent), scannerRange))
+                    if (scannerRange > 0 && this.primarySurface) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(scannerRange))
                 }
             } else {
                 this.changeUsedCrystals(-this.crystalDrain)

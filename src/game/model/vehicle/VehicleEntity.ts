@@ -406,7 +406,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.worldMgr.ecs.removeComponent(this.driver.entity, MapMarkerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.REMOVE))
         const driverScannerComponent = this.worldMgr.ecs.getComponents(this.driver.entity).get(ScannerComponent)
-        if (driverScannerComponent) driverScannerComponent.origin = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+        if (driverScannerComponent) this.worldMgr.ecs.addComponent(this.entity, driverScannerComponent)
         if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
@@ -428,9 +428,13 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.worldMgr.ecs.addComponent(this.driver.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.UPDATE, floorPosition))
         this.driver.sceneEntity.visible = true
-        const driverComponents = this.worldMgr.ecs.getComponents(this.driver.entity)
-        const driverScannerComponent = driverComponents.get(ScannerComponent)
-        if (driverScannerComponent) driverScannerComponent.origin = driverComponents.get(PositionComponent)
+        const scannerComponent = this.worldMgr.ecs.getComponents(this.entity).get(ScannerComponent)
+        if (scannerComponent) this.worldMgr.ecs.getComponents(this.driver.entity).add(scannerComponent)
+        const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
+        if (!scannerRange) {
+            this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
+            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.UPDATE, this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position))
+        }
         this.driver = undefined
         this.engineSound = SoundManager.stopAudio(this.engineSound)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
@@ -505,10 +509,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const components = this.worldMgr.ecs.getComponents(this.entity)
         components.get(HealthComponent).rockFallDamage = GameConfig.instance.getRockFallDamage(this.entityType, this.level)
         const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
-        if (scannerRange) {
-            const positionComponent = components.get(PositionComponent)
-            this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(positionComponent, scannerRange))
-        }
+        if (scannerRange) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(scannerRange))
     }
 
     getRepairValue(): number {

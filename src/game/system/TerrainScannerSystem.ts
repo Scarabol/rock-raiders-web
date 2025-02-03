@@ -1,12 +1,13 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { ScannerComponent } from '../component/ScannerComponent'
+import { PositionComponent } from '../component/PositionComponent'
 import { UpdateRadarEntityEvent, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { WorldManager } from '../WorldManager'
 import { MapMarkerChange, MapMarkerType } from '../component/MapMarkerComponent'
 import { EventBroker } from '../../event/EventBroker'
 
 export class TerrainScannerSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([ScannerComponent])
+    readonly componentsRequired: Set<Function> = new Set([ScannerComponent, PositionComponent])
 
     constructor(readonly worldMgr: WorldManager) {
         super()
@@ -18,13 +19,14 @@ export class TerrainScannerSystem extends AbstractGameSystem {
             try {
                 const components = this.ecs.getComponents(entity)
                 const scannerComponent = components.get(ScannerComponent)
+                const positionComponent = components.get(PositionComponent)
                 if (scannerComponent.scanDelay > 0) {
                     scannerComponent.scanDelay -= elapsedMs
                     const radius = (1 - (scannerComponent.scanDelay % 1000) / 1000) * (scannerComponent.range - 0.5)
-                    EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, entity, MapMarkerChange.UPDATE, scannerComponent.origin.position, radius))
+                    EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, entity, MapMarkerChange.UPDATE, positionComponent.position, radius))
                 } else {
                     scannerComponent.scanDelay = 5000
-                    const origin = scannerComponent.origin.surface
+                    const origin = positionComponent.surface
                     for (let dx = -scannerComponent.range - 1; dx <= scannerComponent.range; dx++) {
                         for (let dy = -scannerComponent.range - 1; dy <= scannerComponent.range; dy++) {
                             if (dx === 0 && dy === 0) continue

@@ -1,5 +1,4 @@
 import { AbstractGameComponent } from '../ECS'
-import { PositionComponent } from './PositionComponent'
 import { TILESIZE } from '../../params'
 
 export class ScannerComponent extends AbstractGameComponent {
@@ -7,7 +6,7 @@ export class ScannerComponent extends AbstractGameComponent {
     rangeSQ: number = 0
     scanDelay: number = 0
 
-    constructor(public origin: PositionComponent, range: number) {
+    constructor(range: number) {
         super()
         this.setRange(range)
     }
