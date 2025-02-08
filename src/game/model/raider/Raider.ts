@@ -296,7 +296,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     deselect() {
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+        this.worldMgr.ecs.getComponents(this.entity)?.get(SelectionFrameComponent)?.deselect()
     }
 
     isSelectable(): boolean {

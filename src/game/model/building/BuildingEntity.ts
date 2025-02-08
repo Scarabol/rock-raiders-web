@@ -128,7 +128,7 @@ export class BuildingEntity {
     }
 
     deselect() {
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+        this.worldMgr.ecs.getComponents(this.entity)?.get(SelectionFrameComponent)?.deselect()
     }
 
     getDropPosition2D(): Vector2 {
