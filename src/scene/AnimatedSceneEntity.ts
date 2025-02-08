@@ -130,6 +130,7 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.meshesByLName.clear()
         this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
         this.installedUpgrades.length = 0
+        this.wheelJoints.forEach((e) => e.mesh.removeFromParent())
         this.wheelJoints.length = 0
         this.carryJoints.length = 0
         if (this.driverParent && this.driver) this.driverParent.remove(this.driver)
