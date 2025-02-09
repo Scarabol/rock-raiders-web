@@ -542,8 +542,8 @@ export class Surface {
         ]
     }
 
-    makeRubble(containedOre: number = 0) {
-        if (this.surfaceType.rubbleResilient) return
+    makeRubble(containedOre: number = 0, force: boolean = false) {
+        if (this.surfaceType.rubbleResilient && !force) return
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += containedOre
         this.setSurfaceType(SurfaceType.RUBBLE4)

@@ -120,7 +120,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 }
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             }, 0, () => {
-                                positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
+                                positionComponent.surface.makeRubble(0, true)
                                 this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else {
@@ -241,7 +241,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 }
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             }, 0, () => {
-                                positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
+                                positionComponent.surface.makeRubble(0, true)
                                 this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else {
@@ -306,7 +306,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 }
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             }, 0, () => {
-                                positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
+                                positionComponent.surface.makeRubble(0, true)
                                 this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else {
