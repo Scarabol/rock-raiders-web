@@ -257,7 +257,7 @@ export class BuildingEntity {
             if (this.energized) {
                 this.changeUsedCrystals(this.crystalDrain)
                 if (this.stats.PowerBuilding) this.worldMgr.powerGrid.addEnergySource(this.surfaces)
-                if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
+                if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true)
                 if (this.stats.OxygenCoef) this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
                 const components = this.worldMgr.ecs.getComponents(this.entity)
                 if (!components.has(ScannerComponent)) {

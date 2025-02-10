@@ -30,7 +30,6 @@ import { CameraFrustumUpdater } from '../scene/CameraFrustumUpdater'
 import { ColorRGB } from '../scene/ColorRGB'
 
 export class SceneManager implements Updatable {
-    static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
     readonly scene: Scene
     readonly cameraBird: BirdViewCamera
     readonly cameraShoulder: PerspectiveCamera
@@ -39,7 +38,6 @@ export class SceneManager implements Updatable {
     readonly birdViewControls: BirdViewControls
     readonly sceneObjects: SceneEntity[] = []
     readonly sprites: (Sprite & Updatable)[] = []
-    readonly lastCameraWorldPos: Vector3 = new Vector3()
     readonly raycaster: Raycaster = new Raycaster()
     readonly objectPointer: ObjectPointer = new ObjectPointer()
     ambientLight: LeveledAmbientLight
@@ -233,7 +231,7 @@ export class SceneManager implements Updatable {
         this.sprites.remove(sprite)
     }
 
-    addPositionalAudio(parent: Object3D, sfxName: string, autoPlay: boolean, loop: boolean): PositionalAudio {
+    addPositionalAudio(parent: Object3D, sfxName: string, loop: boolean): PositionalAudio {
         const audio = new PositionalAudio(SoundManager.sceneAudioListener)
         audio.setRefDistance(TILESIZE * 5)
         audio.setRolloffFactor(10)
@@ -251,15 +249,15 @@ export class SceneManager implements Updatable {
         if (audioBuffer) {
             audio.setBuffer(audioBuffer)
             parent.add(audio)
-            if (autoPlay && sfxVolume > 0) audio.play()
+            if (sfxVolume > 0) audio.play()
         }
         return audio
     }
 
     private forceCameraBirdAboveFloor() {
-        this.cameraBird.getWorldPosition(this.lastCameraWorldPos)
-        this.lastCameraWorldPos.y += TILESIZE
-        this.raycaster.set(this.lastCameraWorldPos, SceneManager.VEC_DOWN)
+        const cameraBirdPos = this.cameraBird.getWorldPosition(new Vector3())
+        cameraBirdPos.y += TILESIZE
+        this.raycaster.set(cameraBirdPos, new Vector3(0, -1, 0))
         const terrainIntersectionPoint = this.raycaster.intersectObject(this.floorGroup, true)?.[0]?.point
         if (!terrainIntersectionPoint) return
         const minCameraPosY = terrainIntersectionPoint.y + CAMERA_MIN_HEIGHT_ABOVE_TERRAIN + CAMERA_MAX_SHAKE_BUMP

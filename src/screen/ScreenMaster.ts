@@ -104,8 +104,9 @@ export class ScreenMaster {
     }
 
     onWindowResize() {
-        this.width = HTML_GAME_CONTAINER.offsetWidth - 100
-        this.height = HTML_GAME_CONTAINER.offsetHeight - 1
+        const aspectRatio = HTML_GAME_CONTAINER.offsetWidth / HTML_GAME_CONTAINER.offsetHeight
+        this.width = HTML_GAME_CONTAINER.offsetWidth - 1 - (aspectRatio < 1.333333 ? 0 : 100)
+        this.height = HTML_GAME_CONTAINER.offsetHeight - 1 - (aspectRatio < 1.333333 ? 100 : 0)
         if (SaveGameManager.currentPreferences.screenRatioFixed > 0) {
             const idealHeight = Math.round(this.width / SaveGameManager.currentPreferences.screenRatioFixed)
             if (idealHeight > this.height) {

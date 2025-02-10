@@ -461,8 +461,7 @@ export class NerpRunner {
 
     setTutorialBlockIsGround(tutoBlockId: number, state: number): void {
         if (state !== 1) console.warn(`Unexpected state (${state}) given for setTutorialBlockIsGround`)
-        const surfaceType = SurfaceType.GROUND
-        this.setTutorialBlock(tutoBlockId, surfaceType)
+        this.setTutorialBlock(tutoBlockId, SurfaceType.GROUND)
     }
 
     setTutorialBlockIsPath(tutoBlockId: number, state: number) {

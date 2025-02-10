@@ -14,10 +14,11 @@ import { BeamUpComponent } from '../game/component/BeamUpComponent'
 import { EventBroker } from '../event/EventBroker'
 import { SpriteImage } from '../core/Sprite'
 
-export class FollowerRenderer extends WebGLRenderer {
+export class FollowerRenderer {
     static readonly MAX_FPS = 30
-    readonly camera: Camera
-    readonly composer: EffectComposer
+    renderer?: WebGLRenderer
+    camera?: Camera
+    composer?: EffectComposer
     trackEntity?: GameEntity
     started: boolean = false
     renderInterval?: NodeJS.Timeout
@@ -25,12 +26,6 @@ export class FollowerRenderer extends WebGLRenderer {
     angle: number = 0
 
     constructor(readonly canvas: SpriteImage, readonly scene: Scene, readonly ecs: ECS) {
-        super({antialias: true, canvas: canvas, powerPreference: 'high-performance'})
-        this.camera = new PerspectiveCamera(45, 1, 0.1, 200)
-        this.composer = new EffectComposer(this)
-        this.composer.addPass(new RenderPass(scene, this.camera))
-        this.composer.addPass(new ShaderPass(GreenScaleShader))
-        this.composer.addPass(new OutputPass())
         EventBroker.subscribe(EventKey.FOLLOWER_RENDER_START, () => {
             this.started = true
             this.startRendering()
@@ -58,6 +53,14 @@ export class FollowerRenderer extends WebGLRenderer {
                 this.resetTracking()
                 return
             }
+            if (!this.renderer) {
+                this.renderer = new WebGLRenderer({antialias: true, canvas: this.canvas, powerPreference: 'high-performance'})
+                this.camera = new PerspectiveCamera(45, 1, 0.1, 200)
+                this.composer = new EffectComposer(this.renderer)
+                this.composer.addPass(new RenderPass(this.scene, this.camera))
+                this.composer.addPass(new ShaderPass(GreenScaleShader))
+                this.composer.addPass(new OutputPass())
+            }
             const components = this.ecs.getComponents(this.trackEntity)
             const lookAtPosition = components?.get(AnimatedSceneEntityComponent)?.sceneEntity?.getWorldPosition(new Vector3())
             if (components?.has(BeamUpComponent) || !lookAtPosition) {
@@ -76,13 +79,13 @@ export class FollowerRenderer extends WebGLRenderer {
 
     private resetTracking() {
         this.trackEntity = undefined
-        this.clear()
+        this.renderer?.clear()
         this.renderInterval = clearIntervalSafe(this.renderInterval)
         EventBroker.publish(new FollowerSetCanvasEvent(undefined))
     }
 
     dispose() {
         this.renderInterval = clearIntervalSafe(this.renderInterval)
-        super.dispose()
+        this.renderer?.dispose()
     }
 }

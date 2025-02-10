@@ -34,7 +34,7 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    height: 80vh;
+    height: 80%;
     margin-left: 10px;
 }
 
@@ -47,6 +47,8 @@ html, body {
         width: 80vw;
         flex-direction: row;
         height: auto;
+        margin-left: 0;
+        margin-top: 10px;
     }
 }
 
@@ -58,13 +60,13 @@ html, body {
 
 @media screen and (height < 650px) {
     .mobile-helper-toolbar {
-        height: 100vh;
+        height: 100%;
     }
 }
 
 .mobile-helper-toolbar button {
-    min-width: 80px;
-    width: 80px;
+    min-width: 70px;
+    width: 70px;
     aspect-ratio: 1;
     /*bootstrap .btn-dark*/
     color: #fff;
@@ -80,7 +82,7 @@ html, body {
     user-select: none;
     border: 1px solid;
     padding: 0.375rem 0.75rem;
-    font-size: 1rem;
+    font-size: 0.8rem;
     border-radius: 0.25rem;
     /*root*/
     cursor: pointer;

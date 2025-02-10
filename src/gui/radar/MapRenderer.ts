@@ -1,12 +1,12 @@
 import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from '../../worker/TypedWorker'
 import { MapSurfaceRect } from './MapSurfaceRect'
 import { MapRendererCameraRect, MapRendererMessage, MapRendererResponse, MapRendererWorker, MapRendererWorkerRequestType } from '../../worker/MapRendererWorker'
-import { generateUUID } from 'three/src/math/MathUtils'
 import { MapMarkerType } from '../../game/component/MapMarkerComponent'
 
 export class MapRenderer {
-    readonly resolveCallbackById: Map<string, (() => void)> = new Map()
+    readonly resolveCallbackById: Map<number, (() => void)> = new Map()
     readonly worker: TypedWorker<MapRendererMessage>
+    requestId: number = 1 // start with 1 for truthiness safety
 
     constructor(terrainSprite: HTMLCanvasElement, entitySprite: HTMLCanvasElement, monsterSprite: HTMLCanvasElement, materialSprite: HTMLCanvasElement, geoScanSprite: HTMLCanvasElement, camSprite: HTMLCanvasElement) {
         const msgInit: MapRendererMessage = {
@@ -46,7 +46,7 @@ export class MapRenderer {
 
     redrawTerrain(offset: { x: number, y: number }, surfaceRectSize: number, surfaceMap: MapSurfaceRect[][]): Promise<void> {
         return new Promise((resolve) => {
-            const requestId = generateUUID()
+            const requestId = this.requestId++
             this.resolveCallbackById.set(requestId, resolve)
             this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_TERRAIN, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, terrain: surfaceMap})
         })
@@ -54,7 +54,7 @@ export class MapRenderer {
 
     redrawSurface(offset: { x: number, y: number }, surfaceRectSize: number, surface: MapSurfaceRect): Promise<void> {
         return new Promise((resolve) => {
-            const requestId = generateUUID()
+            const requestId = this.requestId++
             this.resolveCallbackById.set(requestId, resolve)
             this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_SURFACE, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, surface: surface})
         })
@@ -62,7 +62,7 @@ export class MapRenderer {
 
     redrawEntities(offset: { x: number, y: number }, mapMarkerType: MapMarkerType, surfaceRectSize: number, entities: { x: number, z: number, r: number }[]): Promise<void> {
         return new Promise((resolve) => {
-            const requestId = generateUUID()
+            const requestId = this.requestId++
             this.resolveCallbackById.set(requestId, resolve)
             this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_ENTITIES, requestId: requestId, mapMarkerType: mapMarkerType, offset: offset, surfaceRectSize: surfaceRectSize, entities: entities})
         })
@@ -70,7 +70,7 @@ export class MapRenderer {
 
     redrawCamera(offset: { x: number, y: number }, surfaceRectSize: number, rect: MapRendererCameraRect): Promise<void> {
         return new Promise((resolve) => {
-            const requestId = generateUUID()
+            const requestId = this.requestId++
             this.resolveCallbackById.set(requestId, resolve)
             this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_CAMERA, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, rect: rect})
         })

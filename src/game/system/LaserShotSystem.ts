@@ -48,7 +48,7 @@ export class LaserShotSystem extends AbstractGameSystem {
         }
         turretComponent.fireDelay = turretComponent.weaponCfg.rechargeTimeMs
         sceneEntityComponent.sceneEntity.getFireNullParents().forEach((parent) => {
-            this.worldMgr.sceneMgr.addPositionalAudio(sceneEntityComponent.sceneEntity, 'SFX_Laser', true, false)
+            this.worldMgr.sceneMgr.addPositionalAudio(sceneEntityComponent.sceneEntity, 'SFX_Laser', false)
             this.addLaserShot(parent, turretComponent)
         })
     }
@@ -84,7 +84,7 @@ export class LaserShotSystem extends AbstractGameSystem {
             EventBroker.publish(new MonsterLaserHitEvent(rocky, turretComponent.weaponCfg))
             const soundParent = new Object3D()
             soundParent.position.copy(rockyIntersection.point)
-            this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LaserHit', true, false)
+            this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LaserHit', false)
             this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BoulderExplode, rockyIntersection.point, Math.random() * 2 * Math.PI, false)
         } else {
             const floorIntersection = this.raycaster.intersectObjects(this.worldMgr.sceneMgr.floorGroup.children, false)[0]
@@ -101,7 +101,7 @@ export class LaserShotSystem extends AbstractGameSystem {
                 }
                 const soundParent = new Object3D()
                 soundParent.position.copy(floorIntersection.point)
-                this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LaserHit', true, false)
+                this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LaserHit', false)
                 this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BoulderExplode, floorIntersection.point, Math.random() * 2 * Math.PI, false)
             } // else { // XXX Stop laser shot beam at roof intersection
         }
@@ -112,7 +112,7 @@ export class LaserShotSystem extends AbstractGameSystem {
         this.worldMgr.sceneMgr.scene.add(mesh)
         const soundParent = new Object3D()
         soundParent.position.copy(parent.worldPos)
-        this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LazerRecharge', true, false)
+        this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LazerRecharge', false)
     }
 
     update(elapsedMs: number, entities: Set<number>, dirty: Set<number>): void {

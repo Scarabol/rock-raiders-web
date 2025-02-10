@@ -372,7 +372,7 @@ export class Raider implements Updatable, JobFulfiller {
         }
         const workActivity = this.job.getWorkActivity() || this.getDefaultAnimationName()
         if (!this.workAudio && this.job.workSoundRaider) {
-            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundRaider, true, this.job.getExpectedTimeLeft() !== null)
+            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundRaider, this.job.getExpectedTimeLeft() !== null)
         }
         if (workActivity === RaiderActivity.Drill) {
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
@@ -457,8 +457,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private completeJob() {
-        if (this.workAudio?.loop) this.workAudio = SoundManager.stopAudio(this.workAudio)
-        else this.workAudio = undefined
+        this.workAudio = SoundManager.stopAudio(this.workAudio)
         this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         if (this.job?.jobState === JobState.INCOMPLETE) return

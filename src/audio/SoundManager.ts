@@ -75,7 +75,7 @@ export class SoundManager {
         }).random()
     }
 
-    static stopAudio(audio?: PositionalAudio): undefined {
+    static stopAudio(audio: PositionalAudio | undefined): undefined {
         if (!audio) return undefined
         if (audio?.isPlaying) audio.stop()
         this.playingAudio.delete(audio)

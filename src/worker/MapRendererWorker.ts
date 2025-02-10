@@ -26,7 +26,7 @@ type MapRendererInitMessage = {
 
 type MapRendererTerrainRenderMessage = {
     type: MapRendererWorkerRequestType.MAP_RENDER_TERRAIN
-    requestId: string
+    requestId: number
     offset: { x: number, y: number }
     surfaceRectSize: number
     terrain: MapSurfaceRect[][]
@@ -34,7 +34,7 @@ type MapRendererTerrainRenderMessage = {
 
 type MapRendererSurfaceRenderMessage = {
     type: MapRendererWorkerRequestType.MAP_RENDER_SURFACE
-    requestId: string
+    requestId: number
     offset: { x: number, y: number }
     surfaceRectSize: number
     surface: MapSurfaceRect
@@ -42,7 +42,7 @@ type MapRendererSurfaceRenderMessage = {
 
 type MapRendererEntitiesRenderMessage = {
     type: MapRendererWorkerRequestType.MAP_RENDER_ENTITIES
-    requestId: string
+    requestId: number
     offset: { x: number, y: number }
     surfaceRectSize: number
     mapMarkerType: MapMarkerType
@@ -51,7 +51,7 @@ type MapRendererEntitiesRenderMessage = {
 
 type MapRendererCameraRenderMessage = {
     type: MapRendererWorkerRequestType.MAP_RENDER_CAMERA
-    requestId: string
+    requestId: number
     offset: { x: number, y: number }
     surfaceRectSize: number
     rect: MapRendererCameraRect
@@ -68,7 +68,7 @@ export type MapRendererMessage = MapRendererInitMessage | MapRendererTerrainRend
 
 export type MapRendererResponse = {
     type: MapRendererWorkerRequestType.RESPONSE_MAP_RENDERER
-    requestId: string
+    requestId: number
 }
 
 export class MapRendererWorker {
