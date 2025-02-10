@@ -14,6 +14,7 @@ export class SceneMesh extends Mesh {
     }
 
     dispose() {
+        this.removeFromParent()
         this.geometry?.dispose()
         this.getMaterials().forEach((m) => m.dispose())
     }
