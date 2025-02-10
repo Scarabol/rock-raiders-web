@@ -16,7 +16,7 @@ export class SurfaceType {
     canHaveFence: boolean = false
     connectsPath: boolean = false
     mapSurfaceColor: string = '#00FFFF'
-    rubbleResilient: boolean = true
+    fallInAffected: boolean = false
     hasErosion: boolean = false
 
     constructor(options: Partial<SurfaceType> = {}) {
@@ -29,7 +29,7 @@ export class SurfaceType {
         selectable: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
-        rubbleResilient: false,
+        fallInAffected: true,
     })
     static readonly HIDDEN_CAVERN = new SurfaceType({
         name: 'surfaceTypeUndiscovered',
@@ -137,7 +137,7 @@ export class SurfaceType {
         canHaveFence: true,
         connectsPath: true,
         mapSurfaceColor: '#ffff00',
-        rubbleResilient: false,
+        fallInAffected: true,
     })
     static readonly POWER_PATH_BUILDING_SITE = new SurfaceType({
         name: 'power path building site',
@@ -162,7 +162,7 @@ export class SurfaceType {
         hasRubble: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
-        rubbleResilient: false,
+        fallInAffected: true,
     })
     static readonly RUBBLE2 = new SurfaceType({
         name: 'surfaceTypeRubble',
@@ -172,7 +172,7 @@ export class SurfaceType {
         hasRubble: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
-        rubbleResilient: false,
+        fallInAffected: true,
     })
     static readonly RUBBLE3 = new SurfaceType({
         name: 'surfaceTypeRubble',
@@ -182,7 +182,7 @@ export class SurfaceType {
         hasRubble: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
-        rubbleResilient: false,
+        fallInAffected: true,
     })
     static readonly RUBBLE4 = new SurfaceType({
         name: 'surfaceTypeRubble',

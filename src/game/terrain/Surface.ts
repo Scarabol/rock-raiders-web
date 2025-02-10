@@ -231,7 +231,6 @@ export class Surface {
         const droppedOre = this.containedOres + (this.surfaceType === SurfaceType.ORE_SEAM ? this.seamLevel : 0)
         const droppedCrystals = this.containedCrystals + (this.surfaceType === SurfaceType.CRYSTAL_SEAM ? this.seamLevel : 0)
         this.setSurfaceType(SurfaceType.RUBBLE4)
-        this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += SURFACE_NUM_CONTAINED_ORE
         this.needsMeshUpdate = true
         const caveFound = this.discover()
@@ -304,21 +303,26 @@ export class Surface {
 
     reduceRubble() {
         this.rubblePositions.shift()
+        let hiddenInRubble: number = this.containedOres
         switch (this.surfaceType) {
             case SurfaceType.RUBBLE4:
                 this.setSurfaceType(SurfaceType.RUBBLE3)
+                hiddenInRubble = 3
                 break
             case SurfaceType.RUBBLE3:
                 this.setSurfaceType(SurfaceType.RUBBLE2)
+                hiddenInRubble = 2
                 break
             case SurfaceType.RUBBLE2:
                 this.setSurfaceType(SurfaceType.RUBBLE1)
+                hiddenInRubble = 1
                 break
             case SurfaceType.RUBBLE1:
                 this.setSurfaceType(SurfaceType.GROUND)
+                hiddenInRubble = 0
                 break
         }
-        this.dropContainedMaterials(this.containedOres - this.rubblePositions.length, 0)
+        this.dropContainedMaterials(this.containedOres - hiddenInRubble, 0)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
@@ -549,13 +553,6 @@ export class Surface {
         ]
     }
 
-    makeRubble(containedOre: number = 0) {
-        if (this.surfaceType.rubbleResilient) return
-        this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
-        this.containedOres += containedOre
-        this.setSurfaceType(SurfaceType.RUBBLE4)
-    }
-
     setBuilding(building?: BuildingEntity) {
         this.building = building
         this.setSurfaceType(this.building ? SurfaceType.POWER_PATH_BUILDING : SurfaceType.GROUND)
@@ -588,6 +585,11 @@ export class Surface {
                     m.disposeFromWorld()
                 }
             })
+        } else if ([SurfaceType.RUBBLE4, SurfaceType.RUBBLE3, SurfaceType.RUBBLE2, SurfaceType.RUBBLE1].includes(this.surfaceType)) {
+            if (this.rubblePositions.length < 1) this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
+            if (oldSurfaceType === SurfaceType.POWER_PATH) {
+                this.containedOres += 2
+            }
         }
     }
 

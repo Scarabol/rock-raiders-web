@@ -50,7 +50,7 @@ export class GuiManager {
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_MAKE_RUBBLE, () => {
-            entityMgr.selection.surface?.makeRubble(2)
+            entityMgr.selection.surface?.setSurfaceType(SurfaceType.RUBBLE4)
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_PLACE_FENCE, () => {

@@ -103,7 +103,7 @@ export class Terrain {
         const heading = Math.atan2(target.y - source.y, source.x - target.x) + Math.PI / 2
         const rockFallAnimName = this.levelConf.rockFallStyle.tunnel // fall-ins always come from (reinforcable) walls
         this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading, false)
-        target.makeRubble()
+        if (target.surfaceType.fallInAffected) target.setSurfaceType(SurfaceType.RUBBLE4)
         EventBroker.publish(new LandslideEvent(new PositionComponent(target.getCenterWorld(), target)))
     }
 
