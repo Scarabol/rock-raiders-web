@@ -73,6 +73,7 @@ export class GuiManager {
                 fence.targetSurface.fenceRequested = false
             }
             fence.worldMgr.ecs.addComponent(fence.entity, new BeamUpComponent(fence))
+            EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_CREATE_DRILL_JOB, () => {
             entityMgr.selection.surface?.setupDrillJob()
@@ -112,6 +113,7 @@ export class GuiManager {
             }
             building.carriedItems.forEach((m) => building.worldMgr.entityMgr.placeMaterial(m, building.primarySurface.getRandomPosition()))
             building.beamUp()
+            EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_BUILDING_POWER_STATE, (event: ChangeBuildingPowerState) => {
             entityMgr.selection.building?.setPowerSwitch(event.state)
@@ -130,6 +132,7 @@ export class GuiManager {
         })
         EventBroker.subscribe(EventKey.COMMAND_RAIDER_BEAMUP, () => {
             entityMgr.selection.raiders.forEach((r) => r.beamUp())
+            EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_TRAIN_RAIDER, (event: TrainRaider) => {
             entityMgr.selection.raiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainRaiderJob(entityMgr, event.training, undefined)))

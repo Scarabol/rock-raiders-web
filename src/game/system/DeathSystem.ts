@@ -25,6 +25,14 @@ export class DeathSystem extends AbstractGameSystem {
                     components.get(LastWillComponent).onDeath()
                     this.ecs.removeComponent(entity, LastWillComponent)
                     if (selectionFrameComponent?.isSelected()) {
+                        if (this.worldMgr.entityMgr.selection.building?.entity === entity) {
+                            this.worldMgr.entityMgr.selection.building = undefined
+                        }
+                        this.worldMgr.entityMgr.selection.raiders.removeAll((v) => v.entity === entity)
+                        this.worldMgr.entityMgr.selection.vehicles.removeAll((v) => v.entity === entity)
+                        if (this.worldMgr.entityMgr.selection.fence?.entity === entity) {
+                            this.worldMgr.entityMgr.selection.fence = undefined
+                        }
                         selectionFrameComponent.deselect()
                         EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
                     }

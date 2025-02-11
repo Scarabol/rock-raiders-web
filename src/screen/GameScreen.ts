@@ -1,5 +1,5 @@
 import { LevelConfData } from '../game/LevelLoader'
-import { InitRadarMap, ShowGameResultEvent } from '../event/LocalEvents'
+import { DeselectAll, InitRadarMap, ShowGameResultEvent } from '../event/LocalEvents'
 import { EntityManager } from '../game/EntityManager'
 import { GuiManager } from '../game/GuiManager'
 import { GameResult, GameResultState } from '../game/model/GameResult'
@@ -55,12 +55,6 @@ export class GameScreen {
         this.entityMgr = new EntityManager(this.worldMgr)
         this.guiMgr = new GuiManager(this.worldMgr)
         EventBroker.subscribe(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
-            this.selectionFrameLayer.active = false
-            this.guiTopLeftLayer.active = false
-            this.guiTopRightLayer.active = false
-            this.guiBottomRightLayer.active = false
-            this.guiBottomLeftLayer.active = false
-            this.overlayLayer.active = false
             this.startEndgameSequence(event.result).then()
         })
         EventBroker.subscribe(EventKey.RESTART_GAME, () => this.restartLevel())
@@ -172,6 +166,14 @@ export class GameScreen {
 
     async startEndgameSequence(resultState: GameResultState) {
         if (!this.levelConf) throw new Error('No level config given')
+        this.selectionFrameLayer.active = false
+        this.guiTopLeftLayer.active = false
+        this.guiTopRightLayer.active = false
+        this.guiBottomRightLayer.active = false
+        this.guiBottomLeftLayer.active = false
+        this.overlayLayer.active = false
+        // TODO Disable scene to avoid further selections
+        EventBroker.publish(new DeselectAll())
         const numMaxAirRaiders = this.levelConf.oxygenRate ? this.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT : MAX_RAIDER_BASE
         const canvas = resultState === GameResultState.COMPLETE ? await this.screenMaster.createScreenshot() : undefined
         const result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, numMaxAirRaiders, this.worldMgr.gameTimeSeconds, canvas)
