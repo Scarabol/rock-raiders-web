@@ -34,19 +34,19 @@ import { EventBroker } from '../event/EventBroker'
 import { PowerGrid } from './terrain/PowerGrid'
 import { EmergeSystem } from './system/EmergeSystem'
 import { SoundManager } from '../audio/SoundManager'
-import { SAMPLE } from '../audio/Sample'
 import { TeleportSystem } from './system/TeleportSystem'
 import { FallInSystem } from './system/FallInSystem'
 import { FluidSurfaceSystem } from './system/FluidSurfaceSystem'
 import { LaserShotSystem } from './system/LaserShotSystem'
 import { GameResultState } from './model/GameResult'
+import { NerpScript } from '../nerp/NerpScript'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
     readonly jobSupervisor: Supervisor = new Supervisor(this)
     sceneMgr: SceneManager
     entityMgr: EntityManager
-    nerpRunner?: NerpRunner
+    nerpRunner: NerpRunner = new NerpRunner(this, new NerpScript(), [])
     powerGrid: PowerGrid
     gameLoopInterval?: NodeJS.Timeout
     gameTimeMs: number = 0
@@ -92,7 +92,7 @@ export class WorldManager {
         EventBroker.subscribe(EventKey.LOCATION_RAIDER_DISCOVERED, () => GameState.hiddenObjectsFound++)
         EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
             GameState.alarmMode = event.alarmState
-            if (GameState.alarmMode) SoundManager.playSfxSound(SAMPLE.SFX_Siren)
+            if (GameState.alarmMode) SoundManager.playSfxSound('SFX_Siren')
         })
     }
 
@@ -101,17 +101,17 @@ export class WorldManager {
         this.gameTimeMs = 0
         this.nerpRunner = new NerpRunner(this, levelConf.nerpScript, levelConf.nerpMessages)
         this.firstUnpause = true
-        const gameSpeedIndex = Math.round(SaveGameManager.currentPreferences.gameSpeed * 5)
+        const gameSpeedIndex = Math.round(SaveGameManager.preferences.gameSpeed * 5)
         this.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
         this.crystalsQuota = levelConf.reward?.quota?.crystals || 0
     }
 
     start() {
-        this.nerpRunner?.start()
+        this.nerpRunner.start()
     }
 
     stop() {
-        this.nerpRunner?.stop()
+        this.nerpRunner.stop()
         this.stopLoop()
     }
 

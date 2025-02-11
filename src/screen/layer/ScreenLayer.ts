@@ -78,7 +78,7 @@ export class ScreenLayer {
         return [clientX - clientRect.left, clientY - clientRect.top]
     }
 
-    takeScreenshotFromLayer(): Promise<SpriteImage> {
+    takeScreenshotFromLayer(): Promise<SpriteImage | undefined> {
         return Promise.resolve(this.canvas)
     }
 }

@@ -69,7 +69,7 @@ export class AnimationGroup extends SceneEntity {
                 this.meshList[obj.parentObjInd - 1].add(mesh)
             }
             // setup animation clip for each object
-            const opacityTracks = obj.opacityTracks.flatMap((t) => mesh.getMaterials()
+            const opacityTracks = obj.opacityTracks.flatMap((t) => mesh.material
                 .map((_, index) => new NumberKeyframeTrack(`.material[${index}].opacity`, t.times, t.values)))
             const clip = new AnimationClip(lwscData.filePath, lwscData.durationSeconds, [...obj.keyframeTracks, ...opacityTracks])
             this.maxDurationMs = Math.max(this.maxDurationMs, clip.duration * 1000)

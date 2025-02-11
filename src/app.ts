@@ -13,7 +13,6 @@ import { BitmapFontData } from './core/BitmapFont'
 import { BitmapWorkerPool } from './worker/BitmapWorkerPool'
 
 export async function start() {
-    console.time('Total asset loading time')
     const screenMaster = new ScreenMaster()
     const vfs = await new GameFilesLoader(screenMaster.loadingLayer).loadGameFiles()
     const assetLoader = new AssetLoader(vfs)

@@ -110,10 +110,14 @@ export class Terrain {
     getFloorPosition(world: Vector2) {
         const p = world.clone().divideScalar(TILESIZE).floor()
         const s = world.clone().divideScalar(TILESIZE).sub(p)
-        const dy0 = Math.interpolate(this.getHeightOffset(p.x, p.y), this.getHeightOffset(p.x + 1, p.y), s.x)
-        const dy1 = Math.interpolate(this.getHeightOffset(p.x, p.y + 1), this.getHeightOffset(p.x + 1, p.y + 1), s.x)
-        const floorY = Math.interpolate(dy0, dy1, s.y) * TILESIZE
+        const dy0 = Terrain.interpolate(this.getHeightOffset(p.x, p.y), this.getHeightOffset(p.x + 1, p.y), s.x)
+        const dy1 = Terrain.interpolate(this.getHeightOffset(p.x, p.y + 1), this.getHeightOffset(p.x + 1, p.y + 1), s.x)
+        const floorY = Terrain.interpolate(dy0, dy1, s.y) * TILESIZE
         return new Vector3(world.x, floorY, world.y)
+    }
+
+    private static interpolate(y0: number, y1: number, v: number): number {
+        return y0 + v * (y1 - y0)
     }
 
     getHeightOffset(x: number, y: number): number {

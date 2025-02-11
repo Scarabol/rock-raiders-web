@@ -30,6 +30,7 @@ export class IconSubPanel extends Panel {
 
     addMenuItem(menuItemGroup: Map<string, MenuItemCfg>, itemKey: string) {
         const menuItemCfg = menuItemGroup.get(itemKey.toLowerCase())
+        if (!menuItemCfg) throw new Error(`No menu item config given for ${itemKey}`)
         const menuItem = this.addChild(new IconPanelButton(menuItemCfg, itemKey, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(menuItem)
         return menuItem

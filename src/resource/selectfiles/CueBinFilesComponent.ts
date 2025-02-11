@@ -26,6 +26,7 @@ export class CueBinFilesComponent extends AbstractFormFilesComponent {
             switch (cueEntry.track.type) {
                 case 'MODE1': {
                     const chunkSize = cueEntry.track.bitrate
+                    if (!chunkSize) throw new Error('No chunk size given for track')
                     if (chunkSize !== 2352) console.warn(`Expected bitrate 2352 but got (${chunkSize}) instead`)
                     const startSector = cueEntry.index.sector
                     const startOffset = (16 + startSector) * chunkSize + 16

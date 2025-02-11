@@ -1,4 +1,4 @@
-import { SpriteContext, SpriteImage } from './Sprite'
+import { getSpriteContext, SpriteContext, SpriteImage } from './Sprite'
 
 export function createCanvas(width: number, height: number): HTMLCanvasElement {
     const canvas = document.createElement('canvas')
@@ -18,9 +18,7 @@ export function createContext(width: number, height: number): SpriteContext {
     } else {
         canvas = new OffscreenCanvas(width, height)
     }
-    const context = canvas.getContext('2d')
-    if (!context) throw new Error('Could not get context for canvas')
-    return context
+    return getSpriteContext(canvas)
 }
 
 /**

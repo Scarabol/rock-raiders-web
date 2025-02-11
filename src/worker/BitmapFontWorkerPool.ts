@@ -28,8 +28,8 @@ export class BitmapFontWorkerPool extends AbstractWorkerPool<BitmapFontWorkerReq
         await Promise.all(this.broadcast(message))
     }
 
-    async createTextImage(fontName: string, text?: string, maxWidth?: number, autoCenter: boolean = true): Promise<SpriteImage | undefined> {
-        if (!text) return undefined
+    async createTextImage(fontName: string | undefined, text: string | undefined, maxWidth?: number, autoCenter: boolean = true): Promise<SpriteImage | undefined> {
+        if (!fontName || !text) return undefined
         const message = {type: BitmapFontWorkerRequestType.CREATE_TEXT_IMAGE, fontName: fontName, text: text, maxWidth: maxWidth, autoCenter: autoCenter}
         const response = await this.processMessage(message)
         if (!response.textImageData) return undefined

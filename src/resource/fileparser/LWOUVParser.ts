@@ -1,6 +1,4 @@
 import { getFilename } from '../../core/Util'
-import { Vector3 } from 'three'
-import { degToRad } from 'three/src/math/MathUtils'
 
 export class UVData {
     names: string[] = []

@@ -1,5 +1,6 @@
 import { ObjectListEntryCfg } from '../../cfg/ObjectListEntryCfg'
 import { VirtualFile } from './VirtualFile'
+import { TerrainMapData } from '../../game/terrain/TerrainMapData'
 
 export class WadParser {
     static parseFileList(dataView: DataView<ArrayBuffer>): VirtualFile[] {
@@ -37,7 +38,7 @@ export class WadParser {
         return result
     }
 
-    static parseMap(buffer: Uint8Array) {
+    static parseMap(buffer: Uint8Array): TerrainMapData {
         const map: { width: number, height: number, level: number[][] } = {width: buffer[8], height: buffer[12], level: []}
         let row: number[] = []
         for (let seek = 16; seek < buffer.length; seek += 2) {

@@ -22,25 +22,21 @@ export class ResourceManager {
     static getResource(resourceName: string): any {
         const lName = resourceName?.toString()?.toLowerCase() || undefined
         if (!lName) return undefined
-        return this.resourceByName.get(lName) || undefined
+        return this.resourceByName.get(lName)
     }
 
     static getImage(imageName: string): SpriteImage {
         return this.imageCache.getOrUpdate(imageName, () => {
-            return this.createImage(imageName)
+            const imgData = this.getImageData(imageName)
+            const context = createContext(imgData.width, imgData.height)
+            context.putImageData(imgData, 0, 0)
+            // TODO Loading screen background should be cached to be able to be shown earlier
+            if (imageName.toLowerCase().endsWith('/loading.bmp') || imageName.toLowerCase().endsWith('/menubgpic.bmp')) {
+                context.fillStyle = '#f00'
+                context.fillRect(38, 9, 131, 131)
+            }
+            return context.canvas
         })
-    }
-
-    private static createImage(imageName: string): SpriteImage {
-        const imgData = this.getImageData(imageName)
-        const context = createContext(imgData.width, imgData.height)
-        context.putImageData(imgData, 0, 0)
-        // TODO Loading screen background should be cached to be able to be shown earlier
-        if (imageName.toLowerCase().endsWith('/loading.bmp') || imageName.toLowerCase().endsWith('/menubgpic.bmp')) {
-            context.fillStyle = '#f00'
-            context.fillRect(38, 9, 131, 131)
-        }
-        return context.canvas
     }
 
     static getImageData(imageName: string): ImageData {
@@ -49,10 +45,6 @@ export class ResourceManager {
             console.error(`Image '${imageName}' unknown! Using placeholder image instead`)
             return createDummyImgData(64, 64)
         })
-    }
-
-    static getImageOrNull(imageName: string): SpriteImage | undefined {
-        return imageName ? this.getImage(imageName) : undefined
     }
 
     static async loadAllCursor() {
@@ -112,7 +104,7 @@ export class ResourceManager {
         })
         result.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
         if (result.length > 0) {
-            return result.map((textureFilepath) => this.getTexture(textureFilepath))
+            return result.map((textureFilepath) => this.getTexture(textureFilepath)).filter((t) => !!t)
         } else if (!lBasename.startsWith('world/shared/')) {
             return this.getTexturesBySequenceName(`world/shared/${getFilename(lBasename)}`)
         } else {
@@ -175,7 +167,7 @@ export class ResourceManager {
                     const sharedLwoBuffer = ResourceManager.getResource(sharedLwoFilepath)
                     if (!sharedLwoBuffer) {
                         if (VERBOSE) console.warn(`Could not find lwo file neither at ${lwoFilepath} nor at ${sharedLwoFilepath}`)
-                        return null
+                        return undefined
                     }
                     textureLoader.setMeshPath(getPath(sharedLwoFilepath))
                     const uvFilepath = sharedLwoFilepath.replace('.lwo', '.uv')
@@ -227,6 +219,7 @@ class ResourceManagerTextureLoader extends LWOBTextureLoader {
         if (alphaIndexMatch) textureFilename = alphaIndexMatch[1] + alphaIndexMatch[3]
         if (hasSequence) {
             const match = textureFilename.match(/(.+\D)0+(\d+)\..+/i)
+            if (!match) return []
             return ResourceManager.getTexturesBySequenceName(this.meshPath + match[1])
         } else {
             return ResourceManager.getMeshTexture(textureFilename, this.meshPath)

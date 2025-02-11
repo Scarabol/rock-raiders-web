@@ -8,11 +8,11 @@ import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class SelectionFrameLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrame
-    selectionRect: Rect
+    selectionRect?: Rect
 
     constructor() {
         super()
-        this.ratio = SaveGameManager.currentPreferences.screenRatioFixed
+        this.ratio = SaveGameManager.preferences.screenRatioFixed
         this.animationFrame = new AnimationFrame(this.canvas, this.readbackCanvas)
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)
@@ -29,7 +29,7 @@ export class SelectionFrameLayer extends ScreenLayer {
 
     reset() {
         super.reset()
-        this.selectionRect = null
+        this.selectionRect = undefined
     }
 
     resize(width: number, height: number) {

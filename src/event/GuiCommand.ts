@@ -2,20 +2,12 @@ import { EntityType } from '../game/model/EntityType'
 import { RaiderTool } from '../game/model/raider/RaiderTool'
 import { RaiderTraining } from '../game/model/raider/RaiderTraining'
 import { EventKey } from './EventKeyEnum'
-import { Cursor } from '../resource/Cursor'
-import { Sample } from '../audio/Sample'
 import { VehicleUpgrade } from '../game/model/vehicle/VehicleUpgrade'
 import { CameraRotation } from '../scene/BirdViewControls'
 import { Vector2 } from 'three'
 import { BaseEvent } from './EventTypeMap'
 import { TooltipSpriteBuilder } from '../resource/TooltipSpriteBuilder'
 import { SpriteImage } from '../core/Sprite'
-
-export class ChangeCursor extends BaseEvent {
-    constructor(readonly cursor: Cursor, readonly timeout?: number) {
-        super(EventKey.COMMAND_CHANGE_CURSOR)
-    }
-}
 
 export class ChangeTooltip extends BaseEvent {
     readonly getTooltipTextImg: () => Promise<SpriteImage>
@@ -45,7 +37,7 @@ export class HideTooltip extends BaseEvent {
 }
 
 export class PlaySoundEvent extends BaseEvent {
-    constructor(readonly sample: Sample, readonly isVoice: boolean) {
+    constructor(readonly sample: string, readonly isVoice: boolean) {
         super(EventKey.COMMAND_PLAY_SOUND)
     }
 }

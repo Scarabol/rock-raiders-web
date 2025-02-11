@@ -4,21 +4,21 @@ import { DEFAULT_FONT_NAME } from '../params'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 
 export class MainMenuWindow extends MainMenuBaseItem {
-    imgFirstLine: SpriteImage
-    imgSecondLine: SpriteImage
+    imgFirstLine?: SpriteImage
+    imgSecondLine?: SpriteImage
 
     constructor(area: { x: number; y: number; w: number; h: number }) {
         super(area.x, area.y, area.w, area.h)
     }
 
-    setFirstLine(text: string) {
+    setFirstLine(text: string | undefined) {
         BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, text, this.width).then((textImage) => {
             this.imgFirstLine = textImage
             this.state.stateChanged = true
         })
     }
 
-    setSecondLine(text: string) {
+    setSecondLine(text: string | undefined) {
         BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, text, this.width).then((textImage) => {
             this.imgSecondLine = textImage
             this.state.stateChanged = true

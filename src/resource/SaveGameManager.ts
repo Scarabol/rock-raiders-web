@@ -18,7 +18,7 @@ export class SaveGamePreferences { // this gets serialized
 }
 
 export class SaveGameManager {
-    static currentPreferences: SaveGamePreferences = new SaveGamePreferences()
+    static preferences: SaveGamePreferences = new SaveGamePreferences()
     static screenshots: Promise<HTMLCanvasElement | undefined>[] = []
     static currentTeam: SaveGameRaider[] = []
     private static saveGames: SaveGame[] = [] // this gets serialized
@@ -29,9 +29,9 @@ export class SaveGameManager {
             if (VERBOSE) console.log('Loading preferences...')
             const preferences = localStorage.getItem('preferences')
             if (preferences) {
-                this.currentPreferences = {...this.currentPreferences, ...JSON.parse(preferences)}
+                this.preferences = {...this.preferences, ...JSON.parse(preferences)}
+                console.log(`Preferences loaded`, this.preferences)
                 EventBroker.publish(new ChangePreferences())
-                console.log(`Preferences loaded`, this.currentPreferences)
             }
         } catch (e) {
             console.error('Could not load preferences', e)
@@ -84,7 +84,7 @@ export class SaveGameManager {
 
     static getOverallGameProgress(index: number): number {
         const levels = this.saveGames[index]?.levels ?? []
-        const levelNameList = levels.filter((l) => l.levelName.toLowerCase().startsWith('level'))
+        const levelNameList = levels.filter((l) => l.levelName?.toLowerCase().startsWith('level'))
         return new Set(levelNameList).size * 100 / NUM_OF_LEVELS_TO_COMPLETE_GAME
     }
 
@@ -93,7 +93,7 @@ export class SaveGameManager {
         this.currentLevels = []
     }
 
-    static saveGame(index: number, screenshot: HTMLCanvasElement) {
+    static saveGame(index: number, screenshot: HTMLCanvasElement | undefined) {
         this.saveGames[index] = this.saveGames[index] || new SaveGame()
         this.saveGames[index].levels = this.currentLevels.map((l) => SaveGameLevel.copy(l)) // deep copy required, otherwise changes are reflected
         this.saveGames[index].team = this.currentTeam.map((t) => SaveGameRaider.copy(t)) // deep copy required, otherwise changes are reflected
@@ -103,7 +103,7 @@ export class SaveGameManager {
         if (VERBOSE) console.log('game progress saved', this.saveGames)
     }
 
-    private static createSaveGameThumbnail(screenshot: HTMLCanvasElement): string {
+    private static createSaveGameThumbnail(screenshot: HTMLCanvasElement | undefined): string {
         if (!screenshot) return ''
         const canvas = document.createElement('canvas')
         canvas.width = SAVE_GAME_SCREENSHOT_WIDTH
@@ -125,9 +125,10 @@ export class SaveGameManager {
     }
 
     static setLevelScore(levelName: string, score: number) {
-        const previousAttempt = this.currentLevels.find((l) => l.levelName.equalsIgnoreCase(levelName))
+        const previousAttempt = this.currentLevels.find((l) => l.levelName?.equalsIgnoreCase(levelName))
         if (previousAttempt) {
-            if (previousAttempt.levelScore < score) {
+            const prevScore = previousAttempt.levelScore || 0
+            if (prevScore < score) {
                 previousAttempt.levelScore = score
             }
         } else {
@@ -135,28 +136,28 @@ export class SaveGameManager {
         }
     }
 
-    static getLevelScoreString(levelName: string) {
+    static getLevelScoreString(levelName: string): string {
         if (!levelName.toLowerCase().startsWith('level')) return ''
-        const levelScore = this.currentLevels.find((l) => l.levelName.equalsIgnoreCase(levelName))?.levelScore
+        const levelScore = this.currentLevels.find((l) => l.levelName?.equalsIgnoreCase(levelName))?.levelScore
         if (!levelScore) return ''
         return ` (${levelScore})`
     }
 
     static getLevelCompleted(levelName: string): boolean {
-        return !!this.currentLevels.find((l) => l.levelName.equalsIgnoreCase(levelName))
+        return !!this.currentLevels.find((l) => l.levelName?.equalsIgnoreCase(levelName))
     }
 
-    static savePreferences() {
-        localStorage.setItem('preferences', JSON.stringify(this.currentPreferences))
-        console.log('Preferences saved', this.currentPreferences)
+    static savePreferences(): void {
+        localStorage.setItem('preferences', JSON.stringify(this.preferences))
+        console.log('Preferences saved', this.preferences)
     }
 
     static getSfxVolume(): number {
-        return this.currentPreferences.toggleSfx ? this.currentPreferences.volumeSfx : 0
+        return this.preferences.toggleSfx ? this.preferences.volumeSfx : 0
     }
 
     static getMusicVolume(): number {
-        return this.currentPreferences.toggleMusic ? this.currentPreferences.volumeMusic : 0
+        return this.preferences.toggleMusic ? this.preferences.volumeMusic : 0
     }
 }
 

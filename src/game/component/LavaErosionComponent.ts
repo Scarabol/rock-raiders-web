@@ -39,7 +39,7 @@ export class LavaErosionComponent extends AbstractGameComponent {
                 GameConfig.instance.miscObjects.LavaErosionSmoke4,
             ])
             const smoke = this.surface.worldMgr.sceneMgr.addMiscAnim(lwsFilename, this.surface.getCenterWorld(), Math.random() * 2 * Math.PI, false)
-            smoke.meshList.forEach((m) => m.getMaterials().forEach((m) => m.color.setRGB(1, 0.5, 0)))
+            smoke.meshList.forEach((m) => m.material.forEach((m) => m.color.setRGB(1, 0.5, 0)))
         }
     }
 }

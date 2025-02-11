@@ -6,18 +6,18 @@ import { ResourceManager } from '../../resource/ResourceManager'
 
 export class IconPanelToggleButton extends IconPanelButton {
     toggleState: boolean = false
-    imgOnNormal: SpriteImage
-    imgOnHover: SpriteImage
-    imgOnPressed: SpriteImage
-    imgOnDisabled: SpriteImage
+    imgOnNormal?: SpriteImage
+    imgOnHover?: SpriteImage
+    imgOnPressed?: SpriteImage
+    imgOnDisabled?: SpriteImage
     isToggled: () => boolean = () => false
 
     constructor(menuItemOffCfg: MenuItemCfg, menuItemOnCfg: MenuItemCfg, parentWidth: number, menuIndex: number) {
         super(menuItemOffCfg, '', parentWidth, menuIndex)
-        this.imgOnNormal = ResourceManager.getImageOrNull(menuItemOnCfg.normalFile)
-        this.imgOnHover = ResourceManager.getImageOrNull(menuItemOnCfg.highlightFile)
-        this.imgOnPressed = ResourceManager.getImageOrNull(menuItemOnCfg.pressedFile)
-        this.imgOnDisabled = ResourceManager.getImageOrNull(menuItemOnCfg.disabledFile)
+        if (menuItemOnCfg.normalFile) this.imgOnNormal = ResourceManager.getImage(menuItemOnCfg.normalFile)
+        if (menuItemOnCfg.highlightFile) this.imgOnHover = ResourceManager.getImage(menuItemOnCfg.highlightFile)
+        if (menuItemOnCfg.pressedFile) this.imgOnPressed = ResourceManager.getImage(menuItemOnCfg.pressedFile)
+        if (menuItemOnCfg.disabledFile) this.imgOnDisabled = ResourceManager.getImage(menuItemOnCfg.disabledFile)
     }
 
     clicked(event: GuiPointerDownEvent) {

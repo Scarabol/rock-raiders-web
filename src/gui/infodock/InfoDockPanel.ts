@@ -9,7 +9,6 @@ import { InfoMessagesCfg } from './InfoMessagesCfg'
 import { InformationPanel } from './InformationPanel'
 import { CameraControl, PlaySoundEvent } from '../../event/GuiCommand'
 import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
-import { Sample } from '../../audio/Sample'
 import { WorldLocationEventMap } from '../../event/EventTypeMap'
 import { DEV_MODE } from '../../params'
 
@@ -64,13 +63,13 @@ export class InfoDockPanel extends Panel {
 
     private addInfoDockButton(config: InfoMessagesEntryConfig, eventType: keyof WorldLocationEventMap, eventTypeGone?: keyof WorldLocationEventMap) {
         const infoDockButton = this.addChild(new InfoDockButton(this, config))
-        const sample = Sample.fromString(config.sfxName)
         this.registerEventListener(eventType, (event: WorldLocationEvent) => {
             if (infoDockButton.messages.some((m) => m.location === event.location)) return
             infoDockButton.hidden = false
             while (infoDockButton.messages.length >= 9) infoDockButton.messages.pop()
             infoDockButton.messages.unshift(event)
             this.showButton(infoDockButton)
+            const sample = config.sfxName
             if (sample && !DEV_MODE) this.publishEvent(new PlaySoundEvent(sample, true))
         })
         if (eventTypeGone) {

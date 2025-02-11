@@ -16,7 +16,7 @@ export class RonFileParser {
         return entries[0] as object
     }
 
-    private static parseObj(obj: {}, lines: string[], start: number): number {
+    private static parseObj(obj: Record<string, unknown>, lines: string[], start: number): number {
         const multiValues: any[] = []
         for (let c = start; c < lines.length; c++) {
             const line = lines[c]
@@ -25,7 +25,7 @@ export class RonFileParser {
             const key = name.toLowerCase()
             if (val === '{') {
                 obj[key] = {}
-                c = this.parseObj(obj[key], lines, c + 1)
+                c = this.parseObj(obj[key] as Record<string, unknown>, lines, c + 1)
             } else if (key === '}') {
                 return c
             } else {
@@ -60,13 +60,13 @@ export class RonFileParser {
         return value
     }
 
-    private static assignValue(obj: {}, key: string, multiProperties: any[], value: any) {
+    private static assignValue(obj: Record<string, unknown>, key: string, multiProperties: any[], value: any) {
         if (obj.hasOwnProperty(key)) {
             if (!multiProperties.includes(key)) {
                 multiProperties.push(key)
                 obj[key] = [obj[key]]
             }
-            obj[key].push(value)
+            ;(obj[key] as unknown[]).push(value)
         } else {
             obj[key] = value
         }

@@ -4,7 +4,8 @@ import { ScaledLayer } from './ScreenLayer'
 import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
 import { OptionsPanel } from '../../gui/overlay/OptionsPanel'
 import { PausePanel } from '../../gui/overlay/PausePanel'
-import { ChangeCursor, HideTooltip } from '../../event/GuiCommand'
+import { HideTooltip } from '../../event/GuiCommand'
+import { CursorManager } from '../CursorManager'
 import { Panel } from '../../gui/base/Panel'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { CURSOR } from '../../resource/Cursor'
@@ -39,16 +40,16 @@ export class OverlayLayer extends ScaledLayer {
         this.panelOptions = this.addPanel(new OptionsPanel(GameConfig.instance.menu.optionsMenu, this.canvas.width, this.canvas.height))
         this.panelBriefing = this.addPanel(new BriefingPanel())
         // link items
-        this.panelPause.onContinueGame = () => this.setActivePanel(null)
+        this.panelPause.onContinueGame = () => this.setActivePanel(undefined)
         this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
         this.panelPause.onAbortGame = () => {
-            this.setActivePanel(null)
+            this.setActivePanel(undefined)
             EventBroker.publish(new GameResultEvent(GameResultState.QUIT))
         }
         this.panelPause.onRestartGame = () => EventBroker.publish(new RestartGameEvent())
         this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
-        this.panelOptions.onContinueMission = () => this.setActivePanel(null)
-        this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
+        this.panelOptions.onContinueMission = () => this.setActivePanel(undefined)
+        this.panelBriefing.onContinueMission = () => this.setActivePanel(undefined)
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)
             this.rootElement.onRedraw(context)
@@ -69,7 +70,7 @@ export class OverlayLayer extends ScaledLayer {
         })
         this.addEventListener('keyup', (event: KeyboardEvent): boolean => {
             if (event.key === 'Escape' && this.panelBriefing.hidden) {
-                this.setActivePanel(this.panelPause.hidden && this.panelOptions.hidden ? this.panelPause : null)
+                this.setActivePanel(this.panelPause.hidden && this.panelOptions.hidden ? this.panelPause : undefined)
                 return true
             } else if (event.key === ' ' && !this.panelBriefing.hidden) { // space
                 this.panelBriefing.nextParagraph()
@@ -83,8 +84,8 @@ export class OverlayLayer extends ScaledLayer {
     showBriefing(levelConf: LevelConfData) {
         const objectiveSfx = `Stream_Objective_Levels::${levelConf.levelName}`.toLowerCase()
         this.panelBriefing.setup(GameConfig.instance.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage640x480, objectiveSfx)
-        this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
-        this.setActivePanel(SaveGameManager.currentPreferences.skipBriefings ? null : this.panelBriefing)
+        this.panelBriefing.onContinueMission = () => this.setActivePanel(undefined)
+        this.setActivePanel(SaveGameManager.preferences.skipBriefings ? undefined : this.panelBriefing)
     }
 
     showResultBriefing(result: GameResultState, levelConf: LevelConfData, onContinue: () => void) {
@@ -114,11 +115,11 @@ export class OverlayLayer extends ScaledLayer {
         this.active = true
     }
 
-    setActivePanel(panel: Panel) {
+    setActivePanel(panel: Panel | undefined) {
         this.panels.forEach(p => p !== panel && p.hide())
         if (panel) {
             panel.show()
-            EventBroker.publish(new ChangeCursor(CURSOR.STANDARD))
+            CursorManager.changeCursor(CURSOR.STANDARD)
             EventBroker.publish(new HideTooltip())
         }
         EventBroker.publish(new BaseEvent(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
@@ -128,7 +129,7 @@ export class OverlayLayer extends ScaledLayer {
     reset(): void {
         this.rootElement.reset()
         this.panels.forEach((p) => p.reset())
-        this.setActivePanel(SaveGameManager.currentPreferences.skipBriefings ? null : this.panelBriefing)
+        this.setActivePanel(SaveGameManager.preferences.skipBriefings ? undefined : this.panelBriefing)
     }
 
     addPanel<T extends Panel>(panel: T): T {

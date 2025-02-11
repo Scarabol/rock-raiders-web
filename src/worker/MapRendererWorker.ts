@@ -1,7 +1,7 @@
 import { TypedWorkerBackend, TypedWorkerThreaded } from './TypedWorker'
 import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { MAP_MAX_UPDATE_INTERVAL, MAP_PANEL_SURFACE_RECT_MARGIN, TILESIZE } from '../params'
-import { SpriteContext, SpriteImage } from '../core/Sprite'
+import { getSpriteContext, SpriteContext, SpriteImage } from '../core/Sprite'
 import { MapMarkerType } from '../game/component/MapMarkerComponent'
 import { Vector2 } from 'three'
 
@@ -87,12 +87,12 @@ export class MapRendererWorker {
 
     processMessage(msg: MapRendererMessage) {
         if (msg.type === MapRendererWorkerRequestType.MAP_RENDERER_INIT) {
-            this.surfaceContext = msg.terrainSprite.getContext('2d')
-            this.monsterContext = msg.monsterSprite.getContext('2d')
-            this.materialContext = msg.materialSprite.getContext('2d')
-            this.geoScanContext = msg.geoScanSprite.getContext('2d')
-            this.entityContext = msg.entitySprite.getContext('2d')
-            this.cameraContext = msg.cameraSprite.getContext('2d')
+            this.surfaceContext = getSpriteContext(msg.terrainSprite)
+            this.monsterContext = getSpriteContext(msg.monsterSprite)
+            this.materialContext = getSpriteContext(msg.materialSprite)
+            this.geoScanContext = getSpriteContext(msg.geoScanSprite)
+            this.entityContext = getSpriteContext(msg.entitySprite)
+            this.cameraContext = getSpriteContext(msg.cameraSprite)
         } else {
             switch (msg.type) {
                 case MapRendererWorkerRequestType.MAP_RENDER_TERRAIN:
@@ -195,7 +195,7 @@ export class MapRendererWorker {
         }
     }
 
-    private redrawCamera(offset: { x: number, y: number }, surfaceRectSize: number, rect: MapRendererCameraRect) {
+    private redrawCamera(offset: { x: number, y: number }, surfaceRectSize: number, rect: MapRendererCameraRect | undefined) {
         if (!this.cameraContext || !rect) return
         this.cameraContext.clearRect(0, 0, this.cameraContext.canvas.width, this.cameraContext.canvas.height)
         // draw camera frustum

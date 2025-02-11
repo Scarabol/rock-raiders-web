@@ -27,10 +27,10 @@ export class Button extends BaseElement {
         super()
         const btnCfg = Object.assign(new BaseButtonCfg(), btnCfgPart)
         this.buttonType = btnCfg.buttonType
-        this.imgNormal = ResourceManager.getImageOrNull(btnCfg.normalFile)
-        this.imgHover = ResourceManager.getImageOrNull(btnCfg.highlightFile)
-        this.imgPressed = ResourceManager.getImageOrNull(btnCfg.pressedFile)
-        this.imgDisabled = ResourceManager.getImageOrNull(btnCfg.disabledFile)
+        if (btnCfg.normalFile) this.imgNormal = ResourceManager.getImage(btnCfg.normalFile)
+        if (btnCfg.highlightFile) this.imgHover = ResourceManager.getImage(btnCfg.highlightFile)
+        if (btnCfg.pressedFile) this.imgPressed = ResourceManager.getImage(btnCfg.pressedFile)
+        if (btnCfg.disabledFile) this.imgDisabled = ResourceManager.getImage(btnCfg.disabledFile)
         this.relX = btnCfg.relX
         this.relY = btnCfg.relY
         this.width = Button.ignoreUndefinedMax(btnCfg.width, this.imgNormal?.width, this.imgPressed?.width, this.imgHover?.width)

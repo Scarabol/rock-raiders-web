@@ -21,21 +21,21 @@ export class PausePanel extends MenuBasePanel {
         const advOptions = this.layersByKey.get('menu5')
         const wallDetailsToggle = advOptions.itemsCycle[0]
         wallDetailsToggle.disabled = true // TODO Implement wall details with pro meshes
-        wallDetailsToggle.setState(SaveGameManager.currentPreferences.wallDetails)
+        wallDetailsToggle.setState(SaveGameManager.preferences.wallDetails)
         const musicToggle = advOptions.itemsCycle[1]
-        musicToggle.setState(SaveGameManager.currentPreferences.toggleMusic)
+        musicToggle.setState(SaveGameManager.preferences.toggleMusic)
         musicToggle.onStateChanged = (state) => {
-            SaveGameManager.currentPreferences.toggleMusic = state
+            SaveGameManager.preferences.toggleMusic = state
             this.publishEvent(new ChangePreferences())
         }
         const sfxToggle = advOptions.itemsCycle[2]
-        sfxToggle.setState(SaveGameManager.currentPreferences.toggleSfx)
+        sfxToggle.setState(SaveGameManager.preferences.toggleSfx)
         sfxToggle.onStateChanged = (state) => {
-            SaveGameManager.currentPreferences.toggleSfx = state
+            SaveGameManager.preferences.toggleSfx = state
             this.publishEvent(new ChangePreferences())
         }
         const autoGameSpeedToggle = advOptions.itemsCycle[3]
         autoGameSpeedToggle.disabled = true // TODO Implement auto game speed
-        autoGameSpeedToggle.setState(SaveGameManager.currentPreferences.autoGameSpeed)
+        autoGameSpeedToggle.setState(SaveGameManager.preferences.autoGameSpeed)
     }
 }

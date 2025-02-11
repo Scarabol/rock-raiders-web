@@ -57,7 +57,7 @@ export class BuildingEntity {
     surfaces: Surface[] = []
     pathSurfaces: Surface[] = []
 
-    constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType) {
+    constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType, worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
         this.entity = this.worldMgr.ecs.addEntity()
         this.buildingType = BuildingType.from(this.entityType)
         this.sceneEntity = new AnimatedSceneEntity()
@@ -92,6 +92,71 @@ export class BuildingEntity {
             const weaponCfg = GameConfig.instance.weaponTypes.bigLazer
             this.worldMgr.ecs.addComponent(this.entity, new LaserBeamTurretComponent(weaponCfg))
         }
+        this.primarySurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPosition)
+        this.surfaces.push(this.primarySurface)
+        this.primarySurface.pathBlockedByBuilding = this.entityType !== EntityType.TOOLSTATION // XXX better evaluate EnterToolStore in stats while path finding
+        if (this.buildingType.secondaryBuildingPart) {
+            const secondaryOffset = new Vector2(TILESIZE * this.buildingType.secondaryBuildingPart.x, TILESIZE * this.buildingType.secondaryBuildingPart.y)
+                .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
+            this.secondarySurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(secondaryOffset)
+            this.surfaces.push(this.secondarySurface)
+            this.secondarySurface.pathBlockedByBuilding = this.entityType !== EntityType.TOOLSTATION // XXX better evaluate EnterToolStore in stats while path finding
+        }
+        if (this.buildingType.primaryPowerPath) {
+            const pathOffset = this.buildingType.primaryPowerPath.clone().multiplyScalar(TILESIZE)
+                .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
+            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
+            if (surface.surfaceType.floor || surface.surfaceType === SurfaceType.HIDDEN_CAVERN) {
+                this.primaryPathSurface = surface
+                this.surfaces.push(this.primaryPathSurface)
+                this.pathSurfaces.push(this.primaryPathSurface)
+            }
+        }
+        if (this.buildingType.secondaryPowerPath) {
+            const pathOffset = this.buildingType.secondaryPowerPath.clone().multiplyScalar(TILESIZE)
+                .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
+            this.secondaryPathSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
+            this.surfaces.push(this.secondaryPathSurface)
+            this.pathSurfaces.push(this.secondaryPathSurface)
+        }
+        if (this.buildingType.waterPathSurface) {
+            const pathOffset = this.buildingType.waterPathSurface.clone().multiplyScalar(TILESIZE)
+                .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
+            this.waterPathSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
+            this.pathSurfaces.push(this.waterPathSurface)
+        }
+        this.surfaces.forEach((s) => s.setBuilding(this))
+        const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity, {
+            gameEntity: this.entity,
+            entityType: this.entityType
+        }, this.stats))
+        const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPosition)
+        floorPosition.y = Math.max(...this.surfaces.map((s) => this.worldMgr.sceneMgr.getFloorPosition(s.getCenterWorld2D()).y))
+        const positionComponent = this.worldMgr.ecs.addComponent(this.entity, new PositionComponent(floorPosition, this.primarySurface))
+        this.sceneEntity.position.copy(floorPosition)
+        this.sceneEntity.position.y += positionComponent.floorOffset
+        this.sceneEntity.rotation.y = radHeading
+        this.sceneEntity.visible = this.surfaces.some((s) => s.discovered)
+        this.worldMgr.sceneMgr.addSceneEntity(this.sceneEntity)
+        if (this.sceneEntity.visible) {
+            this.worldMgr.entityMgr.buildings.push(this)
+        } else {
+            this.worldMgr.entityMgr.buildingsUndiscovered.push(this)
+        }
+        if (this.surfaces.some((s) => s.selected)) EventBroker.publish(new DeselectAll())
+        if (this.sceneEntity.visible && !disableTeleportIn) {
+            this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
+            this.sceneEntity.setAnimation(BuildingActivity.Teleport, () => {
+                this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
+                this.powerOffSprite.setEnabled(!this.isPowered())
+                this.onPlaceDown()
+            })
+        } else {
+            this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
+            this.onPlaceDown()
+        }
+        this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
+        this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
     }
 
     get stats(): BuildingEntityStats {
@@ -288,74 +353,6 @@ export class BuildingEntity {
         if (!changedCrystals) return
         GameState.usedCrystals += changedCrystals
         EventBroker.publish(new UsedCrystalsChanged())
-    }
-
-    placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
-        this.primarySurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPosition)
-        this.surfaces.push(this.primarySurface)
-        this.primarySurface.pathBlockedByBuilding = this.entityType !== EntityType.TOOLSTATION // XXX better evaluate EnterToolStore in stats while path finding
-        if (this.buildingType.secondaryBuildingPart) {
-            const secondaryOffset = new Vector2(TILESIZE * this.buildingType.secondaryBuildingPart.x, TILESIZE * this.buildingType.secondaryBuildingPart.y)
-                .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
-            this.secondarySurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(secondaryOffset)
-            this.surfaces.push(this.secondarySurface)
-            this.secondarySurface.pathBlockedByBuilding = this.entityType !== EntityType.TOOLSTATION // XXX better evaluate EnterToolStore in stats while path finding
-        }
-        if (this.buildingType.primaryPowerPath) {
-            const pathOffset = this.buildingType.primaryPowerPath.clone().multiplyScalar(TILESIZE)
-                .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
-            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
-            if (surface.surfaceType.floor || surface.surfaceType === SurfaceType.HIDDEN_CAVERN) {
-                this.primaryPathSurface = surface
-                this.surfaces.push(this.primaryPathSurface)
-                this.pathSurfaces.push(this.primaryPathSurface)
-            }
-        }
-        if (this.buildingType.secondaryPowerPath) {
-            const pathOffset = this.buildingType.secondaryPowerPath.clone().multiplyScalar(TILESIZE)
-                .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
-            this.secondaryPathSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
-            this.surfaces.push(this.secondaryPathSurface)
-            this.pathSurfaces.push(this.secondaryPathSurface)
-        }
-        if (this.buildingType.waterPathSurface) {
-            const pathOffset = this.buildingType.waterPathSurface.clone().multiplyScalar(TILESIZE)
-                .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
-            this.waterPathSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
-            this.pathSurfaces.push(this.waterPathSurface)
-        }
-        this.surfaces.forEach((s) => s.setBuilding(this))
-        const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity, {
-            gameEntity: this.entity,
-            entityType: this.entityType
-        }, this.stats))
-        const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPosition)
-        floorPosition.y = Math.max(...this.surfaces.map((s) => this.worldMgr.sceneMgr.getFloorPosition(s.getCenterWorld2D()).y))
-        const positionComponent = this.worldMgr.ecs.addComponent(this.entity, new PositionComponent(floorPosition, this.primarySurface))
-        this.sceneEntity.position.copy(floorPosition)
-        this.sceneEntity.position.y += positionComponent.floorOffset
-        this.sceneEntity.rotation.y = radHeading
-        this.sceneEntity.visible = this.surfaces.some((s) => s.discovered)
-        this.worldMgr.sceneMgr.addSceneEntity(this.sceneEntity)
-        if (this.sceneEntity.visible) {
-            this.worldMgr.entityMgr.buildings.push(this)
-        } else {
-            this.worldMgr.entityMgr.buildingsUndiscovered.push(this)
-        }
-        if (this.surfaces.some((s) => s.selected)) EventBroker.publish(new DeselectAll())
-        if (this.sceneEntity.visible && !disableTeleportIn) {
-            this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
-            this.sceneEntity.setAnimation(BuildingActivity.Teleport, () => {
-                this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
-                this.powerOffSprite.setEnabled(!this.isPowered())
-                this.onPlaceDown()
-            })
-        } else {
-            this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
-            this.onPlaceDown()
-        }
-        this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
-        this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
     }
 
     private onPlaceDown() {

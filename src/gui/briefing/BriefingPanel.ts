@@ -47,7 +47,7 @@ export class BriefingPanel extends Panel {
     }
 
     setup(dialogTitle: string, objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg, objectiveSfx: string) {
-        this.imgBack = ResourceManager.getImageOrNull(objectiveBackImgCfg.filename)
+        this.imgBack = ResourceManager.getImage(objectiveBackImgCfg.filename)
         this.relX = this.xIn = objectiveBackImgCfg.x
         this.relY = this.yIn = objectiveBackImgCfg.y
         this.width = this.imgBack?.width || 0

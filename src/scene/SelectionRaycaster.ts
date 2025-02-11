@@ -8,9 +8,10 @@ import { Terrain } from '../game/terrain/Terrain'
 import { BuildingEntity } from '../game/model/building/BuildingEntity'
 import { Raider } from '../game/model/raider/Raider'
 import { EntityType } from '../game/model/EntityType'
-import { SceneSelectionComponent, SceneSelectionUserData } from '../game/component/SceneSelectionComponent'
+import { PickSphereMesh, SceneSelectionComponent } from '../game/component/SceneSelectionComponent'
 import { GameEntity } from '../game/ECS'
 import { SelectionFrameComponent } from '../game/component/SelectionFrameComponent'
+import { SurfaceMesh } from '../game/terrain/SurfaceMesh'
 
 export interface CursorTarget {
     raider?: Raider
@@ -38,7 +39,7 @@ export class SelectionRaycaster {
         if (selection.isEmpty()) selection.vehicles.push(...raycaster.getEntities(this.worldMgr.entityMgr.vehicles, true))
         if (selection.isEmpty()) selection.building = raycaster.getEntities(this.worldMgr.entityMgr.buildings, true)[0]
         if (selection.isEmpty()) selection.fence = raycaster.getEntities(this.worldMgr.entityMgr.placedFences, false)[0]
-        if (selection.isEmpty() && this.terrain) selection.surface = raycaster.getSurfaceIntersection(this.worldMgr.sceneMgr.floorGroup.children)?.surface
+        if (selection.isEmpty() && this.terrain) selection.surface = raycaster.getSurfaceIntersection(this.worldMgr.sceneMgr.floorGroup.children)
         return selection
     }
 
@@ -57,9 +58,9 @@ export class SelectionRaycaster {
         const building = raycaster.getFirstEntity(this.worldMgr.entityMgr.buildings)
         if (building) return {building: building, entityType: building.entityType}
         if (this.terrain) {
-            const intersection = raycaster.raycaster.intersectObjects(this.worldMgr.sceneMgr.floorGroup.children, false)[0]
+            const intersection = raycaster.raycaster.intersectObjects<SurfaceMesh>(this.worldMgr.sceneMgr.floorGroup.children, false)[0]
             if (intersection) {
-                const surface: Surface = intersection?.object?.userData?.selectable
+                const surface = intersection.object.userData.selectable
                 if (surface?.discovered) {
                     if (surface.building && surface.pathBlockedByBuilding) {
                         return {building: surface.building, entityType: surface.building.entityType}
@@ -80,38 +81,32 @@ class SceneRaycaster {
         this.raycaster.setFromCamera(origin, this.worldMgr.sceneMgr.cameraActive)
     }
 
-    getEntities<T extends { entity: GameEntity }>(entities: T[], allowDoubleSelection: boolean): any[] {
+    getEntities<T extends { entity: GameEntity }>(entities: T[], allowDoubleSelection: boolean): T[] {
         const objects = entities.map((m) => this.worldMgr.ecs.getComponents(m.entity).get(SceneSelectionComponent).pickSphere).filter((p) => !!p)
-        const intersection = this.raycaster.intersectObjects(objects, false)
-        if (intersection.length < 1) return []
-        const selection = []
-        const gameEntity = (intersection[0].object.userData as SceneSelectionUserData)?.gameEntity
+        const intersection = this.raycaster.intersectObjects<PickSphereMesh>(objects, false)[0]
+        if (!intersection) return []
+        const gameEntity = intersection.object.userData.gameEntity
         if (gameEntity) {
             const selectionFrameComponent = this.worldMgr.ecs.getComponents(gameEntity).get(SelectionFrameComponent)
             if (!!selectionFrameComponent && (!selectionFrameComponent.isSelected() || allowDoubleSelection)) {
                 const selectable = entities.find((e) => e.entity === gameEntity)
-                if (selectable) {
-                    selection.push(selectable)
-                }
+                if (selectable) return [selectable]
             }
         }
-        return selection
+        return []
     }
 
-    getFirstEntity<T extends { entity: GameEntity }>(entities: T[]): T {
+    getFirstEntity<T extends { entity: GameEntity }>(entities: T[]): T | undefined {
         const objects = entities.map((m) => this.worldMgr.ecs.getComponents(m.entity).get(SceneSelectionComponent).pickSphere).filter((p) => !!p)
-        const intersection = this.raycaster.intersectObjects(objects, false)[0]
-        const selectionUserData = intersection?.object?.userData as SceneSelectionUserData
-        if (!selectionUserData) return null
-        return entities.find((e) => e.entity === selectionUserData.gameEntity)
+        const intersection = this.raycaster.intersectObjects<PickSphereMesh>(objects, false)[0]
+        if (!intersection) return undefined
+        const gameEntity = intersection.object.userData.gameEntity
+        return entities.find((e) => e.entity === gameEntity)
     }
 
-    getSurfaceIntersection(surfaces: Object3D[]): { surface: Surface, intersectionPoint: Vector2 } {
-        const intersection = this.raycaster.intersectObjects(surfaces, false)[0]
-        if (intersection) {
-            const surface: Surface = intersection?.object?.userData?.selectable
-            return {surface: surface?.discovered ? surface : null, intersectionPoint: new Vector2(intersection.point.x, intersection.point.z)}
-        }
-        return null
+    getSurfaceIntersection(surfaces: Object3D[]): Surface | undefined {
+        const intersection = this.raycaster.intersectObjects<SurfaceMesh>(surfaces, false)[0]
+        if (intersection) return intersection?.object?.userData?.selectable
+        return undefined
     }
 }

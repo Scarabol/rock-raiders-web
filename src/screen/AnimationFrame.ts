@@ -1,4 +1,4 @@
-import { SpriteContext, SpriteImage } from '../core/Sprite'
+import { getSpriteContext, SpriteContext, SpriteImage } from '../core/Sprite'
 import { cancelAnimationFrameSafe } from '../core/Util'
 
 type AnimationFrameRedrawCallback = (context: SpriteContext) => void
@@ -12,12 +12,8 @@ export class AnimationFrame {
     scaleY: number = 1
 
     constructor(canvas: SpriteImage, readbackCanvas: SpriteImage) {
-        const context = canvas.getContext('2d')
-        if (!context) throw new Error('Could not get context for canvas')
-        this.context = context
-        const readbackContext = readbackCanvas.getContext('2d', {willReadFrequently: true})
-        if (!readbackContext) throw new Error('Could not get readback context')
-        this.readbackContext = readbackContext
+        this.context = getSpriteContext(canvas)
+        this.readbackContext = getSpriteContext(readbackCanvas, {willReadFrequently: true})
     }
 
     set onRedraw(callback: AnimationFrameRedrawCallback) {

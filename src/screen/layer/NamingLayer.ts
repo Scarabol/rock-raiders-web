@@ -57,8 +57,9 @@ export class NamingLayer extends ScaledLayer {
 
     private onEnterKeyUp(): boolean {
         const selectedRaider = this.gameScreen.worldMgr.entityMgr.selection.hasOnlyOneRaider()
+        if (!selectedRaider) return false
         const raiderSaveGame = GameState.raiderSaveGameMap.get(selectedRaider)
-        if (!selectedRaider || !raiderSaveGame) return false
+        if (!raiderSaveGame) return false
         this.showBackdrop = !this.showBackdrop
         EventBroker.publish(new BaseEvent(this.showBackdrop ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
         if (this.showBackdrop) {
@@ -74,7 +75,7 @@ export class NamingLayer extends ScaledLayer {
             this.gameScreen.worldMgr.ecs.getComponents(selectedRaider).get(SelectionNameComponent)?.setVisible(false)
             this.raiderOnScreen = this.raiderToScreenPos(selectedRaider)
         } else {
-            raiderSaveGame.name = this.raiderName || raiderSaveGame.name
+            raiderSaveGame.name = this.raiderName || raiderSaveGame.name || ''
             const selectionNameComponent = this.gameScreen.worldMgr.ecs.getComponents(selectedRaider).get(SelectionNameComponent)
             selectionNameComponent?.setName(raiderSaveGame.name)
             selectionNameComponent?.setVisible(true)

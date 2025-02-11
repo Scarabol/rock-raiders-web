@@ -7,7 +7,8 @@ import { BaseElement } from '../base/BaseElement'
 import { MapSurfaceRect } from './MapSurfaceRect'
 import { MapRenderer } from './MapRenderer'
 import { GameEntity } from '../../game/ECS'
-import { CameraControl, ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
+import { CameraControl, ChangeTooltip } from '../../event/GuiCommand'
+import { CursorManager } from '../../screen/CursorManager'
 import { TILESIZE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
 import { EventBroker } from '../../event/EventBroker'
 import { CURSOR } from '../../resource/Cursor'
@@ -33,7 +34,7 @@ export class MapView extends BaseElement {
     lastSurface?: MapSurfaceRect
     lastEntity?: GameEntity
     entityBelowCursor?: GameEntity
-    cameraRect?: MapRendererCameraRect
+    cameraRect: MapRendererCameraRect = {topLeft: {x: 0, z: 0}, topRight: {x: 0, z: 0}, bottomRight: {x: 0, z: 0}, bottomLeft: {x: 0, z: 0}}
 
     constructor() {
         super()
@@ -157,7 +158,7 @@ export class MapView extends BaseElement {
                     const dz = ty - ez
                     if (Math.abs(dx) <= 2 && Math.abs(dz) <= 2) { // TODO sync with rect size in MapRendererWorker
                         this.entityBelowCursor = entity
-                        EventBroker.publish(new ChangeCursor(CURSOR.TRACK_OBJECT))
+                        CursorManager.changeCursor(CURSOR.TRACK_OBJECT)
                         if (this.lastEntity !== entity) {
                             this.lastEntity = entity
                             // TODO get entity object name and publish tooltip event

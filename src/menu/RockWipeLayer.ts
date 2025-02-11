@@ -1,6 +1,5 @@
 import { ScreenLayer } from '../screen/layer/ScreenLayer'
 import { SoundManager } from '../audio/SoundManager'
-import { SAMPLE } from '../audio/Sample'
 import { AmbientLight, OrthographicCamera, Scene } from 'three'
 import { clearIntervalSafe } from '../core/Util'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
@@ -31,7 +30,7 @@ export class RockWipeLayer extends ScreenLayer {
     show() {
         super.show()
         this.group.resetAnimation()
-        SoundManager.playSfxSound(SAMPLE.SFX_RockWipe)
+        SoundManager.playSfxSound('SFX_RockWipe')
         this.renderer.startRendering(this.scene).then()
         this.groupUpdateInterval = clearIntervalSafe(this.groupUpdateInterval)
         this.groupUpdateInterval = setInterval(() => {

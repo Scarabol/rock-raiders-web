@@ -7,7 +7,7 @@ import { GameState } from '../game/model/GameState'
 import { ObjectListLoader } from '../game/ObjectListLoader'
 import { SceneManager } from '../game/SceneManager'
 import { WorldManager } from '../game/WorldManager'
-import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE } from '../params'
+import { ADDITIONAL_RAIDER_PER_SUPPORT, DEV_MODE, MAX_RAIDER_BASE } from '../params'
 import { GameLayer } from './layer/GameLayer'
 import { GuiBottomLeftLayer, GuiBottomRightLayer, GuiTopLeftLayer, GuiTopRightLayer } from './layer/GuiMainLayer'
 import { OverlayLayer } from './layer/OverlayLayer'
@@ -19,7 +19,6 @@ import { GameResultEvent, LevelSelectedEvent, MaterialAmountChanged } from '../e
 import { EntityType } from '../game/model/EntityType'
 import { AdvisorLayer } from './layer/AdvisorLayer'
 import { EventBroker } from '../event/EventBroker'
-import { ObjectPointer } from '../scene/ObjectPointer'
 import { NamingLayer } from './layer/NamingLayer'
 
 export class GameScreen {
@@ -89,8 +88,10 @@ export class GameScreen {
         console.log(`Starting level ${this.levelConf.levelName} - ${this.levelConf.fullName}`)
         document.title = `${this.levelConf.fullName} - Rock Raiders Web`
         const params = new URLSearchParams(window.location.search)
-        params.set('entry', this.levelConf.levelName)
-        history.pushState(null, '', `${window.location.pathname}?${params.toString()}`)
+        if (DEV_MODE) {
+            params.set('entry', this.levelConf.levelName)
+            history.pushState(null, '', `${window.location.pathname}?${params.toString()}`)
+        }
         GameState.reset()
         this.entityMgr.reset()
         this.guiTopLeftLayer.reset()
@@ -100,21 +101,7 @@ export class GameScreen {
         GameState.unassignedTeam = [...SaveGameManager.currentTeam]
         this.worldMgr.setup(this.levelConf)
         this.sceneMgr.setupScene(this.levelConf)
-        if (this.levelConf.blockPointersMap) {
-            for (let x = 0; x < this.levelConf.mapWidth; x++) {
-                for (let y = 0; y < this.levelConf.mapHeight; y++) {
-                    const tutoBlockId = this.levelConf.blockPointersMap[y][x]
-                    if (tutoBlockId) {
-                        const tutoBlock = this.sceneMgr.terrain.surfaces[x][y]
-                        tutoBlock.mesh.objectPointer = new ObjectPointer()
-                        this.sceneMgr.scene.add(tutoBlock.mesh.objectPointer)
-                        this.worldMgr.nerpRunner.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(tutoBlock)
-                    }
-                }
-            }
-        }
         // setup GUI
-        this.guiMgr.buildingCycleIndex = 0
         this.overlayLayer.showBriefing(this.levelConf)
         GameState.priorityList.setList(this.levelConf.priorities)
         // load in non-space objects next

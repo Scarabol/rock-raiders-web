@@ -29,7 +29,6 @@ export enum EventKey {
     ADVANCE_AFTER_REWARDS = 'advance-after-rewards',
 
     // GUI command events
-    COMMAND_CHANGE_CURSOR = 'command-change-cursor',
     COMMAND_TOOLTIP_CHANGE = 'command-tooltip-change',
     COMMAND_TOOLTIP_HIDE = 'command-tooltip-hide',
     COMMAND_PLAY_SOUND = 'command-play-sound',

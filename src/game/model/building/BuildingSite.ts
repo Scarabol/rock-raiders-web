@@ -156,8 +156,9 @@ export class BuildingSite {
                 item.disposeFromWorld()
             }
         }))
-        if (this.buildingType) new BuildingEntity(this.worldMgr, this.buildingType.entityType) // TODO Refactor power path building site handling
-            .placeDown(this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
+        if (this.buildingType) { // TODO Refactor power path building site handling
+            new BuildingEntity(this.worldMgr, this.buildingType.entityType, this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
+        }
     }
 
     cancelSite() {

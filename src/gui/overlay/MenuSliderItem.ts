@@ -9,8 +9,8 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class MenuSliderItem extends BaseElement {
-    imgTextNormal: SpriteImage
-    imgTextHover: SpriteImage
+    imgTextNormal?: SpriteImage
+    imgTextHover?: SpriteImage
     imgLeft: SpriteImage
     imgNormal: SpriteImage
     imgHover: SpriteImage
@@ -65,7 +65,7 @@ export class MenuSliderItem extends BaseElement {
             BitmapFontWorkerPool.instance.createTextImage(menuCfg.hiFont, itemCfg.description),
         ]).then((textImages) => {
             [this.imgTextNormal, this.imgTextHover] = textImages
-            this.height = this.imgTextNormal.height
+            this.height = this.imgTextNormal?.height || 0
         })
     }
 
@@ -84,7 +84,7 @@ export class MenuSliderItem extends BaseElement {
         if (this.hover) {
             img = this.imgTextHover
         }
-        context.drawImage(img, this.x, this.y)
+        if (img) context.drawImage(img, this.x, this.y)
         let posX = this.x + this.sliderX
         context.drawImage(this.imgLeft, posX, this.y)
         context.drawImage(this.imgNormal, posX, this.y)

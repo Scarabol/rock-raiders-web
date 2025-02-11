@@ -19,7 +19,7 @@ export class TooltipLayer extends ScreenLayer {
 
     constructor() {
         super()
-        this.ratio = SaveGameManager.currentPreferences.screenRatioFixed
+        this.ratio = SaveGameManager.preferences.screenRatioFixed
         EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_CHANGE, (event: ChangeTooltip) => {
             if (this.cursorLeft || !this.active || event.tooltipKey === this.lastTooltipKey) return
             this.lastTooltipKey = event.tooltipKey
@@ -56,7 +56,7 @@ export class TooltipLayer extends ScreenLayer {
         })
         this.addEventListener('keyup', (event: KeyboardEvent): boolean => {
             if (event.key === 'p') {
-                this.screenMaster.saveScreenshot()
+                this.screenMaster?.saveScreenshot()
                 return true
             }
             return false

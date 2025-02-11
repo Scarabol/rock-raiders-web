@@ -18,7 +18,7 @@ export class MainMenuLayer extends ScaledLayer {
     static readonly SCROLL_AREA_HEIGHT = 180
 
     readonly cfg: MenuEntryCfg
-    readonly menuImage: SpriteImage
+    readonly menuImage?: SpriteImage
     readonly items: MainMenuBaseItem[] = []
     readonly overlays: FlicAnimOverlay[] = []
     scrollY: number = 0
@@ -26,13 +26,13 @@ export class MainMenuLayer extends ScaledLayer {
     scrollInterval?: NodeJS.Timeout
     overlayTimeout?: NodeJS.Timeout
     overlayIndex: number = 0
-    overlay: FlicAnimOverlay
+    overlay?: FlicAnimOverlay
 
     constructor(menuCfg: MenuEntryCfg) {
         super()
         this.cfg = menuCfg
-        this.menuImage = menuCfg.menuImage ? ResourceManager.getImage(menuCfg.menuImage) : null // TODO create all images in loading phase
-        let titleImage: SpriteImage
+        this.menuImage = menuCfg.menuImage ? ResourceManager.getImage(menuCfg.menuImage) : undefined // TODO create all images in loading phase
+        let titleImage: SpriteImage | undefined
         if (menuCfg.displayTitle && menuCfg.fullName) {
             BitmapFontWorkerPool.instance.createTextImage(menuCfg.loFont, menuCfg.fullName) // TODO create all images in loading phase
                 .then((img) => titleImage = img)
@@ -81,7 +81,7 @@ export class MainMenuLayer extends ScaledLayer {
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 this.overlay?.stop()
-                this.overlay = null
+                this.overlay = undefined
                 this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
                 this.animationFrame.notifyRedraw()
             } else if (this.cfg.playRandom && this.active) {
@@ -183,7 +183,7 @@ export class MainMenuLayer extends ScaledLayer {
 
     private setScrollY(deltaY: number) {
         const scrollYBefore = this.scrollY
-        this.scrollY = Math.min(Math.max(this.scrollY + deltaY, 0), this.menuImage.height - this.fixedHeight)
+        this.scrollY = Math.min(Math.max(this.scrollY + deltaY, 0), (this.menuImage?.height ?? this.fixedHeight) - this.fixedHeight)
         if (scrollYBefore !== this.scrollY) this.animationFrame.notifyRedraw()
     }
 

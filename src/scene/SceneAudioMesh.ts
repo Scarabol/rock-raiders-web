@@ -4,7 +4,12 @@ import { SoundManager } from '../audio/SoundManager'
 import { SceneMesh } from './SceneMesh'
 import { TILESIZE } from '../params'
 
+export interface SceneAudioMeshUserData {
+    sfxNameAnimation?: string
+}
+
 export class SceneAudioMesh extends SceneMesh {
+    declare userData: SceneAudioMeshUserData
     audioNode?: PositionalAudio
     lastSfxName: string = ''
 
@@ -14,7 +19,7 @@ export class SceneAudioMesh extends SceneMesh {
         const sfxName = this.userData.sfxNameAnimation || ''
         if (!sfxName || (this.lastSfxName === sfxName && this.audioNode?.isPlaying)) return
         this.lastSfxName = sfxName
-        const audioBuffer = SoundManager.getSoundBuffer(this.lastSfxName)
+        const audioBuffer = SoundManager.getSoundBuffer(sfxName)
         if (!audioBuffer) return
         if (!this.audioNode) {
             this.audioNode = new PositionalAudio(SoundManager.sceneAudioListener)

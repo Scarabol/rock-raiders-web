@@ -1,4 +1,3 @@
-import { SAMPLE } from '../../audio/Sample'
 import { SoundManager } from '../../audio/SoundManager'
 import { SelectPanelType } from '../../event/LocalEvents'
 import { BuildingEntity } from './building/BuildingEntity'
@@ -82,7 +81,7 @@ export class GameSelection {
                 this.surface = undefined
             }
         }
-        if (added) SoundManager.playSfxSound(SAMPLE.SFX_Okay)
+        if (added) SoundManager.playSfxSound('SFX_Okay')
     }
 
     private syncRaiderSelection(before: Raider[], after: Raider[]): boolean {
@@ -198,7 +197,7 @@ export class GameSelection {
         return this.raiders.some((r) => r.getCarryCapacity() > 0) || this.vehicles.some((v) => v.getCarryCapacity() > 0)
     }
 
-    getPrimarySelected(): Raider | VehicleEntity {
+    getPrimarySelected(): Raider | VehicleEntity | undefined {
         // TODO Allow for primary (green) and secondary (yellow) selected entities
         return this.raiders[0] ?? this.vehicles[0]
     }

@@ -10,8 +10,6 @@ import { EventBroker } from './event/EventBroker'
 import { SoundManager } from './audio/SoundManager'
 import { TooltipLayer } from './screen/layer/TooltipLayer'
 import { EventKey } from './event/EventKeyEnum'
-import { ChangeCursor } from './event/GuiCommand'
-import { CursorManager } from './screen/CursorManager'
 import { MusicManager } from './audio/MusicManager'
 
 export class GameModule {
@@ -22,9 +20,6 @@ export class GameModule {
 
     constructor(readonly screenMaster: ScreenMaster) {
         EventBroker.init()
-        EventBroker.subscribe(EventKey.COMMAND_CHANGE_CURSOR, (event: ChangeCursor) => {
-            CursorManager.changeCursor(event.cursor, event.timeout)
-        })
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             screenMaster.onWindowResize()
         })
@@ -39,7 +34,7 @@ export class GameModule {
         this.gameScreen = new GameScreen(screenMaster)
         this.rewardScreen = new RewardScreen(screenMaster)
         const params = new URLSearchParams(window.location.search)
-        SaveGameManager.currentPreferences.testLevels = params.has('testlevels') || DEV_MODE
+        SaveGameManager.preferences.testLevels = params.has('testlevels') || DEV_MODE
         const entry = params.get('entry')
         if (DEV_MODE && entry) {
             ObjectListLoader.numRaider = Number(params.get('numRaider')) || 0

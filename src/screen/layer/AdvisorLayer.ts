@@ -18,7 +18,7 @@ export class AdvisorLayer extends ScreenLayer {
 
     constructor() {
         super()
-        this.ratio = SaveGameManager.currentPreferences.screenRatioFixed
+        this.ratio = SaveGameManager.preferences.screenRatioFixed
         this.renderer = new BaseRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, {alpha: true})
         this.renderer.camera = new PerspectiveCamera(CAMERA_FOV, 4 / 3, 0.1, 100)
         // 510 -> 510 / 640 = 0.80 -> ... => 7.25 // XXX How to derive from numbers in cfg?
@@ -42,7 +42,7 @@ export class AdvisorLayer extends ScreenLayer {
         this.group = new AnimationLoopGroup(advisorCfg.animFileName, () => {
             this.renderer.stopRendering()
         }).setLoop(advisorCfg.loopStart, advisorCfg.loopEnd).setup()
-        this.group.meshList.forEach((m) => m.getMaterials().forEach((m) => m.side = DoubleSide)) // otherwise flipped normals
+        this.group.meshList.forEach((m) => m.material.forEach((m) => m.side = DoubleSide)) // otherwise flipped normals
         this.scene.add(this.group)
         EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
             if (event.isShowing) {

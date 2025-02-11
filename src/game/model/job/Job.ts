@@ -7,7 +7,6 @@ import { RaiderTraining } from '../raider/RaiderTraining'
 import { JobState } from './JobState'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { PriorityIdentifier } from './PriorityIdentifier'
-import { Sample } from '../../../audio/Sample'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { EntityType } from '../EntityType'
 import { TerrainPath } from '../../terrain/TerrainPath'
@@ -34,8 +33,8 @@ export abstract class Job {
     requiredTool: RaiderTool = RaiderTool.NONE
     requiredTraining: RaiderTraining = RaiderTraining.NONE
     priorityIdentifier: PriorityIdentifier = PriorityIdentifier.NONE
-    workSoundRaider?: Sample
-    workSoundVehicle?: Sample
+    workSoundRaider?: string
+    workSoundVehicle?: string
     doOnAlarm: boolean = false
 
     abstract assign(fulfiller: JobFulfiller): void

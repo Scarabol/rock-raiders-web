@@ -16,8 +16,8 @@ import { SpriteImage } from '../core/Sprite'
 
 export class FollowerRenderer {
     static readonly MAX_FPS = 30
+    readonly camera: Camera = new PerspectiveCamera(45, 1, 0.1, 200)
     renderer?: WebGLRenderer
-    camera?: Camera
     composer?: EffectComposer
     trackEntity?: GameEntity
     started: boolean = false
@@ -55,7 +55,6 @@ export class FollowerRenderer {
             }
             if (!this.renderer) {
                 this.renderer = new WebGLRenderer({antialias: true, canvas: this.canvas, powerPreference: 'high-performance'})
-                this.camera = new PerspectiveCamera(45, 1, 0.1, 200)
                 this.composer = new EffectComposer(this.renderer)
                 this.composer.addPass(new RenderPass(this.scene, this.camera))
                 this.composer.addPass(new ShaderPass(GreenScaleShader))
@@ -72,7 +71,7 @@ export class FollowerRenderer {
             this.camera.position.set(lookAtPosition.x + off.x, lookAtPosition.y + TILESIZE * 1.333, lookAtPosition.z + off.y)
             this.camera.lookAt(lookAtPosition)
             this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
-            this.lastAnimationRequest = requestAnimationFrame(() => this.composer.render())
+            this.lastAnimationRequest = requestAnimationFrame(() => this.composer?.render())
         }, 1000 / FollowerRenderer.MAX_FPS)
         EventBroker.publish(new FollowerSetCanvasEvent(this.canvas))
     }

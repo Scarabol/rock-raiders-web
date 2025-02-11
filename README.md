@@ -70,6 +70,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Two buttons in priority list can be hovered/pressed/released at the same time
 - Use pro-meshes to render high-detail walls in first person and shoulder view
 - Bats don't appear in flocks
+- Middle wheel meshes of small digger do not rotate after engine upgrade
+
+### Authentic
+
 - Surface object pointer in tutorials removes surface highlight color as in original
 
 ## Technical Debt

@@ -29,8 +29,6 @@ import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityCom
 import { Vector3 } from 'three'
 
 export class GuiManager {
-    buildingCycleIndex: number = 0
-
     constructor(worldMgr: WorldManager) {
         const sceneMgr = worldMgr.sceneMgr
         const cameraControls = sceneMgr.birdViewControls
@@ -178,8 +176,8 @@ export class GuiManager {
                 cameraControls.zoom(event.args.zoom)
             }
             if (event.args.cycleBuilding) {
-                this.buildingCycleIndex = (this.buildingCycleIndex + 1) % entityMgr.buildings.length
-                const target = entityMgr.buildings[this.buildingCycleIndex].primarySurface.getCenterWorld()
+                cameraControls.buildingCycleIndex = (cameraControls.buildingCycleIndex + 1) % entityMgr.buildings.length
+                const target = entityMgr.buildings[cameraControls.buildingCycleIndex].primarySurface.getCenterWorld()
                 cameraControls.jumpTo(target)
             }
             if (event.args.rotationIndex) cameraControls.rotate(event.args.rotationIndex)
@@ -209,7 +207,7 @@ export class GuiManager {
             SoundManager.setupSfxAudioTarget()
             const sfxVolume = SaveGameManager.getSfxVolume()
             SoundManager.playingAudio.forEach((a) => a.setVolume(sfxVolume))
-            const gameSpeedIndex = Math.round(SaveGameManager.currentPreferences.gameSpeed * 5)
+            const gameSpeedIndex = Math.round(SaveGameManager.preferences.gameSpeed * 5)
             worldMgr.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
         })
         EventBroker.subscribe(EventKey.COMMAND_UPGRADE_VEHICLE, (event: UpgradeVehicle) => {
@@ -221,7 +219,6 @@ export class GuiManager {
                 if (!r.hasTool(RaiderTool.BIRD_SCARER)) return
                 r.removeTool(RaiderTool.BIRD_SCARER)
                 if (r.selected) EventBroker.publish(new SelectionChanged(entityMgr))
-                const birdScarer = worldMgr.ecs.addEntity()
                 const position = r.getPosition()
                 const heading = Math.random() * 2 * Math.PI
                 const sceneEntity = new AnimatedSceneEntity()
@@ -231,6 +228,7 @@ export class GuiManager {
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.OohScary))
                 sceneEntity.setAnimation(DynamiteActivity.Normal, () => {
                     sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
+                        const birdScarer = worldMgr.ecs.addEntity()
                         worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
                         entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
                         sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BirdScarer, position, heading, false, () => {

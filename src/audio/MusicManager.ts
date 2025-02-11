@@ -6,7 +6,7 @@ import { EventKey } from '../event/EventKeyEnum'
 export class MusicManager {
     static readonly audioContext: AudioContext = new AudioContext()
     static readonly musicTracks: AudioBuffer[] = []
-    static audioTarget?: GainNode
+    static audioTarget: GainNode = this.audioContext.createGain()
     static currentTrack?: AudioBufferSourceNode
     static firstUnpause: boolean = true
     static playNext: boolean = true
@@ -27,7 +27,6 @@ export class MusicManager {
             if (this.musicTracks.length < 1) console.warn('No music tracks found in cache')
             // TODO unpause might occur before decoding finished, better make this async
         })().then()
-        this.audioTarget = this.audioContext.createGain()
         this.audioTarget.gain.value = SaveGameManager.getMusicVolume()
         this.audioTarget.connect(this.audioContext.destination)
         EventBroker.subscribe(EventKey.LEVEL_SELECTED, () => {
@@ -47,7 +46,7 @@ export class MusicManager {
         })
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             this.audioTarget.gain.value = SaveGameManager.getMusicVolume()
-            if (SaveGameManager.currentPreferences.toggleMusic) {
+            if (SaveGameManager.preferences.toggleMusic) {
                 this.playTracks()
             } else {
                 this.stopTracks()

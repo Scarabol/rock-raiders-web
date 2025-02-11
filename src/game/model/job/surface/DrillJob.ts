@@ -6,7 +6,6 @@ import { JobFulfiller } from '../Job'
 import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
-import { SAMPLE } from '../../../../audio/Sample'
 import { GameEntity } from '../../../ECS'
 
 export class DrillJob extends ShareableJob {
@@ -16,8 +15,8 @@ export class DrillJob extends ShareableJob {
         super()
         this.requiredTool = RaiderTool.DRILL
         this.priorityIdentifier = PriorityIdentifier.DESTRUCTION
-        this.workSoundRaider = SAMPLE.SFX_Drill
-        this.workSoundVehicle = SAMPLE.SND_BIGDIGDRILL
+        this.workSoundRaider = 'SFX_Drill'
+        this.workSoundVehicle = 'SND_BIGDIGDRILL'
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {

@@ -49,6 +49,7 @@ const ANTIALIASING_BIT = 64
 //*  TFLG DEFINITION END  *//
 //*************************//
 
+// noinspection JSUnusedGlobalSymbols
 enum ReflectionMode {
     BACKDROP = 0,
     BACKDROP_WITH_RAYTRACING = 1,
@@ -150,9 +151,9 @@ export class LWOBParser {
 
     parsePolygons(chunkSize: number): void {
         let offset = 0
-        const vertices = []
-        const uvs = []
-        const indices = []
+        const vertices: number[] = []
+        const uvs: number[] = []
+        const indices: number[] = []
         while (offset < chunkSize) {
             const numIndices = this.lwoReader.readUint16()
             const faceIndices = []

@@ -90,8 +90,7 @@ export class ObjectListLoader {
             case EntityType.ORE_REFINERY:
             case EntityType.GUNSTATION:
             case EntityType.TELEPORT_BIG:
-                const building = new BuildingEntity(this.worldMgr, entityType)
-                building.placeDown(worldPos, -headingRad - Math.PI, this.disableStartTeleport)
+                const building = new BuildingEntity(this.worldMgr, entityType, worldPos, -headingRad - Math.PI, this.disableStartTeleport)
                 if (entityType === EntityType.TOOLSTATION) {
                     if (!this.trackEntity && building.sceneEntity.visible) this.trackEntity = building.entity
                     if (building.primaryPathSurface) {

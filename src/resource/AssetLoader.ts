@@ -12,6 +12,8 @@ import { VirtualFileSystem } from './fileparser/VirtualFileSystem'
 import { ResourceManager } from './ResourceManager'
 import { SoundManager } from '../audio/SoundManager'
 import { BitmapWithPalette } from './fileparser/BitmapWithPalette'
+import { TerrainMapData } from '../game/terrain/TerrainMapData'
+import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 
 export class AssetLoader {
     readonly assetRegistry: AssetRegistry = new AssetRegistry(this)
@@ -89,7 +91,7 @@ export class AssetLoader {
         return new ObjectiveTextParser().parseObjectiveTextFile(text)
     }
 
-    async loadMapAsset(name: string) {
+    async loadMapAsset(name: string): Promise<TerrainMapData> {
         const view = this.vfs.getFile(name).toArray()
         if (view.length < 13 || String.fromCharCode(...view.slice(0, 3)) !== 'MAP') {
             throw new Error(`Invalid map data provided for: ${name}`)
@@ -97,12 +99,12 @@ export class AssetLoader {
         return WadParser.parseMap(view)
     }
 
-    async loadObjectListAsset(name: string) {
+    async loadObjectListAsset(name: string): Promise<Map<string, ObjectListEntryCfg>> {
         const data = this.vfs.getFile(name).toText()
         return WadParser.parseObjectList(data)
     }
 
-    async loadWavAsset(path: string) {
+    async loadWavAsset(path: string): Promise<AudioBuffer | undefined> {
         let buffer: ArrayBuffer | undefined
         const errors: unknown[] = []
         try {
@@ -123,13 +125,13 @@ export class AssetLoader {
                 ) {
                     console.error(`Could not find sound ${path}:\n` + errors.join('\n'))
                 }
-                return null
+                return undefined
             }
         }
         return AudioContext.getContext().decodeAudioData(buffer)
     }
 
-    async loadLWOFile(lwoFilepath: string) {
+    async loadLWOFile(lwoFilepath: string): Promise<ArrayBuffer | undefined> {
         try {
             return this.vfs.getFile(lwoFilepath).toBuffer()
         } catch (e) {
@@ -145,7 +147,7 @@ export class AssetLoader {
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_PipeL.lwo')) {
                     throw new Error(`Could not load LWO file ${lwoFilepath}; Error: ${e}`)
                 }
-                return null
+                return undefined
             }
         }
     }

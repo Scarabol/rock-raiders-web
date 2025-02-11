@@ -4,7 +4,6 @@ import { PathTarget } from '../PathTarget'
 import { Job, JobFulfiller } from './Job'
 import { EntityType } from '../EntityType'
 import { Raider } from '../raider/Raider'
-import { SAMPLE } from '../../../audio/Sample'
 import { DynamiteExplosionEvent } from '../../../event/WorldEvents'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
@@ -25,12 +24,12 @@ export class CarryJob extends Job {
         super()
         this.requiredTraining = this.carryItem.requiredTraining
         this.priorityIdentifier = this.carryItem.priorityIdentifier
-        this.workSoundRaider = SAMPLE.SFX_Place
+        this.workSoundRaider = 'SFX_Place'
         const carriedEntityType = this.carryItem.entityType
         if (carriedEntityType === EntityType.ORE || carriedEntityType === EntityType.BRICK) {
-            this.workSoundRaider = SAMPLE.SFX_PlaceOre
+            this.workSoundRaider = 'SFX_PlaceOre'
         } else if (carriedEntityType === EntityType.CRYSTAL) {
-            this.workSoundRaider = SAMPLE.SFX_PlaceCrystal
+            this.workSoundRaider = 'SFX_PlaceCrystal'
         }
     }
 

@@ -9,6 +9,7 @@ import { DEV_MODE } from '../params'
 import { getMonsterEntityTypeByName, MonsterEntityType } from './model/EntityType'
 import { NerpMessage } from '../resource/fileparser/NerpMsgParser'
 import { RockFallStyle } from '../cfg/RockFallStyle'
+import { TerrainMapData } from './terrain/TerrainMapData'
 
 export interface LevelConfData {
     levelName: string
@@ -54,8 +55,10 @@ export class LevelLoader {
         if (!levelConf) throw new Error(`Could not find level configuration for "${levelName}"`)
         const levelObjective = ResourceManager.getResource(levelConf.objectiveText) as Record<string, LevelObjectiveTextEntry>
         levelConf.objectiveTextCfg = levelObjective[levelName.toLowerCase()]
-        const terrainMap = ResourceManager.getResource(levelConf.terrainMap)
+        const terrainMap = ResourceManager.getResource(levelConf.terrainMap) as TerrainMapData
         if (!terrainMap) throw new Error(`Could not load terrain data for "${levelConf.terrainMap}"`)
+        const predugMap = ResourceManager.getResource(levelConf.predugMap) as TerrainMapData
+        if (!predugMap || predugMap.width !== terrainMap.width || predugMap.height !== terrainMap.height) throw new Error(`Could not load predug data for ${levelConf.predugMap}`)
         const rockFallStyle = GameConfig.instance.rockFallStyles.get(levelConf.rockFallStyle.toLowerCase())
         if (!rockFallStyle) throw new Error(`Could not get rock fall style "${levelConf.rockFallStyle.toLowerCase()}" from config with ${Array.from(GameConfig.instance.rockFallStyles.values())}`)
         return {
@@ -68,10 +71,10 @@ export class LevelLoader {
             roofTexture: GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet).roofTexture,
             rockFallStyle: rockFallStyle,
             fallinMultiplier: levelConf.fallinMultiplier,
-            terrainMap: this.checkMap(levelConf.terrainMap, terrainMap.width, terrainMap.height),
+            terrainMap: terrainMap.level,
             pathMap: this.checkMap(levelConf.pathMap, terrainMap.width, terrainMap.height),
             surfaceMap: this.checkMap(levelConf.surfaceMap, terrainMap.width, terrainMap.height),
-            predugMap: this.checkMap(levelConf.predugMap, terrainMap.width, terrainMap.height),
+            predugMap: predugMap.level,
             cryOreMap: this.checkMap(levelConf.cryOreMap, terrainMap.width, terrainMap.height),
             fallinMap: this.checkMap(levelConf.fallinMap, terrainMap.width, terrainMap.height),
             erodeMap: this.checkMap(levelConf.erodeMap, terrainMap.width, terrainMap.height),
@@ -98,7 +101,7 @@ export class LevelLoader {
     }
 
     static checkMap(mapFileName: string, width: number, height: number): number[][] | undefined {
-        const map = ResourceManager.getResource(mapFileName)
+        const map = ResourceManager.getResource(mapFileName) as TerrainMapData
         if (!map) return undefined
         if (map.width !== width || map.height !== height) {
             console.warn(`Given map "${mapFileName}" has unexpected size ${width} x ${height}`)

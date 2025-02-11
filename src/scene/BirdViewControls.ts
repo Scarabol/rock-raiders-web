@@ -29,6 +29,7 @@ export class BirdViewControls extends MapControls {
     shakeTimeout: number = 0
     bumpTimeout: number = 0
     isTutorial: boolean = false
+    buildingCycleIndex: number = 0
 
     constructor(camera: Camera, readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
@@ -78,6 +79,7 @@ export class BirdViewControls extends MapControls {
         this.lockedObject = undefined
         this.shakeTimeout = 0
         this.bumpTimeout = 0
+        this.buildingCycleIndex = 0
     }
 
     zoom(zoom: number) {

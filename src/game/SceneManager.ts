@@ -69,7 +69,7 @@ export class SceneManager implements Updatable {
             this.setActiveCamera(this.cameraBird) // TODO Only reset camera, when camera parent is affected
         })
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
-            this.ambientLight?.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
+            this.ambientLight?.setLightLevel(SaveGameManager.preferences.gameBrightness)
         })
         EventBroker.subscribe(EventKey.GUI_GO_BACK_BUTTON_CLICKED, () => {
             this.setBuildModeSelection(undefined)
@@ -81,7 +81,7 @@ export class SceneManager implements Updatable {
         if (this.torchLightCursor) this.torchLightCursor.visible = GameState.isBirdView
         this.birdViewControls.disabled = !GameState.isBirdView
         if (this.roofGroup) this.roofGroup.visible = !GameState.isBirdView
-        this.scene.fog = GameState.isBirdView ? undefined : new FogExp2(this.scene.background as Color, 0.007)
+        this.scene.fog = GameState.isBirdView ? null : new FogExp2(this.scene.background as Color, 0.007)
         this.cameraActive = camera
         this.cameraActive.add(SoundManager.sceneAudioListener)
         this.renderer.camera = camera
@@ -91,7 +91,7 @@ export class SceneManager implements Updatable {
         this.scene.clear()
         this.scene.background = new ColorRGB(levelConf.fogColor) // fog color must be equal to scene background to avoid "holes" in fog at max rendering distance
         this.ambientLight = new LeveledAmbientLight()
-        this.ambientLight.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
+        this.ambientLight.setLightLevel(SaveGameManager.preferences.gameBrightness)
         this.scene.add(this.ambientLight)
 
         this.torchLightCursor = new TorchLightCursor()
@@ -119,6 +119,20 @@ export class SceneManager implements Updatable {
 
         const followerCanvas = createCanvas(158, 158)
         this.followerRenderer = new FollowerRenderer(followerCanvas, this.scene, this.worldMgr.ecs)
+
+        if (levelConf.blockPointersMap) {
+            for (let x = 0; x < levelConf.mapWidth; x++) {
+                for (let y = 0; y < levelConf.mapHeight; y++) {
+                    const tutoBlockId = levelConf.blockPointersMap[y][x]
+                    if (tutoBlockId) {
+                        const tutoBlock = this.terrain.surfaces[x][y]
+                        tutoBlock.mesh.objectPointer = new ObjectPointer()
+                        this.scene.add(tutoBlock.mesh.objectPointer)
+                        this.worldMgr.nerpRunner.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(tutoBlock)
+                    }
+                }
+            }
+        }
     }
 
     async startScene(): Promise<void> {

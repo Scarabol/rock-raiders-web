@@ -1,4 +1,3 @@
-import { SAMPLE } from '../audio/Sample'
 import { SoundManager } from '../audio/SoundManager'
 import { MenuLabelItemCfg } from '../cfg/MenuLabelItemCfg'
 import { SpriteContext, SpriteImage } from '../core/Sprite'
@@ -34,7 +33,7 @@ export class MainMenuIconButton extends MainMenuBaseItem {
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = () => {
-            SoundManager.playSfxSound(SAMPLE.SFX_ButtonPressed)
+            SoundManager.playSfxSound('SFX_ButtonPressed')
             callback()
         }
     }

@@ -8,17 +8,16 @@ import { imgDataToCanvas } from '../core/ImageHelper'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 import { GameConfig } from '../cfg/GameConfig'
 import { SoundManager } from '../audio/SoundManager'
-import { SAMPLE } from '../audio/Sample'
 
 export class MainMenuLoadSaveButton extends MainMenuBaseItem {
-    labelImgLo: SpriteImage
-    labelImgHi: SpriteImage
-    saveGameImg: SpriteImage
+    labelImgLo?: SpriteImage
+    labelImgHi?: SpriteImage
+    saveGameImg?: SpriteImage
     saveGameImgWidthLo: number = 0
     saveGameImgHeightLo: number = 0
     saveGameImgWidthHi: number = 0
     saveGameImgHeightHi: number = 0
-    overlay: FlicAnimOverlay
+    overlay?: FlicAnimOverlay
 
     constructor(readonly layer: MainMenuLayer, index: number, x: number, y: number, loading: boolean) {
         super(x, y)
@@ -30,8 +29,8 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
             BitmapFontWorkerPool.instance.createTextImage(layer.cfg.hiFont, buttonLabel),
         ]).then((textImages) => {
             [this.labelImgLo, this.labelImgHi] = textImages
-            this.width = Math.max(this.labelImgLo.width, this.labelImgHi.width) + menuCfg.saveImage.BigWidth
-            this.height = Math.max(this.labelImgLo.height, this.labelImgHi.height)
+            this.width = Math.max(this.labelImgLo?.width || 0, this.labelImgHi?.width || 0) + menuCfg.saveImage.BigWidth
+            this.height = Math.max(this.labelImgLo?.height || 0, this.labelImgHi?.height || 0)
         })
         this.targetIndex = index
         if (loading) {
@@ -51,7 +50,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = async () => {
-            SoundManager.playSfxSound(SAMPLE.SFX_ButtonPressed)
+            SoundManager.playSfxSound('SFX_ButtonPressed')
             await this.overlay?.play()
             callback()
         }

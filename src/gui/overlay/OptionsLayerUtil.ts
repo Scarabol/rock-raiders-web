@@ -6,38 +6,38 @@ import { SaveGameManager } from '../../resource/SaveGameManager'
 export function setupOptionsLayer(optionsLayer: MenuLayer, onRepeatBriefing: () => unknown) {
     const gameSpeedSlider = optionsLayer.itemsSlider[0]
     gameSpeedSlider.onValueChanged = (value) => {
-        SaveGameManager.currentPreferences.gameSpeed = value
+        SaveGameManager.preferences.gameSpeed = value
         optionsLayer.publishEvent(new ChangePreferences())
     }
     const volumeSfxSlider = optionsLayer.itemsSlider[1]
     volumeSfxSlider.onValueChanged = (value) => {
-        SaveGameManager.currentPreferences.volumeSfx = value
+        SaveGameManager.preferences.volumeSfx = value
         optionsLayer.publishEvent(new ChangePreferences())
     }
     const volumeMusicSlider = optionsLayer.itemsSlider[2]
     volumeMusicSlider.onValueChanged = (value) => {
-        SaveGameManager.currentPreferences.volumeMusic = value
+        SaveGameManager.preferences.volumeMusic = value
         optionsLayer.publishEvent(new ChangePreferences())
     }
     const gameBrightnessSlider = optionsLayer.itemsSlider[3]
     gameBrightnessSlider.onValueChanged = (value) => {
-        SaveGameManager.currentPreferences.gameBrightness = value
+        SaveGameManager.preferences.gameBrightness = value
         optionsLayer.publishEvent(new ChangePreferences())
     }
     const showHelpWindowCycle = optionsLayer.itemsCycle[0]
     showHelpWindowCycle.disabled = true // TODO Implement help window
     showHelpWindowCycle.onStateChanged = (state) => {
-        SaveGameManager.currentPreferences.showHelpWindow = state
+        SaveGameManager.preferences.showHelpWindow = state
         optionsLayer.publishEvent(new ChangePreferences())
     }
     optionsLayer.itemsTrigger[0].onClick = () => onRepeatBriefing()
 
     function updateAllValues() {
-        gameSpeedSlider.setValue(SaveGameManager.currentPreferences.gameSpeed)
-        volumeSfxSlider.setValue(SaveGameManager.currentPreferences.volumeSfx)
-        volumeMusicSlider.setValue(SaveGameManager.currentPreferences.volumeMusic)
-        gameBrightnessSlider.setValue(SaveGameManager.currentPreferences.gameBrightness)
-        showHelpWindowCycle.setState(SaveGameManager.currentPreferences.showHelpWindow)
+        gameSpeedSlider.setValue(SaveGameManager.preferences.gameSpeed)
+        volumeSfxSlider.setValue(SaveGameManager.preferences.volumeSfx)
+        volumeMusicSlider.setValue(SaveGameManager.preferences.volumeMusic)
+        gameBrightnessSlider.setValue(SaveGameManager.preferences.gameBrightness)
+        showHelpWindowCycle.setState(SaveGameManager.preferences.showHelpWindow)
     }
 
     updateAllValues()

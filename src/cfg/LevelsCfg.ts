@@ -116,7 +116,7 @@ export class LevelEntryCfg extends BaseConfig {
     }
 
     isLocked(): boolean {
-        return !SaveGameManager.currentPreferences.testLevels &&
+        return !SaveGameManager.preferences.testLevels &&
             !this.frontEndOpen &&
             !this.levelName.equalsIgnoreCase(GameConfig.instance.main.startLevel) &&
             !this.levelName.equalsIgnoreCase(GameConfig.instance.main.tutorialStartLevel) &&

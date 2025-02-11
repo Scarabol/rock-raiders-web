@@ -12,7 +12,7 @@ import { Cursor, CURSOR } from '../../resource/Cursor'
 import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/terrain/Surface'
 import { EventKey } from '../../event/EventKeyEnum'
-import { ChangeCursor } from '../../event/GuiCommand'
+import { CursorManager } from '../CursorManager'
 import { CursorTarget, SelectionRaycaster } from '../../scene/SelectionRaycaster'
 import { WorldManager } from '../../game/WorldManager'
 import { GameState } from '../../game/model/GameState'
@@ -40,10 +40,10 @@ export class GameLayer extends ScreenLayer {
 
     constructor(readonly worldMgr: WorldManager) {
         super()
-        this.ratio = SaveGameManager.currentPreferences.screenRatioFixed
+        this.ratio = SaveGameManager.preferences.screenRatioFixed
         EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
             const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
-            EventBroker.publish(new ChangeCursor(this.determineCursor(cursorTarget)))
+            CursorManager.changeCursor(this.determineCursor(cursorTarget))
         })
         this.addEventListener('pointermove', (event): boolean => {
             const gameEvent = new GamePointerEvent(POINTER_EVENT.MOVE, event)
@@ -54,7 +54,7 @@ export class GameLayer extends ScreenLayer {
             if (event.button !== MOUSE_BUTTON.MAIN) return false
             const gameEvent = new GamePointerEvent(POINTER_EVENT.DOWN, event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
-            if (!this.worldMgr.sceneMgr.buildMarker.buildingType && !this.worldMgr.entityMgr.selection.doubleSelect && this.worldMgr.sceneMgr.cameraActive === this.worldMgr.sceneMgr.cameraBird) {
+            if (!this.worldMgr.sceneMgr.buildMarker.buildingType && !this.worldMgr.entityMgr.selection.doubleSelect && GameState.isBirdView) {
                 this.pointerDown = {x: gameEvent.canvasX, y: gameEvent.canvasY}
             }
             return false
@@ -106,7 +106,7 @@ export class GameLayer extends ScreenLayer {
         this.cursorRelativePos.x = (event.canvasX / this.canvas.width) * 2 - 1
         this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
         const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
-        EventBroker.publish(new ChangeCursor(this.determineCursor(cursorTarget)))
+        CursorManager.changeCursor(this.determineCursor(cursorTarget))
         if (event.pointerType === 'mouse' && cursorTarget.intersectionPoint) this.worldMgr.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
         this.publishTooltipEvent(cursorTarget)
         this.worldMgr.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
@@ -334,8 +334,8 @@ export class GameLayer extends ScreenLayer {
         return false
     }
 
-    takeScreenshotFromLayer(): Promise<SpriteImage> {
-        return new Promise<SpriteImage>((resolve) => {
+    takeScreenshotFromLayer(): Promise<SpriteImage | undefined> {
+        return new Promise<SpriteImage | undefined>((resolve) => {
             this.worldMgr.sceneMgr.renderer.screenshotCallback = resolve
         })
     }

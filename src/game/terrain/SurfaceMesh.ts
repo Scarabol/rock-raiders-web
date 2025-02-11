@@ -3,14 +3,19 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { SurfaceGeometry, SurfaceVertex } from './SurfaceGeometry'
 import { WALL_TYPE } from './WallType'
 import { ObjectPointer } from '../../scene/ObjectPointer'
+import { Surface } from './Surface'
 
-export class SurfaceMesh extends Mesh {
-    readonly geometry: SurfaceGeometry = new SurfaceGeometry()
-    readonly material: MeshPhongMaterial = new MeshPhongMaterial({shininess: 0})
+export interface SurfaceMeshUserData {
+    selectable?: Surface
+    surface?: Surface
+}
+
+export class SurfaceMesh extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
+    declare userData: SurfaceMeshUserData
     objectPointer?: ObjectPointer // Only available for surfaces with tuto block id
 
-    constructor(x: number, y: number, userData: any) {
-        super()
+    constructor(x: number, y: number, userData: SurfaceMeshUserData) {
+        super(new SurfaceGeometry(), new MeshPhongMaterial({shininess: 0}))
         this.position.set(x, 0, y)
         this.userData = userData
     }
@@ -27,7 +32,7 @@ export class SurfaceMesh extends Mesh {
         }
         texture.center.set(0.5, 0.5)
         texture.rotation = textureRotation
-        if (this.material.map) this.material.map.dispose()
+        this.material.map?.dispose()
         this.material.map = texture
         this.material.needsUpdate = true
     }
@@ -37,6 +42,7 @@ export class SurfaceMesh extends Mesh {
     }
 
     dispose() {
+        this.removeFromParent()
         this.geometry.dispose()
         this.material.dispose()
     }

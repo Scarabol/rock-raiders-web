@@ -5,7 +5,7 @@ export class SequenceTextureMaterial extends MeshPhongMaterial {
     textures: Texture[] = []
     timer: number = 0
     seqNum: number = 0
-    hasTextureSequence: boolean = true
+    isSequenceTextureMaterial: boolean = true
 
     constructor(name: string) {
         super({

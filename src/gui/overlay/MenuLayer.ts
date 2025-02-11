@@ -20,7 +20,7 @@ export class MenuLayer extends BaseElement {
         super()
         this.relX = menuCfg.position[0]
         this.relY = menuCfg.position[1]
-        this.menuImage = ResourceManager.getImageOrNull(menuCfg.menuImage)
+        this.menuImage = ResourceManager.getImage(menuCfg.menuImage)
         BitmapFontWorkerPool.instance.createTextImage(menuCfg.menuFont, menuCfg.fullName)
             .then((textImage) => this.titleImage = textImage)
         menuCfg.itemsLabel.forEach((itemCfg) => {

@@ -157,7 +157,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addTextureFolder('World/WorldTextures/IceSplit/Ice')
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava')
         this.addTextureFolder('World/WorldTextures/RockSplit/Rock')
-        gameConfig.textures.textureSetByName.forEach((s) => this.addAsset(this.assetLoader.loadWadTexture, s.roofTexture))
+        gameConfig.textures.textureSetByName.forEach((s) => s.roofTexture && this.addAsset(this.assetLoader.loadWadTexture, s.roofTexture))
         // TODO Load pro meshes for high wall details
         // Array.from(gameConfig.textures.textureSetByName.values()).forEach((set) => {
         //     this.assetLoader.wad0File.filterEntryNames(`${set.meshBasename}.*.lwo`).forEach((meshName) => {

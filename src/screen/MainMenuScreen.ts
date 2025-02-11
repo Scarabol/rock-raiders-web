@@ -14,7 +14,7 @@ import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { LevelLoader } from '../game/LevelLoader'
 import { SoundManager } from '../audio/SoundManager'
-import { SAMPLE } from '../audio/Sample'
+import { DEV_MODE } from '../params'
 
 export class MainMenuScreen {
     readonly menuLayers: ScaledLayer[] = []
@@ -98,7 +98,7 @@ export class MainMenuScreen {
     }
 
     showMainMenu(index: number = 0) {
-        if (!this.sfxAmbientLoop) this.sfxAmbientLoop = SoundManager.playLoopSound(SAMPLE.SFX_AmbientMusicLoop)
+        if (!this.sfxAmbientLoop) this.sfxAmbientLoop = SoundManager.playLoopSound('SFX_AmbientMusicLoop')
         const oldIndex = this.menuLayers.findIndex((m) => m.active)
         let timeout = 0
         if (oldIndex === 0 || (index === 0 && oldIndex > 0)) {

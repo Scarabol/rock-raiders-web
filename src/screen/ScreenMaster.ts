@@ -1,6 +1,5 @@
 import { createCanvas } from '../core/ImageHelper'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
-import { ScreenLayer } from './layer/ScreenLayer'
 import { LoadingLayer } from './layer/LoadingLayer'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { HTML_GAME_CANVAS_CONTAINER, HTML_GAME_CONTAINER } from '../core'
@@ -95,11 +94,11 @@ export class ScreenMaster {
         return layer
     }
 
-    removeLayer(layer: ScreenLayer) {
+    removeLayer(layer: AbstractLayer) {
         layer.hide()
         if (this.layers.includes(layer)) {
             this.layers.remove(layer)
-            HTML_GAME_CANVAS_CONTAINER.removeChild(layer.canvas)
+            HTML_GAME_CANVAS_CONTAINER.removeChild(layer.element)
         }
     }
 
@@ -107,10 +106,10 @@ export class ScreenMaster {
         const aspectRatio = HTML_GAME_CONTAINER.offsetWidth / HTML_GAME_CONTAINER.offsetHeight
         this.width = HTML_GAME_CONTAINER.offsetWidth - 1 - (aspectRatio < 1.333333 ? 0 : 100)
         this.height = HTML_GAME_CONTAINER.offsetHeight - 1 - (aspectRatio < 1.333333 ? 100 : 0)
-        if (SaveGameManager.currentPreferences.screenRatioFixed > 0) {
-            const idealHeight = Math.round(this.width / SaveGameManager.currentPreferences.screenRatioFixed)
+        if (SaveGameManager.preferences.screenRatioFixed > 0) {
+            const idealHeight = Math.round(this.width / SaveGameManager.preferences.screenRatioFixed)
             if (idealHeight > this.height) {
-                this.width = Math.round(this.height * SaveGameManager.currentPreferences.screenRatioFixed)
+                this.width = Math.round(this.height * SaveGameManager.preferences.screenRatioFixed)
             } else {
                 this.height = idealHeight
             }
@@ -125,7 +124,8 @@ export class ScreenMaster {
     async createScreenshot(): Promise<HTMLCanvasElement> {
         const activeLayers = this.getActiveLayersSorted().reverse()
         if (activeLayers.length < 1) return Promise.reject()
-        const layers = await Promise.all(activeLayers.map((l) => l.takeScreenshotFromLayer()))
+        const allLayers = await Promise.all(activeLayers.map((l) => l.takeScreenshotFromLayer()))
+        const layers = allLayers.filter((l) => !!l)
         const maxLayerWidth = layers.reduce((w, l) => Math.max(w, l.width), 0)
         const maxLayerHeight = layers.reduce((h, l) => Math.max(h, l.height), 0)
         const canvas = createCanvas(maxLayerWidth, maxLayerHeight)

@@ -6,6 +6,7 @@ import { EventBroker } from '../event/EventBroker'
 import { VERBOSE } from '../params'
 
 export class SoundManager {
+    private static readonly MISSING_SFX = ['SurfaceSFX_Tunnel'].map((n) => n.toLowerCase()) // ignore known sfx issues
     static readonly playingAudio: Set<PositionalAudio> = new Set()
     static readonly sfxBuffersByKey: Map<string, AudioBuffer[]> = new Map()
     static readonly sceneAudioListener: AudioListener = new AudioListener()
@@ -24,7 +25,7 @@ export class SoundManager {
     static setupSfxAudioTarget(): GainNode {
         this.sfxAudioTarget = this.sfxAudioTarget || AudioContext.getContext().createGain()
         this.sfxAudioTarget.gain.value = SaveGameManager.getSfxVolume()
-        if (SaveGameManager.currentPreferences.toggleSfx) {
+        if (SaveGameManager.preferences.toggleSfx) {
             this.sfxAudioTarget.connect(AudioContext.getContext().destination)
         } else {
             this.sfxAudioTarget.disconnect()
@@ -36,7 +37,7 @@ export class SoundManager {
         if (this.skipVoiceLines) return undefined
         this.skipVoiceLines = true
         const sound = this.playSfxSound(soundName)
-        sound.addEventListener('ended', () => {
+        sound?.addEventListener('ended', () => {
             setTimeout(() => {
                 this.skipVoiceLines = false
             }, NerpRunner.timeAddedAfterSample)
@@ -66,9 +67,9 @@ export class SoundManager {
     }
 
     static getSoundBuffer(sfxName: string): AudioBuffer | undefined {
-        return this.sfxBuffersByKey.getOrUpdate(sfxName.toLowerCase(), () => {
-            // ignore known sound issues
-            if (VERBOSE || !['SurfaceSFX_Tunnel'].includes(sfxName)) {
+        sfxName = sfxName.toLowerCase()
+        return this.sfxBuffersByKey.getOrUpdate(sfxName, () => {
+            if (VERBOSE || !this.MISSING_SFX.includes(sfxName)) {
                 console.warn(`Could not find SFX with name '${sfxName}'`)
             }
             return []
