@@ -42,6 +42,7 @@ export class SelectVehicleManedPanel extends IconSubPanel {
             this.noVehicleWithDriver = event.noVehicleWithDriver
             unloadVehicleItem.updateState()
             loadVehicleItem.updateState()
+            this.upgradeItem.updateState()
             leaveVehicleItem.updateState()
         })
     }
