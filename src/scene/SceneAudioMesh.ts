@@ -4,7 +4,12 @@ import { SoundManager } from '../audio/SoundManager'
 import { SceneMesh } from './SceneMesh'
 import { TILESIZE } from '../params'
 
+export interface SceneAudioMeshUserData {
+    sfxNameAnimation?: string
+}
+
 export class SceneAudioMesh extends SceneMesh {
+    declare userData: SceneAudioMeshUserData
     audioNode?: PositionalAudio
     lastSfxName: string = ''
 

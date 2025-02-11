@@ -51,7 +51,7 @@ export class MaterialSpawner {
                 break
             case EntityType.CRYSTAL:
                 const poweredMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Crystal)
-                poweredMesh.getMaterials().forEach((m) => {
+                poweredMesh.material.forEach((m) => {
                     m.color.fromArray(GameConfig.instance.main.powerCrystalRGB)
                     m.emissive.fromArray(GameConfig.instance.main.powerCrystalRGB)
                 })
@@ -62,7 +62,7 @@ export class MaterialSpawner {
                 break
             case EntityType.DEPLETED_CRYSTAL:
                 const unpoweredMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Crystal)
-                unpoweredMesh.getMaterials().forEach((m) => {
+                unpoweredMesh.material.forEach((m) => {
                     m.color.fromArray(GameConfig.instance.main.unpoweredCrystalRGB)
                     m.emissive.fromArray(GameConfig.instance.main.unpoweredCrystalRGB)
                 })

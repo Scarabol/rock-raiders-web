@@ -42,7 +42,7 @@ export class AdvisorLayer extends ScreenLayer {
         this.group = new AnimationLoopGroup(advisorCfg.animFileName, () => {
             this.renderer.stopRendering()
         }).setLoop(advisorCfg.loopStart, advisorCfg.loopEnd).setup()
-        this.group.meshList.forEach((m) => m.getMaterials().forEach((m) => m.side = DoubleSide)) // otherwise flipped normals
+        this.group.meshList.forEach((m) => m.material.forEach((m) => m.side = DoubleSide)) // otherwise flipped normals
         this.scene.add(this.group)
         EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
             if (event.isShowing) {

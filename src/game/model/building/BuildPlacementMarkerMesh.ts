@@ -3,7 +3,7 @@ import { TILESIZE } from '../../../params'
 import { SceneManager } from '../../SceneManager'
 import { Surface } from '../../terrain/Surface'
 
-export class BuildPlacementMarkerMesh extends Mesh {
+export class BuildPlacementMarkerMesh extends Mesh<BufferGeometry, MeshPhongMaterial> {
     sceneMgr: SceneManager
     lastSurfaceMesh?: Mesh
 
@@ -32,7 +32,7 @@ export class BuildPlacementMarkerMesh extends Mesh {
     }
 
     setColor(hexColor: number) {
-        (this.material as MeshPhongMaterial).color.setHex(hexColor)
+        this.material.color.setHex(hexColor)
     }
 
     getSurface(): Surface {

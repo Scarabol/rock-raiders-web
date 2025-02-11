@@ -11,8 +11,8 @@ import { EntityType } from '../model/EntityType'
 import { MaterialSpawner } from '../factory/MaterialSpawner'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { LaserBeamMesh } from '../../scene/LaserBeamMesh'
-import { Surface } from '../terrain/Surface'
-import { SceneSelectionComponent } from '../component/SceneSelectionComponent'
+import { SurfaceMesh } from '../terrain/SurfaceMesh'
+import { PickSphereMesh, SceneSelectionComponent } from '../component/SceneSelectionComponent'
 import { GameConfig } from '../../cfg/GameConfig'
 
 class LaserShot {
@@ -77,20 +77,20 @@ export class LaserShotSystem extends AbstractGameSystem {
         // TODO Check laser beam shot collision with buildings and vehicles
         const rockyPickSpheres = this.worldMgr.entityMgr.rockMonsters
             .map((r) => this.ecs.getComponents(r)?.get(SceneSelectionComponent)?.pickSphere).filter((m) => !!m)
-        const rockyIntersection = this.raycaster.intersectObjects(rockyPickSpheres, false)[0]
+        const rockyIntersection = this.raycaster.intersectObjects<PickSphereMesh>(rockyPickSpheres, false)[0]
         if (rockyIntersection) {
             beamLength = rockyIntersection.distance
-            const rocky = rockyIntersection.object?.userData?.gameEntity
+            const rocky = rockyIntersection.object.userData.gameEntity
             EventBroker.publish(new MonsterLaserHitEvent(rocky, turretComponent.weaponCfg))
             const soundParent = new Object3D()
             soundParent.position.copy(rockyIntersection.point)
             this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LaserHit', false)
             this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BoulderExplode, rockyIntersection.point, Math.random() * 2 * Math.PI, false)
         } else {
-            const floorIntersection = this.raycaster.intersectObjects(this.worldMgr.sceneMgr.floorGroup.children, false)[0]
+            const floorIntersection = this.raycaster.intersectObjects<SurfaceMesh>(this.worldMgr.sceneMgr.floorGroup.children, false)[0]
             if (floorIntersection) {
                 beamLength = floorIntersection.distance
-                const surface: Surface = floorIntersection.object?.userData?.selectable
+                const surface = floorIntersection.object.userData.selectable
                 if (surface?.surfaceType.statsLaserName) {
                     const laserDestroyTime = turretComponent.weaponCfg[surface.surfaceType.statsLaserName]
                     if (laserDestroyTime) {
