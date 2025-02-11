@@ -287,10 +287,11 @@ export class Raider implements Updatable, JobFulfiller {
         return this.isSelectable() || this.selected
     }
 
-    select(): boolean {
+    select(primary: boolean): boolean {
         if (!this.isSelectable()) return false
         const components = this.worldMgr.ecs.getComponents(this.entity)
-        components.get(SelectionFrameComponent)?.select()
+        const selectionFrameComponent = components.get(SelectionFrameComponent)
+        primary ? selectionFrameComponent?.select() : selectionFrameComponent?.selectSecondary()
         components.get(SelectionNameComponent)?.setVisible(true)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         this.workAudio = SoundManager.stopAudio(this.workAudio)
