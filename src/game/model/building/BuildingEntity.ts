@@ -342,7 +342,9 @@ export class BuildingEntity {
         this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
         this.surfaces.forEach((s) => s.updateTexture())
         EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
-        if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
+        if (this.selected || (this.entityType === EntityType.UPGRADE && this.worldMgr.entityMgr.selection.vehicles.length > 0)) {
+            EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
+        }
     }
 
     get crystalDrain(): number {
