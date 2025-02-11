@@ -21,6 +21,7 @@ export class GameSelection {
     vehicles: VehicleEntity[] = []
     fence?: MaterialEntity
     doubleSelect?: BuildingEntity | VehicleEntity
+    primarySelect?: Raider | VehicleEntity
 
     isEmpty(): boolean {
         return !this.surface && !this.building && this.raiders.length < 1 && this.vehicles.length < 1 && !this.fence
@@ -38,6 +39,7 @@ export class GameSelection {
         this.doubleSelect = undefined
         this.fence?.worldMgr.ecs.getComponents(this.fence.entity).get(SelectionFrameComponent)?.deselect()
         this.fence = undefined
+        this.primarySelect = undefined
     }
 
     canMove(): boolean {
@@ -91,9 +93,10 @@ export class GameSelection {
             if (deselected) r.deselect()
             return deselected
         })
+        this.primarySelect = after[0]
         after.forEach((r) => {
             if (before.indexOf(r) === -1) {
-                if (r.select()) {
+                if (r.select(this.primarySelect === r)) {
                     before.push(r)
                     added = true
                 }
@@ -110,9 +113,10 @@ export class GameSelection {
             if (deselected) v.deselect()
             return deselected
         })
+        if (!this.primarySelect) this.primarySelect = after[0]
         after.forEach((v) => {
             if (before.indexOf(v) === -1) {
-                if (v.select()) {
+                if (v.select(this.primarySelect === v)) {
                     before.push(v)
                     added = true
                 }
@@ -198,8 +202,7 @@ export class GameSelection {
     }
 
     getPrimarySelected(): Raider | VehicleEntity | undefined {
-        // TODO Allow for primary (green) and secondary (yellow) selected entities
-        return this.raiders[0] ?? this.vehicles[0]
+        return this.primarySelect
     }
 
     hasOnlyOneRaider(): GameEntity | undefined {

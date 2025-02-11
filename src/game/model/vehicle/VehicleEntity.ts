@@ -268,9 +268,10 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         return this.isSelectable() || this.selected
     }
 
-    select(): boolean {
+    select(primary: boolean): boolean {
         if (!this.isSelectable()) return false
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
+        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)
+        primary ? selectionFrameComponent?.select() : selectionFrameComponent?.selectSecondary()
         this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         this.workAudio = SoundManager.stopAudio(this.workAudio)
         return true
