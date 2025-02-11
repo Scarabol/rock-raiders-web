@@ -15,7 +15,7 @@ export class SamplesCfg extends BaseConfig {
                 sndPath.startsWith('@')) {
                 sndPath = sndPath.slice(1)
             }
-            this.pathToSfxKeys.getOrUpdate(`${sndPath}.wav`, () => []).push(unifiedKey)
+            this.pathToSfxKeys.getOrUpdate(`${sndPath.toLowerCase()}.wav`, () => []).push(unifiedKey)
         })
         return true
     }
