@@ -28,6 +28,7 @@ import { Raider } from './model/raider/Raider'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { CameraFrustumUpdater } from '../scene/CameraFrustumUpdater'
 import { ColorRGB } from '../scene/ColorRGB'
+import { SelectionNameComponent } from './component/SelectionNameComponent'
 
 export class SceneManager implements Updatable {
     readonly scene: Scene
@@ -82,6 +83,7 @@ export class SceneManager implements Updatable {
         this.birdViewControls.disabled = !GameState.isBirdView
         if (this.roofGroup) this.roofGroup.visible = !GameState.isBirdView
         this.scene.fog = GameState.isBirdView ? null : new FogExp2(this.scene.background as Color, 0.007)
+        this.worldMgr.entityMgr?.selection.raiders.forEach((r) => this.worldMgr.ecs.getComponents(r.entity)?.get(SelectionNameComponent)?.setVisible(GameState.isBirdView))
         this.cameraActive = camera
         this.cameraActive.add(SoundManager.sceneAudioListener)
         this.renderer.camera = camera
