@@ -9,7 +9,6 @@
 import { AdditiveBlending, BufferAttribute, BufferGeometry, ClampToEdgeWrapping, DoubleSide, Loader, MirroredRepeatWrapping, RepeatWrapping, Texture, Vector3 } from 'three'
 import { getFilename } from '../../core/Util'
 import { VERBOSE } from '../../params'
-import { SceneMesh } from '../../scene/SceneMesh'
 import { SequenceTextureMaterial } from '../../scene/SequenceTextureMaterial'
 import { UVData } from './LWOUVParser'
 
@@ -66,7 +65,6 @@ export class LWOBParser {
     uvs: Float32Array = new Float32Array()
 
     constructor(
-        readonly lwoFilepath: string,
         buffer: ArrayBuffer,
         readonly textureLoader: LWOBTextureLoader,
         readonly uvData: UVData,
@@ -75,7 +73,7 @@ export class LWOBParser {
         this.lwoReader = new LWOBFileReader(buffer)
     }
 
-    parse(): SceneMesh | undefined {
+    parse(): { geometry: BufferGeometry, material: SequenceTextureMaterial[] } | undefined {
         if (this.lwoReader.readIDTag() !== 'FORM') {
             console.error('Cannot find header.')
             return undefined
@@ -124,7 +122,7 @@ export class LWOBParser {
         this.geometry.setIndex(new BufferAttribute(this.indices, 1))
         this.geometry.computeVertexNormals()
 
-        return new SceneMesh(this.geometry, this.materials, this.lwoFilepath)
+        return {geometry: this.geometry, material: this.materials}
     }
 
     parsePoints(chunkSize: number): void {

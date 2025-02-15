@@ -7,15 +7,9 @@ export class SceneMesh extends Mesh<BufferGeometry, SequenceTextureMaterial[]> {
         this.name = name ?? ''
     }
 
-    clone(): this {
-        const clone = super.clone(true)
-        clone.material = this.material.map((m) => m.clone())
-        return clone
-    }
-
     dispose() {
         this.removeFromParent()
-        this.geometry?.dispose()
+        // do not dispose geometries since they're handled as singletons to save memory
         this.material?.forEach((m) => m.dispose())
     }
 

@@ -1,4 +1,4 @@
-import { RepeatWrapping, SRGBColorSpace, Texture } from 'three'
+import { BufferGeometry, RepeatWrapping, SRGBColorSpace, Texture } from 'three'
 import { getFilename, getPath } from '../core/Util'
 import { VERBOSE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
@@ -13,11 +13,13 @@ import { Cursor, CURSOR } from './Cursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { CursorManager } from '../screen/CursorManager'
 import { AnimatedCursorData } from '../screen/AnimatedCursor'
+import { SequenceTextureMaterial } from '../scene/SequenceTextureMaterial'
 
 export class ResourceManager {
     static readonly resourceByName: Map<string, any> = new Map()
     static readonly imageCache: Map<string, SpriteImage> = new Map()
-    static readonly lwoCache: Map<string, SceneMesh> = new Map()
+    static readonly lwoCache: Map<string, { geometry: BufferGeometry, material: SequenceTextureMaterial[] } | undefined> = new Map()
+    static readonly textureCache: Map<string, Map<number, Texture>> = new Map()
 
     static getResource(resourceName: string): any {
         const lName = resourceName?.toString()?.toLowerCase() || undefined
@@ -133,6 +135,18 @@ export class ResourceManager {
         })
     }
 
+    static getSurfaceTexture(textureFilepath: string, rotation: number): Texture | undefined {
+        const texture = this.getTexture(textureFilepath)
+        if (!texture) return undefined
+        if (rotation === 0) return texture
+        return this.textureCache.getOrUpdate(textureFilepath, () => new Map()).getOrUpdate(rotation, () => {
+            const rotatedTexture = texture.clone()
+            rotatedTexture.center.set(0.5, 0.5)
+            rotatedTexture.rotation = rotation
+            return rotatedTexture
+        })
+    }
+
     static getTexture(textureFilepath: string): Texture | undefined {
         if (!textureFilepath) {
             throw new Error(`textureFilepath must not be undefined, null or empty - was ${textureFilepath}`)
@@ -141,7 +155,7 @@ export class ResourceManager {
         return this.createTexture(imgData, textureFilepath)
     }
 
-    private static createTexture(imgData: ImageData, textureFilepath: string) {
+    private static createTexture(imgData: ImageData, textureFilepath: string): Texture | undefined {
         if (!imgData) {
             // ignore known texture issues
             if (VERBOSE || !['teofoilreflections.jpg', 'wingbase3.bmp', 'a_side.bmp', 'a_top.bmp', 'sand.bmp', 'display.bmp'].includes(textureFilepath)) {
@@ -149,17 +163,19 @@ export class ResourceManager {
             }
             return undefined
         }
-        // without repeat wrapping some entities are not fully textured
-        const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
-        texture.name = textureFilepath
-        texture.needsUpdate = true // without everything is just dark
-        texture.colorSpace = SRGBColorSpace
-        return texture
+        return this.textureCache.getOrUpdate(textureFilepath, () => new Map()).getOrUpdate(0, () => {
+            // without repeat wrapping some entities are not fully textured
+            const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
+            texture.name = textureFilepath
+            texture.needsUpdate = true // without everything is just dark
+            texture.colorSpace = SRGBColorSpace
+            return texture
+        })
     }
 
-    static getLwoModel(lwoFilepath: string, textureLoader: ResourceManagerTextureLoader = ResourceManagerTextureLoader.instance): SceneMesh {
+    static getLwoModel(lwoFilepath: string, textureLoader: ResourceManagerTextureLoader = ResourceManagerTextureLoader.instance): SceneMesh | undefined {
         if (!lwoFilepath.endsWith('.lwo')) lwoFilepath += '.lwo'
-        return this.lwoCache.getOrUpdate(lwoFilepath.toLowerCase(), () => {
+        const lwoData = this.lwoCache.getOrUpdate(lwoFilepath.toLowerCase(), () => {
             const lwoBuffer = ResourceManager.getResource(lwoFilepath)
             if (!lwoBuffer) {
                 const sharedLwoFilepath = `world/shared/${getFilename(lwoFilepath)}`
@@ -172,14 +188,16 @@ export class ResourceManager {
                     textureLoader.setMeshPath(getPath(sharedLwoFilepath))
                     const uvFilepath = sharedLwoFilepath.replace('.lwo', '.uv')
                     const uvData = ResourceManager.getResource(uvFilepath) as UVData
-                    return new LWOBParser(sharedLwoFilepath, sharedLwoBuffer, textureLoader, uvData).parse()
+                    return new LWOBParser(sharedLwoBuffer, textureLoader, uvData).parse()
                 })
             }
             textureLoader.setMeshPath(getPath(lwoFilepath))
             const uvFilepath = lwoFilepath.replace('.lwo', '.uv')
             const uvData = ResourceManager.getResource(uvFilepath) as UVData
-            return new LWOBParser(lwoFilepath, lwoBuffer, textureLoader, uvData).parse()
-        })?.clone()
+            return new LWOBParser(lwoBuffer, textureLoader, uvData).parse()
+        })
+        if (!lwoData) return undefined
+        return new SceneMesh(lwoData.geometry, lwoData.material.map((m) => m.clone()), lwoFilepath)
     }
 
     static getLwscData(lwscFilepath: string): LWSCData {
