@@ -14,7 +14,6 @@ import { EventKey } from '../event/EventKeyEnum'
 import { AdvanceAfterRewardsEvent, ShowGameResultEvent } from '../event/LocalEvents'
 import { OverwriteLayer } from '../menu/OverwriteLayer'
 import { FlicAnimOverlay } from '../menu/FlicAnimOverlay'
-import { imgDataToCanvas } from '../core/ImageHelper'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
@@ -74,11 +73,8 @@ export class RewardScreen {
         const keyToIndex = ['crystals', 'ore', 'diggable', 'constructions', 'caverns', 'figures', 'rockmonsters', 'oxygen', 'timer', 'score']
         this.cfg.flics.forEach((flic, key) => {
             const flicIndex = keyToIndex.indexOf(key)
-            const flhImgData = ResourceManager.getResource(flic.flhFilepath) ?? []
-            if (flhImgData.length > 0) {
-                const flicImages = flhImgData.map((f: ImageData) => imgDataToCanvas(f))
-                this.flics[flicIndex] = new FlicAnimOverlay(this.resultsLayer.animationFrame, flicImages, flic.rect.x, flic.rect.y, '') // XXX Consider width/height of rect to scale/clip?
-            }
+            const flicImages = ResourceManager.getResource(flic.flhFilepath) ?? []
+            this.flics[flicIndex] = new FlicAnimOverlay(this.resultsLayer.animationFrame, flicImages, flic.rect.x, flic.rect.y, '') // XXX Consider width/height of rect to scale/clip?
         })
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer('RewardDescriptionLayer'), 620)
         this.btnLayer = screenMaster.addLayer(new ScaledLayer('RewardButtonLayer'), 650)

@@ -7,7 +7,7 @@ import { LWSCData } from './fileparser/LWSCParser'
 import { AnimEntityData } from './AnimEntityParser'
 import { UVData } from './fileparser/LWOUVParser'
 import { SpriteImage } from '../core/Sprite'
-import { createCanvas, createContext, createDummyImgData, imgDataToCanvas } from '../core/ImageHelper'
+import { createCanvas, createContext, createDummyImgData } from '../core/ImageHelper'
 import { GameConfig } from '../cfg/GameConfig'
 import { Cursor, CURSOR } from './Cursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
@@ -61,14 +61,13 @@ export class ResourceManager {
             }
             loadingCursors.push(cacheGetData(cursorFileName).then((animatedCursorData) => {
                 if (!animatedCursorData) {
-                    const cursorImages = (this.getResource(cursorFileName) as ImageData[]).map((imgData) => {
+                    const cursorImages = (this.getResource(cursorFileName) as SpriteImage[]).map((cursorCanvas) => {
                         const blankCanvas = createCanvas(blankPointerImageData.width, blankPointerImageData.height)
                         const context = blankCanvas.getContext('2d')
                         if (!context) throw new Error('Could not init context for cursor canvas')
                         context.putImageData(blankPointerImageData, 0, 0)
-                        const cursorCanvas = imgDataToCanvas(imgData)
-                        const x = Math.round((blankPointerImageData.width - imgData.width) / 2)
-                        const y = Math.round((blankPointerImageData.height - imgData.height) / 2)
+                        const x = Math.round((blankPointerImageData.width - cursorCanvas.width) / 2)
+                        const y = Math.round((blankPointerImageData.height - cursorCanvas.height) / 2)
                         context.drawImage(cursorCanvas, x, y)
                         return context.canvas
                     })

@@ -4,7 +4,6 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 import { UiElementCallback } from './UiElementState'
 import { FlicAnimOverlay } from './FlicAnimOverlay'
-import { imgDataToCanvas } from '../core/ImageHelper'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 import { GameConfig } from '../cfg/GameConfig'
 import { SoundManager } from '../audio/SoundManager'
@@ -35,11 +34,8 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
         this.targetIndex = index
         if (loading) {
             const overlayCfg = layer.cfg.overlays[index]
-            const flhImgData = ResourceManager.getResource(overlayCfg.flhFilepath) ?? []
-            if (flhImgData.length > 0) {
-                const flicImages = flhImgData.map((f: ImageData) => imgDataToCanvas(f))
-                this.overlay = new FlicAnimOverlay(this.layer.animationFrame, flicImages, overlayCfg.x, overlayCfg.y, overlayCfg.sfxName)
-            }
+            const flicImages = ResourceManager.getResource(overlayCfg.flhFilepath) ?? []
+            this.overlay = new FlicAnimOverlay(this.layer.animationFrame, flicImages, overlayCfg.x, overlayCfg.y, overlayCfg.sfxName)
         }
         this.actionName = loading ? `load_game_${index}` : `save_game_${index}`
         this.saveGameImgWidthLo = menuCfg.saveImage.Width

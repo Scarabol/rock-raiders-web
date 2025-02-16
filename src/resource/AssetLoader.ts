@@ -14,6 +14,7 @@ import { SoundManager } from '../audio/SoundManager'
 import { BitmapWithPalette } from './fileparser/BitmapWithPalette'
 import { TerrainMapData } from '../game/terrain/TerrainMapData'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
+import { imgDataToCanvas } from '../core/ImageHelper'
 
 export class AssetLoader {
     readonly assetRegistry: AssetRegistry = new AssetRegistry(this)
@@ -171,7 +172,8 @@ export class AssetLoader {
                 flhContent = this.vfs.getFile(`Data/${filename}`).toDataView()
             }
         }
-        return new FlhParser(flhContent, interFrameMode).parse()
+        const imgData = new FlhParser(flhContent, interFrameMode).parse()
+        return imgData.map((i) => imgDataToCanvas(i))
     }
 
     async loadUVFile(filename: string) {

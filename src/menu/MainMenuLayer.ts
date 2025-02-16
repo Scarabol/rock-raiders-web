@@ -10,7 +10,6 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuIconButton } from './MainMenuIconButton'
 import { MainMenuLabelButton } from './MainMenuLabelButton'
 import { GameWheelEvent } from '../event/GameWheelEvent'
-import { imgDataToCanvas } from '../core/ImageHelper'
 import { FlicAnimOverlay } from './FlicAnimOverlay'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 
@@ -45,11 +44,8 @@ export class MainMenuLayer extends ScaledLayer {
             }
         })
         this.cfg.overlays.forEach((flic) => {
-            const flhImgData = ResourceManager.getResource(flic.flhFilepath) ?? []
-            if (flhImgData.length > 0) {
-                const flicImages = flhImgData.map((f: ImageData) => imgDataToCanvas(f))
-                this.overlays.push(new FlicAnimOverlay(this.animationFrame, flicImages, flic.x, flic.y, flic.sfxName))
-            }
+            const flicImages = ResourceManager.getResource(flic.flhFilepath) ?? []
+            this.overlays.push(new FlicAnimOverlay(this.animationFrame, flicImages, flic.x, flic.y, flic.sfxName))
         })
         if (this.cfg.playRandom) this.cfg.overlays.shuffle()
         this.animationFrame.onRedraw = (context) => {
