@@ -26,4 +26,8 @@ export class VirtualFileSystem {
     get fileNames(): string[] {
         return Array.from(this.files.keys())
     }
+
+    dispose(): void {
+        this.files.clear()
+    }
 }

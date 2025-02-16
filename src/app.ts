@@ -70,6 +70,7 @@ export async function start() {
     BitmapWorkerPool.instance.terminatePool()
     console.timeEnd('Total asset loading time')
     console.log(`Loading of about ${(assetLoader.assetRegistry.size)} assets complete!`)
+    assetLoader.vfs.dispose()
     screenMaster.loadingLayer.hide()
     Array.from(document.getElementsByClassName('hide-after-loading-assets')).forEach((e) => {
         (e as HTMLElement).style.visibility = 'hidden'
