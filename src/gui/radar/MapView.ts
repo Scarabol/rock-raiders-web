@@ -14,6 +14,7 @@ import { EventBroker } from '../../event/EventBroker'
 import { CURSOR } from '../../resource/Cursor'
 import { Vector2 } from 'three'
 import { MapRendererCameraRect } from '../../worker/MapRendererWorker'
+import { Panel } from '../base/Panel'
 
 export class MapView extends BaseElement {
     readonly mapRenderer: MapRenderer
@@ -36,7 +37,7 @@ export class MapView extends BaseElement {
     entityBelowCursor?: GameEntity
     cameraRect: MapRendererCameraRect = {topLeft: {x: 0, z: 0}, topRight: {x: 0, z: 0}, bottomRight: {x: 0, z: 0}, bottomLeft: {x: 0, z: 0}}
 
-    constructor() {
+    constructor(readonly parentPanel: Panel) {
         super()
         this.width = 152
         this.height = 149
@@ -96,10 +97,12 @@ export class MapView extends BaseElement {
                     entities.delete(event.entity)
                     break
             }
+            // TODO This should be limited in frontend, since requests blocked by worker still produce overhead
             this.mapRenderer.redrawEntities(this.offset, event.mapMarkerType, this.surfaceRectSize, Array.from(entities.values())).then(() => this.notifyRedraw())
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_CAMERA, (event: UpdateRadarCamera) => {
             this.cameraRect = event.cameraRect
+            // TODO This should be limited in frontend, since requests blocked by worker still produce overhead
             this.mapRenderer.redrawCamera(this.offset, this.surfaceRectSize, this.cameraRect).then(() => this.notifyRedraw())
         })
     }
@@ -184,5 +187,10 @@ export class MapView extends BaseElement {
         const ty = (y - this.y + this.offset.y)
         const worldPos = new Vector2(tx, ty).multiplyScalar(TILESIZE / this.surfaceRectSize)
         EventBroker.publish(new CameraControl({jumpToWorld: worldPos}))
+    }
+
+    notifyRedraw() {
+        if (this.parentPanel.movedIn) return
+        super.notifyRedraw()
     }
 }

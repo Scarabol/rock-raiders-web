@@ -22,7 +22,7 @@ export class RadarPanel extends Panel {
     constructor(panelCfg: PanelCfg, panelFillCfg: PanelCfg, panelOverlayCfg: PanelCfg, buttonsCfg: ButtonRadarCfg) {
         super(panelCfg)
         this.fill = ResourceManager.getImage(panelFillCfg.filename)
-        this.map = this.addChild(new MapView())
+        this.map = this.addChild(new MapView(this))
         this.follower = this.addChild(new FollowerView(panelOverlayCfg))
         this.btnToggle = this.addChild(new Button(buttonsCfg.panelButtonRadarToggle))
         this.btnToggle.onClick = () => this.toggleState()
