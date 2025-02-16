@@ -4,10 +4,12 @@ import { HTML_GAME_CANVAS_CONTAINER } from '../core'
 
 export class DebugHelper {
     static readonly element: HTMLElement = HTML_GAME_CANVAS_CONTAINER.appendChild(document.createElement('div'))
+    static readonly messageContainer: HTMLElement = this.element.appendChild(document.createElement('div'))
     static readonly maxNumFpsValues = 150
     static {
         DebugHelper.element.classList.add('game-debug-layer')
         DebugHelper.element.style.display = 'none'
+        DebugHelper.messageContainer.style.overflowWrap = 'break-word'
     }
 
     readonly context: SpriteContext
@@ -41,7 +43,7 @@ export class DebugHelper {
         copyToClipboard.style.top = '0'
         copyToClipboard.style.right = '0'
         copyToClipboard.onclick = () => {
-            navigator.clipboard.writeText(Array.from(DebugHelper.element.children).map((e) => (e as HTMLElement).innerText).join('\n')).then()
+            navigator.clipboard.writeText(Array.from(DebugHelper.messageContainer.children).map((e) => (e as HTMLElement).innerText).join('\n')).then()
         }
     }
 
@@ -65,8 +67,8 @@ export class DebugHelper {
 
     static addDebugMessage(message: any, optionalParams: any[], color: string) {
         try {
-            if (DebugHelper.element.children.length > 100 && DebugHelper.element.lastChild) DebugHelper.element.removeChild(DebugHelper.element.lastChild)
-            const msg = DebugHelper.element.insertBefore(document.createElement('DIV'), DebugHelper.element.firstChild)
+            if (DebugHelper.messageContainer.children.length > 100 && DebugHelper.messageContainer.lastChild) DebugHelper.messageContainer.removeChild(DebugHelper.messageContainer.lastChild)
+            const msg = DebugHelper.messageContainer.insertBefore(document.createElement('DIV'), DebugHelper.messageContainer.firstChild)
             msg.innerText = message
             optionalParams.forEach((p) => msg.innerText += `\n${JSON.stringify(p)}`)
             msg.style.padding = '0.1em'
