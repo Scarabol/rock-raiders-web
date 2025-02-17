@@ -157,7 +157,7 @@ export class GameLayer extends ScreenLayer {
         }
         if (!this.pointerDown) return
         const downUpDistance = Math.abs(event.canvasX - this.pointerDown.x) + Math.abs(event.canvasY - this.pointerDown.y)
-        if (downUpDistance < 5) {
+        if (downUpDistance < 20) {
             this.cursorRelativePos.x = (event.canvasX / this.canvas.width) * 2 - 1
             this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
             if (this.worldMgr.sceneMgr.hasBuildModeSelection()) {
