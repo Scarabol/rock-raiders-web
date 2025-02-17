@@ -10,7 +10,7 @@ export class VehiclePanel extends IconSubPanel {
     requestedVehiclesByType: Map<EntityType, number> = new Map()
     btnLabelByType: Map<EntityType, IconPanelButtonLabel> = new Map()
 
-    constructor(vehicleEntities: VehicleEntityType[], onBackPanel: Panel) {
+    constructor(vehicleEntities: VehicleEntityType[], readonly onBackPanel: Panel) {
         super(vehicleEntities.length, onBackPanel, false)
         this.registerEventListener(EventKey.REQUESTED_VEHICLES_CHANGED, (event: RequestedVehiclesChanged) => {
             this.requestedVehiclesByType.set(event.vehicle, event.numRequested)
@@ -22,7 +22,10 @@ export class VehiclePanel extends IconSubPanel {
     addVehicleMenuItem(entityType: EntityType) {
         const item = super.addMenuItem(GameConfig.instance.interfaceBuildImages, entityType.toLowerCase())
         item.isDisabled = () => item.hasUnfulfilledDependency
-        item.onClick = () => this.publishEvent(new RequestedVehiclesChanged(entityType, this.requestedVehiclesByType.getOrUpdate(entityType, () => 0) + 1))
+        item.onClick = () => {
+            this.toggleState(() => this.onBackPanel.toggleState())
+            this.publishEvent(new RequestedVehiclesChanged(entityType, this.requestedVehiclesByType.getOrUpdate(entityType, () => 0) + 1))
+        }
         item.tooltip = GameConfig.instance.objectNamesCfg.getOrUpdate(entityType.toLowerCase(), () => '')
         if (!item.tooltip) console.warn(`Could not determine tooltip for ${entityType}`)
         item.tooltipSfx = GameConfig.instance.objTtSFXs.getOrUpdate(entityType.toLowerCase(), () => '')
