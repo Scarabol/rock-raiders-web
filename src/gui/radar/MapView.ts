@@ -26,7 +26,7 @@ export class MapView extends BaseElement {
     readonly cameraSprite: SpriteImage
     readonly offset: { x: number, y: number } = {x: 0, y: 0}
     readonly surfaceMap: MapSurfaceRect[][] = []
-    entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number, r: number }>> = new Map()
+    readonly entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number, r: number }>> = new Map()
     surfaceRectSizeMin: number = 10
     surfaceRectSizeMax: number = 15
     surfaceRectSize: number = 10
@@ -35,7 +35,7 @@ export class MapView extends BaseElement {
     lastSurface?: MapSurfaceRect
     lastEntity?: GameEntity
     entityBelowCursor?: GameEntity
-    cameraRect: MapRendererCameraRect = {topLeft: {x: 0, z: 0}, topRight: {x: 0, z: 0}, bottomRight: {x: 0, z: 0}, bottomLeft: {x: 0, z: 0}}
+    cameraRect?: MapRendererCameraRect
 
     constructor(readonly parentPanel: Panel) {
         super()
@@ -105,6 +105,13 @@ export class MapView extends BaseElement {
             // TODO This should be limited in frontend, since requests blocked by worker still produce overhead
             this.mapRenderer.redrawCamera(this.offset, this.surfaceRectSize, this.cameraRect).then(() => this.notifyRedraw())
         })
+    }
+
+    reset() {
+        super.reset()
+        this.surfaceMap.length = 0
+        this.entitiesByOrder.clear()
+        this.cameraRect = undefined
     }
 
     zoomIn(): void {

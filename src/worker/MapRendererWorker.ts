@@ -54,7 +54,7 @@ type MapRendererCameraRenderMessage = {
     requestId: number
     offset: { x: number, y: number }
     surfaceRectSize: number
-    rect: MapRendererCameraRect
+    rect: MapRendererCameraRect | undefined
 }
 
 export type MapRendererCameraRect = {
@@ -196,8 +196,9 @@ export class MapRendererWorker {
     }
 
     private redrawCamera(offset: { x: number, y: number }, surfaceRectSize: number, rect: MapRendererCameraRect | undefined) {
-        if (!this.cameraContext || !rect) return
+        if (!this.cameraContext) return
         this.cameraContext.clearRect(0, 0, this.cameraContext.canvas.width, this.cameraContext.canvas.height)
+        if (!rect) return
         // draw camera frustum
         this.cameraContext.beginPath()
         const [topLeft, topRight, bottomRight, bottomLeft] = [rect.topLeft, rect.topRight, rect.bottomRight, rect.bottomLeft]

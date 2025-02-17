@@ -68,7 +68,7 @@ export class MapRenderer {
         })
     }
 
-    redrawCamera(offset: { x: number, y: number }, surfaceRectSize: number, rect: MapRendererCameraRect): Promise<void> {
+    redrawCamera(offset: { x: number, y: number }, surfaceRectSize: number, rect: MapRendererCameraRect | undefined): Promise<void> {
         return new Promise((resolve) => {
             const requestId = this.requestId++
             this.resolveCallbackById.set(requestId, resolve)
