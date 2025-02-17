@@ -8,6 +8,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent } from '../../event/LocalEvents'
 import { EntityDependency, EntityDependencyChecked, GameConfig } from '../../cfg/GameConfig'
 import { DependencySpriteWorkerPool } from '../../worker/DependencySpriteWorkerPool'
+import { clearTimeoutSafe } from '../../core/Util'
 
 export class IconPanelButton extends Button {
     tooltipDisabled: string
@@ -19,6 +20,7 @@ export class IconPanelButton extends Button {
     dependencyTooltipImage?: SpriteImage
     showDependencies: boolean = false
     hasUnfulfilledDependency: boolean = false
+    showDependenciesTimeout?: NodeJS.Timeout
 
     constructor(menuItemCfg: MenuItemCfg, itemKey: string, parentWidth: number, menuIndex: number) {
         super(menuItemCfg)
@@ -75,6 +77,12 @@ export class IconPanelButton extends Button {
         this.hasRaider = false
         this.discoveredBuildingsMaxLevel = new Map()
         this.updateState(false)
+        this.showDependenciesTimeout = clearTimeoutSafe(this.showDependenciesTimeout)
+    }
+
+    hide() {
+        super.hide()
+        this.showDependenciesTimeout = clearTimeoutSafe(this.showDependenciesTimeout)
     }
 
     updateState(autoRedraw: boolean = true) {
@@ -82,6 +90,16 @@ export class IconPanelButton extends Button {
         const stateChanged = this.disabled !== targetState
         this.disabled = targetState
         if (stateChanged && autoRedraw) this.notifyRedraw()
+        return stateChanged
+    }
+
+    onPointerLeave(): boolean {
+        let stateChanged = super.onPointerLeave()
+        if (this.showDependencies || this.showDependenciesTimeout) {
+            this.showDependencies = false
+            this.showDependenciesTimeout = clearTimeoutSafe(this.showDependenciesTimeout)
+            stateChanged = true
+        }
         return stateChanged
     }
 
@@ -94,7 +112,17 @@ export class IconPanelButton extends Button {
 
     isInRect(sx: number, sy: number): boolean {
         const inRect = super.isInRect(sx, sy)
-        this.showDependencies = inRect
+        if (inRect) {
+            if (!this.showDependenciesTimeout) {
+                this.showDependenciesTimeout = setTimeout(() => {
+                    this.showDependencies = true
+                    this.notifyRedraw()
+                }, 500)
+            }
+        } else {
+            this.showDependencies = false
+            this.showDependenciesTimeout = clearTimeoutSafe(this.showDependenciesTimeout)
+        }
         return inRect
     }
 }
