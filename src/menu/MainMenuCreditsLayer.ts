@@ -12,8 +12,8 @@ export class MainMenuCreditsLayer extends ScaledLayer {
     static readonly FONT = 'Interface/Fonts/RSFont.bmp'
 
     readonly maxNumOfLinesOnScreen: number
-    readonly currentLines: SpriteImage[] = []
-    readonly renderedBitmapLines: SpriteImage[] = []
+    readonly currentLines: (SpriteImage | undefined)[] = []
+    readonly renderedBitmapLines: (SpriteImage | undefined)[] = []
     readonly backVideo?: AVIVideoStream
     backImg?: SpriteImage
     loopIndexTimeout?: NodeJS.Timeout
@@ -25,7 +25,7 @@ export class MainMenuCreditsLayer extends ScaledLayer {
         super('credits')
         const fontHeight = BitmapFontWorkerPool.instance.getFontHeight(MainMenuCreditsLayer.FONT)
         this.maxNumOfLinesOnScreen = Math.round(this.fixedHeight / fontHeight)
-        const creditsTextContent: string = '\n'.repeat(this.maxNumOfLinesOnScreen) + ResourceManager.getResource(GameConfig.instance.main.creditsTextFile) + '\n\n\n\nWeb Port\n\nScarabol'
+        const creditsTextContent: string = '\n'.repeat(this.maxNumOfLinesOnScreen) + ResourceManager.getResource(GameConfig.instance.main.creditsTextFile) + '\n\n\nWeb implementation\n\nScarabol'
         const bitmapLines = creditsTextContent.split('\n').map((line) => {
             return BitmapFontWorkerPool.instance.createTextImage(MainMenuCreditsLayer.FONT, line, this.fixedWidth, true)
         })
@@ -40,7 +40,7 @@ export class MainMenuCreditsLayer extends ScaledLayer {
             }
         }
         Promise.all((bitmapLines)).then((bitmapLines) => {
-            this.renderedBitmapLines.push(...bitmapLines.filter((l) => !!l))
+            this.renderedBitmapLines.push(...bitmapLines)
             this.counter = this.maxNumOfLinesOnScreen + 5
             this.currentLines.push(...this.renderedBitmapLines.slice(0, this.counter))
             this.animationFrame.onRedraw = (context) => {
@@ -85,7 +85,7 @@ export class MainMenuCreditsLayer extends ScaledLayer {
             this.offsetY = this.offsetY + 0.8
             this.animationFrame.notifyRedraw()
             this.increaseLoopIndex()
-        }, NATIVE_UPDATE_INTERVAL) // XXX get actual render update rate from AVI metadata
+        }, NATIVE_UPDATE_INTERVAL)
     }
 
     hide() {
