@@ -1,4 +1,4 @@
-import { ScaledLayer } from './ScreenLayer'
+import { ScaledLayer } from './ScaledLayer'
 import { GameConfig } from '../../cfg/GameConfig'
 import { SpriteImage } from '../../core/Sprite'
 

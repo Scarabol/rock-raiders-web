@@ -21,6 +21,9 @@
   },
   "homepage": "https://github.com/scarabol/rock-raiders-web#readme",
   "devDependencies": {
+    "@ffmpeg/core": "^0.12.10",
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/types": "^0.12.4",
     "@types/node": "^22.13.1",
     "@types/offscreencanvas": "^2019.7.3",
     "@types/pako": "^2.0.3",

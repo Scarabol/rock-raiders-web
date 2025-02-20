@@ -46,7 +46,7 @@ export class GameModule {
             else if (entry === 'reward') this.rewardScreen.showGameResult(GameResult.random())
             else if (entry === 'random') this.mainMenuScreen.selectLevelRandom()
             else if (entry === 'credits') this.mainMenuScreen.showCredits()
-            else if (entry) this.mainMenuScreen.selectLevel(entry)
+            else if (entry) this.mainMenuScreen.selectLevel(entry).then()
         } else {
             this.mainMenuScreen.showMainMenu()
         }

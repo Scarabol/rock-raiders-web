@@ -15,6 +15,7 @@ export interface LevelConfData {
     levelName: string
     fullName: string
     generateSpiders: boolean
+    video: string
     textureBasename: string
     roofTexture: string
     rockFallStyle: RockFallStyle
@@ -65,6 +66,7 @@ export class LevelLoader {
             levelName: levelConf.levelName,
             fullName: levelConf.fullName,
             generateSpiders: levelConf.generateSpiders,
+            video: levelConf.video ? `data/${levelConf.video.toLowerCase()}` : '',
             mapWidth: terrainMap.width,
             mapHeight: terrainMap.height,
             textureBasename: GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet).textureBasename,

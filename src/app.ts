@@ -1,5 +1,5 @@
 import { GameFilesLoader } from './resource/GameFilesLoader'
-import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME, VERBOSE } from './params'
+import { DEFAULT_FONT_NAME, DEV_MODE, TOOLTIP_FONT_NAME, VERBOSE } from './params'
 import { ScreenMaster } from './screen/ScreenMaster'
 import { AssetLoader } from './resource/AssetLoader'
 import { CURSOR } from './resource/Cursor'
@@ -15,6 +15,8 @@ import { BitmapWorkerPool } from './worker/BitmapWorkerPool'
 export async function start() {
     const screenMaster = new ScreenMaster()
     const vfs = await new GameFilesLoader(screenMaster.loadingLayer).loadGameFiles()
+    if (!DEV_MODE) await screenMaster.videoLayer.playVideo(`data/${GameConfig.instance.main.rrAvi}`)
+    screenMaster.loadingLayer.show()
     const assetLoader = new AssetLoader(vfs)
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')
     await Promise.all([

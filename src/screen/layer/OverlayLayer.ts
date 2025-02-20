@@ -1,6 +1,6 @@
 import { LevelConfData } from '../../game/LevelLoader'
 import { EventKey } from '../../event/EventKeyEnum'
-import { ScaledLayer } from './ScreenLayer'
+import { ScaledLayer } from './ScaledLayer'
 import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
 import { OptionsPanel } from '../../gui/overlay/OptionsPanel'
 import { PausePanel } from '../../gui/overlay/PausePanel'

@@ -1,5 +1,5 @@
+import { ScaledLayer } from '../screen/layer/ScaledLayer'
 import { ResourceManager } from '../resource/ResourceManager'
-import { ScaledLayer } from '../screen/layer/ScreenLayer'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
 import { clearTimeoutSafe } from '../core/Util'
 import { SpriteImage } from '../core/Sprite'

@@ -1,4 +1,4 @@
-import { ScaledLayer } from './ScreenLayer'
+import { ScaledLayer } from './ScaledLayer'
 import { RadarPanel } from '../../gui/radar/RadarPanel'
 import { MessagePanel } from '../../gui/messagepanel/MessagePanel'
 import { Panel } from '../../gui/base/Panel'

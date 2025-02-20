@@ -24,7 +24,7 @@ html, body {
     position: relative;
 }
 
-#game-canvas-container > canvas {
+#game-canvas-container > canvas, video {
     grid-column: 1;
     grid-row: 1;
     outline: none;

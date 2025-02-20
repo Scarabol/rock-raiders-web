@@ -75,7 +75,7 @@ export class MainCfg extends BaseConfig {
     // AllowDebugKeys = FALSE
     // AllowEditMode = FALSE
     // DontPlayAvis = FALSE
-    // RRAvi = avi/intro.avi
+    rrAvi = 'avi/intro.avi'
     // Avi = avi/lmi640.avi
     // DDILogo = Languages/DDI_Logo.bmp
     // DDILogoTime = 4.0

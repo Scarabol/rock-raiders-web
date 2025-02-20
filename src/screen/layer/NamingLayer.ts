@@ -1,4 +1,5 @@
-import { ScaledLayer, ScreenLayer } from './ScreenLayer'
+import { ScaledLayer } from './ScaledLayer'
+import { AbstractLayer } from './AbstractLayer'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseEvent } from '../../event/EventTypeMap'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -14,7 +15,7 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { EntityType } from '../../game/model/EntityType'
 
 export class NamingLayer extends ScaledLayer {
-    readonly visibleLayers: ScreenLayer[] = []
+    readonly visibleLayers: AbstractLayer[] = []
     showBackdrop: boolean = false
     raiderName: string = ''
     firstKey: boolean = true

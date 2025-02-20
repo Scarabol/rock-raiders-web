@@ -1,18 +1,12 @@
-import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
-import { AnimationFrame } from '../AnimationFrame'
-import { ScreenMaster } from '../ScreenMaster'
+import { AbstractLayer } from './AbstractLayer'
 import { SpriteImage } from '../../core/Sprite'
 
-export class ScreenLayer {
-    readonly eventListener: Set<string> = new Set()
-    screenMaster: ScreenMaster
+export class ScreenLayer extends AbstractLayer {
     canvas: HTMLCanvasElement
     readbackCanvas: HTMLCanvasElement
-    zIndex: number = 0
-    active: boolean = false
-    ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
 
     constructor(layerName?: string) {
+        super()
         this.canvas = this.createCanvas(layerName || this.constructor.name)
         this.readbackCanvas = this.createCanvas(`${layerName || this.constructor.name}-fastread`)
     }
@@ -24,27 +18,11 @@ export class ScreenLayer {
         return canvas
     }
 
-    addEventListener<K extends keyof HTMLElementEventMap>(eventType: K, listener: (event: HTMLElementEventMap[K]) => boolean) {
-        this.eventListener.add(eventType)
-        this.canvas.addEventListener(eventType, (event) => {
-            event.stopPropagation()
-            const consumed = this.active && listener(event)
-            if (!consumed) this.screenMaster.dispatchEvent(event, this.zIndex)
-            if (eventType === 'mousemove') this.screenMaster.onGlobalMouseMoveEvent(event as PointerEvent)
-            else if (eventType === 'mouseleave') this.screenMaster.onGlobalMouseLeaveEvent(event as PointerEvent)
-        })
+    get element(): HTMLElement {
+        return this.canvas
     }
 
-    reset() {
-    }
-
-    setZIndex(zIndex: number) {
-        this.zIndex = zIndex
-        this.canvas.style.zIndex = String(zIndex)
-        this.canvas.tabIndex = zIndex // enable keyboard input for canvas element
-    }
-
-    resize(width: number, height: number) {
+    resize(width: number, height: number): void {
         if (this.ratio > 0) {
             const idealHeight = Math.round(width / this.ratio)
             if (idealHeight > height) {
@@ -59,20 +37,6 @@ export class ScreenLayer {
         this.readbackCanvas.height = this.canvas.height
     }
 
-    show() {
-        this.active = true
-        this.canvas.style.visibility = 'visible'
-    }
-
-    hide() {
-        this.active = false
-        this.canvas.style.visibility = 'hidden'
-    }
-
-    isActive() {
-        return this.active
-    }
-
     transformCoords(clientX: number, clientY: number) {
         const clientRect = this.canvas.getBoundingClientRect()
         return [clientX - clientRect.left, clientY - clientRect.top]
@@ -80,41 +44,5 @@ export class ScreenLayer {
 
     takeScreenshotFromLayer(): Promise<SpriteImage | undefined> {
         return Promise.resolve(this.canvas)
-    }
-}
-
-export class ScaledLayer extends ScreenLayer {
-    readonly animationFrame: AnimationFrame
-    fixedWidth: number = NATIVE_SCREEN_WIDTH
-    fixedHeight: number = NATIVE_SCREEN_HEIGHT
-    scaleX: number = 1
-    scaleY: number = 1
-
-    constructor(layerName?: string) {
-        super(layerName)
-        this.updateScale()
-        this.animationFrame = new AnimationFrame(this.canvas, this.readbackCanvas)
-    }
-
-    private updateScale() {
-        this.scaleX = this.canvas.width / this.fixedWidth
-        this.scaleY = this.canvas.height / this.fixedHeight
-    }
-
-    transformCoords(clientX: number, clientY: number) {
-        const [cx, cy] = super.transformCoords(clientX, clientY)
-        return [cx / this.scaleX, cy / this.scaleY].map((c) => Math.round(c))
-    }
-
-    resize(width: number, height: number) {
-        super.resize(width, height)
-        this.updateScale()
-        this.animationFrame.scale(this.scaleX, this.scaleY)
-        this.animationFrame.notifyRedraw()
-    }
-
-    show() {
-        super.show()
-        this.animationFrame.notifyRedraw()
     }
 }

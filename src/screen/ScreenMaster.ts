@@ -1,12 +1,15 @@
+import { AbstractLayer } from './layer/AbstractLayer'
 import { createCanvas } from '../core/ImageHelper'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { LoadingLayer } from './layer/LoadingLayer'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { HTML_GAME_CANVAS_CONTAINER, HTML_GAME_CONTAINER } from '../core'
+import { VideoLayer } from './layer/VideoLayer'
 
 export class ScreenMaster {
-    readonly layers: ScreenLayer[] = []
+    readonly layers: AbstractLayer[] = []
     readonly loadingLayer: LoadingLayer
+    readonly videoLayer: VideoLayer
     width: number = NATIVE_SCREEN_WIDTH
     height: number = NATIVE_SCREEN_HEIGHT
     onGlobalMouseMoveEvent: (event: PointerEvent) => void = () => {
@@ -19,7 +22,7 @@ export class ScreenMaster {
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
         HTML_GAME_CANVAS_CONTAINER.addEventListener('pointerdown', () => {
-            this.getActiveLayersSorted()?.[0]?.canvas?.focus() // always focus topmost
+            this.getActiveLayersSorted()?.[0]?.element?.focus() // always focus topmost
         })
         // in case topmost layer does not listen for event, it reaches game-canvas-container as fallback dispatch from here
         ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'keypress', 'wheel', 'mousemove', 'mouseleave'].forEach((eventType) => {
@@ -36,8 +39,8 @@ export class ScreenMaster {
             })
         })
         this.setupToolbarButtons()
+        this.videoLayer = this.addLayer(new VideoLayer(), 1200)
         this.loadingLayer = this.addLayer(new LoadingLayer(), 1500)
-        this.loadingLayer.show()
     }
 
     private setupToolbarButtons() {
@@ -80,17 +83,17 @@ export class ScreenMaster {
         if (!nextLayer) return
         // @ts-ignore // XXX maybe there is more elegant way to clone events
         const eventClone = new event.constructor(event.type, event)
-        nextLayer.canvas.dispatchEvent(eventClone)
+        nextLayer.element.dispatchEvent(eventClone)
     }
 
-    addLayer<T extends ScreenLayer>(layer: T, zIndex: number): T {
+    addLayer<T extends AbstractLayer>(layer: T, zIndex: number): T {
         if (!zIndex) throw new Error(`Invalid zIndex ${zIndex} given for layer`)
         if (this.layers.some((l) => l.zIndex === zIndex)) throw new Error(`The given zIndex is not unique`)
         layer.screenMaster = this
         layer.resize(this.width, this.height)
         layer.setZIndex(zIndex)
         this.layers.push(layer)
-        HTML_GAME_CANVAS_CONTAINER.appendChild(layer.canvas)
+        HTML_GAME_CANVAS_CONTAINER.appendChild(layer.element)
         return layer
     }
 
@@ -117,8 +120,8 @@ export class ScreenMaster {
         this.layers.forEach((layer) => layer.resize(this.width, this.height))
     }
 
-    getActiveLayersSorted(): ScreenLayer[] {
-        return this.layers.filter(l => l.isActive()).sort((a, b) => b.zIndex - a.zIndex)
+    getActiveLayersSorted(): AbstractLayer[] {
+        return this.layers.filter(l => l.active).sort((a, b) => b.zIndex - a.zIndex)
     }
 
     async createScreenshot(): Promise<HTMLCanvasElement> {

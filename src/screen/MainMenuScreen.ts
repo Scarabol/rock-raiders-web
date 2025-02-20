@@ -8,7 +8,7 @@ import { ScreenMaster } from './ScreenMaster'
 import { EventKey } from '../event/EventKeyEnum'
 import { LevelSelectedEvent, MaterialAmountChanged } from '../event/WorldEvents'
 import { MainMenuCreditsLayer } from '../menu/MainMenuCreditsLayer'
-import { ScaledLayer } from './layer/ScreenLayer'
+import { ScaledLayer } from './layer/ScaledLayer'
 import { RockWipeLayer } from '../menu/RockWipeLayer'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
@@ -82,7 +82,7 @@ export class MainMenuScreen {
         if (item.actionName.equalsIgnoreCase('next')) {
             this.showMainMenu(item.targetIndex)
         } else if (item.actionName.equalsIgnoreCase('selectlevel')) {
-            this.selectLevel((item as MainMenuLevelButton).levelConf.levelName)
+            this.selectLevel((item as MainMenuLevelButton).levelConf.levelName).then()
         } else if (item.actionName.toLowerCase().startsWith('load_game')) {
             SaveGameManager.loadGame(item.targetIndex)
             this.showLevelSelection()
@@ -123,18 +123,19 @@ export class MainMenuScreen {
         const unlockedLevels = allLevels.filter((levelConf) => !levelConf.isLocked())
         const incompleteLevels = unlockedLevels.filter((levelConf) => !SaveGameManager.getLevelCompleted(levelConf.levelName))
         const levelName = incompleteLevels.random()?.levelName || unlockedLevels.random()?.levelName || allLevels.random()?.levelName
-        this.selectLevel(levelName)
+        this.selectLevel(levelName).then()
     }
 
-    selectLevel(levelName: string | undefined) {
+    async selectLevel(levelName: string | undefined) {
         try {
             if (!levelName) return
             this.sfxAmbientLoop?.stop()
             this.sfxAmbientLoop = undefined
             const levelConf = LevelLoader.fromName(levelName) // Get config first in case of error
-            this.screenMaster.loadingLayer.show()
             this.menuLayers.forEach((m) => m.hide())
             this.rockWipeLayer.hide()
+            if (!DEV_MODE) await this.screenMaster.videoLayer.playVideo(levelConf.video)
+            this.screenMaster.loadingLayer.show()
             EventBroker.publish(new LevelSelectedEvent(levelConf))
             EventBroker.publish(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
         } catch (e) {
