@@ -7,9 +7,10 @@ import { VERBOSE } from '../params'
 
 export class SoundManager {
     private static readonly MISSING_SFX = ['SurfaceSFX_Tunnel'].map((n) => n.toLowerCase()) // ignore known sfx issues
-    static readonly playingAudio: Set<PositionalAudio> = new Set()
+    static readonly playingAudio: Map<number, PositionalAudio> = new Map()
     static readonly sfxBuffersByKey: Map<string, AudioBuffer[]> = new Map()
     static readonly sceneAudioListener: AudioListener = new AudioListener()
+    private static audioId: number = 1 // start with 1 for truthiness safety
     static sfxAudioTarget: GainNode
     static skipVoiceLines: boolean = false
 
@@ -76,10 +77,17 @@ export class SoundManager {
         }).random()
     }
 
-    static stopAudio(audio: PositionalAudio | undefined): undefined {
+    static stopAudio(audioId: number | undefined): undefined {
+        if (!audioId) return undefined
+        const audio = this.playingAudio.get(audioId)
         if (!audio) return undefined
         if (audio?.isPlaying) audio.stop()
-        this.playingAudio.delete(audio)
+        this.playingAudio.delete(audioId)
         return undefined
+    }
+
+    static get nextAudioId(): number {
+        this.audioId++
+        return this.audioId
     }
 }

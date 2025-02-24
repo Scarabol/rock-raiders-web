@@ -247,18 +247,19 @@ export class SceneManager implements Updatable {
         this.sprites.remove(sprite)
     }
 
-    addPositionalAudio(parent: Object3D, sfxName: string, loop: boolean): PositionalAudio {
+    addPositionalAudio(parent: Object3D, sfxName: string, loop: boolean): number {
         const audio = new PositionalAudio(SoundManager.sceneAudioListener)
         audio.setRefDistance(TILESIZE * 5)
         audio.setRolloffFactor(10)
         const sfxVolume = SaveGameManager.getSfxVolume()
         audio.setVolume(sfxVolume)
         audio.loop = loop
-        SoundManager.playingAudio.add(audio)
+        const audioId = SoundManager.nextAudioId
+        SoundManager.playingAudio.set(audioId, audio)
         if (!audio.loop) {
             audio.onEnded = () => {
                 parent.remove(audio)
-                SoundManager.playingAudio.delete(audio)
+                SoundManager.playingAudio.delete(audioId)
             }
         }
         const audioBuffer = SoundManager.getSoundBuffer(sfxName)
@@ -267,7 +268,7 @@ export class SceneManager implements Updatable {
             parent.add(audio)
             if (sfxVolume > 0) audio.play()
         }
-        return audio
+        return audioId
     }
 
     private forceCameraBirdAboveFloor() {

@@ -1,4 +1,4 @@
-import { PositionalAudio, Vector2, Vector3 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
@@ -55,12 +55,12 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     level: number = 0
     job?: Job
     followUpJob?: Job
-    workAudio?: PositionalAudio
+    workAudioId?: number
     stats: VehicleEntityStats
     sceneEntity: AnimatedSceneEntity
     driver?: Raider
     callManJob?: ManVehicleJob
-    engineSound?: PositionalAudio
+    engineSoundId?: number
     carriedItems: Set<MaterialEntity> = new Set()
     carriedVehicle?: VehicleEntity
     upgrades: Set<VehicleUpgrade> = new Set()
@@ -112,8 +112,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             return
         }
         const workActivity = this.job.getWorkActivity() || AnimEntityActivity.Stand
-        if (!this.workAudio && this.job.workSoundVehicle) {
-            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundVehicle, true)
+        if (!this.workAudioId && this.job.workSoundVehicle) {
+            this.workAudioId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundVehicle, true)
         }
         if (workActivity === RaiderActivity.Drill) {
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
@@ -157,8 +157,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     disposeFromWorld() {
         this.worldMgr.sceneMgr.disposeSceneEntity(this.sceneEntity)
-        this.workAudio = SoundManager.stopAudio(this.workAudio)
-        this.engineSound = SoundManager.stopAudio(this.engineSound)
+        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
+        this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
@@ -273,7 +273,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)
         primary ? selectionFrameComponent?.select() : selectionFrameComponent?.selectSecondary()
         this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-        this.workAudio = SoundManager.stopAudio(this.workAudio)
+        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
         return true
     }
 
@@ -294,7 +294,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
      */
 
     stopJob() {
-        this.workAudio = SoundManager.stopAudio(this.workAudio)
+        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
         this.dropCarried(false)
         if (!this.job) return
         this.job.unAssign(this)
@@ -305,7 +305,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     private completeJob() {
-        this.workAudio = SoundManager.stopAudio(this.workAudio)
+        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
         this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         if (this.job?.jobState === JobState.INCOMPLETE) return
@@ -408,7 +408,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.REMOVE))
         const driverScannerComponent = this.worldMgr.ecs.getComponents(this.driver.entity).get(ScannerComponent)
         if (driverScannerComponent) this.worldMgr.ecs.addComponent(this.entity, driverScannerComponent)
-        if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true)
+        if (this.stats.EngineSound && !this.engineSoundId && !DEV_MODE) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
@@ -437,7 +437,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.UPDATE, this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position))
         }
         this.driver = undefined
-        this.engineSound = SoundManager.stopAudio(this.engineSound)
+        this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
 

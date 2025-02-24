@@ -1,4 +1,4 @@
-import { PositionalAudio, Vector2, Vector3 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
 import { RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, RAIDER_PATH_PRECISION, SPIDER_SLIP_RANGE_SQ, TILESIZE } from '../../../params'
@@ -51,7 +51,7 @@ export class Raider implements Updatable, JobFulfiller {
     level: number = 0
     job?: Job
     followUpJob?: Job
-    workAudio?: PositionalAudio
+    workAudioId?: number
     sceneEntity: AnimatedSceneEntity
     carries?: MaterialEntity
     slipped: boolean = false
@@ -137,7 +137,7 @@ export class Raider implements Updatable, JobFulfiller {
 
     disposeFromWorld() {
         this.worldMgr.sceneMgr.disposeSceneEntity(this.sceneEntity)
-        this.workAudio = SoundManager.stopAudio(this.workAudio)
+        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
@@ -294,7 +294,7 @@ export class Raider implements Updatable, JobFulfiller {
         primary ? selectionFrameComponent?.select() : selectionFrameComponent?.selectSecondary()
         components.get(SelectionNameComponent)?.setVisible(true)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
-        this.workAudio = SoundManager.stopAudio(this.workAudio)
+        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
         return true
     }
 
@@ -336,7 +336,7 @@ export class Raider implements Updatable, JobFulfiller {
 
     stopJob() {
         this.dropCarried(false)
-        this.workAudio = SoundManager.stopAudio(this.workAudio)
+        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
         if (!this.job) return
         this.job.unAssign(this)
         if (this.followUpJob) this.followUpJob.unAssign(this)
@@ -372,8 +372,8 @@ export class Raider implements Updatable, JobFulfiller {
             return
         }
         const workActivity = this.job.getWorkActivity() || this.getDefaultAnimationName()
-        if (!this.workAudio && this.job.workSoundRaider) {
-            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundRaider, this.job.getExpectedTimeLeft() !== null)
+        if (!this.workAudioId && this.job.workSoundRaider) {
+            this.workAudioId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundRaider, this.job.getExpectedTimeLeft() !== null)
         }
         if (workActivity === RaiderActivity.Drill) {
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
@@ -458,7 +458,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private completeJob() {
-        this.workAudio = SoundManager.stopAudio(this.workAudio)
+        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
         this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         if (this.job?.jobState === JobState.INCOMPLETE) return

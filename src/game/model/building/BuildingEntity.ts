@@ -1,4 +1,4 @@
-import { PositionalAudio, Vector2, Vector3 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { BuildingsChangedEvent, DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
@@ -53,7 +53,7 @@ export class BuildingEntity {
     energized: boolean = false
     getToolPathTarget?: PathTarget
     carryPathTarget?: PathTarget
-    engineSound?: PositionalAudio
+    engineSoundId?: number
     surfaces: Surface[] = []
     pathSurfaces: Surface[] = []
 
@@ -258,7 +258,7 @@ export class BuildingEntity {
     disposeFromWorld() {
         this.worldMgr.sceneMgr.disposeSceneEntity(this.sceneEntity)
         this.worldMgr.sceneMgr.removeSprite(this.powerOffSprite)
-        this.engineSound = SoundManager.stopAudio(this.engineSound)
+        this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
@@ -322,7 +322,7 @@ export class BuildingEntity {
             if (this.energized) {
                 this.changeUsedCrystals(this.crystalDrain)
                 if (this.stats.PowerBuilding) this.worldMgr.powerGrid.addEnergySource(this.surfaces)
-                if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true)
+                if (this.stats.EngineSound && !this.engineSoundId && !DEV_MODE) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true)
                 if (this.stats.OxygenCoef) this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
                 const components = this.worldMgr.ecs.getComponents(this.entity)
                 if (!components.has(ScannerComponent)) {
@@ -332,7 +332,7 @@ export class BuildingEntity {
             } else {
                 this.changeUsedCrystals(-this.crystalDrain)
                 if (this.stats.PowerBuilding) this.worldMgr.powerGrid.removeEnergySource(this.surfaces)
-                this.engineSound = SoundManager.stopAudio(this.engineSound)
+                this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
                 this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
             }
         }

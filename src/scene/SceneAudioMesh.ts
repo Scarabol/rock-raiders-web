@@ -10,6 +10,7 @@ export interface SceneAudioMeshUserData {
 
 export class SceneAudioMesh extends SceneMesh {
     declare userData: SceneAudioMeshUserData
+    readonly audioId: number = SoundManager.nextAudioId
     audioNode?: PositionalAudio
     lastSfxName: string = ''
 
@@ -27,13 +28,13 @@ export class SceneAudioMesh extends SceneMesh {
             this.audioNode.setRolloffFactor(10)
             this.add(this.audioNode)
             this.audioNode.onEnded = () => {
-                SoundManager.stopAudio(this.audioNode)
+                SoundManager.stopAudio(this.audioId)
             }
         }
         this.audioNode.setVolume(sfxVolume)
         this.audioNode.setBuffer(audioBuffer)
         this.audioNode.play()
-        SoundManager.playingAudio.add(this.audioNode)
+        SoundManager.playingAudio.set(this.audioId, this.audioNode)
     }
 
     private isVisible(): boolean {
@@ -45,7 +46,7 @@ export class SceneAudioMesh extends SceneMesh {
     }
 
     dispose() {
-        SoundManager.stopAudio(this.audioNode)
+        SoundManager.stopAudio(this.audioId)
         this.lastSfxName = ''
     }
 }
