@@ -2,6 +2,7 @@ import { cacheGetData } from '../resource/AssetCacheHelper'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventBroker } from '../event/EventBroker'
 import { EventKey } from '../event/EventKeyEnum'
+import { PRNG } from '../game/factory/PRNG'
 
 export class MusicManager {
     static readonly audioContext: AudioContext = new AudioContext()
@@ -58,7 +59,7 @@ export class MusicManager {
         try {
             this.playNext = true
             if (this.currentTrack) return // music already playing
-            const audioBuffer = this.musicTracks.random() // TODO Consider CDStartTrack from config on first track
+            const audioBuffer = PRNG.unsafe.sample(this.musicTracks) // TODO Consider CDStartTrack from config on first track
             if (!audioBuffer) return
             this.currentTrack = this.audioContext.createBufferSource()
             this.currentTrack.buffer = audioBuffer

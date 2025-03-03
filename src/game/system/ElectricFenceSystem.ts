@@ -10,6 +10,7 @@ import { Vector2, Vector3 } from 'three'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
+import { PRNG } from '../factory/PRNG'
 
 const FENCE_RANGE_SQ = TILESIZE / 4 * TILESIZE / 4
 
@@ -155,9 +156,9 @@ export class ElectricFenceSystem extends AbstractGameSystem {
                 shortBeams.push({lwsFilename: GameConfig.instance.miscObjects.ShortElectricFenceBeam, beamPos: fenceSurface.getCenterWorld(), beamHeading})
             })
         })
-        const nextBeam = [...longBeams, ...shortBeams].random()
+        const nextBeam = PRNG.animation.sample([...longBeams, ...shortBeams])
         if (!nextBeam) return
-        this.beamDelayMs += Math.randomInclusive(0, 4000)
+        this.beamDelayMs += PRNG.animation.randInt(4000)
         this.worldMgr.sceneMgr.addMiscAnim(nextBeam.lwsFilename, nextBeam.beamPos, nextBeam.beamHeading, false)
     }
 }

@@ -8,6 +8,7 @@ import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { LandslideEvent } from '../../event/WorldLocationEvent'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
+import { PRNG } from '../factory/PRNG'
 
 export class DamageSystem extends AbstractGameSystem {
     readonly componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
@@ -47,7 +48,7 @@ export class DamageSystem extends AbstractGameSystem {
                 } else {
                     const movableComponent = components.get(MovableStatsComponent)
                     if (!movableComponent?.crossLava && positionComponent.surface.surfaceType === SurfaceType.LAVA5) {
-                        healthComponent.changeHealth(-Math.randomInclusive(20, 40))
+                        healthComponent.changeHealth(-(20 + PRNG.damage.randInt(20)))
                         healthComponent.hitByLavaTimeoutMs = 2000
                     }
                 }

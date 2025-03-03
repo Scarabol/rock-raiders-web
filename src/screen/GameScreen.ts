@@ -20,6 +20,7 @@ import { EntityType } from '../game/model/EntityType'
 import { AdvisorLayer } from './layer/AdvisorLayer'
 import { EventBroker } from '../event/EventBroker'
 import { NamingLayer } from './layer/NamingLayer'
+import { PRNG } from '../game/factory/PRNG'
 
 export class GameScreen {
     readonly worldMgr: WorldManager
@@ -99,6 +100,9 @@ export class GameScreen {
         this.guiBottomRightLayer.reset()
         this.guiBottomLeftLayer.reset()
         GameState.unassignedTeam = [...SaveGameManager.currentTeam]
+        const fixedSeed = DEV_MODE ? params.get('randomSeed') : undefined
+        if (fixedSeed) console.warn(`Using fixed random seed "${fixedSeed}"`)
+        PRNG.setSeed(fixedSeed || Math.random().toString())
         this.worldMgr.setup(this.levelConf)
         this.sceneMgr.setupScene(this.levelConf)
         // setup GUI

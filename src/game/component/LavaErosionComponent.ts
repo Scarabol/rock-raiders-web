@@ -2,6 +2,7 @@ import { AbstractGameComponent } from '../ECS'
 import { Surface } from '../terrain/Surface'
 import { SurfaceType } from '../terrain/SurfaceType'
 import { GameConfig } from '../../cfg/GameConfig'
+import { PRNG } from '../factory/PRNG'
 
 export class LavaErosionComponent extends AbstractGameComponent {
     readonly erosionTimeMultiplier: number
@@ -32,13 +33,13 @@ export class LavaErosionComponent extends AbstractGameComponent {
         }
         this.surface.setSurfaceType(erosionSurfaceType)
         if (addSmokeEffect) {
-            const lwsFilename = Array.random([
+            const lwsFilename = PRNG.animation.sample([
                 GameConfig.instance.miscObjects.LavaErosionSmoke1,
                 GameConfig.instance.miscObjects.LavaErosionSmoke2,
                 GameConfig.instance.miscObjects.LavaErosionSmoke3,
                 GameConfig.instance.miscObjects.LavaErosionSmoke4,
             ])
-            const smoke = this.surface.worldMgr.sceneMgr.addMiscAnim(lwsFilename, this.surface.getCenterWorld(), Math.random() * 2 * Math.PI, false)
+            const smoke = this.surface.worldMgr.sceneMgr.addMiscAnim(lwsFilename, this.surface.getCenterWorld(), PRNG.animation.random() * 2 * Math.PI, false)
             smoke.meshList.forEach((m) => m.material.forEach((m) => m.color.setRGB(1, 0.5, 0)))
         }
     }

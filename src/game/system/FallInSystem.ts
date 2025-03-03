@@ -1,5 +1,6 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { FallInComponent } from '../component/FallInComponent'
+import { PRNG } from '../factory/PRNG'
 
 export class FallInSystem extends AbstractGameSystem {
     readonly componentsRequired: Set<Function> = new Set([FallInComponent])
@@ -15,7 +16,7 @@ export class FallInSystem extends AbstractGameSystem {
                     continue
                 }
                 fallInComponent.timer = fallInComponent.maxTimerMs
-                const origin = fallInComponent.target.neighbors.filter((n) => n.isReinforcable()).random()
+                const origin = PRNG.terrain.sample(fallInComponent.target.neighbors.filter((n) => n.isReinforcable()))
                 if (origin) origin.terrain.createFallIn(origin, fallInComponent.target)
             } catch (e) {
                 console.error(e)

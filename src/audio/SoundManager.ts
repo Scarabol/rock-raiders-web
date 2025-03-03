@@ -4,6 +4,7 @@ import { EventKey } from '../event/EventKeyEnum'
 import { NerpRunner } from '../nerp/NerpRunner'
 import { EventBroker } from '../event/EventBroker'
 import { VERBOSE } from '../params'
+import { PRNG } from '../game/factory/PRNG'
 
 export class SoundManager {
     private static readonly MISSING_SFX = ['SurfaceSFX_Tunnel'].map((n) => n.toLowerCase()) // ignore known sfx issues
@@ -69,12 +70,12 @@ export class SoundManager {
 
     static getSoundBuffer(sfxName: string): AudioBuffer | undefined {
         sfxName = sfxName.toLowerCase()
-        return this.sfxBuffersByKey.getOrUpdate(sfxName, () => {
+        return PRNG.unsafe.sample(this.sfxBuffersByKey.getOrUpdate(sfxName, () => {
             if (VERBOSE || !this.MISSING_SFX.includes(sfxName)) {
                 console.warn(`Could not find SFX with name '${sfxName}'`)
             }
             return []
-        }).random()
+        }))
     }
 
     static stopAudio(audioId: number | undefined): undefined {

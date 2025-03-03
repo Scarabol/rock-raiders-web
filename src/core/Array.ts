@@ -15,17 +15,11 @@ declare global {
         count(callback: (element: T) => boolean): number
 
         partition(filter: (element: T) => boolean): [T[], T[]]
-
-        random(): T | undefined
-
-        shuffle(): this
     }
 
     // noinspection JSUnusedGlobalSymbols
     interface ArrayConstructor {
         ensure<T>(value: T | T[]): T[]
-
-        random<T>(value: [T, ...T[]]): T
     }
 }
 
@@ -69,25 +63,6 @@ Array.prototype.partition = function <T>(filter: (element: T) => boolean): [T[],
     return [left, right]
 }
 
-Array.prototype.random = function <T>(): T | undefined {
-    if (this.length < 1) return undefined
-    return this[Math.randomInclusive(this.length - 1)]
-}
-
-Array.prototype.shuffle = function <T>(): T[] {
-    let currentIndex = this.length
-    while (currentIndex !== 0) {
-        const randomIndex = Math.floor(Math.random() * currentIndex)
-        currentIndex--;
-        [this[currentIndex], this[randomIndex]] = [this[randomIndex], this[currentIndex]]
-    }
-    return this
-}
-
 Array.ensure = function <T>(value: T | T[]): T[] {
     return (!value) ? [] : Array.isArray(value) ? value : [value]
-}
-
-Array.random = function <T>(value: [T, ...T[]]): T {
-    return value.random()!
 }

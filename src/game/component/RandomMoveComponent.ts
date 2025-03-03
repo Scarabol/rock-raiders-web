@@ -1,4 +1,5 @@
 import { AbstractGameComponent } from '../ECS'
+import { PRNG } from '../factory/PRNG'
 
 export class RandomMoveComponent extends AbstractGameComponent {
     idleTimer: number = 0
@@ -18,7 +19,7 @@ export class RandomMoveComponent extends AbstractGameComponent {
 
     private resetIdleTimer() {
         if (this.maxIdleTimer <= 0) return false
-        this.idleTimer = Math.randomInclusive(this.maxIdleTimer)
+        this.idleTimer = PRNG.movement.randInt(this.maxIdleTimer)
         return false
     }
 }

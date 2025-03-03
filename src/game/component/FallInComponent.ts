@@ -1,5 +1,6 @@
 import { AbstractGameComponent } from '../ECS'
 import { Surface } from '../terrain/Surface'
+import { PRNG } from '../factory/PRNG'
 
 export class FallInComponent extends AbstractGameComponent {
     timer: number
@@ -9,6 +10,6 @@ export class FallInComponent extends AbstractGameComponent {
         readonly maxTimerMs: number,
     ) {
         super()
-        this.timer = Math.random() * maxTimerMs
+        this.timer = PRNG.terrain.randInt(maxTimerMs)
     }
 }

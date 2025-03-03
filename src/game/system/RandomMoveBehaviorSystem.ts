@@ -5,6 +5,7 @@ import { PositionComponent } from '../component/PositionComponent'
 import { SurfaceType } from '../terrain/SurfaceType'
 import { RandomMoveComponent } from '../component/RandomMoveComponent'
 import { HeadingComponent } from '../component/HeadingComponent'
+import { PRNG } from '../factory/PRNG'
 
 export class RandomMoveBehaviorSystem extends AbstractGameSystem {
     readonly componentsRequired: Set<Function> = new Set([RandomMoveComponent, PositionComponent, MovableStatsComponent])
@@ -18,7 +19,7 @@ export class RandomMoveBehaviorSystem extends AbstractGameSystem {
                 const positionComponent = components.get(PositionComponent)
                 if (!positionComponent.isDiscovered()) continue
                 const statsComponent = components.get(MovableStatsComponent)
-                const targetSurface = Array.random([positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) =>
+                const targetSurface = PRNG.movement.sample([positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) =>
                     (!n.wallType || statsComponent.enterWall)
                     && (!n.surfaceType.floor || statsComponent.crossLand)
                     && (n.surfaceType !== SurfaceType.LAVA5 || statsComponent.crossLava)

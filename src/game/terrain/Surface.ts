@@ -31,6 +31,7 @@ import { EmergeComponent } from '../component/EmergeComponent'
 import { FallInComponent } from '../component/FallInComponent'
 import { FluidSurfaceComponent } from '../component/FluidSurfaceComponent'
 import { MonsterSpawner } from '../factory/MonsterSpawner'
+import { PRNG } from '../factory/PRNG'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -200,8 +201,8 @@ export class Surface {
                 }
             }
             const seamDropPosition = new Vector2().copy(drillPosition).sub(this.getCenterWorld2D())
-                .clampLength(TILESIZE / 10, Math.randomInclusive(TILESIZE / 10, TILESIZE / 2))
-                .rotateAround(new Vector2(0, 0), degToRad(-10 + Math.randomInclusive(20)))
+                .clampLength(TILESIZE / 10, TILESIZE / 10 + PRNG.terrain.randInt(TILESIZE / 2 - TILESIZE / 10))
+                .rotateAround(new Vector2(0, 0), degToRad(-10 + PRNG.terrain.randInt(20)))
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
                 const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, seamDropPosition)
@@ -239,7 +240,7 @@ export class Surface {
         this.dropContainedMaterials(droppedOre, droppedCrystals)
         // add crumble animation
         const wallNeighbors = this.neighbors.filter((n) => !!n.wallType)
-        const randomWallNeighbor = wallNeighbors.random()
+        const randomWallNeighbor = PRNG.terrain.sample(wallNeighbors)
         if (this.wallType === WALL_TYPE.CORNER && randomWallNeighbor) { // by default the corner animation goes from this.x+1,this.y+1 to this.x,this.y
             const neighborToRight = this.terrain.getSurface(this.x - randomWallNeighbor.y + this.y, this.y + randomWallNeighbor.x - this.x)
             let crumbleAngle = Math.atan2(neighborToRight.x - this.x, neighborToRight.y - this.y)
@@ -275,16 +276,16 @@ export class Surface {
 
     private generateSpiders() {
         if (!this.terrain.levelConf.generateSpiders) return
-        if (Math.random() > 0.1) return
-        const numSpiders = Math.pow(Math.round(1 + Math.random()), 2) * Math.round(1 + Math.random())
+        if (PRNG.terrain.random() > 0.1) return
+        const numSpiders = Math.pow(Math.round(1 + PRNG.terrain.random()), 2) * Math.round(1 + PRNG.terrain.random())
         for (let c = 0; c < numSpiders; c++) {
-            MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SMALL_SPIDER, this.getRandomPosition(), Math.PI * 2 * Math.random())
+            MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SMALL_SPIDER, this.getRandomPosition(), PRNG.animation.random() * 2 * Math.PI)
         }
     }
 
     getRandomPosition(): Vector2 {
-        return new Vector2(this.x * TILESIZE + TILESIZE / 2 + Math.randomSign() * Math.randomInclusive(TILESIZE / 4),
-            this.y * TILESIZE + TILESIZE / 2 + Math.randomSign() * Math.randomInclusive(TILESIZE / 4))
+        return new Vector2(this.x * TILESIZE + TILESIZE / 4 + PRNG.terrain.random() * TILESIZE / 2,
+            this.y * TILESIZE + TILESIZE / 4 + PRNG.terrain.random() * TILESIZE / 2)
     }
 
     cancelJobs() {

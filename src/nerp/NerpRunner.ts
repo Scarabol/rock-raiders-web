@@ -33,6 +33,7 @@ import { RaiderTrainings } from '../game/model/raider/RaiderTraining'
 import { clearIntervalSafe, isNum } from '../core/Util'
 import { RaiderTools } from '../game/model/raider/RaiderTool'
 import { JobState } from '../game/model/job/JobState'
+import { PRNG } from '../game/factory/PRNG'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -338,9 +339,9 @@ export class NerpRunner {
     }
 
     generateSlug() {
-        const slugHole = this.worldMgr.sceneMgr.terrain.slugHoles.random()
+        const slugHole = PRNG.nerp.sample(this.worldMgr.sceneMgr.terrain.slugHoles)
         if (!slugHole) return
-        const slug = MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SLUG, slugHole.getRandomPosition(), Math.random() * 2 * Math.PI)
+        const slug = MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SLUG, slugHole.getRandomPosition(), PRNG.animation.random() * 2 * Math.PI)
         const behaviorComponent = this.worldMgr.ecs.addComponent(slug, new SlugBehaviorComponent())
         const components = this.worldMgr.ecs.getComponents(slug)
         const sceneEntity = components.get(AnimatedSceneEntityComponent)
@@ -606,7 +607,7 @@ export class NerpRunner {
     }
 
     getRandom100(): number {
-        return Math.randomInclusive(100)
+        return PRNG.nerp.randInt(100)
     }
 
     // noinspection SpellCheckingInspection
@@ -672,7 +673,7 @@ export class NerpRunner {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((t) => {
             for (let c = 0; c < numOfCrystals; c++) {
-                const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, t.getRandomPosition(), Math.random() * 2 * Math.PI)
+                const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, t.getRandomPosition(), PRNG.animation.random() * 2 * Math.PI)
                 if (crystal.carryJob) crystal.carryJob.jobState = JobState.CANCELED
             }
         })
@@ -703,9 +704,9 @@ export class NerpRunner {
     makeSomeoneOnThisBlockPickUpSomethingOnThisBlock(tutoBlockId: number) {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((t) => {
-            const raider = this.worldMgr.entityMgr.raiders.filter((r) => r.getSurface() === t && r.isReadyToTakeAJob()).random()
+            const raider = PRNG.nerp.sample(this.worldMgr.entityMgr.raiders.filter((r) => r.getSurface() === t && r.isReadyToTakeAJob()))
             if (!raider) return
-            const material = this.worldMgr.entityMgr.materials.filter((m) => m.getSurface() === t && !m.carryJob?.hasFulfiller()).random()
+            const material = PRNG.nerp.sample(this.worldMgr.entityMgr.materials.filter((m) => m.getSurface() === t && !m.carryJob?.hasFulfiller()))
             if (!material) return
             raider.setJob(material.setupCarryJob())
         })

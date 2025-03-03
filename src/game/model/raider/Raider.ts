@@ -40,6 +40,7 @@ import { EventBroker } from '../../../event/EventBroker'
 import { TooltipComponent } from '../../component/TooltipComponent'
 import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 import { SelectionNameComponent } from '../../component/SelectionNameComponent'
+import { PRNG } from '../../factory/PRNG'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -62,7 +63,7 @@ export class Raider implements Updatable, JobFulfiller {
     toolsIndex: number = 0
     weaponCooldown: number = 0
     resting: boolean = false
-    idleCounter: number = Math.random() * 3000
+    idleCounter: number = PRNG.animation.randInt(3000)
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
@@ -102,13 +103,13 @@ export class Raider implements Updatable, JobFulfiller {
             this.scared = false
             this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture('bubbleIdle')
             if (this.idleCounter > 3000) {
-                const idleAnim = Array.random(['Activity_Waiting1', 'Activity_Waiting2', 'Activity_Waiting3', 'Activity_Waiting4'])
+                const idleAnim = PRNG.animation.sample(['Activity_Waiting1', 'Activity_Waiting2', 'Activity_Waiting3', 'Activity_Waiting4'])
                 this.idleCounter = 0
                 this.sceneEntity.setAnimation(idleAnim, () => {
                     this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
                 })
             } else {
-                this.idleCounter += elapsedMs * Math.random()
+                this.idleCounter += PRNG.animation.randInt(elapsedMs)
             }
             return
         }
@@ -215,7 +216,7 @@ export class Raider implements Updatable, JobFulfiller {
             if (!!this.carries) {
                 // XXX Adjust balancing for resting
                 const chanceToRestPerSecond = this.stats.RestPercent / 20 * Math.max(0, 1 - this.foodLevel / this.stats.RestPercent)
-                if (Math.random() < chanceToRestPerSecond * elapsedMs / 1000) {
+                if (PRNG.movement.random() < chanceToRestPerSecond * elapsedMs / 1000) {
                     this.resting = true
                     this.sceneEntity.setAnimation('Activity_Rest', () => {
                         this.resting = false
@@ -267,7 +268,7 @@ export class Raider implements Updatable, JobFulfiller {
 
     private slip() {
         this.dropCarried(true)
-        if (Math.randomInclusive(0, 100) < 10) this.stopJob()
+        if (PRNG.movement.randInt(100) < 10) this.stopJob()
         this.slipped = true
         this.sceneEntity.setAnimation(RaiderActivity.Slip, () => {
             this.slipped = false

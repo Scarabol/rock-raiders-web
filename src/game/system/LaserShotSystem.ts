@@ -14,6 +14,7 @@ import { LaserBeamMesh } from '../../scene/LaserBeamMesh'
 import { SurfaceMesh } from '../terrain/SurfaceMesh'
 import { PickSphereMesh, SceneSelectionComponent } from '../component/SceneSelectionComponent'
 import { GameConfig } from '../../cfg/GameConfig'
+import { PRNG } from '../factory/PRNG'
 
 class LaserShot {
     timeout: number = 250
@@ -85,7 +86,7 @@ export class LaserShotSystem extends AbstractGameSystem {
             const soundParent = new Object3D()
             soundParent.position.copy(rockyIntersection.point)
             this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LaserHit', false)
-            this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BoulderExplode, rockyIntersection.point, Math.random() * 2 * Math.PI, false)
+            this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BoulderExplode, rockyIntersection.point, PRNG.animation.random() * 2 * Math.PI, false)
         } else {
             const floorIntersection = this.raycaster.intersectObjects<SurfaceMesh>(this.worldMgr.sceneMgr.floorGroup.children, false)[0]
             if (floorIntersection) {
@@ -102,7 +103,7 @@ export class LaserShotSystem extends AbstractGameSystem {
                 const soundParent = new Object3D()
                 soundParent.position.copy(floorIntersection.point)
                 this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LaserHit', false)
-                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BoulderExplode, floorIntersection.point, Math.random() * 2 * Math.PI, false)
+                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BoulderExplode, floorIntersection.point, PRNG.animation.random() * 2 * Math.PI, false)
             } // else { // XXX Stop laser shot beam at roof intersection
         }
         const mesh = new LaserBeamMesh(beamLength)

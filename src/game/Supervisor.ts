@@ -17,6 +17,7 @@ import { EatBarracksJob } from './model/job/raider/EatBarracksJob'
 import { EventBroker } from '../event/EventBroker'
 import { GameState } from './model/GameState'
 import { SurfaceType } from './terrain/SurfaceType'
+import { PRNG } from './factory/PRNG'
 
 /**
  * Tutorial01
@@ -184,7 +185,7 @@ export class Supervisor {
                 const blockedSite = raiderSurface.site
                 if (blockedSite?.buildingType) raider.setJob(new MoveJob(blockedSite.getWalkOutSurface().getRandomPosition()))
                 if (raiderSurface.surfaceType === SurfaceType.LAVA5) {
-                    const safeNeighbor = raiderSurface.neighbors.filter((n) => n.isWalkable()).random() || raiderSurface
+                    const safeNeighbor = PRNG.movement.sample(raiderSurface.neighbors.filter((n) => n.isWalkable())) || raiderSurface
                     raider.setJob(new MoveJob(safeNeighbor.getRandomPosition()))
                 }
             } catch (e) {

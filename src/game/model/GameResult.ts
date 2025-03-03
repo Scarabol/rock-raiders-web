@@ -2,6 +2,7 @@ import { LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { ADDITIONAL_RAIDER_PER_SUPPORT } from '../../params'
 import { GameState } from './GameState'
 import { GameConfig } from '../../cfg/GameConfig'
+import { PRNG } from '../factory/PRNG'
 
 export enum GameResultState {
     // noinspection JSUnusedGlobalSymbols
@@ -63,8 +64,8 @@ export class GameResult {
     }
 
     static random(): GameResult {
-        const randomLevelConf = Array.from(GameConfig.instance.levels.levelCfgByName.values()).filter((c) => c.levelName.toLowerCase().startsWith('level')).random()
+        const randomLevelConf = PRNG.unsafe.sample(Array.from(GameConfig.instance.levels.levelCfgByName.values()).filter((c) => c.levelName.toLowerCase().startsWith('level')))
         if (!randomLevelConf) throw new Error('Could not find random level configuration')
-        return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GameResultState.COMPLETE, Math.randomInclusive(6), Math.randomInclusive(10), 10, 942, undefined)
+        return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GameResultState.COMPLETE, PRNG.unsafe.randInt(6), PRNG.unsafe.randInt(10), 10, 942, undefined)
     }
 }

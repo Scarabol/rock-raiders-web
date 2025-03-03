@@ -32,6 +32,7 @@ import { HeadingComponent } from '../component/HeadingComponent'
 import { BeamUpComponent } from '../component/BeamUpComponent'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
+import { PRNG } from '../factory/PRNG'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -68,7 +69,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             }
             const healthComponent = components.get(HealthComponent)
             // TODO How does laser beam shot damage work in original?
-            const laserDamage = Math.randomInclusive(4 * event.weaponCfg.defaultDamage, 6 * event.weaponCfg.defaultDamage)
+            const laserDamage = (4 + PRNG.damage.randInt(2)) * event.weaponCfg.defaultDamage
             healthComponent.changeHealth(-laserDamage)
             sceneEntity.setAnimation(RockMonsterActivity.HitHard, () => {
                 if (!behaviorComponent) {
@@ -218,7 +219,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 } else {
                                     // XXX Adjust balancing for resting
                                     const chanceToRestPerSecond = stats.RestPercent / 20
-                                    if (Math.random() < chanceToRestPerSecond * elapsedMs / 1000) {
+                                    if (PRNG.movement.random() < chanceToRestPerSecond * elapsedMs / 1000) {
                                         const prevState = behaviorComponent.state
                                         behaviorComponent.state = RockMonsterBehaviorState.RESTING
                                         this.ecs.removeComponent(entity, WorldTargetComponent)
@@ -395,7 +396,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 behaviorComponent.state = RockMonsterBehaviorState.GOTO_CRYSTAL
                 behaviorComponent.targetCrystal = closestCrystal.obj
             } else {
-                behaviorComponent.state = Math.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
+                behaviorComponent.state = PRNG.movement.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
             }
         } else if (GameState.monsterCongregation && GameState.monsterCongregation.distanceToSquared(rockyPos) > TILESIZE) {
             const path = pathFinder.findShortestPath(rockyPos, [PathTarget.fromLocation(GameState.monsterCongregation)], stats, 1)
@@ -406,7 +407,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 return
             }
         } else {
-            behaviorComponent.state = Math.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
+            behaviorComponent.state = PRNG.movement.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
         }
     }
 

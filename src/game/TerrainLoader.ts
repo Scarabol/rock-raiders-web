@@ -11,6 +11,7 @@ import { EmergeComponent } from './component/EmergeComponent'
 import { FallInComponent } from './component/FallInComponent'
 import { FluidSurfaceComponent } from './component/FluidSurfaceComponent'
 import { isNum } from '../core/Util'
+import { PRNG } from './factory/PRNG'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelConfData, worldMgr: WorldManager): Terrain {
@@ -139,7 +140,7 @@ export class TerrainLoader {
                     const lavaErosionComponent = new LavaErosionComponent(targetSurface, erosionLevel)
                     worldMgr.ecs.addComponent(targetSurface.entity, lavaErosionComponent)
                     if (lavaErosionComponent.isSelfEroding) {
-                        for (let c = 0; c < Math.randomInclusive(1, 5); c++) {
+                        for (let c = 0; c < 1 + PRNG.terrain.randInt(4); c++) {
                             lavaErosionComponent.increaseErosionLevel(false)
                         }
                     }

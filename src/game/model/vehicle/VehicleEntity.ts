@@ -46,6 +46,7 @@ import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 import { LaserBeamTurretComponent } from '../../component/LaserBeamTurretComponent'
 import { MaterialSpawner } from '../../factory/MaterialSpawner'
 import { MovableStatsComponent } from '../../component/MovableStatsComponent'
+import { PRNG } from '../../factory/PRNG'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -563,7 +564,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     pickupNearbyEntity(): void {
         const surfsToCheck = this.getNearbySurfaces()
         if (this.stats.CarryVehicles && !this.carriedVehicle) {
-            this.carriedVehicle = this.worldMgr.entityMgr.vehicles.filter((v) => v.stats.VehicleCanBeCarried && surfsToCheck.includes(v.getSurface())).random()
+            this.carriedVehicle = PRNG.movement.sample(this.worldMgr.entityMgr.vehicles.filter((v) => v.stats.VehicleCanBeCarried && surfsToCheck.includes(v.getSurface())))
             if (this.carriedVehicle) {
                 this.loadCarriedVehicle()
                 return
@@ -604,7 +605,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const direction = this.sceneEntity.getWorldDirection(new Vector3())
         const targetedPosition = this.getSurface().getCenterWorld2D().add(new Vector2(direction.x, direction.z).setLength(TILESIZE))
         const targetedSurface = this.getSurface().terrain.getSurfaceFromWorld2D(targetedPosition)
-        const unloadSurface = accessibleNeighbors.includes(targetedSurface) ? targetedSurface : accessibleNeighbors.random()
+        const unloadSurface = accessibleNeighbors.includes(targetedSurface) ? targetedSurface : PRNG.movement.sample(accessibleNeighbors)
         if (!this.carriedVehicle || !unloadSurface) return
         this.portering = true
         const dropOffVehicle = this.carriedVehicle

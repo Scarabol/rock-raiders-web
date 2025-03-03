@@ -27,6 +27,7 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { DynamiteActivity } from './model/anim/AnimationActivity'
 import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityComponent'
 import { Vector3 } from 'three'
+import { PRNG } from './factory/PRNG'
 
 export class GuiManager {
     constructor(worldMgr: WorldManager) {
@@ -220,10 +221,9 @@ export class GuiManager {
                 r.removeTool(RaiderTool.BIRD_SCARER)
                 if (r.selected) EventBroker.publish(new SelectionChanged(entityMgr))
                 const position = r.getPosition()
-                const heading = Math.random() * 2 * Math.PI
                 const sceneEntity = new AnimatedSceneEntity()
                 sceneEntity.position.copy(position)
-                sceneEntity.rotation.y = heading
+                sceneEntity.rotation.y = PRNG.animation.random() * 2 * Math.PI
                 sceneMgr.addSceneEntity(sceneEntity)
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.OohScary))
                 sceneEntity.setAnimation(DynamiteActivity.Normal, () => {
@@ -231,7 +231,7 @@ export class GuiManager {
                         const birdScarer = worldMgr.ecs.addEntity()
                         worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
                         entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
-                        sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BirdScarer, position, heading, false, () => {
+                        sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BirdScarer, position, PRNG.animation.random() * 2 * Math.PI, false, () => {
                             sceneMgr.disposeSceneEntity(sceneEntity)
                             entityMgr.removeEntity(birdScarer)
                             worldMgr.ecs.removeEntity(birdScarer)

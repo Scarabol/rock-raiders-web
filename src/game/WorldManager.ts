@@ -40,6 +40,7 @@ import { FluidSurfaceSystem } from './system/FluidSurfaceSystem'
 import { LaserShotSystem } from './system/LaserShotSystem'
 import { GameResultState } from './model/GameResult'
 import { NerpScript } from '../nerp/NerpScript'
+import { PRNG } from './factory/PRNG'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -135,7 +136,7 @@ export class WorldManager {
     }
 
     async teleportEnd(): Promise<void> {
-        ;[...this.entityMgr.raiders.filter((r) => !r.vehicle), ...this.entityMgr.vehicles, ...this.entityMgr.buildings].shuffle()
+        PRNG.animation.shuffle([...this.entityMgr.raiders.filter((r) => !r.vehicle), ...this.entityMgr.vehicles, ...this.entityMgr.buildings])
             .forEach((e, i) => setTimeout(() => e.beamUp(), i * 200))
         return new Promise((resolve) => setTimeout(() => resolve(), 10000))
     }

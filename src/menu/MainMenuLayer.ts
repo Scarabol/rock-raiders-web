@@ -12,6 +12,7 @@ import { MainMenuLabelButton } from './MainMenuLabelButton'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { FlicAnimOverlay } from './FlicAnimOverlay'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
+import { PRNG } from '../game/factory/PRNG'
 
 export class MainMenuLayer extends ScaledLayer {
     static readonly SCROLL_AREA_HEIGHT = 180
@@ -47,7 +48,7 @@ export class MainMenuLayer extends ScaledLayer {
             const flicImages = ResourceManager.getResource(flic.flhFilepath) ?? []
             this.overlays.push(new FlicAnimOverlay(this.animationFrame, flicImages, flic.x, flic.y, flic.sfxName))
         })
-        if (this.cfg.playRandom) this.cfg.overlays.shuffle()
+        if (this.cfg.playRandom) PRNG.unsafe.shuffle(this.cfg.overlays)
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.fixedWidth, this.fixedHeight)
             if (this.menuImage) context.drawImage(this.menuImage, 0, -this.scrollY)
@@ -200,6 +201,6 @@ export class MainMenuLayer extends ScaledLayer {
             this.overlayIndex = (this.overlayIndex + 1) % this.cfg.overlays.length
             await this.overlay.play()
             this.playRandomOverlay()
-        }, Math.randomInclusive(2000, 5000))
+        }, 2000 + PRNG.unsafe.randInt(3000))
     }
 }

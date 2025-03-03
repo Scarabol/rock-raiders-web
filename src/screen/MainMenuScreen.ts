@@ -15,6 +15,7 @@ import { EventBroker } from '../event/EventBroker'
 import { LevelLoader } from '../game/LevelLoader'
 import { SoundManager } from '../audio/SoundManager'
 import { DEV_MODE } from '../params'
+import { PRNG } from '../game/factory/PRNG'
 
 export class MainMenuScreen {
     readonly menuLayers: ScaledLayer[] = []
@@ -122,7 +123,7 @@ export class MainMenuScreen {
         const allLevels = GameConfig.instance.getAllLevels()
         const unlockedLevels = allLevels.filter((levelConf) => !levelConf.isLocked())
         const incompleteLevels = unlockedLevels.filter((levelConf) => !SaveGameManager.getLevelCompleted(levelConf.levelName))
-        const levelName = incompleteLevels.random()?.levelName || unlockedLevels.random()?.levelName || allLevels.random()?.levelName
+        const levelName = PRNG.unsafe.sample(incompleteLevels)?.levelName || PRNG.unsafe.sample(unlockedLevels)?.levelName || PRNG.unsafe.sample(allLevels)?.levelName
         this.selectLevel(levelName).then()
     }
 

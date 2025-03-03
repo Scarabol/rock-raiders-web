@@ -4,12 +4,6 @@ declare global {
 
         hashCode(): number
     }
-
-    interface Math {
-        randomInclusive(minimum: number, maximum?: number): number
-
-        randomSign(): number
-    }
 }
 
 String.prototype.equalsIgnoreCase = function (other?: string): boolean {
@@ -26,15 +20,5 @@ String.prototype.hashCode = function () { // Inspired by https://stackoverflow.c
     }
     return hash
 }
-
-Math.randomInclusive = (minimum: number, maximum: number): number => {
-    if (maximum === undefined) {
-        maximum = minimum
-        minimum = 0
-    }
-    return Math.floor(Math.random() * (maximum - minimum + 1) + minimum)
-}
-
-Math.randomSign = (): number => Math.random() < 0.5 ? -1 : 1
 
 export {}
