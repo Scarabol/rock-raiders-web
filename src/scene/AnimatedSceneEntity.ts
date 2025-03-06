@@ -77,13 +77,13 @@ export class AnimatedSceneEntity extends SceneEntity {
             const animatedGroup = this.cacheAnimationGroups.getOrUpdate(animData.file, () => {
                 return new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs, onAnimationTrigger).setup()
             })
+            this.animationParent.add(animatedGroup)
+            this.animationGroups.push(animatedGroup)
             animatedGroup.resetAnimation()
             animatedGroup.onAnimationDone = onAnimationDone
             animatedGroup.durationTimeoutMs = durationTimeoutMs
             animatedGroup.onAnimationTrigger = onAnimationTrigger
             animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
-            this.animationParent.add(animatedGroup)
-            this.animationGroups.push(animatedGroup)
             this.pivotMaxZ = animEntityData.pivotMaxZ ?? this.pivotMaxZ
             this.pivotMinZ = animEntityData.pivotMinZ ?? this.pivotMinZ
             // add wheels
