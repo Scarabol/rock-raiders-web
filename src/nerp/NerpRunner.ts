@@ -10,7 +10,7 @@ import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpScript } from './NerpScript'
-import { DEV_MODE, NERP_EXECUTION_INTERVAL } from '../params'
+import { NERP_EXECUTION_INTERVAL } from '../params'
 import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, RequestedRaidersChanged } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
@@ -34,8 +34,7 @@ import { clearIntervalSafe, isNum } from '../core/Util'
 import { RaiderTools } from '../game/model/raider/RaiderTool'
 import { JobState } from '../game/model/job/JobState'
 import { PRNG } from '../game/factory/PRNG'
-
-window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
+import { SaveGameManager } from '../resource/SaveGameManager'
 
 interface IconClickedEntry {
     iconName: string
@@ -420,7 +419,7 @@ export class NerpRunner {
             return
         }
         let sampleLength = this.timeForNoSample / 1000
-        if (!DEV_MODE && msg.snd) {
+        if (!SaveGameManager.preferences.muteDevSounds && msg.snd) {
             this.messageSfx = SoundManager.playVoice(msg.snd) || this.messageSfx
             sampleLength = this.messageSfx?.buffer?.duration || sampleLength
         }

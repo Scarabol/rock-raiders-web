@@ -7,6 +7,7 @@ import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { EventKey } from '../event/EventKeyEnum'
 import { DynamiteExplosionEvent } from '../event/WorldEvents'
+import { SaveGameManager } from '../resource/SaveGameManager'
 
 export enum CameraRotation {
     NONE = 0,
@@ -37,7 +38,7 @@ export class BirdViewControls extends MapControls {
         this.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
         this.listenToKeyEvents(domElement)
         this.keyPanSpeed = this.keyPanSpeed * KEY_PAN_SPEED
-        if (!DEV_MODE) {
+        if (!SaveGameManager.preferences.cameraUnlimited) {
             this.minDistance = GameConfig.instance.main.minDist
             this.maxDistance = GameConfig.instance.main.maxDist
             this.minPolarAngle = Math.PI / 2 - degToRad(GameConfig.instance.main.maxTilt)

@@ -1,7 +1,7 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
 import { ScreenLayer } from './ScreenLayer'
-import { CURSOR_MAX_HEIGHT, DEV_MODE, NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
+import { CURSOR_MAX_HEIGHT, NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { clearTimeoutSafe } from '../../core/Util'
 import { SoundManager } from '../../audio/SoundManager'
 import { EventBroker } from '../../event/EventBroker'
@@ -19,7 +19,7 @@ export class TooltipLayer extends ScreenLayer {
 
     constructor() {
         super()
-        this.ratio = SaveGameManager.preferences.screenRatioFixed
+        this.ratio = SaveGameManager.calcScreenRatio()
         EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_CHANGE, (event: ChangeTooltip) => {
             if (this.cursorLeft || !this.active || event.tooltipKey === this.lastTooltipKey) return
             this.lastTooltipKey = event.tooltipKey
@@ -33,7 +33,7 @@ export class TooltipLayer extends ScreenLayer {
                 this.changeTooltipImage(await event.getTooltipTextImg())
             }, event.timeoutText)
             const tooltipSfx = event.tooltipSfx
-            if (!DEV_MODE && tooltipSfx) {
+            if (!SaveGameManager.preferences.muteDevSounds && tooltipSfx) {
                 this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playVoice(tooltipSfx), event.timeoutSfx)
             }
         })

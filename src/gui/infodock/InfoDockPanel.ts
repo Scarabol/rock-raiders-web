@@ -10,7 +10,7 @@ import { InformationPanel } from './InformationPanel'
 import { CameraControl, PlaySoundEvent } from '../../event/GuiCommand'
 import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
 import { WorldLocationEventMap } from '../../event/EventTypeMap'
-import { DEV_MODE } from '../../params'
+import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class InfoDockPanel extends Panel {
     readonly stackButtons: InfoDockButton[] = []
@@ -70,7 +70,7 @@ export class InfoDockPanel extends Panel {
             infoDockButton.messages.unshift(event)
             this.showButton(infoDockButton)
             const sample = config.sfxName
-            if (sample && !DEV_MODE) this.publishEvent(new PlaySoundEvent(sample, true))
+            if (sample && !SaveGameManager.preferences.muteDevSounds) this.publishEvent(new PlaySoundEvent(sample, true))
         })
         if (eventTypeGone) {
             this.registerEventListener(eventTypeGone, (event: WorldLocationEvent) => {

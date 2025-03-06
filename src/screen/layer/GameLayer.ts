@@ -40,7 +40,7 @@ export class GameLayer extends ScreenLayer {
 
     constructor(readonly worldMgr: WorldManager) {
         super()
-        this.ratio = SaveGameManager.preferences.screenRatioFixed
+        this.ratio = SaveGameManager.calcScreenRatio()
         EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
             const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
             CursorManager.changeCursor(this.determineCursor(cursorTarget))
@@ -404,7 +404,7 @@ export class GameLayer extends ScreenLayer {
     }
 
     private onGlobalMouseEvent(event: GamePointerEvent) {
-        if (!this.active || DEV_MODE) return
+        if (!this.active || !SaveGameManager.preferences.edgeScrolling) return
         const screenPanOffset = 4
         let key: string = ''
         if (event.canvasX < screenPanOffset) {

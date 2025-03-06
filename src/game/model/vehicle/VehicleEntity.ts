@@ -2,7 +2,7 @@ import { Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
-import { DEV_MODE, ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../../../params'
+import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
@@ -47,6 +47,7 @@ import { LaserBeamTurretComponent } from '../../component/LaserBeamTurretCompone
 import { MaterialSpawner } from '../../factory/MaterialSpawner'
 import { MovableStatsComponent } from '../../component/MovableStatsComponent'
 import { PRNG } from '../../factory/PRNG'
+import { SaveGameManager } from '../../../resource/SaveGameManager'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -409,7 +410,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.REMOVE))
         const driverScannerComponent = this.worldMgr.ecs.getComponents(this.driver.entity).get(ScannerComponent)
         if (driverScannerComponent) this.worldMgr.ecs.addComponent(this.entity, driverScannerComponent)
-        if (this.stats.EngineSound && !this.engineSoundId && !DEV_MODE) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true)
+        if (this.stats.EngineSound && !this.engineSoundId && !SaveGameManager.preferences.muteDevSounds) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
 

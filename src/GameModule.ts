@@ -23,7 +23,6 @@ export class GameModule {
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             screenMaster.onWindowResize()
         })
-        SaveGameManager.loadPreferences()
         SaveGameManager.loadSaveGames()
         SaveGameManager.loadSaveGameScreenshots()
         if (DEV_MODE) SaveGameManager.loadGame(0)
@@ -34,7 +33,7 @@ export class GameModule {
         this.gameScreen = new GameScreen(screenMaster)
         this.rewardScreen = new RewardScreen(screenMaster)
         const params = new URLSearchParams(window.location.search)
-        SaveGameManager.preferences.testLevels = params.has('testlevels') || DEV_MODE
+        SaveGameManager.preferences.testLevels = params.has('testlevels') || SaveGameManager.preferences.testLevels
         const entry = params.get('entry')
         if (DEV_MODE && entry) {
             ObjectListLoader.numRaider = Number(params.get('numRaider')) || 0

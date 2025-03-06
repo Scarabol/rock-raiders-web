@@ -1,5 +1,5 @@
 import { GameFilesLoader } from './resource/GameFilesLoader'
-import { DEFAULT_FONT_NAME, DEV_MODE, TOOLTIP_FONT_NAME, VERBOSE } from './params'
+import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME, VERBOSE } from './params'
 import { ScreenMaster } from './screen/ScreenMaster'
 import { AssetLoader } from './resource/AssetLoader'
 import { CURSOR } from './resource/Cursor'
@@ -11,11 +11,21 @@ import { CursorManager } from './screen/CursorManager'
 import { DependencySpriteWorkerPool } from './worker/DependencySpriteWorkerPool'
 import { BitmapFontData } from './core/BitmapFont'
 import { BitmapWorkerPool } from './worker/BitmapWorkerPool'
+import { ConsoleIntegration } from './ConsoleIntegration'
+import { SaveGameManager } from './resource/SaveGameManager'
+
+declare global {
+    interface Window {
+        rr: ConsoleIntegration;
+    }
+}
 
 export async function start() {
+    if (window) window.rr = new ConsoleIntegration()
+    SaveGameManager.loadPreferences()
     const screenMaster = new ScreenMaster()
     const vfs = await new GameFilesLoader(screenMaster.loadingLayer).loadGameFiles()
-    if (!DEV_MODE) await screenMaster.videoLayer.playVideo(`data/${GameConfig.instance.main.rrAvi}`)
+    if (SaveGameManager.preferences.playVideos) await screenMaster.videoLayer.playVideo(`data/${GameConfig.instance.main.rrAvi}`)
     screenMaster.loadingLayer.show()
     const assetLoader = new AssetLoader(vfs)
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')

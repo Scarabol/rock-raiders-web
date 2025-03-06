@@ -12,7 +12,7 @@ export class SelectionFrameLayer extends ScreenLayer {
 
     constructor() {
         super()
-        this.ratio = SaveGameManager.preferences.screenRatioFixed
+        this.ratio = SaveGameManager.calcScreenRatio()
         this.animationFrame = new AnimationFrame(this.canvas, this.readbackCanvas)
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)

@@ -18,7 +18,7 @@ export class AdvisorLayer extends ScreenLayer {
 
     constructor() {
         super()
-        this.ratio = SaveGameManager.preferences.screenRatioFixed
+        this.ratio = SaveGameManager.calcScreenRatio()
         this.renderer = new BaseRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, {alpha: true})
         this.renderer.camera = new PerspectiveCamera(CAMERA_FOV, 4 / 3, 0.1, 100)
         // 510 -> 510 / 640 = 0.80 -> ... => 7.25 // XXX How to derive from numbers in cfg?

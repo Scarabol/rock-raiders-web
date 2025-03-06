@@ -1,4 +1,4 @@
-import { AxesHelper, Color, FogExp2, Group, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
+import { Color, FogExp2, Group, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
 import { LevelConfData } from './LevelLoader'
 import { BirdViewControls } from '../scene/BirdViewControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
@@ -11,7 +11,7 @@ import { BirdViewCamera } from '../scene/BirdViewCamera'
 import { TorchLightCursor } from '../scene/TorchLightCursor'
 import { SceneRenderer } from '../scene/SceneRenderer'
 import { Updatable, updateSafe } from './model/Updateable'
-import { CAMERA_FOV, CAMERA_MAX_SHAKE_BUMP, CAMERA_MIN_HEIGHT_ABOVE_TERRAIN, DEV_MODE, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
+import { CAMERA_FOV, CAMERA_MAX_SHAKE_BUMP, CAMERA_MIN_HEIGHT_ABOVE_TERRAIN, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { SceneEntity } from './SceneEntity'
@@ -61,7 +61,7 @@ export class SceneManager implements Updatable {
         this.cameraFPV = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 8 * TILESIZE)
         this.renderer = new SceneRenderer(canvas)
         this.birdViewControls = new BirdViewControls(this.cameraBird, canvas)
-        if (!DEV_MODE) this.birdViewControls.addEventListener('change', () => this.forceCameraBirdAboveFloor())
+        if (!SaveGameManager.preferences.cameraUnlimited) this.birdViewControls.addEventListener('change', () => this.forceCameraBirdAboveFloor())
         const frustumUpdater = new CameraFrustumUpdater(this.cameraBird)
         frustumUpdater.onCameraMoved()
         this.birdViewControls.addEventListener('change', () => frustumUpdater.onCameraMoved())
@@ -110,7 +110,6 @@ export class SceneManager implements Updatable {
         this.roofGroup = new Group()
         this.roofGroup.visible = false
         this.roofGroup.scale.setScalar(TILESIZE)
-        if (DEV_MODE) this.floorGroup.add(new AxesHelper())
         this.terrain = TerrainLoader.loadTerrain(levelConf, this.worldMgr)
         this.terrain.forEachSurface((s) => {
             this.floorGroup.add(s.mesh)

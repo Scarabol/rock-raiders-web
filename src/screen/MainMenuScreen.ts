@@ -14,7 +14,6 @@ import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { LevelLoader } from '../game/LevelLoader'
 import { SoundManager } from '../audio/SoundManager'
-import { DEV_MODE } from '../params'
 import { PRNG } from '../game/factory/PRNG'
 
 export class MainMenuScreen {
@@ -135,7 +134,7 @@ export class MainMenuScreen {
             const levelConf = LevelLoader.fromName(levelName) // Get config first in case of error
             this.menuLayers.forEach((m) => m.hide())
             this.rockWipeLayer.hide()
-            if (!DEV_MODE) await this.screenMaster.videoLayer.playVideo(levelConf.video)
+            if (SaveGameManager.preferences.playVideos) await this.screenMaster.videoLayer.playVideo(levelConf.video)
             this.screenMaster.loadingLayer.show()
             EventBroker.publish(new LevelSelectedEvent(levelConf))
             EventBroker.publish(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw

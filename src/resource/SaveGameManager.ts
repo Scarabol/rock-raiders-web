@@ -1,8 +1,7 @@
 import { DEFAULT_AUTO_GAME_SPEED, DEFAULT_GAME_BRIGHTNESS, DEFAULT_GAME_SPEED_MULTIPLIER, DEFAULT_MUSIC_TOGGLE, DEFAULT_MUSIC_VOLUME, DEFAULT_SCREEN_RATIO_FIXED, DEFAULT_SFX_TOGGLE, DEFAULT_SFX_VOLUME, DEFAULT_SHOW_HELP_WINDOW, DEFAULT_WALL_DETAILS, DEV_MODE, NUM_OF_LEVELS_TO_COMPLETE_GAME, SAVE_GAME_SCREENSHOT_HEIGHT, SAVE_GAME_SCREENSHOT_WIDTH, VERBOSE } from '../params'
-import { ChangePreferences } from '../event/GuiCommand'
-import { EventBroker } from '../event/EventBroker'
 
 export class SaveGamePreferences { // this gets serialized
+    // Vanilla game preferences
     gameSpeed: number = DEFAULT_GAME_SPEED_MULTIPLIER
     volumeSfx: number = DEFAULT_SFX_VOLUME
     volumeMusic: number = DEFAULT_MUSIC_VOLUME
@@ -12,9 +11,14 @@ export class SaveGamePreferences { // this gets serialized
     toggleMusic: boolean = DEFAULT_MUSIC_TOGGLE
     toggleSfx: boolean = DEFAULT_SFX_TOGGLE
     autoGameSpeed: boolean = DEFAULT_AUTO_GAME_SPEED
-    screenRatioFixed: number = DEFAULT_SCREEN_RATIO_FIXED // set to 0 for responsive screen ratio
+    // Additional game preferences
+    screenRatio: string = '4:3' // set to 0 for responsive screen ratio
     testLevels: boolean = false
+    cameraUnlimited: boolean = DEV_MODE
     skipBriefings: boolean = DEV_MODE
+    muteDevSounds: boolean = DEV_MODE
+    playVideos: boolean = !DEV_MODE
+    edgeScrolling: boolean = !DEV_MODE
 }
 
 export class SaveGameManager {
@@ -30,8 +34,8 @@ export class SaveGameManager {
             const preferences = localStorage.getItem('preferences')
             if (preferences) {
                 this.preferences = {...this.preferences, ...JSON.parse(preferences)}
+                if (window?.rr) window.rr.preferences = this.preferences
                 console.log(`Preferences loaded`, this.preferences)
-                EventBroker.publish(new ChangePreferences())
             }
         } catch (e) {
             console.error('Could not load preferences', e)
@@ -158,6 +162,19 @@ export class SaveGameManager {
 
     static getMusicVolume(): number {
         return this.preferences.toggleMusic ? this.preferences.volumeMusic : 0
+    }
+
+    static calcScreenRatio(): number {
+        if (!this.preferences.screenRatio || this.preferences.screenRatio === 'responsive') return 0
+        const matched = this.preferences.screenRatio?.match('^\d:\d$')
+        if (matched?.length === 3) {
+            const w = Number(matched[1])
+            const h = Number(matched[2])
+            if (!isNaN(w) && !isNaN(h)) {
+                return w / h
+            }
+        }
+        return DEFAULT_SCREEN_RATIO_FIXED
     }
 }
 
