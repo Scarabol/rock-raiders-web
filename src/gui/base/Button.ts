@@ -41,7 +41,7 @@ export class Button extends BaseElement {
         this.onClick = () => console.log(`button pressed: ${this.buttonType}`)
         if (blinkingByDefault) this.startBlinking()
         EventBroker.subscribe(EventKey.GUI_BUTTON_BLINK, (event: GuiButtonBlinkEvent) => {
-            if (this.buttonType !== event.buttonType) return
+            if (this.buttonType.toLowerCase() !== event.buttonType.toLowerCase()) return
             if (event.blinking) {
                 if (!this.blinkInterval) this.startBlinking()
             } else {

@@ -10,7 +10,7 @@ export class SelectLavaErosionPanel extends IconSubPanel {
 
     constructor(onBackPanel: Panel) {
         super(1, onBackPanel, true)
-        const cancelBuilding = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_RepairLava')
+        const cancelBuilding = this.addMenuItem(GameConfig.instance.interfaceImages.repairLava)
         cancelBuilding.isDisabled = () => this.hasRepairLava
         cancelBuilding.onClick = () => this.publishEvent(new RepairLava())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

@@ -34,7 +34,7 @@ export interface LevelConfData {
     nerpScript: NerpScript
     nerpMessages: NerpMessage[]
     objectiveTextCfg: LevelObjectiveTextEntry
-    objectiveImage640x480: ObjectiveImageCfg
+    objectiveImage: ObjectiveImageCfg
     priorities: LevelPrioritiesEntryConfig[]
     disableStartTeleport: boolean
     disableEndTeleport: boolean
@@ -52,7 +52,7 @@ export interface LevelConfData {
 
 export class LevelLoader {
     static fromName(levelName: string): LevelConfData {
-        const levelConf = GameConfig.instance.levels.levelCfgByName.get(levelName)
+        const levelConf = GameConfig.instance.levels.find((l) => l.levelName.equalsIgnoreCase(levelName))
         if (!levelConf) throw new Error(`Could not find level configuration for "${levelName}"`)
         const levelObjective = ResourceManager.getResource(levelConf.objectiveText) as Record<string, LevelObjectiveTextEntry>
         levelConf.objectiveTextCfg = levelObjective[levelName.toLowerCase()]
@@ -60,8 +60,8 @@ export class LevelLoader {
         if (!terrainMap) throw new Error(`Could not load terrain data for "${levelConf.terrainMap}"`)
         const predugMap = ResourceManager.getResource(levelConf.predugMap) as TerrainMapData
         if (!predugMap || predugMap.width !== terrainMap.width || predugMap.height !== terrainMap.height) throw new Error(`Could not load predug data for ${levelConf.predugMap}`)
-        const rockFallStyle = GameConfig.instance.rockFallStyles.get(levelConf.rockFallStyle.toLowerCase())
-        if (!rockFallStyle) throw new Error(`Could not get rock fall style "${levelConf.rockFallStyle.toLowerCase()}" from config with ${Array.from(GameConfig.instance.rockFallStyles.values())}`)
+        const rockFallStyle = GameConfig.instance.rockFallStyles[levelConf.rockFallStyle.toLowerCase()]
+        if (!rockFallStyle) throw new Error(`Could not get rock fall style "${levelConf.rockFallStyle.toLowerCase()}" from config with ${Object.values(GameConfig.instance.rockFallStyles)}`)
         return {
             levelName: levelConf.levelName,
             fullName: levelConf.fullName,
@@ -69,8 +69,8 @@ export class LevelLoader {
             video: levelConf.video ? `data/${levelConf.video.toLowerCase()}` : '',
             mapWidth: terrainMap.width,
             mapHeight: terrainMap.height,
-            textureBasename: GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet).textureBasename,
-            roofTexture: GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet).roofTexture,
+            textureBasename: GameConfig.instance.textures.textureSetByName[levelConf.textureSet.toLowerCase()].textureBasename,
+            roofTexture: GameConfig.instance.textures.textureSetByName[levelConf.textureSet.toLowerCase()].roofTexture,
             rockFallStyle: rockFallStyle,
             fallinMultiplier: levelConf.fallinMultiplier,
             terrainMap: terrainMap.level,
@@ -85,7 +85,7 @@ export class LevelLoader {
             nerpScript: NerpParser.parse(levelConf.nerpFile),
             nerpMessages: ResourceManager.getResource(levelConf.nerpMessageFile) ?? [],
             objectiveTextCfg: levelConf.objectiveTextCfg,
-            objectiveImage640x480: levelConf.objectiveImage640x480,
+            objectiveImage: levelConf.objectiveImage640x480,
             priorities: levelConf.priorities,
             disableStartTeleport: levelConf.disableStartTeleport || DEV_MODE,
             disableEndTeleport: levelConf.disableEndTeleport || DEV_MODE,
@@ -113,6 +113,7 @@ export class LevelLoader {
     }
 
     static checkRGB(rgbInput: number[] | undefined): [number, number, number] {
-        return rgbInput?.length === 3 ? rgbInput as [number, number, number] : [0, 0, 0]
+        if (!Array.isArray(rgbInput) || rgbInput.length !== 3 || rgbInput.some((n) => isNaN(n))) throw new Error(`Invalid RGB value (${rgbInput}) given`)
+        return rgbInput.map((n) => Math.max(0, Math.min(255, n)) / 255) as [number, number, number]
     }
 }

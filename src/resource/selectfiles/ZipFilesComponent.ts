@@ -58,7 +58,9 @@ export class ZipFilesComponent implements SelectFilesComponent {
             return `https://scarabol.github.io/wad-editor/mirror-archive.org/Rock%20Raiders%20%28${language}%29%20small.zip.part${n}`
         })
         urls.forEach((url) => {
-            const fileName = decodeURIComponent(url.split('/').last())
+            const urlFileName = url.split('/').last()
+            if (!urlFileName) return
+            const fileName = decodeURIComponent(urlFileName)
             this.setProgress(fileName, 0, 100)
         })
         const buffers = await Promise.all(urls.map((url) => this.loadFileFromUrl(url)))
@@ -86,8 +88,13 @@ export class ZipFilesComponent implements SelectFilesComponent {
     }
 
     async loadFileFromUrl(url: string): Promise<ArrayBuffer> {
-        const fileName = decodeURIComponent(url.split('/').last())
         return new Promise((resolve, reject) => {
+            const urlFileName = url.split('/').last()
+            if (!urlFileName) {
+                reject(new Error('No file name given'))
+                return
+            }
+            const fileName = decodeURIComponent(urlFileName)
             console.log(`Loading file from ${url}`)
             const xhr = new XMLHttpRequest()
             xhr.open('GET', url)

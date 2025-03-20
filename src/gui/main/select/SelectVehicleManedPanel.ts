@@ -15,24 +15,24 @@ export class SelectVehicleManedPanel extends IconSubPanel {
 
     constructor(onBackPanel: Panel) {
         super(7, onBackPanel, true)
-        const unloadVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UnLoadVehicle')
+        const unloadVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages.unLoadVehicle)
         unloadVehicleItem.isDisabled = () => this.noVehicleWithCarried
         unloadVehicleItem.onClick = () => this.publishEvent(new VehicleUnload())
-        const loadVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_VehiclePickUp')
+        const loadVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages.vehiclePickUp)
         loadVehicleItem.isDisabled = () => !this.someVehicleCanLoad
         loadVehicleItem.onClick = () => this.publishEvent(new VehicleLoad())
-        this.upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UpgradeVehicle')
+        this.upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages.upgradeVehicle)
         this.upgradeItem.isDisabled = () => !this.hasUpgradeSite
-        const leaveVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GetOut')
+        const leaveVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages.getOut)
         leaveVehicleItem.isDisabled = () => this.noVehicleWithDriver
         leaveVehicleItem.onClick = () => this.publishEvent(new VehicleDriverGetOut())
-        const firstPersonView = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoFirstPerson')
+        const firstPersonView = this.addMenuItem(GameConfig.instance.interfaceImages.gotoFirstPerson)
         firstPersonView.isDisabled = () => false
         firstPersonView.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.FPV))
-        const shoulderView = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoSecondPerson')
+        const shoulderView = this.addMenuItem(GameConfig.instance.interfaceImages.gotoSecondPerson)
         shoulderView.isDisabled = () => false
         shoulderView.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.SHOULDER))
-        const deleteVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteVehicle')
+        const deleteVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages.deleteVehicle)
         deleteVehicleItem.isDisabled = () => false
         deleteVehicleItem.onClick = () => this.publishEvent(new VehicleBeamUp())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

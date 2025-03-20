@@ -27,7 +27,7 @@ export class InfoDockPanel extends Panel {
         this.addInfoDockButton(infoMessagesConfig.infoLandslide, EventKey.LOCATION_LANDSLIDE)
         this.addInfoDockButton(infoMessagesConfig.infoPowerDrain, EventKey.LOCATION_POWER_DRAIN)
         this.addInfoDockButton(infoMessagesConfig.infoSlugEmerge, EventKey.LOCATION_SLUG_EMERGE, EventKey.LOCATION_SLUG_GONE)
-        this.addInfoDockButton(infoMessagesConfig.infoFoundMinifigure, EventKey.LOCATION_RAIDER_DISCOVERED)
+        this.addInfoDockButton(infoMessagesConfig.infoFoundMiniFigure, EventKey.LOCATION_RAIDER_DISCOVERED)
     }
 
     reset() {

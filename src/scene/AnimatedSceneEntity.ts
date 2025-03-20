@@ -178,7 +178,7 @@ export class AnimatedSceneEntity extends SceneEntity {
                 }
                 const upgradeMesh = new AnimatedSceneEntity()
                 upgradeMesh.name = upgrade.lNameType
-                const upgradeFilename = GameConfig.instance.upgradeTypesCfg.get(upgrade.lNameType) || upgrade.lUpgradeFilepath
+                const upgradeFilename = GameConfig.instance.upgradeTypes[upgrade.lNameType] || upgrade.lUpgradeFilepath
                 try {
                     const upgradeAnimData = ResourceManager.getAnimatedData(upgradeFilename)
                     upgradeMesh.addAnimated(upgradeAnimData)

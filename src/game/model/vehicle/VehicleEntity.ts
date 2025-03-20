@@ -83,8 +83,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         const objectKey = this.entityType.toLowerCase()
-        const objectName = GameConfig.instance.objectNamesCfg.get(objectKey)
-        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey) || ''
+        const objectName = GameConfig.instance.objectNames[objectKey] || ''
+        const sfxKey = GameConfig.instance.objTtSFXs[objectKey] || ''
         if (objectName) this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, sfxKey, () => {
             const health = this.worldMgr.ecs.getComponents(this.entity).get(HealthComponent)?.health ?? 0
             return TooltipSpriteBuilder.getTooltipSprite(objectName, health)
@@ -118,9 +118,14 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             this.workAudioId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundVehicle, true)
         }
         if (workActivity === RaiderActivity.Drill) {
+            const workplace = this.job.getWorkplace(this)
+            if (!this.job.surface || !workplace) {
+                this.stopJob()
+                return
+            }
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
             this.sceneEntity.setAnimation(workActivity)
-            this.job.surface.addDrillTimeProgress(this.getDrillTimeSeconds(this.job.surface), elapsedMs, this.job.getWorkplace(this).targetLocation)
+            this.job.surface.addDrillTimeProgress(this.getDrillTimeSeconds(this.job.surface), elapsedMs, workplace.targetLocation)
         } else if (workActivity === AnimEntityActivity.Stand) {
             this.sceneEntity.setAnimation(workActivity)
             this.completeJob()
@@ -173,7 +178,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), targets, this.stats, 1)
     }
 
-    private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {
+    private moveToClosestTarget(target: PathTarget | undefined, elapsedMs: number): MoveState {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
         if (result === MoveState.MOVED) {
             this.onEntityMoved()
@@ -204,14 +209,14 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         })
     }
 
-    private moveToClosestTargetInternal(target: PathTarget, elapsedMs: number): MoveState {
+    private moveToClosestTargetInternal(target: PathTarget | undefined, elapsedMs: number): MoveState {
         if (!target) return MoveState.TARGET_UNREACHABLE
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
             const path = this.findShortestPath(target)
             this.currentPath = path && path.locations.length > 0 ? path : undefined
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
-        const step = this.determineStep(elapsedMs)
+        const step = this.determineStep(elapsedMs, this.currentPath)
         if (step.targetReached) {
             if (target.building) this.sceneEntity.headTowards(target.building.primarySurface.getCenterWorld2D())
             return MoveState.TARGET_REACHED
@@ -225,20 +230,20 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         }
     }
 
-    private determineStep(elapsedMs: number): EntityStep {
-        const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
+    private determineStep(elapsedMs: number, currentPath: TerrainPath): EntityStep {
+        const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(currentPath.firstLocation)
         targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
         const step = new EntityStep(targetWorld.sub(this.getPosition()))
         const stepLengthSq = step.vec.lengthSq()
         const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // XXX use average speed between current and target position
         const entitySpeedSq = entitySpeed * entitySpeed
-        if (this.currentPath.locations.length > 1) {
+        if (currentPath.locations.length > 1) {
             if (stepLengthSq <= entitySpeedSq) {
-                this.currentPath.locations.shift()
-                return this.determineStep(elapsedMs)
+                currentPath.locations.shift()
+                return this.determineStep(elapsedMs, currentPath)
             }
         }
-        if (this.currentPath.target.targetLocation.distanceToSquared(this.getPosition2D()) <= this.currentPath.target.radiusSq) {
+        if (currentPath.target.targetLocation.distanceToSquared(this.getPosition2D()) <= currentPath.target.radiusSq) {
             step.targetReached = true
         }
         step.vec.clampLength(0, entitySpeed)
@@ -320,9 +325,11 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         }
     }
 
-    getDrillTimeSeconds(surface: Surface): number {
+    getDrillTimeSeconds(surface: Surface | undefined): number {
         if (!surface) return 0
-        return this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0
+        const statsDrillName = surface.surfaceType.statsDrillName
+        if (!statsDrillName) return 0
+        return this.stats[statsDrillName]?.[this.level] || 0
     }
 
     setJob(job: Job, followUpJob?: Job) {
@@ -355,17 +362,17 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         } else if (this.hasCapacity()) {
             const fulfillerPos = this.getPosition2D()
             const matNearby = this.worldMgr.entityMgr.materials.find((m) => { // XXX Move to entity manager and optimize with quad tree
-                if (m.entityType !== this.job.carryItem.entityType || m.carryJob.hasFulfiller() || m.carryJob.jobState !== JobState.INCOMPLETE) return false
+                if (m.entityType !== this.job?.carryItem?.entityType || m.carryJob?.hasFulfiller() || m.carryJob?.jobState !== JobState.INCOMPLETE) return false
                 const pos = this.worldMgr.ecs.getComponents(m.entity)?.get(PositionComponent)
                 if (!pos) return false
                 return pos.getPosition2D().distanceToSquared(fulfillerPos) < Math.pow(3 * TILESIZE, 2) // XXX Improve range, since this is executed on each frame
             })
-            if (matNearby) {
-                const workplace = this.job.getWorkplace(this)
-                if (workplace.building) {
+            if (matNearby?.carryJob) {
+                const workplace = this.job?.getWorkplace(this)
+                if (workplace?.building) {
                     this.job = matNearby.carryJob
                     this.job.assign(this)
-                } else if (workplace.site) {
+                } else if (workplace?.site) {
                     if (!workplace.site.needs(carryItem.entityType)) {
                         return true
                     }
@@ -422,7 +429,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (!this.driver) return
         this.sceneEntity.removeDriver()
         this.driver.vehicle = undefined
-        const hopOffSpot = walkableSurface.building?.entityType === EntityType.DOCKS ? walkableSurface.building.primaryPathSurface.getRandomPosition() : walkableSurface.getRandomPosition()
+        const hopOffSpot = walkableSurface.building?.entityType === EntityType.DOCKS ? walkableSurface.building.primaryPathSurface!.getRandomPosition() : walkableSurface.getRandomPosition()
         const floorPosition = this.driver.worldMgr.sceneMgr.getFloorPosition(hopOffSpot)
         this.driver.setPosition(floorPosition)
         this.driver.sceneEntity.rotation.y = this.sceneEntity.heading

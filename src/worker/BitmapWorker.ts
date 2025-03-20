@@ -21,22 +21,23 @@ export interface BitmapWorkerResponse {
 
 export class BitmapSystem extends AbstractWorkerSystem<BitmapWorkerRequest, BitmapWorkerResponse> {
     onMessageFromFrontend(workerRequestHash: string, request: BitmapWorkerRequest): void {
+        const decoded = BitmapWithPalette.decode(new DataView(request.bitmapData))
         switch (request.type) {
             case BitmapWorkerRequestType.DECODE_BITMAP:
-                this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData)})
+                this.sendResponse(workerRequestHash, {decoded: decoded})
                 break
             case BitmapWorkerRequestType.DECODE_BITMAP_ALPHA:
-                this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlpha()})
+                this.sendResponse(workerRequestHash, {decoded: decoded.applyAlpha()})
                 break
             case BitmapWorkerRequestType.DECODE_BITMAP_ALPHA_INDEX:
                 if (request.alphaIndex === undefined || request.alphaIndex === null) {
                     console.error(`No alpha index given for bitmap decode request`)
                     return
                 }
-                this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlphaByIndex(request.alphaIndex)})
+                this.sendResponse(workerRequestHash, {decoded: decoded.applyAlphaByIndex(request.alphaIndex)})
                 break
             case BitmapWorkerRequestType.DECODE_BITMAP_ALPHA_TRANSLUCENT:
-                this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlphaTranslucent()})
+                this.sendResponse(workerRequestHash, {decoded: decoded.applyAlphaTranslucent()})
                 break
         }
     }

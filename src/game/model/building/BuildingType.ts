@@ -84,13 +84,13 @@ export class BuildingType {
     }
 
     getObjectName(level: number): string {
-        let objectName = GameConfig.instance.objectNamesCfg.getOrUpdate(this.entityType.toLowerCase(), () => '')
+        let objectName = GameConfig.instance.objectNames[this.entityType.toLowerCase()] || ''
         const upgradeName = GameConfig.instance.upgradeNames[level - 1]
         if (upgradeName) objectName += ` (${upgradeName})`
         return objectName
     }
 
     getSfxKey(): string {
-        return GameConfig.instance.objTtSFXs.getOrUpdate(this.entityType.toLowerCase(), () => '')
+        return GameConfig.instance.objTtSFXs[this.entityType.toLowerCase()] || ''
     }
 }

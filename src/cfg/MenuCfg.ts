@@ -1,6 +1,6 @@
 import { Rect } from '../core/Rect'
 import { BaseConfig } from './BaseConfig'
-import { parseLabel } from './CfgHelper'
+import { CfgHelper } from './CfgHelper'
 import { MenuEntryCfg } from './MenuEntryCfg'
 import { OverwriteCfg } from './OverwriteCfg'
 
@@ -54,7 +54,7 @@ export class GameMenuCfg extends BaseConfig {
             const helpWindowCycle = this.optionsMenu.menus[0].itemsCycle[0]
             ;[helpWindowCycle.labelOn, helpWindowCycle.labelOff] = [helpWindowCycle.labelOff, helpWindowCycle.labelOn] // XXX uplift config parsing workaround
         } else if ('Overwrite'.equalsIgnoreCase(unifiedKey)) {
-            this.overwrite.setFromCfgObj(cfgValue)
+            this.overwrite.setFromValue(cfgValue)
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)
         }
@@ -63,7 +63,7 @@ export class GameMenuCfg extends BaseConfig {
 
     parseValue(unifiedKey: string, cfgValue: any): any {
         if (unifiedKey === 'savegame' || unifiedKey === 'loadgame') {
-            return parseLabel(cfgValue)
+            return CfgHelper.parseLabel(cfgValue)
         } else {
             return super.parseValue(unifiedKey, cfgValue)
         }
@@ -96,7 +96,7 @@ class LevelTextCfg extends BaseConfig {
         } else if ('Panel'.equalsIgnoreCase(unifiedKey)) {
             this.panel.setFromCfgObj(cfgValue)
         } else {
-            return super.assignValue(objKey, unifiedKey, parseLabel(cfgValue))
+            return super.assignValue(objKey, unifiedKey, CfgHelper.parseLabel(cfgValue))
         }
         return true
     }
@@ -106,7 +106,7 @@ export class MenuPanelCfg extends BaseConfig {
     imgBackground: string = ''
     rect: Rect = new Rect()
 
-    setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {
+    setFromCfgObj(cfgObj: any): this {
         this.imgBackground = cfgObj[0]
         this.rect.x = cfgObj[1]
         this.rect.y = cfgObj[2]
@@ -126,7 +126,7 @@ export class SaveTextCfg extends BaseConfig {
         if (unifiedKey === 'window') {
             return Rect.fromArray(cfgValue)
         } else {
-            return parseLabel(cfgValue)
+            return CfgHelper.parseLabel(cfgValue)
         }
     }
 }

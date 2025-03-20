@@ -1,19 +1,13 @@
 import { VERBOSE } from '../params'
 
 export class BaseConfig {
-    setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {
+    setFromCfgObj(cfgObj: any): this {
         Object.entries(cfgObj).forEach(([cfgKey, value]) => {
             const unifiedKey = this.unifyKey(cfgKey)
             const found = Object.keys(this).some((objKey) => {
                 return this.assignValue(objKey, unifiedKey, value)
             })
-            if (!found) {
-                if (createMissing) {
-                    this[cfgKey] = value
-                } else {
-                    if (VERBOSE) console.warn(`cfg key: ${cfgKey} does not exist in cfg and will be ignored`)
-                }
-            }
+            if (!found && VERBOSE) console.warn(`cfg key: ${cfgKey} does not exist in cfg and will be ignored`)
         })
         return this
     }

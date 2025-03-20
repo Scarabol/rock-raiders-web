@@ -14,11 +14,11 @@ export class PausePanel extends MenuBasePanel {
         super(cfg)
         this.width = width
         this.height = height
-        this.layersByKey.get('menu1').itemsTrigger[0].onClick = () => this.onContinueGame()
-        setupOptionsLayer(this.layersByKey.get('menu2'), () => this.onRepeatBriefing())
-        this.layersByKey.get('menu3').itemsTrigger[0].onClick = () => this.onAbortGame()
-        this.layersByKey.get('menu4').itemsTrigger[0].onClick = () => this.onRestartGame()
-        const advOptions = this.layersByKey.get('menu5')
+        this.layersByKey.get('menu1')!.itemsTrigger[0].onClick = () => this.onContinueGame()
+        setupOptionsLayer(this.layersByKey.get('menu2')!, () => this.onRepeatBriefing())
+        this.layersByKey.get('menu3')!.itemsTrigger[0].onClick = () => this.onAbortGame()
+        this.layersByKey.get('menu4')!.itemsTrigger[0].onClick = () => this.onRestartGame()
+        const advOptions = this.layersByKey.get('menu5')!
         const wallDetailsToggle = advOptions.itemsCycle[0]
         wallDetailsToggle.disabled = true // TODO Implement wall details with pro meshes
         wallDetailsToggle.setState(SaveGameManager.preferences.wallDetails)

@@ -30,7 +30,7 @@ export class PanelRotationControlImageCfg extends BaseConfig {
     x: number = 0
     y: number = 0
 
-    setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {
+    setFromCfgObj(cfgObj: any): this {
         [this.imgHighlight, this.x, this.y] = cfgObj
         return this
     }

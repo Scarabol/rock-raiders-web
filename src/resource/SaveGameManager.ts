@@ -21,6 +21,10 @@ export class SaveGamePreferences { // this gets serialized
     edgeScrolling: boolean = !DEV_MODE
 }
 
+type DeepPartial<T> = {
+    [P in keyof T]?: T[P] extends object ? (T[P] extends Array<infer _> ? T[P] : DeepPartial<T[P]>) : T[P];
+}
+
 export class SaveGameManager {
     static preferences: SaveGamePreferences = new SaveGamePreferences()
     static screenshots: Promise<HTMLCanvasElement | undefined>[] = []
@@ -45,7 +49,8 @@ export class SaveGameManager {
     static loadSaveGames() {
         try {
             if (VERBOSE) console.log('Loading save games...')
-            this.saveGames = JSON.parse(localStorage.getItem('savegames') || '[]')
+            const saveGames: DeepPartial<SaveGame>[] = JSON.parse(localStorage.getItem('savegames') || '[]')
+            this.saveGames = saveGames.map((s): SaveGame => SaveGame.copy(s))
             console.log('All save games loaded', this.saveGames)
         } catch (e) {
             console.error('Could not load save games', e)
@@ -179,17 +184,26 @@ export class SaveGameManager {
 }
 
 class SaveGame { // this gets serialized
-    levels?: SaveGameLevel[] = []
-    team?: SaveGameRaider[] = []
+    levels: SaveGameLevel[] = []
+    team: SaveGameRaider[] = []
+
+    static copy(other: DeepPartial<SaveGame>): SaveGame {
+        const result = new SaveGame()
+        other.levels?.forEach((l) => {
+            if (l?.levelName && l?.levelScore) result.levels.push(new SaveGameLevel(l.levelName, l.levelScore))
+        })
+        result.team = other.team?.map((t) => SaveGameRaider.copy(t)) || []
+        return result
+    }
 }
 
 class SaveGameLevel { // this gets serialized
-    levelName?: string = ''
-    levelScore?: number = 0
+    readonly levelName: string
+    levelScore: number
 
-    constructor(levelName: string | undefined, levelScore: number | undefined) {
-        this.levelName = levelName || ''
-        this.levelScore = levelScore || 0
+    constructor(levelName: string, levelScore: number) {
+        this.levelName = levelName
+        this.levelScore = levelScore
     }
 
     static copy(other: SaveGameLevel): SaveGameLevel {
@@ -198,17 +212,17 @@ class SaveGameLevel { // this gets serialized
 }
 
 export class SaveGameRaider { // this gets serialized
-    name?: string = ''
-    level?: number = 0
-    trainings?: string[] = []
+    name: string
+    level: number
+    trainings: string[]
 
-    constructor(name: string | undefined, level: number | undefined, trainings: string[] | undefined) {
-        this.name = name || ''
-        this.level = level || 0
-        this.trainings = [...(trainings || [])]
+    constructor(name: string, level: number, trainings: string[]) {
+        this.name = name
+        this.level = level
+        this.trainings = [...trainings]
     }
 
-    static copy(other: SaveGameRaider): SaveGameRaider {
-        return new SaveGameRaider(other.name, other.level, other.trainings)
+    static copy(other: DeepPartial<SaveGameRaider>): SaveGameRaider {
+        return new SaveGameRaider(other.name || '', other.level || 0, other.trainings || [])
     }
 }

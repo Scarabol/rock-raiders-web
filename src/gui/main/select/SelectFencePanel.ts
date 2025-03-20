@@ -6,7 +6,7 @@ import { GameConfig } from '../../../cfg/GameConfig'
 export class SelectFencePanel extends IconSubPanel {
     constructor(onBackPanel: Panel) {
         super(1, onBackPanel, true)
-        const beamUpFence = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteElectricFence')
+        const beamUpFence = this.addMenuItem(GameConfig.instance.interfaceImages.deleteElectricFence)
         beamUpFence.isDisabled = () => false
         beamUpFence.onClick = () => this.publishEvent(new BeamUpFence())
     }

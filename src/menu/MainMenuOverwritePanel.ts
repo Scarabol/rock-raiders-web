@@ -6,12 +6,12 @@ import { GameConfig } from '../cfg/GameConfig'
 
 export class MainMenuOverwritePanel extends MainMenuBaseItem {
     overwriteBack: SpriteImage
-    titleImg: SpriteImage
-    titleX: number
-    titleY: number
-    textImg: SpriteImage
-    textX: number
-    textY: number
+    titleImg?: SpriteImage
+    titleX: number = 0
+    titleY: number = 0
+    textImg?: SpriteImage
+    textX: number = 0
+    textY: number = 0
 
     constructor(parentWidth: number, parentHeight: number) {
         super()
@@ -23,6 +23,7 @@ export class MainMenuOverwritePanel extends MainMenuBaseItem {
         this.y = (parentHeight - this.height) / 2
         this.zIndex = 50
         BitmapFontWorkerPool.instance.createTextImage('Interface/Fonts/MbriefFont2.bmp', GameConfig.instance.menu.overwrite.title, dialogCfg.titleWindow.w).then((img) => {
+            if (!img) return
             this.titleImg = img
             this.titleX = this.x + dialogCfg.titleWindow.x + (dialogCfg.titleWindow.w - this.titleImg.width) / 2
             this.titleY = this.y + dialogCfg.titleWindow.y
@@ -32,6 +33,7 @@ export class MainMenuOverwritePanel extends MainMenuBaseItem {
     setIndex(saveGameIndex: number) {
         const text = GameConfig.instance.menu.overwrite.text.replaceAll('%d', (saveGameIndex + 1).toString())
         BitmapFontWorkerPool.instance.createTextImage('Interface/Fonts/MbriefFont.bmp', text, GameConfig.instance.dialog.textWindow.w).then((img) => {
+            if (!img) return
             this.textImg = img
             const dialogCfg = GameConfig.instance.dialog
             this.textX = this.x + dialogCfg.textWindow.x + (dialogCfg.textWindow.w - this.textImg.width) / 2

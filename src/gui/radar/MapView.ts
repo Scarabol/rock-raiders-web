@@ -11,7 +11,6 @@ import { CameraControl, ChangeTooltip } from '../../event/GuiCommand'
 import { CursorManager } from '../../screen/CursorManager'
 import { TILESIZE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
 import { EventBroker } from '../../event/EventBroker'
-import { CURSOR } from '../../resource/Cursor'
 import { Vector2 } from 'three'
 import { MapRendererCameraRect } from '../../worker/MapRendererWorker'
 import { Panel } from '../base/Panel'
@@ -168,7 +167,7 @@ export class MapView extends BaseElement {
                     const dz = ty - ez
                     if (Math.abs(dx) <= 2 && Math.abs(dz) <= 2) { // TODO sync with rect size in MapRendererWorker
                         this.entityBelowCursor = entity
-                        CursorManager.changeCursor(CURSOR.TRACK_OBJECT)
+                        CursorManager.changeCursor('trackObject')
                         if (this.lastEntity !== entity) {
                             this.lastEntity = entity
                             // TODO get entity object name and publish tooltip event

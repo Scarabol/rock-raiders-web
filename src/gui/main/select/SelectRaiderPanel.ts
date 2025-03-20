@@ -18,30 +18,30 @@ export class SelectRaiderPanel extends IconSubPanel {
 
     constructor(onBackPanel: Panel) {
         super(10, onBackPanel, true)
-        const feedItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GoFeed')
+        const feedItem = this.addMenuItem(GameConfig.instance.interfaceImages.goFeed)
         feedItem.isDisabled = () => false
         feedItem.onClick = () => this.publishEvent(new RaiderEat())
-        const unloadItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UnLoadMinifigure')
+        const unloadItem = this.addMenuItem(GameConfig.instance.interfaceImages.unLoadMiniFigure)
         unloadItem.isDisabled = () => !this.someCarries
         unloadItem.onClick = () => this.publishEvent(new RaiderDrop())
-        this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_MinifigurePickUp')
-        this.getToolItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GetTool')
+        this.addMenuItem(GameConfig.instance.interfaceImages.miniFigurePickUp)
+        this.getToolItem = this.addMenuItem(GameConfig.instance.interfaceImages.getTool)
         this.getToolItem.isDisabled = () => false
-        const dropBirdScarer = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DropBirdScarer')
+        const dropBirdScarer = this.addMenuItem(GameConfig.instance.interfaceImages.dropBirdScarer)
         dropBirdScarer.isDisabled = () => !this.hasBirdScarer
         dropBirdScarer.onClick = () => this.publishEvent(new DropBirdScarer())
-        const upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UpgradeMan')
+        const upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages.upgradeMan)
         upgradeItem.isDisabled = () => this.everyHasMaxLevel || !this.hasToolstation
         upgradeItem.onClick = () => this.publishEvent(new RaiderUpgrade())
-        this.trainItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_TrainSkill')
+        this.trainItem = this.addMenuItem(GameConfig.instance.interfaceImages.trainSkill)
         this.trainItem.isDisabled = () => false
-        const firstPersonView = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoFirstPerson')
+        const firstPersonView = this.addMenuItem(GameConfig.instance.interfaceImages.gotoFirstPerson)
         firstPersonView.isDisabled = () => false
         firstPersonView.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.FPV))
-        const shoulderView = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoSecondPerson')
+        const shoulderView = this.addMenuItem(GameConfig.instance.interfaceImages.gotoSecondPerson)
         shoulderView.isDisabled = () => false
         shoulderView.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.SHOULDER))
-        const deleteRaiderItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteMan')
+        const deleteRaiderItem = this.addMenuItem(GameConfig.instance.interfaceImages.deleteMan)
         deleteRaiderItem.isDisabled = () => false
         deleteRaiderItem.onClick = () => this.publishEvent(new RaiderBeamUp())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

@@ -7,13 +7,13 @@ export class ChangeCameraPanel extends IconSubPanel {
 
     constructor() {
         super(3, undefined, false)
-        const birdViewItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoTopView')
+        const birdViewItem = this.addMenuItem(GameConfig.instance.interfaceImages.gotoTopView)
         birdViewItem.isDisabled = () => this.cameraViewMode === CameraViewMode.BIRD
         birdViewItem.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.BIRD))
-        const shoulderViewItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoSecondPerson')
+        const shoulderViewItem = this.addMenuItem(GameConfig.instance.interfaceImages.gotoSecondPerson)
         shoulderViewItem.isDisabled = () => this.cameraViewMode === CameraViewMode.SHOULDER
         shoulderViewItem.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.SHOULDER))
-        const fpvViewItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoFirstPerson')
+        const fpvViewItem = this.addMenuItem(GameConfig.instance.interfaceImages.gotoFirstPerson)
         fpvViewItem.isDisabled = () => this.cameraViewMode === CameraViewMode.FPV
         fpvViewItem.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.FPV))
     }

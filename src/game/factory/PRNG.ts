@@ -8,7 +8,7 @@ export class PRNG {
     static readonly animation: SeededRandomGenerator = new SeededRandomGenerator()
     static readonly nerp: SeededRandomGenerator = new SeededRandomGenerator()
 
-    static readonly unsafe: SeededRandomGenerator = new SeededRandomGenerator().setSeed(Math.random().toString())
+    static readonly unsafe: SeededRandomGenerator = new SeededRandomGenerator().setSeed(Math.random().toString().substring(2))
 
     static setSeed(masterSeed: string) {
         console.log(`Seeding random generators with master seed "${masterSeed}"`)

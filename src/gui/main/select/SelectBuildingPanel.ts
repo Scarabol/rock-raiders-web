@@ -17,17 +17,17 @@ export class SelectBuildingPanel extends IconSubPanel {
 
     constructor(onBackPanel: Panel) {
         super(4, onBackPanel, true)
-        const repairBuildingItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_Repair')
+        const repairBuildingItem = this.addMenuItem(GameConfig.instance.interfaceImages.repair)
         repairBuildingItem.isDisabled = () => !this.buildingNeedsRepair
         repairBuildingItem.onClick = () => this.publishEvent(new RepairBuilding())
-        const menuItemOffCfg = GameConfig.instance.interfaceImages.get('Interface_MenuItem_PowerOff'.toLowerCase())
-        const menuItemOnCfg = GameConfig.instance.interfaceImages.get('Interface_MenuItem_PowerOn'.toLowerCase())
+        const menuItemOffCfg = GameConfig.instance.interfaceImages.powerOff
+        const menuItemOnCfg = GameConfig.instance.interfaceImages.powerOn
         const powerSwitchItem = this.addChild(new IconPanelToggleButton(menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(powerSwitchItem)
         powerSwitchItem.isDisabled = () => !this.buildingCanSwitchPower
         powerSwitchItem.isToggled = () => !this.buildingPowerSwitchState
         powerSwitchItem.onClick = () => this.publishEvent(new ChangeBuildingPowerState(!powerSwitchItem.toggleState))
-        const upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UpgradeBuilding')
+        const upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages.upgradeBuilding)
         upgradeItem.isDisabled = () => !this.buildingCanUpgrade
         upgradeItem.onClick = () => this.publishEvent(new UpgradeBuilding())
         upgradeItem.showTooltipDisabled = () => {
@@ -41,7 +41,7 @@ export class SelectBuildingPanel extends IconSubPanel {
             }
             this.publishEvent(event)
         }
-        const deleteBuildingItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteBuilding')
+        const deleteBuildingItem = this.addMenuItem(GameConfig.instance.interfaceImages.deleteBuilding)
         deleteBuildingItem.isDisabled = () => false
         deleteBuildingItem.onClick = () => this.publishEvent(new BeamUpBuilding())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

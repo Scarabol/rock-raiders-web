@@ -4,8 +4,6 @@ import { SelectFilesModal } from './selectfiles/SelectFilesModal'
 import { VirtualFileSystem } from './fileparser/VirtualFileSystem'
 import { VirtualFile } from './fileparser/VirtualFile'
 import { WadParser } from './fileparser/WadParser'
-import { CfgFileParser } from './fileparser/CfgFileParser'
-import { GameConfig } from '../cfg/GameConfig'
 import { HTML_GAME_CONTAINER } from '../core'
 
 export class GameFilesLoader {
@@ -53,12 +51,6 @@ export class GameFilesLoader {
         console.time('Total asset loading time')
         vfs.filterEntryNames('.+\\.wad').sort()
             .forEach((f) => WadParser.parseFileList(vfs.getFile(f).toDataView()).forEach((f) => vfs.registerFile(f)))
-        this.loadingLayer.setLoadingMessage('Loading configuration...')
-        const cfgFiles = vfs.filterEntryNames('\\.cfg')
-        if (cfgFiles.length < 1) throw new Error('Invalid second WAD file given! No config file present at root level.')
-        if (cfgFiles.length > 1) console.warn(`Found multiple config files (${cfgFiles}) will proceed with first one "${cfgFiles[0]}" only`)
-        const result = CfgFileParser.parse(vfs.getFile(cfgFiles[0]).toArray())
-        GameConfig.instance.setFromCfgObj(result, true) // TODO do not create missing
         this.modal.hide()
         this.onDoneCallback?.(vfs)
     }

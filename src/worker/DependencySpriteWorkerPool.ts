@@ -11,22 +11,19 @@ export class DependencySpriteWorkerPool extends AbstractWorkerPool<DependencySpr
     static readonly dependencySpriteCache: Map<string, SpriteImage> = new Map()
 
     setupPool(args: {
-        teleportManNormal: ImageData,
-        teleportManDisabled: ImageData,
+        teleportManImageData: Map<string, [ImageData, ImageData]>,
         tooltipFontData: BitmapFontData,
         plusSign: ImageData,
         equalSign: ImageData,
         depInterfaceBuildImageData: Map<string, [ImageData, ImageData]>,
     }) {
-        const depInterfaceImageData: Map<string, [ImageData, ImageData]> = new Map()
-        depInterfaceImageData.set('Interface_MenuItem_TeleportMan'.toLowerCase(), [args.teleportManNormal, args.teleportManDisabled])
         return this.startPool(4, {
             type: DependencySpriteWorkerRequestType.SETUP,
             upgradeNames: GameConfig.instance.upgradeNames,
             tooltipFontData: args.tooltipFontData,
             plusSignImgData: args.plusSign,
             equalSignImgData: args.equalSign,
-            interfaceImageData: depInterfaceImageData,
+            interfaceImageData: args.teleportManImageData,
             interfaceBuildImageData: args.depInterfaceBuildImageData,
         })
     }

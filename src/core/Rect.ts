@@ -8,6 +8,8 @@ export class Rect {
     }
 
     public static fromArray(arr: number[]) {
+        if (arr.length !== 4) throw new Error(`Invalid number of args (${arr}) given for rect`)
+        if (arr.some((n) => isNaN(n))) throw new Error(`Invalid arg (${arr}) given for rect`)
         return new Rect(...arr)
     }
 }

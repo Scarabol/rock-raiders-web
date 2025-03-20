@@ -11,7 +11,9 @@ export class OptionsPanel extends MenuBasePanel {
         this.width = width
         this.height = height
         const menu1 = this.layersByKey.get('menu1')
-        menu1.itemsTrigger[1].onClick = () => this.onContinueMission()
-        setupOptionsLayer(menu1, () => this.onRepeatBriefing())
+        if (menu1) {
+            menu1.itemsTrigger[1].onClick = () => this.onContinueMission()
+            setupOptionsLayer(menu1, () => this.onRepeatBriefing())
+        }
     }
 }

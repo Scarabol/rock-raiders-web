@@ -25,13 +25,8 @@ export class SurfaceMesh extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
     }
 
     setTexture(textureFilepath: string, textureRotation: number) {
-        const texture = ResourceManager.getSurfaceTexture(textureFilepath, textureRotation)
-        if (!texture) { // ice has no lava erosion textures
-            console.warn(`Could not find texture '${textureFilepath}'`)
-            return
-        }
         this.material.map?.dispose()
-        this.material.map = texture
+        this.material.map = ResourceManager.getSurfaceTexture(textureFilepath, textureRotation) ?? null
         this.material.needsUpdate = true
     }
 

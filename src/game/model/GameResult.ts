@@ -38,7 +38,7 @@ export class GameResult {
         readonly numBuildings: number,
         readonly numRaiders: number,
         readonly numMaxAirRaiders: number,
-        readonly gameTimeSeconds: number,
+        readonly gameTimeMs: number,
         readonly screenshot: HTMLCanvasElement | undefined,
     ) {
         this.airLevelPercent = GameState.airLevel * 100
@@ -52,7 +52,7 @@ export class GameResult {
         const importance = this.rewardConfig?.importance
         if (quota && importance) {
             this.scoreCrystals = quota.crystals ? Math.min(1, GameState.numCrystal / quota.crystals) * importance.crystals : 0
-            this.scoreTimer = quota.timer && this.gameTimeSeconds <= quota.timer ? importance.timer : 0
+            this.scoreTimer = quota.timerMs && this.gameTimeMs <= quota.timerMs ? importance.timer : 0
             this.scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
             this.scoreConstructions = quota.constructions ? Math.min(1, this.numBuildings / quota.constructions) * importance.constructions : 0
             this.scoreOxygen = GameState.airLevel * importance.oxygen
@@ -64,7 +64,7 @@ export class GameResult {
     }
 
     static random(): GameResult {
-        const randomLevelConf = PRNG.unsafe.sample(Array.from(GameConfig.instance.levels.levelCfgByName.values()).filter((c) => c.levelName.toLowerCase().startsWith('level')))
+        const randomLevelConf = PRNG.unsafe.sample(GameConfig.instance.levels.filter((c) => c.levelName.toLowerCase().startsWith('level')))
         if (!randomLevelConf) throw new Error('Could not find random level configuration')
         return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GameResultState.COMPLETE, PRNG.unsafe.randInt(6), PRNG.unsafe.randInt(10), 10, 942, undefined)
     }

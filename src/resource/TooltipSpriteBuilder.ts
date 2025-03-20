@@ -14,7 +14,7 @@ export class TooltipSpriteBuilder {
         }
         const requests: Promise<SpriteImage>[] = [BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, tooltipText)]
         if (energy) {
-            requests.add(BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.toolTipInfo.get('energytext')}: ${Math.round(energy)}`))
+            requests.add(BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.toolTipInfo['energytext']}: ${Math.round(energy)}`))
         }
         const tooltipTextImages = await Promise.all(requests)
         return this.wrapTooltipSprite(...tooltipTextImages.map((s) => [s]))
@@ -23,29 +23,29 @@ export class TooltipSpriteBuilder {
     static async getRaiderTooltipSprite(tooltipText: string, numToolSlots: number, tools: RaiderTool[], trainings: RaiderTraining[]): Promise<SpriteImage> {
         const tooltipTextImage = await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, tooltipText)
         const toolIcons = tools.map((t) => {
-            return ResourceManager.getImage(GameConfig.instance.tooltipIcons.get(RaiderTools.toToolTipIconName(t)))
+            return ResourceManager.getImage(GameConfig.instance.tooltipIcons[RaiderTools.toToolTipIconName(t)])
         })
         for (let c = toolIcons.length; c < numToolSlots; c++) {
-            toolIcons.push(ResourceManager.getImage(GameConfig.instance.tooltipIcons.get('blank')))
+            toolIcons.push(ResourceManager.getImage(GameConfig.instance.tooltipIcons['blank']))
         }
         const trainingIcons = trainings.map((t) => {
-            return ResourceManager.getImage(GameConfig.instance.tooltipIcons.get(RaiderTrainings.toToolTipIconName(t)))
+            return ResourceManager.getImage(GameConfig.instance.tooltipIcons[RaiderTrainings.toToolTipIconName(t)])
         })
         return this.wrapTooltipSprite([tooltipTextImage], toolIcons, trainingIcons)
     }
 
     static async getBuildingSiteTooltipSprite(tooltipText: string, crystals: { actual: number, needed: number }, ores: { actual: number, needed: number }, bricks: { actual: number, needed: number }): Promise<SpriteImage> {
         const tooltipTextImage = await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, tooltipText)
-        const crystalsTextImage = crystals?.needed ? [await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.objectNamesCfg.get('powercrystal')}: ${crystals.actual}/${crystals.needed}`)] : []
-        const oresTextImage = ores?.needed ? [await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.objectNamesCfg.get('ore')}: ${ores.actual}/${ores.needed}`)] : []
-        const bricksTextImage = bricks?.needed ? [await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.objectNamesCfg.get('processedore')}: ${bricks.actual}/${bricks.needed}`)] : []
+        const crystalsTextImage = crystals?.needed ? [await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.objectNames['powercrystal']}: ${crystals.actual}/${crystals.needed}`)] : []
+        const oresTextImage = ores?.needed ? [await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.objectNames['ore']}: ${ores.actual}/${ores.needed}`)] : []
+        const bricksTextImage = bricks?.needed ? [await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.objectNames['processedore']}: ${bricks.actual}/${bricks.needed}`)] : []
         return this.wrapTooltipSprite([tooltipTextImage], crystalsTextImage, oresTextImage, bricksTextImage)
     }
 
     static async getBuildingMissingOreForUpgradeTooltipSprite(tooltipText: string, buildingMissingOreForUpgrade: number): Promise<SpriteImage> {
-        const tooltipTextImage = await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.toolTipInfo.get('orerequiredtext')}:`)
+        const tooltipTextImage = await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.toolTipInfo['orerequiredtext']}:`)
         const oresTextImage = []
-        const oreImg = ResourceManager.getImage(GameConfig.instance.tooltipIcons.get('ore'))
+        const oreImg = ResourceManager.getImage(GameConfig.instance.tooltipIcons['ore'])
         for (let c = 0; c < buildingMissingOreForUpgrade; c++) {
             oresTextImage.push(oreImg)
         }

@@ -17,15 +17,15 @@ export class LevelSelectLayer extends MainMenuLayer {
         levelTextWindow.setFirstLine(onlyTutorials ? levelTextCfg.level : levelTextCfg.tutorial)
         levelTextWindow.setSecondLine(' ')
         this.items.push(levelTextWindow)
-        GameConfig.instance.levels.levelCfgByName.forEach((level, levelName) => {
+        GameConfig.instance.levels.forEach((level) => {
             const levelButton = new MainMenuLevelButton(this, level, onlyTutorials)
             levelButton.onHoverChange = () => {
-                const levelScore = SaveGameManager.getLevelScoreString(levelName)
+                const levelScore = SaveGameManager.getLevelScoreString(level.levelName)
                 levelTextWindow.setSecondLine(levelButton.hover ? level.fullName + levelScore : ' ')
             }
             levelButton.onShowTooltip = () => {
-                const levelNum = parseInt(levelName.slice(-2))
-                const tutPrefix = levelName.toLowerCase().startsWith('tutorial') ? 'T' : ''
+                const levelNum = parseInt(level.levelName.slice(-2))
+                const tutPrefix = level.levelName.toLowerCase().startsWith('tutorial') ? 'T' : ''
                 const swapped = levelNum === 2 ? 5 : (levelNum === 5 ? 2 : levelNum) // XXX read from config
                 SoundManager.playVoice(`Stream_LevelName_${tutPrefix}Level${!!tutPrefix ? levelNum : swapped}`)
             }

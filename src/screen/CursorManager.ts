@@ -1,4 +1,4 @@
-import { Cursor } from '../resource/Cursor'
+import { Cursor } from '../cfg/PointersCfg'
 import { AnimatedCursor } from './AnimatedCursor'
 import { clearTimeoutSafe } from '../core/Util'
 import { HTML_GAME_CANVAS_CONTAINER } from '../core'

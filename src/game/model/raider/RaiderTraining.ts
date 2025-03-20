@@ -47,7 +47,7 @@ export class RaiderTrainings {
     }
 
     static toToolTipIconName(training: RaiderTraining): string {
-        let result
+        let result = ''
         switch (training) {
             case RaiderTraining.DRIVER:
                 result = `AbilityType_Driver`

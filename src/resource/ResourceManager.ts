@@ -9,7 +9,7 @@ import { UVData } from './fileparser/LWOUVParser'
 import { SpriteImage } from '../core/Sprite'
 import { createCanvas, createContext, createDummyImgData } from '../core/ImageHelper'
 import { GameConfig } from '../cfg/GameConfig'
-import { Cursor, CURSOR } from './Cursor'
+import { Cursor, PointersEntryCfg } from '../cfg/PointersCfg'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { CursorManager } from '../screen/CursorManager'
 import { AnimatedCursorData } from '../screen/AnimatedCursor'
@@ -50,13 +50,12 @@ export class ResourceManager {
     }
 
     static async loadAllCursor() {
-        const blankPointerFilename = GameConfig.instance.pointers.get(CURSOR.BLANK)
-        if (!blankPointerFilename) throw new Error('Could not determine blank pointer filename')
-        const blankPointerImageData = this.getImageData(blankPointerFilename)
+        const blankPointerImageData = this.getImageData(GameConfig.instance.pointers.blank.fileName)
         const loadingCursors: Promise<void>[] = []
-        GameConfig.instance.pointers.forEach((cursorFileName, cursor) => {
+        Object.entries(GameConfig.instance.pointers).forEach(([cursor, cursorEntry]: [string, PointersEntryCfg]) => {
+            const cursorFileName = cursorEntry.fileName
             if (cursorFileName.toLowerCase().endsWith('.bmp')) {
-                loadingCursors.push(this.loadCursor(cursorFileName, cursor))
+                loadingCursors.push(this.loadCursor(cursorFileName, cursor as Cursor))
                 return
             }
             loadingCursors.push(cacheGetData(cursorFileName).then((animatedCursorData) => {
@@ -74,7 +73,7 @@ export class ResourceManager {
                     animatedCursorData = new AnimatedCursorData(cursorImages)
                     cachePutData(cursorFileName, animatedCursorData).then()
                 }
-                CursorManager.addCursor(cursor, animatedCursorData.dataUrls)
+                CursorManager.addCursor(cursor as Cursor, animatedCursorData.dataUrls)
             }))
         })
         await Promise.all(loadingCursors)

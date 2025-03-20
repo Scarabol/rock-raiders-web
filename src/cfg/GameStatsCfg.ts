@@ -77,7 +77,7 @@ export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats
     SurveyRadius: number[] = []
     CrystalDrain: number | number[] = 0
     OxygenCoef: number = 0
-    EngineSound?: string
+    EngineSound: string = ''
     CanDoubleSelect: boolean = false
     MaxCarry: number[] = []
     DamageCausesCallToArms: boolean = false

@@ -1,5 +1,6 @@
 import { BaseConfig } from './BaseConfig'
 import { BaseButtonCfg, ButtonCfg } from './ButtonCfg'
+import { CfgHelper } from './CfgHelper'
 
 export class PriorityButtonsCfg extends BaseConfig {
     aiPriorityTrain: ButtonCfg = new BaseButtonCfg()
@@ -20,8 +21,8 @@ export class PriorityButtonsCfg extends BaseConfig {
             highlightFile: cfgValue[1],
             pressedFile: cfgValue[2],
             disabledFile: cfgValue[3],
-            tooltipText: tooltipText,
-            tooltipSfx: tooltipSfx,
+            tooltipText: CfgHelper.assertString(tooltipText),
+            tooltipSfx: CfgHelper.assertString(tooltipSfx || ''),
         })
     }
 }
@@ -29,7 +30,7 @@ export class PriorityButtonsCfg extends BaseConfig {
 export class PrioritiesImagePositionsCfg extends BaseConfig {
     positionByIndex: PriorityPositionsEntry[] = []
 
-    setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {
+    setFromCfgObj(cfgObj: any): this {
         this.positionByIndex = Object.values(cfgObj).map(cfgValue => new PriorityPositionsEntry(cfgValue))
         return this
     }
@@ -40,6 +41,7 @@ export class PriorityPositionsEntry {
     y: number
 
     constructor(cfgValue: any) {
-        [this.x, this.y] = cfgValue
+        this.x = CfgHelper.assertNumber(cfgValue[0])
+        this.y = CfgHelper.assertNumber(cfgValue[1])
     }
 }

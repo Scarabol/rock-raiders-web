@@ -2,7 +2,6 @@ import { SpriteContext } from '../../core/Sprite'
 import { PlaySoundEvent } from '../../event/GuiCommand'
 import { CursorManager } from '../../screen/CursorManager'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../event/GuiEvent'
-import { CURSOR } from '../../resource/Cursor'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 import { EventBroker } from '../../event/EventBroker'
 
@@ -130,7 +129,7 @@ export class BaseElement {
 
     clicked(event: GuiPointerDownEvent) {
         if (this.onClick) {
-            CursorManager.changeCursor(CURSOR.OKAY, 1000)
+            CursorManager.changeCursor('okay', 1000)
             this.publishEvent(new PlaySoundEvent('SFX_ButtonPressed', false))
             this.onClick(event.sx, event.sy)
         }

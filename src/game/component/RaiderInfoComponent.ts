@@ -24,7 +24,7 @@ export class RaiderInfoComponent extends AbstractGameComponent {
         this.hungerSprite.visible = GameState.showObjInfo && GameState.isBirdView
     }
 
-    setBubbleTexture(textureName: keyof BubblesCfg) {
+    setBubbleTexture(textureName: keyof BubblesCfg | undefined) {
         if (!textureName) return
         const textureFilepath = GameConfig.instance.bubbles[textureName] as string
         this.bubbleSprite.material.map = textureFilepath ? ResourceManager.getTexture(textureFilepath) ?? null : null

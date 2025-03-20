@@ -135,8 +135,9 @@ export class MessagePanel extends Panel {
         this.textInfoMessageCache.getOrUpdate(cfg, () => TextInfoMessage.fromConfig(cfg, maxMessageWidth)).then((msg: TextInfoMessage) => {
             this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
             this.currentMessage = msg
-            this.yOut = Math.max(480 - 409, 480 - 26 - this.currentMessage.textImage.height)
-            this.setMovedIn(this.currentMessage.textImage.height <= 42)
+            const textImageHeight = this.currentMessage.textImage?.height || 0
+            this.yOut = Math.max(480 - 409, 480 - 26 - textImageHeight)
+            this.setMovedIn(textImageHeight <= 42)
             this.notifyRedraw()
             if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample, true))
             if (timeout > 0) {

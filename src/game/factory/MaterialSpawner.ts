@@ -127,8 +127,8 @@ export class MaterialSpawner {
 
     static addTooltip(worldMgr: WorldManager, entity: GameEntity, entityType: EntityType, energyCallback: () => number) {
         const objectKey = entityType.toLowerCase()
-        const objectName = GameConfig.instance.objectNamesCfg.get(objectKey)
-        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey) || ''
+        const objectName = GameConfig.instance.objectNames[objectKey] || ''
+        const sfxKey = GameConfig.instance.objTtSFXs[objectKey] || ''
         if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, sfxKey, () => {
             return TooltipSpriteBuilder.getTooltipSprite(objectName, energyCallback())
         }))

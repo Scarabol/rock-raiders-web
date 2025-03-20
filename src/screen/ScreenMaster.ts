@@ -39,8 +39,8 @@ export class ScreenMaster {
             })
         })
         this.setupToolbarButtons()
-        this.videoLayer = this.addLayer(new VideoLayer(), 1200)
-        this.loadingLayer = this.addLayer(new LoadingLayer(), 1500)
+        this.loadingLayer = this.addLayer(new LoadingLayer(), 1200)
+        this.videoLayer = this.addLayer(new VideoLayer(), 1500)
     }
 
     private setupToolbarButtons() {

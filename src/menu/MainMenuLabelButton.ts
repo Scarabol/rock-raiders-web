@@ -7,8 +7,8 @@ import { UiElementCallback } from './UiElementState'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 
 export class MainMenuLabelButton extends MainMenuBaseItem {
-    labelImgLo: SpriteImage
-    labelImgHi: SpriteImage
+    labelImgLo?: SpriteImage
+    labelImgHi?: SpriteImage
 
     constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {
         super()
@@ -17,6 +17,7 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
             BitmapFontWorkerPool.instance.createTextImage(layer.cfg.hiFont, cfg.label), // TODO create all images in loading phase
         ]).then((textImages) => {
             [this.labelImgLo, this.labelImgHi] = textImages
+            if (!this.labelImgLo || !this.labelImgHi) return
             this.width = Math.max(this.labelImgLo.width, this.labelImgHi.width)
             this.height = Math.max(this.labelImgLo.height, this.labelImgHi.height)
             this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x

@@ -6,12 +6,12 @@ import { MenuEntryCfg } from '../../cfg/MenuEntryCfg'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class MenuCycleItem extends BaseElement {
-    imgTextNormal: SpriteImage
-    imgTextHover: SpriteImage
-    imgLabelOnNormal: SpriteImage // TODO only toggle state with clicks on label
-    imgLabelOffNormal: SpriteImage // TODO use button?
-    imgLabelOnHover: SpriteImage
-    imgLabelOffHover: SpriteImage
+    imgTextNormal?: SpriteImage
+    imgTextHover?: SpriteImage
+    imgLabelOnNormal?: SpriteImage // TODO only toggle state with clicks on label
+    imgLabelOffNormal?: SpriteImage // TODO use button?
+    imgLabelOnHover?: SpriteImage
+    imgLabelOffHover?: SpriteImage
 
     labelX: number = 0
     state: boolean = false
@@ -31,8 +31,8 @@ export class MenuCycleItem extends BaseElement {
             BitmapFontWorkerPool.instance.createTextImage(menuCfg.hiFont, itemCfg.labelOn),
         ]).then((textImages) => {
             [this.imgTextNormal, this.imgTextHover, this.imgLabelOffNormal, this.imgLabelOffHover, this.imgLabelOnNormal, this.imgLabelOnHover] = textImages
-            this.width = itemCfg.width + Math.max(this.imgLabelOnHover.width, this.imgLabelOffHover.width)
-            this.height = this.imgTextNormal.height
+            this.width = itemCfg.width + Math.max(this.imgLabelOnHover?.width || 0, this.imgLabelOffHover?.width || 0)
+            this.height = this.imgTextNormal?.height || 0
         })
         this.onClick = () => {
             this.state = !this.state
@@ -75,8 +75,8 @@ export class MenuCycleItem extends BaseElement {
             img = this.imgTextHover
             imgLabel = this.state ? this.imgLabelOnHover : this.imgLabelOffHover
         }
-        context.drawImage(img, this.x, this.y)
-        context.drawImage(imgLabel, this.x + this.labelX, this.y)
+        if (img) context.drawImage(img, this.x, this.y)
+        if (imgLabel) context.drawImage(imgLabel, this.x + this.labelX, this.y)
         super.onRedraw(context)
     }
 }

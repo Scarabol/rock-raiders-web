@@ -89,7 +89,7 @@ export class BitmapFont {
 
     createTextImageData(text: string, maxWidth?: number, autoCenter: boolean = true): ImageData | undefined {
         if (!text) return undefined
-        text = text.replace(/_/g, ' ')
+        text = text.replace(/_/g, ' ') // TODO All underscores should be replaced in config parsing
         const rows = this.determineRows(text, maxWidth)
         const width = Math.max(1, ...(rows.map(r => r.width)))
         const result = new ImageData(width, this.data.charHeight * (rows.length || 1))

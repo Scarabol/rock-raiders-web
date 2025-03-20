@@ -15,6 +15,7 @@ export class VideoLayer extends AbstractLayer {
         this.video = document.createElement('video')
         this.video.setAttribute('data-layer-class', this.constructor.name)
         this.video.style.visibility = 'hidden'
+        this.video.style.backgroundColor = '#000000'
         this.video.autoplay = true
         this.video.onended = () => {
             this.hide()

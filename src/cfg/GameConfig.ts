@@ -2,12 +2,12 @@ import { InfoMessagesCfg } from '../gui/infodock/InfoMessagesCfg'
 import { TextInfoMessageCfg } from '../gui/messagepanel/TextInfoMessageCfg'
 import { BaseConfig } from './BaseConfig'
 import { BubblesCfg } from './BubblesCfg'
-import { IconPanelBackButtonCfg, MenuItemCfg } from './ButtonCfg'
+import { IconPanelBackButtonCfg } from './ButtonCfg'
 import { ButtonsCfg } from './ButtonsCfg'
-import { parseLabel } from './CfgHelper'
+import { CfgHelper } from './CfgHelper'
 import { DialogCfg } from './DialogCfg'
 import { GameStatsCfg } from './GameStatsCfg'
-import { LevelEntryCfg, LevelsCfg } from './LevelsCfg'
+import { LevelEntryCfg } from './LevelsCfg'
 import { MainCfg } from './MainCfg'
 import { GameMenuCfg } from './MenuCfg'
 import { PanelsCfg } from './PanelCfg'
@@ -23,8 +23,9 @@ import { WeaponTypeCfg } from './WeaponTypeCfg'
 import { SamplesCfg } from './SamplesCfg'
 import { InterfaceSurroundImagesEntryCfg } from './InterfaceSurroundImagesCfg'
 import { AdvisorPositionCfg, AdvisorTypeCfg } from './AdvisorCfg'
-import { Cursor } from '../resource/Cursor'
-import { VERBOSE } from '../params'
+import { PointersCfg } from './PointersCfg'
+import { TILESIZE, VERBOSE } from '../params'
+import { InterfaceBuildImagesCfg, InterfaceImagesCfg } from './InterfaceImageCfg'
 
 export type EntityDependency = { entityType: EntityType, minLevel: number, itemKey: string }
 export type EntityDependencyChecked = EntityDependency & { isOk: boolean }
@@ -36,32 +37,35 @@ export class GameConfig extends BaseConfig {
     dialog: DialogCfg = new DialogCfg()
     reward: RewardCfg = new RewardCfg()
     menu: GameMenuCfg = new GameMenuCfg()
-    toolTipInfo: Map<string, string> = new Map()
-    surfaceTypeDescriptions: Map<string, { objectName: string, sfxKey: string }> = new Map()
+    toolTipInfo: Record<string, string> = {}
+    surfaceTypeDescriptions: Record<string, { objectName: string, sfxKey: string }> = {}
     objInfo: ObjInfoCfg = new ObjInfoCfg()
-    pointers: Map<Cursor, string> = new Map()
-    interfaceImages: Map<string, MenuItemCfg> = new Map()
+    pointers: PointersCfg = new PointersCfg()
+    interfaceImages: InterfaceImagesCfg = new InterfaceImagesCfg()
     panelRotationControl: PanelRotationControlCfg = new PanelRotationControlCfg()
     panels: PanelsCfg = new PanelsCfg()
     buttons: ButtonsCfg = new ButtonsCfg()
     interfaceBackButton: IconPanelBackButtonCfg = new IconPanelBackButtonCfg()
-    interfaceBuildImages: Map<string, MenuItemCfg> = new Map()
+    interfaceBuildImages: InterfaceBuildImagesCfg = new InterfaceBuildImagesCfg()
     interfaceSurroundImages: InterfaceSurroundImagesEntryCfg[] = []
     priorityImages: PriorityButtonsCfg = new PriorityButtonsCfg()
     prioritiesImagePositions: PrioritiesImagePositionsCfg = new PrioritiesImagePositionsCfg()
     miscObjects: MiscObjectsCfg = new MiscObjectsCfg()
     bubbles: BubblesCfg = new BubblesCfg()
-    rockFallStyles: Map<string, RockFallStyle> = new Map()
+    rockFallStyles: Record<string, RockFallStyle> = {}
     textMessagesWithImages: TextInfoMessageCfg = new TextInfoMessageCfg()
     samples: SamplesCfg = new SamplesCfg()
     textures: TexturesCfg = new TexturesCfg()
-    objectNamesCfg: Map<string, string> = new Map()
-    upgradeTypesCfg: Map<string, string> = new Map()
+    objectNames: Record<string, string> = {}
+    vehicleTypes: Record<string, string> = {}
+    rockMonsterTypes: Record<string, string> = {}
+    buildingTypes: Record<string, string> = {}
+    upgradeTypes: Record<string, string> = {}
     infoMessages: InfoMessagesCfg = new InfoMessagesCfg()
     stats: GameStatsCfg = new GameStatsCfg()
-    objTtSFXs: Map<string, string> = new Map()
-    advisor: Map<string, AdvisorTypeCfg> = new Map()
-    advisorPositions640x480: Map<string, AdvisorPositionCfg> = new Map()
+    objTtSFXs: Record<string, string> = {}
+    advisor: Record<string, AdvisorTypeCfg> = {}
+    advisorPositions: Record<string, AdvisorPositionCfg> = {}
     weaponTypes = new class implements Record<string, WeaponTypeCfg> {
         [x: string]: WeaponTypeCfg
 
@@ -73,11 +77,11 @@ export class GameConfig extends BaseConfig {
         freezer = new WeaponTypeCfg()
         rockFallIn = new WeaponTypeCfg()
     }
-    dependencies: Map<EntityType, EntityDependency[]> = new Map()
-    levels: LevelsCfg = new LevelsCfg()
-    tooltips: Map<string, string> = new Map()
+    dependencies: Record<string, EntityDependency[]> = {}
+    levels: LevelEntryCfg[] = []
+    tooltips: Record<string, string> = {}
     upgradeNames: string[] = []
-    tooltipIcons: Map<string, string> = new Map()
+    tooltipIcons: Record<string, string> = {}
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if ('Main'.equalsIgnoreCase(unifiedKey)) {
@@ -89,20 +93,17 @@ export class GameConfig extends BaseConfig {
         } else if ('Menu'.equalsIgnoreCase(unifiedKey)) {
             this.menu.setFromCfgObj(cfgValue)
         } else if ('ToolTipInfo'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.toolTipInfo.set(cfgKey.toLowerCase(), parseLabel(value as string)))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.toolTipInfo[cfgKey.toLowerCase()] = CfgHelper.parseLabel(value as string))
         } else if ('SurfaceTypeDescriptions'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue as Record<string, [string, string]>).forEach(([cfgKey, v]) => {
-                this.surfaceTypeDescriptions.set(this.stripKey(cfgKey), {objectName: v[0], sfxKey: v[1]})
+                this.surfaceTypeDescriptions[this.stripKey(cfgKey)] = {objectName: v[0], sfxKey: v[1]}
             })
         } else if ('ObjInfo'.equalsIgnoreCase(unifiedKey)) {
             this.objInfo.setFromCfgObj(cfgValue)
         } else if ('Pointers'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
-                const cursorFileName: string = Array.isArray(value) ? value[0] : value
-                this.pointers.set(Cursor.fromString(this.stripKey(cfgKey)), cursorFileName.toLowerCase())
-            })
+            this.pointers.setFromValue(cfgValue)
         } else if ('InterfaceImages'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.interfaceImages.set(cfgKey.toLowerCase(), new MenuItemCfg(value)))
+            this.interfaceImages.setFromValue(cfgValue)
         } else if ('PanelRotationControl'.equalsIgnoreCase(unifiedKey)) {
             this.panelRotationControl.setFromCfgObj(cfgValue)
         } else if ('Panels640x480'.equalsIgnoreCase(unifiedKey)) {
@@ -112,7 +113,7 @@ export class GameConfig extends BaseConfig {
         } else if ('InterfaceBackButton'.equalsIgnoreCase(unifiedKey)) {
             this.interfaceBackButton.setFromValue(cfgValue)
         } else if ('InterfaceBuildImages'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.interfaceBuildImages.set(cfgKey.toLowerCase(), new MenuItemCfg(value)))
+            this.interfaceBuildImages.setFromValue(cfgValue)
         } else if ('InterfaceSurroundImages'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([num, cfg]) => {
                 const [imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2] = cfg as [string, number, number, number, number, string, number, number]
@@ -132,7 +133,7 @@ export class GameConfig extends BaseConfig {
                 }
             })
         } else if ('RockFallStyles'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.rockFallStyles.set(cfgKey.toLowerCase(), new RockFallStyle(value)))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.rockFallStyles[cfgKey.toLowerCase()] = new RockFallStyle(value))
         } else if ('TextMessagesWithImages'.equalsIgnoreCase(unifiedKey)) {
             this.textMessagesWithImages.setFromCfgObj(cfgValue)
         } else if ('Samples'.equalsIgnoreCase(unifiedKey)) {
@@ -140,11 +141,17 @@ export class GameConfig extends BaseConfig {
         } else if ('Textures'.equalsIgnoreCase(unifiedKey)) {
             this.textures.setFromCfgObj(cfgValue)
         } else if ('ObjectNames'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objectNamesCfg.set(cfgKey.toLowerCase(), parseLabel(value as string)))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objectNames[cfgKey.toLowerCase()] = CfgHelper.parseLabel(value as string))
+        } else if ('VehicleTypes'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.vehicleTypes[cfgKey.toLowerCase()] = value as string)
+        } else if ('RockMonsterTypes'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.rockMonsterTypes[cfgKey.toLowerCase()] = value as string)
+        } else if ('BuildingTypes'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.buildingTypes[cfgKey.toLowerCase()] = value as string)
         } else if ('UpgradeTypes'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.upgradeTypesCfg.set(cfgKey.toLowerCase(), value as string))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.upgradeTypes[cfgKey.toLowerCase()] = value as string)
         } else if ('InfoMessages'.equalsIgnoreCase(unifiedKey)) {
-            this.infoMessages.setFromCfgObj(cfgValue)
+            this.infoMessages.setFromValue(cfgValue)
         } else if ('Stats'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => {
                 const statsKey = Object.keys(this.stats).find((k) => k.equalsIgnoreCase(cfgKey?.replace('-', '')))
@@ -155,11 +162,11 @@ export class GameConfig extends BaseConfig {
                 }
             })
         } else if ('ObjTtSFXs'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objTtSFXs.set(cfgKey.toLowerCase(), value as string))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objTtSFXs[cfgKey.toLowerCase()] = value as string)
         } else if ('Advisor'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.advisor.set(cfgKey.toLowerCase(), new AdvisorTypeCfg(value)))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.advisor[cfgKey.toLowerCase()] = new AdvisorTypeCfg(value))
         } else if ('AdvisorPositions640x480'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.advisorPositions640x480.set(cfgKey.toLowerCase(), new AdvisorPositionCfg(value)))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.advisorPositions[cfgKey.toLowerCase()] = new AdvisorPositionCfg(value))
         } else if ('WeaponTypes'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => {
                 const weaponTypeKey = Object.keys(this.weaponTypes).find((k) => k.equalsIgnoreCase(cfgKey))
@@ -176,18 +183,23 @@ export class GameConfig extends BaseConfig {
                     return
                 }
                 const entityType: EntityType = getEntityTypeByName(cfgKey.split(':')[1])
-                const deps: EntityDependency[] = (value as [string, number, string][])
+                this.dependencies[entityType.toLowerCase()] = (value as [string, number, string][])
                     .map((d): EntityDependency => ({entityType: getEntityTypeByName(d[0]), minLevel: d[1], itemKey: d[0]}))
-                this.dependencies.set(entityType, deps)
             })
         } else if ('Levels'.equalsIgnoreCase(unifiedKey)) {
-            this.levels.setFromCfgObj(cfgValue)
+            Object.keys(cfgValue).forEach((levelName) => {
+                if (!levelName.toLowerCase().startsWith('tutorial') && !levelName.toLowerCase().startsWith('level')) return // ignore incomplete test levels and duplicates
+                const levelConf = new LevelEntryCfg(levelName).setFromCfgObj(cfgValue[levelName])
+                const tileSize = levelConf.blockSize
+                if (tileSize !== TILESIZE) console.warn(`Unexpected tile size in level configuration: ${tileSize}`)
+                this.levels.push(levelConf)
+            })
         } else if ('ToolTips'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.tooltips.set(cfgKey.toLowerCase(), parseLabel(value as string)))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.tooltips[cfgKey.toLowerCase()] = CfgHelper.parseLabel(value as string))
         } else if ('UpgradeNames'.equalsIgnoreCase(unifiedKey)) {
             this.upgradeNames = Object.values(cfgValue)
         } else if ('ToolTipIcons'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.tooltipIcons.set(this.stripKey(cfgKey), parseLabel(value as string)))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.tooltipIcons[this.stripKey(cfgKey)] = CfgHelper.parseLabel(value as string))
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)
         }
@@ -208,7 +220,7 @@ export class GameConfig extends BaseConfig {
 
     getTooltipText(tooltipKey: string | undefined): string {
         if (!tooltipKey) return ''
-        return this.tooltips.get(tooltipKey.toLowerCase()) || ''
+        return this.tooltips[tooltipKey.toLowerCase()] || ''
     }
 
     getRockFallDamage(entityType: EntityType, level: number = 0): number {
@@ -216,6 +228,6 @@ export class GameConfig extends BaseConfig {
     }
 
     getAllLevels(): LevelEntryCfg[] {
-        return Array.from(this.levels.levelCfgByName.values()).filter((l) => l.levelName.toLowerCase().startsWith('level'))
+        return this.levels.filter((l) => l.levelName.toLowerCase().startsWith('level'))
     }
 }

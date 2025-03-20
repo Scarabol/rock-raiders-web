@@ -393,6 +393,8 @@ export class Surface {
                 suffix = '2' + (this.surfaceType.shaping ? this.surfaceType.matIndex : '1')
             } else if (this.wallType === WALL_TYPE.WALL) {
                 suffix = this.surfaceType.shaping ? '0' + this.surfaceType.matIndex : this.surfaceType.matIndex
+            } else {
+                suffix = '00'
             }
         } else if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.energized && this.building) {
             suffix = '66'
