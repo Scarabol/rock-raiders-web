@@ -79,8 +79,12 @@ export class MonsterSpawner {
                     sceneEntity.setAnimation(AnimEntityActivity.Stand)
                     EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
                 }))
-                const objectName = GameConfig.instance.objectNamesCfg.get(entityType.toLowerCase())
-                if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, GameConfig.instance.objTtSFXs.getOrUpdate(entityType.toLowerCase(), () => '')))
+                const objectKey = entityType.toLowerCase()
+                const objectName = GameConfig.instance.objectNames[objectKey] || ''
+                if (objectName) {
+                    const sfxKey = GameConfig.instance.objTtSFXs[objectKey] || ''
+                    worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, sfxKey))
+                }
                 break
             case EntityType.ICE_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster', entityType, GameConfig.instance.stats.iceMonster)
@@ -129,7 +133,7 @@ export class MonsterSpawner {
         worldMgr.ecs.addComponent(entity, new MovableStatsComponent(stats))
         worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(stats))
         worldMgr.ecs.addComponent(entity, new SceneSelectionComponent(sceneEntity, {gameEntity: entity, entityType: entityType}, stats))
-        const objectName = GameConfig.instance.objectNamesCfg.get(entityType.toLowerCase())
-        if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, GameConfig.instance.objTtSFXs.getOrUpdate(entityType.toLowerCase(), () => '')))
+        const objectName = GameConfig.instance.objectNames[entityType.toLowerCase()]
+        if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, GameConfig.instance.objTtSFXs[entityType.toLowerCase()] || ''))
     }
 }

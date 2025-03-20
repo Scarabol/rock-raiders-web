@@ -1,4 +1,4 @@
-import { Cursor, CURSOR } from '../../resource/Cursor'
+import { Cursor } from '../../cfg/PointersCfg'
 import { GameConfig } from '../../cfg/GameConfig'
 
 export class SurfaceType {
@@ -10,7 +10,7 @@ export class SurfaceType {
     digable: boolean = false
     reinforcable: boolean = false
     hasRubble: boolean = false
-    cursor: Cursor = CURSOR.STANDARD
+    cursor: Cursor = 'standard'
     statsDrillName?: 'HardDrillTime' | 'LooseDrillTime' | 'SoilDrillTime' | 'SeamDrillTime'
     statsLaserName?: 'wallDestroyTimeHard' | 'wallDestroyTimeMedium' | 'wallDestroyTimeLoose'
     canHaveFence: boolean = false
@@ -43,7 +43,7 @@ export class SurfaceType {
         name: 'surfaceTypeImmovable',
         shaping: true,
         matIndex: '5',
-        cursor: CURSOR.SURFACE_TYPE_IMMOVABLE,
+        cursor: 'surfaceTypeImmovable',
         mapSurfaceColor: '#500090',
     })
     static readonly HARD_ROCK = new SurfaceType({
@@ -53,7 +53,7 @@ export class SurfaceType {
         selectable: true,
         digable: true,
         reinforcable: true,
-        cursor: CURSOR.SURFACE_TYPE_HARD,
+        cursor: 'surfaceTypeHard',
         statsDrillName: 'HardDrillTime',
         statsLaserName: 'wallDestroyTimeHard',
         mapSurfaceColor: '#7000B0',
@@ -65,7 +65,7 @@ export class SurfaceType {
         selectable: true,
         digable: true,
         reinforcable: true,
-        cursor: CURSOR.SURFACE_TYPE_MEDIUM,
+        cursor: 'surfaceTypeMedium',
         statsDrillName: 'LooseDrillTime',
         statsLaserName: 'wallDestroyTimeMedium',
         mapSurfaceColor: '#9000D0',
@@ -77,7 +77,7 @@ export class SurfaceType {
         selectable: true,
         digable: true,
         reinforcable: true,
-        cursor: CURSOR.SURFACE_TYPE_LOOSE,
+        cursor: 'surfaceTypeLoose',
         statsDrillName: 'SoilDrillTime',
         statsLaserName: 'wallDestroyTimeLoose',
         mapSurfaceColor: '#B000F0',
@@ -106,7 +106,7 @@ export class SurfaceType {
         selectable: true,
         digable: true,
         reinforcable: true,
-        cursor: CURSOR.SURFACE_TYPE_ORESEAM,
+        cursor: 'surfaceTypeOreSeam',
         statsDrillName: 'SeamDrillTime',
         mapSurfaceColor: '#963c00',
     })
@@ -119,14 +119,14 @@ export class SurfaceType {
         selectable: true,
         digable: true,
         reinforcable: true,
-        cursor: CURSOR.SURFACE_TYPE_CRYSTALSEAM,
+        cursor: 'surfaceTypeCrystalSeam',
         statsDrillName: 'SeamDrillTime',
         mapSurfaceColor: '#aafa00',
     })
     static readonly RECHARGE_SEAM = new SurfaceType({
         name: 'surfaceTypeRechargeSeam',
         matIndex: '67',
-        cursor: CURSOR.SURFACE_TYPE_RECHARGESEAM,
+        cursor: 'surfaceTypeRechargeSeam',
         mapSurfaceColor: '#ffff00',
     })
     static readonly POWER_PATH = new SurfaceType({
@@ -235,10 +235,10 @@ export class SurfaceType {
     }
 
     getObjectName(): string {
-        return GameConfig.instance.surfaceTypeDescriptions.get(this.name.toLowerCase())?.objectName || ''
+        return GameConfig.instance.surfaceTypeDescriptions[this.name.toLowerCase()]?.objectName || ''
     }
 
     getSfxKey(): string {
-        return GameConfig.instance.surfaceTypeDescriptions.get(this.name.toLowerCase())?.sfxKey || ''
+        return GameConfig.instance.surfaceTypeDescriptions[this.name.toLowerCase()]?.sfxKey || ''
     }
 }

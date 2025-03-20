@@ -10,7 +10,7 @@ declare global {
 
         removeAll(predicate: (e: T) => boolean): void
 
-        last(): T
+        last(): T | undefined
 
         count(callback: (element: T) => boolean): number
 
@@ -47,7 +47,7 @@ Array.prototype.removeAll = function <T>(predicate: (e: T) => boolean): void {
     }
 }
 
-Array.prototype.last = function <T>(): T {
+Array.prototype.last = function <T>(): T | undefined {
     return this[this.length > 1 ? this.length - 1 : 0]
 }
 

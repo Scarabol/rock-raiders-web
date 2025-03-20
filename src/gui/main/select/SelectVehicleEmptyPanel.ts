@@ -10,10 +10,10 @@ export class SelectVehicleEmptyPanel extends IconSubPanel {
 
     constructor(onBackPanel: Panel) {
         super(2, onBackPanel, true)
-        const manVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GetIn')
+        const manVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages.getIn)
         manVehicleItem.onClick = () => this.publishEvent(new VehicleCallMan())
         manVehicleItem.isDisabled = () => this.vehicleHasJob
-        const deleteVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteVehicle')
+        const deleteVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages.deleteVehicle)
         deleteVehicleItem.isDisabled = () => false
         deleteVehicleItem.onClick = () => this.publishEvent(new VehicleBeamUp())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

@@ -14,14 +14,14 @@ export class SelectFloorPanel extends IconSubPanel {
 
     constructor(onBackPanel: Panel) {
         super(3, onBackPanel, true)
-        const pathItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_LayPath')
+        const pathItem = this.addMenuItem(GameConfig.instance.interfaceImages.layPath)
         pathItem.addDependencyCheck(EntityType.POWER_PATH)
         pathItem.onClick = () => this.publishEvent(new CreatePowerPath())
         pathItem.isDisabled = () => !this.isGround || !this.hasRaider
-        const removeItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_RemovePath')
+        const removeItem = this.addMenuItem(GameConfig.instance.interfaceImages.removePath)
         removeItem.onClick = () => this.publishEvent(new MakeRubble())
         removeItem.isDisabled = () => !this.isPowerPath
-        const placeFenceItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_PlaceFence')
+        const placeFenceItem = this.addMenuItem(GameConfig.instance.interfaceImages.placeFence)
         placeFenceItem.addDependencyCheck(EntityType.ELECTRIC_FENCE)
         placeFenceItem.isDisabled = () => placeFenceItem.hasUnfulfilledDependency || !this.canPlaceFence
         placeFenceItem.onClick = () => this.publishEvent(new PlaceFence())

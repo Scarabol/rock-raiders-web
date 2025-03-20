@@ -15,10 +15,10 @@ export class AnimEntityData {
     driverNullName: string = ''
     cameraNullName: string = ''
     cameraNullFrames: number = 0
-    readonly highPolyBodies: Map<string, string> = new Map()
-    readonly mediumPolyBodies: Map<string, string> = new Map()
-    readonly lowPolyBodies: Map<string, string> = new Map()
-    readonly fPPolyBodies: Map<string, Map<string, string>> = new Map()
+    readonly highPolyBodies: Record<string, string> = {}
+    readonly mediumPolyBodies: Record<string, string> = {}
+    readonly lowPolyBodies: Record<string, string> = {}
+    readonly fPPolyBodies: Record<string, Record<string, string>> = {}
     fireNullName: string = ''
     xPivotName: string = ''
     yPivotName: string = ''
@@ -91,7 +91,8 @@ export class AnimEntityParser {
                 this.parsePolyBodies(value, this.animEntityData.lowPolyBodies)
             } else if (rootKey.equalsIgnoreCase('FPPoly')) {
                 ['Camera1', 'Camera2'].forEach((cameraName) => {
-                    this.parsePolyBodies(iGet(value, cameraName), this.animEntityData.fPPolyBodies.getOrUpdate(cameraName, () => new Map()))
+                    this.animEntityData.fPPolyBodies[cameraName] = this.animEntityData.fPPolyBodies[cameraName] ?? {}
+                    this.parsePolyBodies(iGet(value, cameraName), this.animEntityData.fPPolyBodies[cameraName])
                 })
             } else if (rootKey.equalsIgnoreCase('Activities')) {
                 this.parseActivities(value)
@@ -130,11 +131,10 @@ export class AnimEntityParser {
         return this.animEntityData
     }
 
-    private parsePolyBodies(value: object, polyBodies: Map<string, string>) {
+    private parsePolyBodies(value: object, polyBodies: Record<string, string>) {
         Object.entries(value).forEach(([key, fileName]) => {
             const polyKey = key.startsWith('!') ? key.slice(1) : key
-            const filePath = 'NULL'.equalsIgnoreCase(fileName) ? 'hidden' : `${fileName}.lwo`
-            polyBodies.set(polyKey.toLowerCase(), filePath)
+            polyBodies[polyKey.toLowerCase()] = 'NULL'.equalsIgnoreCase(fileName) ? 'hidden' : `${fileName}.lwo`
         })
     }
 

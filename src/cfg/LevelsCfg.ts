@@ -1,24 +1,10 @@
 import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseConfig } from './BaseConfig'
 import { LevelObjectiveTextEntry } from '../resource/fileparser/ObjectiveTextParser'
-import { TILESIZE, VERBOSE } from '../params'
+import { VERBOSE } from '../params'
 import { GameConfig } from './GameConfig'
 import { SaveGameManager } from '../resource/SaveGameManager'
-
-export class LevelsCfg extends BaseConfig {
-    levelCfgByName: Map<string, LevelEntryCfg> = new Map()
-
-    setFromCfgObj(cfgObj: any): this {
-        Object.keys(cfgObj).forEach((levelName) => {
-            if (!levelName.toLowerCase().startsWith('tutorial') && !levelName.toLowerCase().startsWith('level')) return // ignore incomplete test levels and duplicates
-            const levelConf = new LevelEntryCfg(levelName).setFromCfgObj(cfgObj[levelName])
-            const tileSize = levelConf.blockSize
-            if (tileSize !== TILESIZE) console.warn(`Unexpected tile size in level configuration: ${tileSize}`)
-            this.levelCfgByName.set(levelName, levelConf)
-        })
-        return this
-    }
-}
+import { CfgHelper } from './CfgHelper'
 
 export class LevelEntryCfg extends BaseConfig {
     fullName: string = ''
@@ -125,8 +111,8 @@ export class LevelEntryCfg extends BaseConfig {
     }
 
     private isUnlockedByLevelLink(): boolean {
-        return Array.from(GameConfig.instance.levels.levelCfgByName.entries()).some(([levelName, levelEntryCfg]) =>
-            SaveGameManager.getLevelCompleted(levelName) && levelEntryCfg.levelLinks.some((levelLink) => this.levelName.equalsIgnoreCase(levelLink))
+        return GameConfig.instance.levels.some((levelEntryCfg) =>
+            SaveGameManager.getLevelCompleted(levelEntryCfg.levelName) && levelEntryCfg.levelLinks.some((levelLink) => this.levelName.equalsIgnoreCase(levelLink))
         )
     }
 }
@@ -178,39 +164,57 @@ export class LevelRewardConfig extends BaseConfig {
     importance?: LevelRewardImportanceConfig
     quota?: LevelRewardQuotaConfig
 
-    parseValue(unifiedKey: string, cfgValue: any): any {
+    parseValue(unifiedKey: string, cfgValue: Record<string, unknown>): any {
         if (unifiedKey === 'importance') {
-            return new LevelRewardImportanceConfig().setFromCfgObj(cfgValue)
+            return new LevelRewardImportanceConfig(cfgValue)
         } else if (unifiedKey === 'quota') {
-            return new LevelRewardQuotaConfig().setFromCfgObj(cfgValue)
+            return new LevelRewardQuotaConfig(cfgValue)
         } else {
             return super.parseValue(unifiedKey, cfgValue)
         }
     }
 }
 
-export class LevelRewardImportanceConfig extends BaseConfig {
-    crystals: number = 0
-    timer: number = 0
-    caverns: number = 0
-    constructions: number = 0
-    oxygen: number = 0
-    figures: number = 0
+export class LevelRewardImportanceConfig {
+    readonly crystals: number = 0
+    readonly timer: number = 0
+    readonly caverns: number = 0
+    readonly constructions: number = 0
+    readonly oxygen: number = 0
+    readonly figures: number = 0
+
+    constructor(cfgObj: Record<string, unknown>) {
+        this.crystals = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'crystals', this.crystals))
+        this.timer = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'timer', this.timer))
+        this.caverns = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'caverns', this.caverns))
+        this.constructions = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'constructions', this.constructions))
+        this.oxygen = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'oxygen', this.oxygen))
+        this.figures = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'figures', this.figures))
+    }
 }
 
-export class LevelRewardQuotaConfig extends BaseConfig {
-    crystals: number = 0
-    timer: number = 0
-    caverns: number = 0
-    constructions: number = 0
+export class LevelRewardQuotaConfig {
+    readonly crystals: number = 0
+    readonly timerMs: number = 0
+    readonly caverns: number = 0
+    readonly constructions: number = 0
+
+    constructor(cfgObj: Record<string, unknown>) {
+        this.crystals = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'crystals', this.crystals))
+        this.timerMs = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'timer', this.timerMs)) * 1000
+        this.caverns = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'caverns', this.caverns))
+        this.constructions = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'constructions', this.constructions))
+    }
 }
 
 export class ObjectiveImageCfg {
-    filename: string
-    x: number
-    y: number
+    readonly filename: string
+    readonly x: number
+    readonly y: number
 
-    constructor(cfgValue: any) {
-        [this.filename, this.x, this.y] = cfgValue
+    constructor(cfgValue: [string, number, number]) {
+        this.filename = CfgHelper.assertString(cfgValue[0])
+        this.x = CfgHelper.assertNumber(cfgValue[1])
+        this.y = CfgHelper.assertNumber(cfgValue[2])
     }
 }

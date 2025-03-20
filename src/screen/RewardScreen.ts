@@ -216,7 +216,7 @@ export class RewardScreen {
             BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('figures'), this.percentString(result.numRaiders, result.numMaxAirRaiders)),
             BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('rockmonsters'), this.percentString(result.defencePercent, 100)),
             BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('oxygen'), this.percentString(result.airLevelPercent, 100)),
-            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('timer'), this.timeString(result.gameTimeSeconds)),
+            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('timer'), this.timeString(result.gameTimeMs)),
             BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('score'), `${result.score}%`),
         ]).then((textImages) => {
             this.resultValues = textImages
@@ -273,7 +273,8 @@ export class RewardScreen {
         return `${value.toString()}%`
     }
 
-    timeString(seconds: number) {
+    timeString(milliseconds: number) {
+        const seconds = Math.round(milliseconds / 1000)
         const ss = RewardScreen.toPaddedString(seconds % 60)
         const minutes = Math.floor(seconds / 60)
         const mm = RewardScreen.toPaddedString(minutes % 60)

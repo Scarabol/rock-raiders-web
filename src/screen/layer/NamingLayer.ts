@@ -64,7 +64,7 @@ export class NamingLayer extends ScaledLayer {
         this.showBackdrop = !this.showBackdrop
         EventBroker.publish(new BaseEvent(this.showBackdrop ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
         if (this.showBackdrop) {
-            this.raiderName = raiderSaveGame.name || GameConfig.instance.objectNamesCfg.get(EntityType.PILOT) || 'Rock Raider'
+            this.raiderName = raiderSaveGame.name || GameConfig.instance.objectNames[EntityType.PILOT.toLowerCase()] || 'Rock Raider'
             this.firstKey = true
             this.visibleLayers.length = 0
             this.gameScreen.screenMaster.layers.forEach((l) => {

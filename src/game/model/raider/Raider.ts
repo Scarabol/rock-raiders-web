@@ -41,12 +41,14 @@ import { TooltipComponent } from '../../component/TooltipComponent'
 import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 import { SelectionNameComponent } from '../../component/SelectionNameComponent'
 import { PRNG } from '../../factory/PRNG'
+import { SaveGameRaider } from '../../../resource/SaveGameManager'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
     readonly entity: GameEntity
     readonly tools: RaiderTool[] = []
     readonly trainings: RaiderTraining[] = []
+    readonly teamMember: SaveGameRaider
     worldMgr: WorldManager
     currentPath?: TerrainPath
     level: number = 0
@@ -74,13 +76,13 @@ export class Raider implements Updatable, JobFulfiller {
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         const objectKey = this.entityType.toLowerCase()
-        const teamMember = this.worldMgr.entityMgr.addRaiderToTeam(this)
-        const raiderName = teamMember.name || GameConfig.instance.objectNamesCfg.get(EntityType.PILOT) || 'Rock Raider'
-        const sfxKey = GameConfig.instance.objTtSFXs.get(objectKey) || ''
+        this.teamMember = this.worldMgr.entityMgr.addRaiderToTeam(this)
+        const raiderName = this.teamMember.name || GameConfig.instance.objectNames[objectKey] || 'Rock Raider'
+        const sfxKey = GameConfig.instance.objTtSFXs[objectKey] || ''
         this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, raiderName, sfxKey, () => {
             return TooltipSpriteBuilder.getRaiderTooltipSprite(raiderName, this.maxTools(), this.tools, this.trainings)
         }))
-        this.worldMgr.ecs.addComponent(this.entity, new SelectionNameComponent(this.sceneEntity)).setName(teamMember.name)
+        this.worldMgr.ecs.addComponent(this.entity, new SelectionNameComponent(this.sceneEntity)).setName(this.teamMember.name)
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 
@@ -200,12 +202,13 @@ export class Raider implements Updatable, JobFulfiller {
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
             const path = this.findShortestPath(target)
             this.currentPath = path && path.locations.length > 0 ? path : undefined
-            this.currentPath?.locations?.forEach((l, index) => {
-                if (index < this.currentPath.locations.length - 1) l.add(new Vector2().random().subScalar(0.5).multiplyScalar(TILESIZE / RAIDER_PATH_PRECISION))
-            }) // XXX Externalize precision
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
+            const currentPath = this.currentPath
+            currentPath.locations.forEach((l, index) => {
+                if (index < currentPath.locations.length - 1) l.add(new Vector2().random().subScalar(0.5).multiplyScalar(TILESIZE / RAIDER_PATH_PRECISION))
+            }) // XXX Externalize precision
         }
-        const step = this.determineStep(elapsedMs)
+        const step = this.determineStep(elapsedMs, this.currentPath)
         if (step.targetReached) {
             return MoveState.TARGET_REACHED
         } else {
@@ -228,20 +231,20 @@ export class Raider implements Updatable, JobFulfiller {
         }
     }
 
-    private determineStep(elapsedMs: number): EntityStep {
-        const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
+    private determineStep(elapsedMs: number, currentPath: TerrainPath): EntityStep {
+        const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(currentPath.firstLocation)
         targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
         const step = new EntityStep(targetWorld.sub(this.getPosition()))
         const stepLengthSq = step.vec.lengthSq()
         const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // XXX use average speed between current and target position
         const entitySpeedSq = entitySpeed * entitySpeed
-        if (this.currentPath.locations.length > 1) {
+        if (currentPath.locations.length > 1) {
             if (stepLengthSq <= entitySpeedSq) {
-                this.currentPath.locations.shift()
-                return this.determineStep(elapsedMs)
+                currentPath.locations.shift()
+                return this.determineStep(elapsedMs, currentPath)
             }
         }
-        if (this.currentPath.target.targetLocation.distanceToSquared(this.getPosition2D()) <= this.currentPath.target.radiusSq) {
+        if (currentPath.target.targetLocation.distanceToSquared(this.getPosition2D()) <= currentPath.target.radiusSq) {
             step.targetReached = true
         }
         step.vec.clampLength(0, entitySpeed)
@@ -332,7 +335,9 @@ export class Raider implements Updatable, JobFulfiller {
 
     getDrillTimeSeconds(surface: Surface): number {
         if (!surface || !this.hasTool(RaiderTool.DRILL)) return 0
-        return this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0
+        const statsDrillName = surface.surfaceType.statsDrillName
+        if (!statsDrillName) return 0
+        return this.stats[statsDrillName]?.[this.level] || 0
     }
 
     stopJob() {
@@ -377,9 +382,14 @@ export class Raider implements Updatable, JobFulfiller {
             this.workAudioId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundRaider, this.job.getExpectedTimeLeft() !== null)
         }
         if (workActivity === RaiderActivity.Drill) {
+            const workplace = this.job.getWorkplace(this)
+            if (!this.job.surface || !workplace) {
+                this.stopJob()
+                return
+            }
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
             this.sceneEntity.setAnimation(workActivity)
-            this.job.surface.addDrillTimeProgress(this.getDrillTimeSeconds(this.job.surface), elapsedMs, this.job.getWorkplace(this).targetLocation)
+            this.job.surface.addDrillTimeProgress(this.getDrillTimeSeconds(this.job.surface), elapsedMs, workplace.targetLocation)
         } else if (workActivity === AnimEntityActivity.Stand) {
             this.sceneEntity.setAnimation(workActivity)
             this.completeJob()
@@ -398,7 +408,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.scared = false
         const targets = this.worldMgr.entityMgr.getRaiderFightTargets()
         const alarmTarget = this.findShortestPath(targets) // TODO Find closest position where shooting is possible, don't shoot through walls
-        if (!alarmTarget) {
+        if (!alarmTarget?.target.entity) {
             this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             return
         }

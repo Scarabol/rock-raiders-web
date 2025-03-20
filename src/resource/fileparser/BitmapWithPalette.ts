@@ -614,8 +614,8 @@ class BmpDecoder implements IBitmapImage {
 export class BitmapWithPalette extends ImageData {
     readonly palette: IColor[]
 
-    static decode(bitmapData: ArrayBuffer): BitmapWithPalette {
-        return new BitmapWithPalette(new BmpDecoder(new DataView(bitmapData), {toRGBA: true}))
+    static decode(bitmapData: DataView): BitmapWithPalette {
+        return new BitmapWithPalette(new BmpDecoder(bitmapData, {toRGBA: true}))
     }
 
     constructor(decoder: BmpDecoder) {

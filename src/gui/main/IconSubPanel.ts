@@ -1,4 +1,3 @@
-import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
@@ -7,9 +6,10 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { SpriteContext } from '../../core/Sprite'
 import { EventBroker } from '../../event/EventBroker'
 import { DeselectAll, GuiBackButtonClicked } from '../../event/LocalEvents'
+import { InterfaceImageEntryCfg } from '../../cfg/InterfaceImageCfg'
 
 export class IconSubPanel extends Panel {
-    iconPanelButtons: IconPanelButton[] = []
+    readonly iconPanelButtons: IconPanelButton[] = []
 
     constructor(numOfItems: number, onBackPanel: Panel | undefined, deselectAll: boolean) {
         super()
@@ -28,10 +28,9 @@ export class IconSubPanel extends Panel {
         this.xOut = -this.img.width
     }
 
-    addMenuItem(menuItemGroup: Map<string, MenuItemCfg>, itemKey: string) {
-        const menuItemCfg = menuItemGroup.get(itemKey.toLowerCase())
-        if (!menuItemCfg) throw new Error(`No menu item config given for ${itemKey}`)
-        const menuItem = this.addChild(new IconPanelButton(menuItemCfg, itemKey, this.img.width, this.iconPanelButtons.length))
+    addMenuItem(interfaceImageCfg: InterfaceImageEntryCfg | undefined) {
+        if (!interfaceImageCfg) throw new Error(`No menu item config given`)
+        const menuItem = this.addChild(new IconPanelButton(interfaceImageCfg, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(menuItem)
         return menuItem
     }

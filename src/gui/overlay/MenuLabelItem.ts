@@ -8,8 +8,8 @@ import { EventKey } from '../../event/EventKeyEnum'
 
 export class MenuLabelItem extends BaseElement {
     target: string
-    loImg: SpriteImage
-    hiImg: SpriteImage
+    loImg?: SpriteImage
+    hiImg?: SpriteImage
 
     constructor(menuCfg: MenuEntryCfg, itemCfg: MenuLabelItemCfg, parentCenterX: number) {
         super()
@@ -19,8 +19,8 @@ export class MenuLabelItem extends BaseElement {
             BitmapFontWorkerPool.instance.createTextImage(menuCfg.hiFont, itemCfg.label),
         ]).then((textImages) => {
             [this.loImg, this.hiImg] = textImages
-            this.width = this.loImg.width
-            this.height = this.loImg.height
+            this.width = this.loImg?.width || 0
+            this.height = this.loImg?.height || 0
             this.relX = menuCfg.autoCenter ? parentCenterX - this.width / 2 : itemCfg.x
             this.updatePosition()
         })
@@ -56,9 +56,9 @@ export class MenuLabelItem extends BaseElement {
     onRedraw(context: SpriteContext) {
         if (this.hidden) return
         if (this.hover) {
-            context.drawImage(this.hiImg, this.x, this.y)
+            if (this.hiImg) context.drawImage(this.hiImg, this.x, this.y)
         } else {
-            context.drawImage(this.loImg, this.x, this.y)
+            if (this.loImg) context.drawImage(this.loImg, this.x, this.y)
         }
         super.onRedraw(context)
     }

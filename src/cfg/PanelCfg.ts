@@ -7,12 +7,12 @@ export class PanelCfg extends BaseConfig {
     xIn: number = 0
     yIn: number = 0
 
-    setFromCfgObj(cfgValue: any, createMissing: boolean = false): this {
-        if (!Array.isArray(cfgValue) || cfgValue.length !== 5) {
-            throw new Error(`Invalid config value given: ${cfgValue}`)
+    setFromCfgObj(cfgObj: any): this {
+        if (!Array.isArray(cfgObj) || cfgObj.length !== 5) {
+            throw new Error(`Invalid config value given: ${cfgObj}`)
         }
-        [this.filename, this.xOut, this.yOut, this.xIn, this.yIn] = cfgValue
-        if (!this.filename) throw new Error(`No filename given in ${cfgValue}`)
+        [this.filename, this.xOut, this.yOut, this.xIn, this.yIn] = cfgObj
+        if (!this.filename) throw new Error(`No filename given in ${cfgObj}`)
         return this
     }
 }

@@ -21,6 +21,7 @@ export class AssetLoader {
 
     constructor(
         readonly vfs: VirtualFileSystem,
+        readonly bitmapWorkerPool: BitmapWorkerPool
     ) {
     }
 
@@ -54,7 +55,7 @@ export class AssetLoader {
     }
 
     async loadWadImageAsset(name: string): Promise<BitmapWithPalette> {
-        return BitmapWorkerPool.instance.decodeBitmap(this.vfs.getFile(name).toBuffer())
+        return this.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
     }
 
     async loadWadTexture(name: string): Promise<BitmapWithPalette> {
@@ -62,24 +63,24 @@ export class AssetLoader {
         const alphaIndexMatch = name.match(/(.*a)(\d+)(_.+)/i)
         if (alphaIndexMatch) {
             const alphaIndex = parseInt(alphaIndexMatch[2])
-            return BitmapWorkerPool.instance.decodeBitmapWithAlphaIndex(data, alphaIndex)
+            return this.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex)
         } else if (name.match(/\/a.*\d.*/i)) {
-            return BitmapWorkerPool.instance.decodeBitmapWithAlpha(data)
+            return this.bitmapWorkerPool.decodeBitmapWithAlpha(data)
         } else {
-            return BitmapWorkerPool.instance.decodeBitmap(data)
+            return this.bitmapWorkerPool.decodeBitmap(data)
         }
     }
 
     async loadAlphaImageAsset(name: string): Promise<ImageData> {
-        return BitmapWorkerPool.instance.decodeBitmapWithAlpha(this.vfs.getFile(name).toBuffer())
+        return this.bitmapWorkerPool.decodeBitmapWithAlpha(this.vfs.getFile(name).toBuffer())
     }
 
     async loadAlphaTranslucentImageAsset(name: string): Promise<ImageData> {
-        return BitmapWorkerPool.instance.decodeBitmapWithAlphaTranslucent(this.vfs.getFile(name).toBuffer())
+        return this.bitmapWorkerPool.decodeBitmapWithAlphaTranslucent(this.vfs.getFile(name).toBuffer())
     }
 
     async loadFontImageAsset(name: string): Promise<BitmapFontData> {
-        const imgData = await BitmapWorkerPool.instance.decodeBitmap(this.vfs.getFile(name).toBuffer())
+        const imgData = await this.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
         return new BitmapFontData(imgData)
     }
 

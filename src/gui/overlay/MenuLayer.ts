@@ -10,7 +10,7 @@ import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class MenuLayer extends BaseElement {
     menuImage: SpriteImage
-    titleImage: SpriteImage
+    titleImage?: SpriteImage
     itemsTrigger: MenuLabelItem[] = []
     itemsNext: MenuLabelItem[] = []
     itemsCycle: MenuCycleItem[] = []
@@ -44,7 +44,7 @@ export class MenuLayer extends BaseElement {
     onRedraw(context: SpriteContext) {
         if (this.hidden) return
         context.drawImage(this.menuImage, (NATIVE_SCREEN_WIDTH - this.menuImage.width) / 2, (NATIVE_SCREEN_HEIGHT - this.menuImage.height) / 2)
-        context.drawImage(this.titleImage, (NATIVE_SCREEN_WIDTH - this.titleImage.width) / 2, this.y)
+        if (this.titleImage) context.drawImage(this.titleImage, (NATIVE_SCREEN_WIDTH - this.titleImage.width) / 2, this.y)
         super.onRedraw(context)
     }
 }

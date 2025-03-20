@@ -54,8 +54,19 @@ export class MainPanel extends Panel {
         this.mainPanel.movedIn = false
 
         const buildingPanel = this.addSubPanel(new BuildingPanel(this.mainPanel))
-        const smallVehiclePanel = this.addSubPanel(new VehiclePanel([EntityType.HOVERBOARD, EntityType.SMALL_DIGGER, EntityType.SMALL_TRUCK, EntityType.SMALL_CAT, EntityType.SMALL_MLP, EntityType.SMALL_HELI], this.mainPanel))
-        const largeVehiclePanel = this.addSubPanel(new VehiclePanel([EntityType.BULLDOZER, EntityType.WALKER_DIGGER, EntityType.LARGE_MLP, EntityType.LARGE_DIGGER, EntityType.LARGE_CAT], this.mainPanel))
+        const smallVehiclePanel = this.addSubPanel(new VehiclePanel(6, this.mainPanel))
+        smallVehiclePanel.addVehicleMenuItem('hoverboard', EntityType.HOVERBOARD)
+        smallVehiclePanel.addVehicleMenuItem('smallDigger', EntityType.SMALL_DIGGER)
+        smallVehiclePanel.addVehicleMenuItem('smallTruck', EntityType.SMALL_TRUCK)
+        smallVehiclePanel.addVehicleMenuItem('smallCat', EntityType.SMALL_CAT)
+        smallVehiclePanel.addVehicleMenuItem('smallMLP', EntityType.SMALL_MLP)
+        smallVehiclePanel.addVehicleMenuItem('smallHeli', EntityType.SMALL_HELI)
+        const largeVehiclePanel = this.addSubPanel(new VehiclePanel(5, this.mainPanel))
+        largeVehiclePanel.addVehicleMenuItem('bullDozer', EntityType.BULLDOZER)
+        largeVehiclePanel.addVehicleMenuItem('walkerDigger', EntityType.WALKER_DIGGER)
+        largeVehiclePanel.addVehicleMenuItem('largeMLP', EntityType.LARGE_MLP)
+        largeVehiclePanel.addVehicleMenuItem('largeDigger', EntityType.LARGE_DIGGER)
+        largeVehiclePanel.addVehicleMenuItem('largeCat', EntityType.LARGE_CAT)
         this.selectWallPanel = this.addSubPanel(new SelectWallPanel(this.mainPanel))
         this.selectFloorPanel = this.addSubPanel(new SelectFloorPanel(this.mainPanel))
         this.selectRubblePanel = this.addSubPanel(new SelectRubblePanel(this.mainPanel))
@@ -80,7 +91,7 @@ export class MainPanel extends Panel {
         const selectFencePanel = this.addSubPanel(new SelectFencePanel(this.mainPanel))
         const cameraViewPanel = this.addSubPanel(new ChangeCameraPanel())
 
-        const teleportRaider = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_TeleportMan')
+        const teleportRaider = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages.teleportMan)
         teleportRaider.addDependencyCheck(EntityType.PILOT)
         teleportRaider.isDisabled = () => this.hasMaxRaiders || this.numRequestedRaiders >= MAX_RAIDER_REQUEST || !this.hasRaiderTeleport
         teleportRaider.updateState()
@@ -93,16 +104,16 @@ export class MainPanel extends Panel {
             this.numRequestedRaiders = event.numRequested
             teleportRaider.updateState()
         })
-        const buildingItem = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_BuildBuilding')
+        const buildingItem = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages.buildBuilding)
         buildingItem.isDisabled = () => false
         buildingItem.onClick = () => {
             this.mainPanel.toggleState(() => buildingPanel.toggleState())
             EventBroker.publish(new GuiBuildButtonClicked())
         }
-        const smallVehicleItem = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_BuildSmallVehicle')
+        const smallVehicleItem = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages.buildSmallVehicle)
         smallVehicleItem.isDisabled = () => false
         smallVehicleItem.onClick = () => this.mainPanel.toggleState(() => smallVehiclePanel.toggleState())
-        const largeVehicleItem = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_BuildLargeVehicle')
+        const largeVehicleItem = this.mainPanel.addMenuItem(GameConfig.instance.interfaceImages.buildLargeVehicle)
         largeVehicleItem.isDisabled = () => false
         largeVehicleItem.onClick = () => this.mainPanel.toggleState(() => largeVehiclePanel.toggleState())
 

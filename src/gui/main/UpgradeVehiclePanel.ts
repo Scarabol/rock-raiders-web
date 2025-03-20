@@ -5,24 +5,25 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { SelectionChanged } from '../../event/LocalEvents'
 import { UpgradeVehicle } from '../../event/GuiCommand'
 import { GameConfig } from '../../cfg/GameConfig'
+import { InterfaceImage } from '../../cfg/InterfaceImageCfg'
 
 export class UpgradeVehiclePanel extends IconSubPanel {
     canInstallUpgrade: Map<VehicleUpgrade, boolean> = new Map()
 
     constructor(onBackPanel: Panel) {
         super(4, onBackPanel, false)
-        this.addUpgradeItem('Interface_MenuItem_UpgardeCarry', VehicleUpgrade.CARRY)
-        this.addUpgradeItem('Interface_MenuItem_UpgardeScan', VehicleUpgrade.SCAN)
-        this.addUpgradeItem('Interface_MenuItem_UpgradeEngine', VehicleUpgrade.SPEED)
-        this.addUpgradeItem('Interface_MenuItem_UpgardeDrill', VehicleUpgrade.DRILL)
+        this.addUpgradeItem('upgradeCarry', VehicleUpgrade.CARRY)
+        this.addUpgradeItem('upgradeScan', VehicleUpgrade.SCAN)
+        this.addUpgradeItem('upgradeEngine', VehicleUpgrade.SPEED)
+        this.addUpgradeItem('upgradeDrill', VehicleUpgrade.DRILL)
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             this.canInstallUpgrade = event.canInstallUpgrade
             this.updateAllButtonStates()
         })
     }
 
-    private addUpgradeItem(itemKey: string, upgrade: VehicleUpgrade) {
-        const upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages, itemKey)
+    private addUpgradeItem(interfaceImage: InterfaceImage, upgrade: VehicleUpgrade) {
+        const upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages[interfaceImage])
         upgradeItem.isDisabled = () => !this.canInstallUpgrade.get(upgrade)
         upgradeItem.onClick = () => this.publishEvent(new UpgradeVehicle(upgrade))
     }

@@ -16,16 +16,16 @@ export class SelectWallPanel extends IconSubPanel {
 
     constructor(onBackPanel: Panel) {
         super(4, onBackPanel, true)
-        const itemDrill = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_Dig')
+        const itemDrill = this.addMenuItem(GameConfig.instance.interfaceImages.dig)
         itemDrill.isDisabled = () => !this.isDrillable
         itemDrill.onClick = () => this.publishEvent(new CreateDrillJob())
-        const itemReinforce = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_Reinforce')
+        const itemReinforce = this.addMenuItem(GameConfig.instance.interfaceImages.reinforce)
         itemReinforce.isDisabled = () => !this.isReinforcable
         itemReinforce.onClick = () => this.publishEvent(new CreateReinforceJob())
-        const itemDynamite = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_Dynamite')
+        const itemDynamite = this.addMenuItem(GameConfig.instance.interfaceImages.dynamite)
         itemDynamite.isDisabled = () => !(this.hasDemolition && this.hasToolstation) && !this.hasToolstationLevel2
         itemDynamite.onClick = () => this.publishEvent(new CreateDynamiteJob())
-        const itemDeselect = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeselectDig')
+        const itemDeselect = this.addMenuItem(GameConfig.instance.interfaceImages.deselectDig)
         itemDeselect.isDisabled = () => false
         itemDeselect.onClick = () => this.publishEvent(new CancelSurfaceJobs())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

@@ -1,4 +1,3 @@
-import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { Button } from '../base/Button'
 import { ChangeTooltip } from '../../event/GuiCommand'
 import { DEV_MODE, TOOLTIP_DELAY_SFX } from '../../params'
@@ -9,6 +8,7 @@ import { BuildingsChangedEvent, RaidersAmountChangedEvent } from '../../event/Lo
 import { EntityDependency, EntityDependencyChecked, GameConfig } from '../../cfg/GameConfig'
 import { DependencySpriteWorkerPool } from '../../worker/DependencySpriteWorkerPool'
 import { clearTimeoutSafe } from '../../core/Util'
+import { InterfaceImageEntryCfg } from '../../cfg/InterfaceImageCfg'
 
 export class IconPanelButton extends Button {
     tooltipDisabled: string
@@ -22,22 +22,21 @@ export class IconPanelButton extends Button {
     hasUnfulfilledDependency: boolean = false
     showDependenciesTimeout?: NodeJS.Timeout
 
-    constructor(menuItemCfg: MenuItemCfg, itemKey: string, parentWidth: number, menuIndex: number) {
-        super(menuItemCfg)
-        this.buttonType = itemKey
+    constructor(interfaceImageCfg: InterfaceImageEntryCfg, parentWidth: number, menuIndex: number) {
+        super(interfaceImageCfg)
         this.relX = parentWidth - 59
         this.relY = 9 + this.height * menuIndex
         this.hoverFrame = true
-        this.tooltipDisabled = menuItemCfg.tooltipDisabled
-        this.tooltipDisabledSfx = menuItemCfg.tooltipDisabledSfx
-        this.hotkey = menuItemCfg.hotkey
+        this.tooltipDisabled = interfaceImageCfg.tooltipDisabled
+        this.tooltipDisabledSfx = interfaceImageCfg.tooltipDisabledSfx
+        this.hotkey = interfaceImageCfg.hotkey
         this.onClick = () => console.log(`menu item pressed: ${this.buttonType}`)
-        this.addDependencyCheck(getEntityTypeByName(itemKey))
+        this.addDependencyCheck(getEntityTypeByName(this.buttonType))
     }
 
     addDependencyCheck(entityType: EntityType) {
         if (!entityType) return
-        const dependencies = GameConfig.instance.dependencies.get(entityType)
+        const dependencies = GameConfig.instance.dependencies[entityType.toLowerCase()]
         if (!dependencies) return
         if (dependencies.some((d) => d.entityType === EntityType.PILOT)) {
             this.registerEventListener(EventKey.RAIDER_AMOUNT_CHANGED, (event: RaidersAmountChangedEvent) => {

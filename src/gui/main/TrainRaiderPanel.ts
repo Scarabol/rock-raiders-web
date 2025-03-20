@@ -5,26 +5,27 @@ import { RaiderTraining } from '../../game/model/raider/RaiderTraining'
 import { Panel } from '../base/Panel'
 import { IconSubPanel } from './IconSubPanel'
 import { GameConfig } from '../../cfg/GameConfig'
+import { InterfaceImage } from '../../cfg/InterfaceImageCfg'
 
 export class TrainRaiderPanel extends IconSubPanel {
     canDoTraining: Map<RaiderTraining, boolean> = new Map()
 
     constructor(onBackPanel: Panel) {
         super(6, onBackPanel, false)
-        this.addTrainingItem('Interface_MenuItem_TrainDriver', RaiderTraining.DRIVER)
-        this.addTrainingItem('Interface_MenuItem_TrainEngineer', RaiderTraining.ENGINEER)
-        this.addTrainingItem('Interface_MenuItem_TrainGeologist', RaiderTraining.GEOLOGIST)
-        this.addTrainingItem('Interface_MenuItem_TrainPilot', RaiderTraining.PILOT)
-        this.addTrainingItem('Interface_MenuItem_TrainSailor', RaiderTraining.SAILOR)
-        this.addTrainingItem('Interface_MenuItem_TrainDynamite', RaiderTraining.DEMOLITION)
+        this.addTrainingItem('trainDriver', RaiderTraining.DRIVER)
+        this.addTrainingItem('trainEngineer', RaiderTraining.ENGINEER)
+        this.addTrainingItem('trainGeologist', RaiderTraining.GEOLOGIST)
+        this.addTrainingItem('trainPilot', RaiderTraining.PILOT)
+        this.addTrainingItem('trainSailor', RaiderTraining.SAILOR)
+        this.addTrainingItem('trainDynamite', RaiderTraining.DEMOLITION)
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             this.canDoTraining = event.canDoTraining
             this.updateAllButtonStates()
         })
     }
 
-    private addTrainingItem(itemKey: string, training: RaiderTraining) {
-        const trainingItem = this.addMenuItem(GameConfig.instance.interfaceImages, itemKey)
+    private addTrainingItem(interfaceImage: InterfaceImage, training: RaiderTraining) {
+        const trainingItem = this.addMenuItem(GameConfig.instance.interfaceImages[interfaceImage])
         trainingItem.isDisabled = () => !this.canDoTraining.get(training)
         trainingItem.onClick = () => this.publishEvent(new TrainRaider(training))
     }

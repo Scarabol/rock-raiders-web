@@ -27,7 +27,6 @@ import { AnimEntityActivity, RaiderActivity } from './model/anim/AnimationActivi
 import { Raider } from './model/raider/Raider'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { CameraFrustumUpdater } from '../scene/CameraFrustumUpdater'
-import { ColorRGB } from '../scene/ColorRGB'
 import { SelectionNameComponent } from './component/SelectionNameComponent'
 
 export class SceneManager implements Updatable {
@@ -91,7 +90,7 @@ export class SceneManager implements Updatable {
 
     setupScene(levelConf: LevelConfData) {
         this.scene.clear()
-        this.scene.background = new ColorRGB(levelConf.fogColor) // fog color must be equal to scene background to avoid "holes" in fog at max rendering distance
+        this.scene.background = new Color().fromArray(levelConf.fogColor) // fog color must be equal to scene background to avoid "holes" in fog at max rendering distance
         this.ambientLight = new LeveledAmbientLight()
         this.ambientLight.setLightLevel(SaveGameManager.preferences.gameBrightness)
         this.scene.add(this.ambientLight)

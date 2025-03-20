@@ -6,7 +6,7 @@ import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class TextInfoMessage {
     constructor(
-        readonly textImage: SpriteImage,
+        readonly textImage: SpriteImage | undefined,
         readonly infoImage: SpriteImage | undefined,
         readonly sfxSample: string | undefined,
     ) {

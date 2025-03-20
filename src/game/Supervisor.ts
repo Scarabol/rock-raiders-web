@@ -61,7 +61,7 @@ export class Supervisor {
             this.assignJobsTimer = 0
             this.checkClearRubbleTimer = 0
             this.autoClearRubble = event.levelConf.levelName.toLowerCase() !== 'tutorial01'
-            this.scanUnclearedRubble = event.levelConf.levelName.toLowerCase() !== 'tutorial08'
+            this.scanUnclearedRubble = event.levelConf.levelName.toLowerCase() !== 'tutorial08' // TODO Evaluate "noGather" from level config
         })
     }
 

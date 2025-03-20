@@ -12,7 +12,7 @@ export class AnimationQualityGroup extends AnimationGroup {
     protected resolveMesh(lowerName: string): SceneMesh | undefined { // TODO support other mesh quality levels and FPP cameras
         // return super.resolveMesh(this.animEntityData.highPolyBodies.get(lowerName)) || super.resolveMesh(lowerName.replace('vlp', 'hp'))
         //     || super.resolveMesh(this.animEntityData.mediumPolyBodies.get(lowerName)) || super.resolveMesh(lowerName.replace('vlp', 'mp'))
-        return super.resolveMesh(this.animEntityData.lowPolyBodies.get(lowerName)) || super.resolveMesh(lowerName.replace('vlp', 'lp'))
+        return super.resolveMesh(this.animEntityData.lowPolyBodies[lowerName]) || super.resolveMesh(lowerName.replace('vlp', 'lp'))
             || super.resolveMesh(lowerName)
     }
 }

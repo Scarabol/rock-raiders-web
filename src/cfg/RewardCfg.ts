@@ -94,7 +94,7 @@ export class RewardButtonCfg extends BaseConfig {
     x: number = 0
     y: number = 0
 
-    setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {
+    setFromCfgObj(cfgObj: any): this {
         if (!Array.isArray(cfgObj) || cfgObj.length !== 6) {
             throw new Error(`Invalid number of args given: ${cfgObj}`)
         }

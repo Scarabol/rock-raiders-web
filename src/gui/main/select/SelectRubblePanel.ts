@@ -12,10 +12,10 @@ export class SelectRubblePanel extends IconSubPanel {
 
     constructor(onBackPanel: Panel) {
         super(2, onBackPanel, true)
-        const clearRubbleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_ClearRubble')
+        const clearRubbleItem = this.addMenuItem(GameConfig.instance.interfaceImages.clearRubble)
         clearRubbleItem.isDisabled = () => !this.hasRubble
         clearRubbleItem.onClick = () => this.publishEvent(new CreateClearRubbleJob())
-        const placeFenceItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_PlaceFence')
+        const placeFenceItem = this.addMenuItem(GameConfig.instance.interfaceImages.placeFence)
         placeFenceItem.addDependencyCheck(EntityType.ELECTRIC_FENCE)
         placeFenceItem.isDisabled = () => placeFenceItem.hasUnfulfilledDependency || !this.canPlaceFence
         placeFenceItem.onClick = () => this.publishEvent(new PlaceFence())

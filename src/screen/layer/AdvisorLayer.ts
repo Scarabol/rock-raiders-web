@@ -28,12 +28,12 @@ export class AdvisorLayer extends ScreenLayer {
         this.scene = new Scene()
         this.scene.add(new AmbientLight(0xffffff, 1)) // XXX read from LWS file
 
-        const advisorPosCfg = GameConfig.instance.advisorPositions640x480.get('Advisor_Objective'.toLowerCase())
+        const advisorPosCfg = GameConfig.instance.advisorPositions['Advisor_Objective'.toLowerCase()]
         if (!advisorPosCfg) {
             console.warn('Advisor position config for mission objective not found')
             return
         }
-        const advisorCfg = GameConfig.instance.advisor.get(advisorPosCfg.advisorType.toLowerCase())
+        const advisorCfg = GameConfig.instance.advisor[advisorPosCfg.advisorType.toLowerCase()]
         if (!advisorCfg) {
             console.warn('Advisor config for mission objective not found', advisorPosCfg)
             return

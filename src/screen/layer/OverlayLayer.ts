@@ -8,7 +8,6 @@ import { HideTooltip } from '../../event/GuiCommand'
 import { CursorManager } from '../CursorManager'
 import { Panel } from '../../gui/base/Panel'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { CURSOR } from '../../resource/Cursor'
 import { POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../../gui/event/GuiEvent'
 import { BaseElement } from '../../gui/base/BaseElement'
@@ -83,7 +82,7 @@ export class OverlayLayer extends ScaledLayer {
 
     showBriefing(levelConf: LevelConfData) {
         const objectiveSfx = `Stream_Objective_Levels::${levelConf.levelName}`.toLowerCase()
-        this.panelBriefing.setup(GameConfig.instance.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage640x480, objectiveSfx)
+        this.panelBriefing.setup(GameConfig.instance.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage, objectiveSfx)
         this.panelBriefing.onContinueMission = () => this.setActivePanel(undefined)
         this.setActivePanel(SaveGameManager.preferences.skipBriefings ? undefined : this.panelBriefing)
     }
@@ -109,7 +108,7 @@ export class OverlayLayer extends ScaledLayer {
             onContinue()
             return
         }
-        this.panelBriefing.setup(title, text, levelConf.objectiveImage640x480, sfx)
+        this.panelBriefing.setup(title, text, levelConf.objectiveImage, sfx)
         this.setActivePanel(this.panelBriefing)
         this.panelBriefing.onContinueMission = onContinue
         this.active = true
@@ -119,7 +118,7 @@ export class OverlayLayer extends ScaledLayer {
         this.panels.forEach(p => p !== panel && p.hide())
         if (panel) {
             panel.show()
-            CursorManager.changeCursor(CURSOR.STANDARD)
+            CursorManager.changeCursor('standard')
             EventBroker.publish(new HideTooltip())
         }
         EventBroker.publish(new BaseEvent(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))

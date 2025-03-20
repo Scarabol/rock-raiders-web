@@ -39,7 +39,7 @@ export class MainCfg extends BaseConfig {
     // CDTracks = 3
     // TopSpotRGB = 127:127:127
     // TrackSpotRGB = 000:255:000
-    ambientRGB: [r: number, g: number, b: number] = [10, 10, 10]
+    ambientRGB: [r: number, g: number, b: number] = [10 / 255, 10 / 255, 10 / 255]
     // FPLightRGB = 127:127:127
     powerCrystalRGB: [r: number, g: number, b: number] = [0, 1, 0]
     unpoweredCrystalRGB: [r: number, g: number, b: number] = [1, 0, 1]
@@ -101,6 +101,10 @@ export class MainCfg extends BaseConfig {
             return true
         } else if (unifiedKey === 'UnpoweredCrystalRGB'.toLowerCase()) {
             this.unpoweredCrystalRGB = cfgValue.map((n: number) => n / 255)
+            return true
+        } else if (unifiedKey === 'AmbientRGB'.toLowerCase()) {
+            if (!Array.isArray(cfgValue) || cfgValue.length !== 3 || cfgValue.some((n) => isNaN(n))) throw new Error(`Invalid RGB value (${cfgValue}) given`)
+            this.ambientRGB = cfgValue.map((n) => Math.max(0, Math.min(255, n)) / 255) as [number, number, number]
             return true
         }
         return super.assignValue(objKey, unifiedKey, cfgValue)

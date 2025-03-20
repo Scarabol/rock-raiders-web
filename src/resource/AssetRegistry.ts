@@ -69,7 +69,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.main.tutorialIcon)
         // level files
         this.addAsset(this.assetLoader.loadNerpAsset, 'Levels/nerpnrn.h')
-        gameConfig.levels.levelCfgByName.forEach((level) => {
+        gameConfig.levels.forEach((level) => {
             level.menuBMP.forEach((bmpName) => {
                 this.addAsset(this.assetLoader.loadAlphaImageAsset, bmpName)
             })
@@ -95,32 +95,25 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addTextureFolder('World/Shared/')
         this.addTextureFolder('Vehicles/SharedUG/')
         // load all entity upgrades
-        Array.from(gameConfig.upgradeTypesCfg.values()).forEach((uType) => {
+        Object.values(gameConfig.upgradeTypes).forEach((uType) => {
             this.addMeshObjects(uType)
         })
         // load all building types
-        const buildingTypes = iGet(gameConfig, 'BuildingTypes')
-        Object.values<string>(buildingTypes).forEach((bType) => {
-            this.addMeshObjects(bType)
-        })
+        Object.values(GameConfig.instance.buildingTypes).forEach((bType) => this.addMeshObjects(bType))
         this.addTextureFolder('Buildings/E-Fence')
         this.addAnimatedEntity('mini-figures/pilot/pilot.ae')
-        Array.from(gameConfig.advisor.values()).forEach((adv) => {
+        Object.values(gameConfig.advisor).forEach((adv) => {
             this.addLWSFile(adv.animFileName)
             this.addTextureFolder(getPath(adv.animFileName))
         })
         // load monsters
-        const rockMonsterTypes = iGet(gameConfig, 'RockMonsterTypes')
-        Object.values<string>(rockMonsterTypes).forEach((mType) => {
-            this.addMeshObjects(mType)
-        })
+        Object.values(GameConfig.instance.rockMonsterTypes).forEach((mType) => this.addMeshObjects(mType))
         this.assetLoader.vfs.filterEntryNames(`Creatures/LavaMonster/.+\\.uv`).forEach((assetPath) => {
             this.addAsset(this.assetLoader.loadUVFile, assetPath)
         })
         await yieldToMainThread()
         // load vehicles
-        const vehicleTypes = iGet(gameConfig, 'VehicleTypes')
-        Object.values<string>(vehicleTypes).forEach((v) => {
+        Object.values(GameConfig.instance.vehicleTypes).forEach((v) => {
             Array.ensure(v).forEach((vType) => {
                 this.addMeshObjects(vType)
             })
@@ -141,7 +134,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         Object.values<string>(miscObjects).forEach((mType) => {
             this.addMeshObjects(mType)
         })
-        gameConfig.rockFallStyles.forEach((entry) => {
+        Object.values(gameConfig.rockFallStyles).forEach((entry) => {
             ;[entry.threeSides, entry.outsideCorner, entry.tunnel].forEach((shape) => {
                 const textureFolder = shape.split('/').slice(0, -1).join('/')
                 this.addTextureFolder(textureFolder)
@@ -157,7 +150,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addTextureFolder('World/WorldTextures/IceSplit/Ice')
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava')
         this.addTextureFolder('World/WorldTextures/RockSplit/Rock')
-        gameConfig.textures.textureSetByName.forEach((s) => s.roofTexture && this.addAsset(this.assetLoader.loadWadTexture, s.roofTexture))
+        Object.values(gameConfig.textures.textureSetByName).forEach((s) => s.roofTexture && this.addAsset(this.assetLoader.loadWadTexture, s.roofTexture))
         // TODO Load pro meshes for high wall details
         // Array.from(gameConfig.textures.textureSetByName.values()).forEach((set) => {
         //     this.assetLoader.wad0File.filterEntryNames(`${set.meshBasename}.*.lwo`).forEach((meshName) => {
@@ -211,7 +204,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
             this.addLWOFile(`${wheelMeshName}.lwo`)
         }
         [animData.highPolyBodies, animData.mediumPolyBodies, animData.lowPolyBodies].forEach((polyType) => {
-            for (const filename of polyType.values()) {
+            for (const filename of Object.values(polyType)) {
                 this.addLWOFile(path + filename)
             }
         })

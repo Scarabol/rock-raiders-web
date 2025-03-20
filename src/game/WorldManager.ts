@@ -45,8 +45,8 @@ import { PRNG } from './factory/PRNG'
 export class WorldManager {
     readonly ecs: ECS = new ECS()
     readonly jobSupervisor: Supervisor = new Supervisor(this)
-    sceneMgr: SceneManager
-    entityMgr: EntityManager
+    sceneMgr!: SceneManager
+    entityMgr!: EntityManager
     nerpRunner: NerpRunner = new NerpRunner(this, new NerpScript(), [])
     powerGrid: PowerGrid
     gameLoopInterval?: NodeJS.Timeout
@@ -148,10 +148,6 @@ export class WorldManager {
             else if (item.entityType === EntityType.BRICK) GameState.numBrick++
             EventBroker.publish(new MaterialAmountChanged())
         }
-    }
-
-    get gameTimeSeconds(): number {
-        return Math.round(this.gameTimeMs / 1000)
     }
 
     checkCrystalFailure() {
