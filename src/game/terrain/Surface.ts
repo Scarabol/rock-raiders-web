@@ -125,26 +125,22 @@ export class Surface {
     private discoverNeighbors(first: boolean, walls: Map<string, Surface>, touched: Map<string, Surface>): boolean {
         this.markDiscovered()
         let caveFound = false
-        for (let x = -1; x <= 1; x++) {
-            for (let y = -1; y <= 1; y++) {
-                if (x === 0 && y === 0) continue
-                const neighbor = this.terrain.getSurface(this.x + x, this.y + y)
-                touched.set(`${neighbor.x}#${neighbor.y}`, neighbor)
-                if (neighbor.discovered && !first) continue
-                if ((x === 0 || y === 0) && (neighbor.surfaceType.floor || neighbor.surfaceType === SurfaceType.HIDDEN_CAVERN || neighbor.surfaceType === SurfaceType.HIDDEN_SLUG_HOLE)) {
-                    caveFound = caveFound || !neighbor.discovered
-                    const neighborCaveFound = neighbor.discoverNeighbors(false, walls, touched) // XXX refactor this remove recursion
-                    caveFound = caveFound || neighborCaveFound
-                } else {
-                    walls.set(`${neighbor.x}#${neighbor.y}`, neighbor)
-                }
+        for (const neighbor of this.neighbors8) {
+            touched.set(`${neighbor.x}#${neighbor.y}`, neighbor)
+            if (neighbor.discovered && !first) continue
+            if (neighbor.surfaceType.floor || neighbor.surfaceType === SurfaceType.HIDDEN_CAVERN || neighbor.surfaceType === SurfaceType.HIDDEN_SLUG_HOLE) {
+                caveFound = caveFound || !neighbor.discovered
+                const neighborCaveFound = neighbor.discoverNeighbors(false, walls, touched) // XXX refactor this remove recursion
+                caveFound = caveFound || neighborCaveFound
+            } else {
+                walls.set(`${neighbor.x}#${neighbor.y}`, neighbor)
             }
         }
         return caveFound
     }
 
     private markDiscovered() {
-        if (this.neighbors.some((n) => n.discovered && n.surfaceType.floor)) {
+        if (this.neighbors8.some((n) => n.discovered && n.surfaceType.floor)) {
             switch (this.surfaceType) {
                 case SurfaceType.HIDDEN_CAVERN:
                     this.surfaceType = SurfaceType.GROUND
@@ -541,6 +537,14 @@ export class Surface {
         return [
             this.terrain.getSurface(this.x - 1, this.y), this.terrain.getSurface(this.x, this.y - 1),
             this.terrain.getSurface(this.x + 1, this.y), this.terrain.getSurface(this.x, this.y + 1),
+        ]
+    }
+
+    get neighbors8(): Surface[] {
+        return [
+            ...this.neighbors,
+            this.terrain.getSurface(this.x - 1, this.y - 1), this.terrain.getSurface(this.x - 1, this.y + 1),
+            this.terrain.getSurface(this.x + 1, this.y + 1), this.terrain.getSurface(this.x + 1, this.y - 1),
         ]
     }
 
