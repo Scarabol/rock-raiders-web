@@ -111,31 +111,26 @@ export class Surface {
      */
     discover(): boolean {
         const walls: Map<string, Surface> = new Map()
-        const touched: Map<string, Surface> = new Map()
-        const caveFound = this.discoverNeighbors(true, walls, touched)
-        walls.forEach((w) => w.markDiscovered())
-        touched.forEach((w) => {
-            w.needsMeshUpdate = true
-            if (w.isUnstable()) w.collapse()
-        })
-        EventBroker.publish(new UpdateRadarTerrain(this.terrain))
-        return caveFound
-    }
-
-    private discoverNeighbors(first: boolean, walls: Map<string, Surface>, touched: Map<string, Surface>): boolean {
-        this.markDiscovered()
         let caveFound = false
-        for (const neighbor of this.neighbors8) {
-            touched.set(`${neighbor.x}#${neighbor.y}`, neighbor)
-            if (neighbor.discovered && !first) continue
-            if (neighbor.surfaceType.floor || neighbor.surfaceType === SurfaceType.HIDDEN_CAVERN || neighbor.surfaceType === SurfaceType.HIDDEN_SLUG_HOLE) {
-                caveFound = caveFound || !neighbor.discovered
-                const neighborCaveFound = neighbor.discoverNeighbors(false, walls, touched) // XXX refactor this remove recursion
-                caveFound = caveFound || neighborCaveFound
-            } else {
-                walls.set(`${neighbor.x}#${neighbor.y}`, neighbor)
+        for (let surface: Surface = this, stack: Surface[] = []; surface; surface = stack.pop()) {
+            surface.markDiscovered()
+            for (const neighbor of surface.neighbors8) {
+                if (neighbor.surfaceType.floor || neighbor.surfaceType === SurfaceType.HIDDEN_CAVERN || neighbor.surfaceType === SurfaceType.HIDDEN_SLUG_HOLE) {
+                    if (!neighbor.discovered) {
+                        stack.push(neighbor)
+                        caveFound = true
+                    }
+                } else {
+                    walls.set(`${neighbor.x}#${neighbor.y}`, neighbor)
+                }
             }
         }
+        walls.forEach((w) => {
+            w.markDiscovered()
+            w.needsMeshUpdate = true
+        })
+        walls.forEach((w) => w.isUnstable() && w.collapse())
+        EventBroker.publish(new UpdateRadarTerrain(this.terrain))
         return caveFound
     }
 
