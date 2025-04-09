@@ -74,14 +74,16 @@
 
 .select-files-accordion input:checked ~ .select-files-accordion-panel {
     height: auto;
-    padding: 10px;
+    padding: 0 10px 10px;
     transition: ease-in-out 0.15s;
 }
 
 .select-button-container {
-    display: flex;
-    gap: 10px;
-    margin: 5px 0;
+    display: flow;
+}
+
+.select-button-container button {
+    margin: 5px;
 }
 
 .select-files-option {

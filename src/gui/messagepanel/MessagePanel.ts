@@ -179,9 +179,9 @@ export class MessagePanel extends Panel {
         const textImage = this.currentMessage?.textImage
         const infoImage = this.currentMessage?.infoImage
         if (textImage) {
-            let txtX = (this.btnNext.relX + 12 - textImage.width) / 2
-            if (infoImage) txtX = (this.img.width - textImage.width - (infoImage ? infoImage.width : 0)) / 2
-            context.drawImage(textImage, this.x + txtX, this.y + 26)
+            let txtX = (this.btnNext.relX - textImage.width) / 2
+            if (infoImage) txtX = (this.img.width - textImage.width - infoImage.width) / 2
+            context.drawImage(textImage, this.x + 6 + txtX, this.y + 26)
         }
         if (infoImage) {
             const infoX = this.x + this.img.width - infoImage.width

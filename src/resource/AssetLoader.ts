@@ -1,4 +1,3 @@
-import { BitmapFontData } from '../core/BitmapFont'
 import { getFilename } from '../core/Util'
 import { FlhParser } from './fileparser/FlhParser'
 import { BitmapWorkerPool } from '../worker/BitmapWorkerPool'
@@ -79,9 +78,8 @@ export class AssetLoader {
         return this.bitmapWorkerPool.decodeBitmapWithAlphaTranslucent(this.vfs.getFile(name).toBuffer())
     }
 
-    async loadFontImageAsset(name: string): Promise<BitmapFontData> {
-        const imgData = await this.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
-        return new BitmapFontData(imgData)
+    async loadFontImageAsset(name: string): Promise<ImageData> {
+        return await this.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
     }
 
     async loadNerpAsset(name: string): Promise<string> {
@@ -125,7 +123,7 @@ export class AssetLoader {
                     !lPath.endsWith('/stats.wav') &&
                     !lPath.endsWith('/dripsB.wav'.toLowerCase())
                 ) {
-                    console.error(`Could not find sound ${path}:\n` + errors.join('\n'))
+                    throw new Error(`Could not find sound ${path}:\n` + errors.join('\n'))
                 }
                 return undefined
             }

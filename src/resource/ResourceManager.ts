@@ -27,6 +27,20 @@ export class ResourceManager {
         return this.resourceByName.get(lName)
     }
 
+    static getImageOptional(imageName: string): SpriteImage | undefined {
+        if (!imageName) return undefined
+        return this.imageCache.getOrUpdate(imageName, () => {
+            const imgData = this.resourceByName.get(imageName.toLowerCase())
+            if (!imgData) {
+                console.warn(`Image "${imageName}" not found!`)
+                return undefined
+            }
+            const context = createContext(imgData.width, imgData.height)
+            context.putImageData(imgData, 0, 0)
+            return context.canvas
+        })
+    }
+
     static getImage(imageName: string): SpriteImage {
         return this.imageCache.getOrUpdate(imageName, () => {
             const imgData = this.getImageData(imageName)
@@ -44,7 +58,7 @@ export class ResourceManager {
     static getImageData(imageName: string): ImageData {
         if (!imageName) throw new Error(`imageName must not be undefined, null or empty - was ${imageName}`)
         return this.resourceByName.getOrUpdate((imageName.toLowerCase()), () => {
-            console.error(`Image '${imageName}' unknown! Using placeholder image instead`)
+            console.error(`Image "${imageName}" not found! Using placeholder image instead`)
             return createDummyImgData(64, 64)
         })
     }
@@ -115,7 +129,7 @@ export class ResourceManager {
 
     static getMeshTexture(textureFilepath: string, meshPath: string): Texture[] {
         for (const path of [
-            "" + meshPath + textureFilepath,
+            '' + meshPath + textureFilepath,
             `vehicles/sharedug/${textureFilepath}`,
             `world/shared/${textureFilepath}`,
         ]) {

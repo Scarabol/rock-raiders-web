@@ -1,5 +1,12 @@
+import { VFSEncoding } from './VirtualFileSystem'
+
 export class EncodingHelper {
-    static currentEncoding = 'default'
+    private static currentEncoding: VFSEncoding = 'default'
+
+    static setEncoding(encoding: VFSEncoding) {
+        console.log(`Changing character encoding to "${encoding}"`)
+        this.currentEncoding = encoding
+    }
 
     static decodeString(encoded: string): string {
         return this.decode([...encoded].map((s) => s.charCodeAt(0)))

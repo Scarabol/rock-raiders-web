@@ -2,6 +2,7 @@ import { VirtualFile } from './VirtualFile'
 import { ByteStreamReader } from '../../core/ByteStreamReader'
 import { CabFile } from './CabFile'
 import { VERBOSE } from '../../params'
+import { SelectFilesProgress } from '../selectfiles/SelectFilesProgress'
 
 export class IsoFileParser {
     readonly files: VirtualFile[] = []
@@ -12,7 +13,7 @@ export class IsoFileParser {
         this.reader = new ByteStreamReader(new DataView(buffer))
     }
 
-    async loadAllFiles(): Promise<VirtualFile[]> {
+    async loadAllFiles(progress: SelectFilesProgress): Promise<VirtualFile[]> {
         console.time('Parsing ISO file directory entries')
         for (let offset = 32 * 1024; offset < this.buffer.byteLength; offset += 2048) { // skip first 32 kB for system area
             this.reader.seek(offset)
@@ -43,12 +44,12 @@ export class IsoFileParser {
         const cabFile = new CabFile(cabHeaderFile.toBuffer(), cabVolumeFile.toBuffer()).parse()
         console.timeEnd('Parsing CAB header and volume files')
         console.time('Loading all files from CAB file listing')
-        const cabFiles = await cabFile.loadAllFiles()
+        const cabFiles = await cabFile.loadAllFiles(progress)
         console.timeEnd('Loading all files from CAB file listing')
         return [...this.files, ...cabFiles]
     }
 
-    readDirectoryEntry(offset: number, parentName: string) {
+    private readDirectoryEntry(offset: number, parentName: string) {
         this.reader.seek(offset)
         const lenDirRecord = this.reader.read8()
         if (lenDirRecord < 1) return
@@ -75,7 +76,7 @@ export class IsoFileParser {
         if (isDirectory && (parentName === '' || fileIdentifier !== '.') && fileIdentifier !== '..') {
             this.readDirectoryEntry(startOffset, filePathIdentifier)
         }
-        this.readDirectoryEntry(offset + lenDirRecord, parentName)
+        if (parentName) this.readDirectoryEntry(offset + lenDirRecord, parentName)
     }
 }
 
