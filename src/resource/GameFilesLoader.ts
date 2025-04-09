@@ -1,10 +1,11 @@
 import { LoadingLayer } from '../screen/layer/LoadingLayer'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { SelectFilesModal } from './selectfiles/SelectFilesModal'
-import { VirtualFileSystem } from './fileparser/VirtualFileSystem'
+import { VFSEncoding, VirtualFileSystem } from './fileparser/VirtualFileSystem'
 import { VirtualFile } from './fileparser/VirtualFile'
 import { WadParser } from './fileparser/WadParser'
 import { HTML_GAME_CONTAINER } from '../core'
+import { EncodingHelper } from './fileparser/EncodingHelper'
 
 export class GameFilesLoader {
     readonly modal: SelectFilesModal
@@ -14,6 +15,7 @@ export class GameFilesLoader {
     constructor(readonly loadingLayer: LoadingLayer) {
         this.modal = new SelectFilesModal(HTML_GAME_CONTAINER, async (vfs) => {
             await cachePutData('vfs', vfs.fileNames)
+            await cachePutData('encoding', vfs.encoding)
             this.onGameFilesLoaded(vfs).then()
         })
         this.onDonePromise = new Promise<VirtualFileSystem>((resolve) => {
@@ -27,7 +29,8 @@ export class GameFilesLoader {
         try {
             const vfsFileNames: string[] | undefined = await cacheGetData('vfs')
             if (vfsFileNames) {
-                const vfs = new VirtualFileSystem()
+                const encoding = (await cacheGetData('encoding')) as VFSEncoding || 'default'
+                const vfs = new VirtualFileSystem(encoding)
                 await Promise.all(vfsFileNames.map(async (fileName) => {
                     const buffer = await cacheGetData(fileName)
                     vfs.registerFile(VirtualFile.fromBuffer(fileName, buffer))
@@ -51,6 +54,7 @@ export class GameFilesLoader {
         console.time('Total asset loading time')
         vfs.filterEntryNames('.+\\.wad').sort()
             .forEach((f) => WadParser.parseFileList(vfs.getFile(f).toDataView()).forEach((f) => vfs.registerFile(f)))
+        EncodingHelper.setEncoding(vfs.encoding)
         this.modal.hide()
         this.onDoneCallback?.(vfs)
     }

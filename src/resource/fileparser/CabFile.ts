@@ -2,6 +2,7 @@ import { ByteStreamReader } from '../../core/ByteStreamReader'
 import Pako from 'pako'
 import { cacheGetData } from '../AssetCacheHelper'
 import { VirtualFile } from './VirtualFile'
+import { SelectFilesProgress } from '../selectfiles/SelectFilesProgress'
 
 interface CabFileEntry {
     filePathName: string;
@@ -188,22 +189,16 @@ export class CabFile {
         return CabFile.FALLBACK_MAJOR_VERSION
     }
 
-    async loadAllFiles(): Promise<VirtualFile[]> {
+    async loadAllFiles(progress: SelectFilesProgress): Promise<VirtualFile[]> {
         const result: VirtualFile[] = []
         await Promise.all(
-            Array.from(this.lowerFilePathNameToFile.keys()).map(async (fileName) => {
+            Array.from(this.lowerFilePathNameToFile.keys()).map(async (fileName, c) => {
                 const buffer = await this.getFileBuffer(fileName)
-                let mappedFileName: string = fileName
-                if (fileName.startsWith('program data files/')) {
-                    mappedFileName = fileName.replace('program data files/', '')
-                } else if (fileName.startsWith('0009-english files/')) { // TODO Implement language support for CAB files
-                    mappedFileName = fileName.replace('0009-english files/', '')
-                } else if (fileName.startsWith('0007-german files/')) { // TODO Implement language support for CAB files
-                    mappedFileName = fileName.replace('0007-german files/', '')
-                } else {
-                    return
-                }
+                const firstSlashIndex = fileName.indexOf('/') + 1
+                // Move files from "program data files/", "0007-german files/" or "registration files/" to root directory
+                const mappedFileName = firstSlashIndex > 1 ? fileName.substring(firstSlashIndex) : fileName
                 result.push(VirtualFile.fromBuffer(mappedFileName, buffer))
+                progress.setProgress('Unpacking files from CAB...', c, this.lowerFilePathNameToFile.size)
             })
         )
         return result

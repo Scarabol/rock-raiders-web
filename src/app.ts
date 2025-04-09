@@ -80,7 +80,7 @@ export async function start() {
         new Promise<SpriteImage>(async (resolve) => {
             const fileData = vfs.getFile(DEFAULT_FONT_NAME).toDataView()
             const imgData = BitmapWithPalette.decode(fileData)
-            const fontData = new BitmapFontData(imgData)
+            const fontData = new BitmapFontData(imgData, 14)
             BitmapFontWorkerPool.instance.setupPool(DEFAULT_FONT_NAME, fontData)
             // waiting for actual pool here, is about 10 times longer
             const loadingText = GameConfig.instance.main.loadingText
@@ -99,16 +99,18 @@ export async function start() {
     bitmapWorkerPool.terminatePool()
     await Promise.all([
         ResourceManager.loadAllCursor(),
-        ...['Interface/FrontEnd/Menu_Font_Hi.bmp',
-            'Interface/FrontEnd/Menu_Font_Lo.bmp',
-            'Interface/Fonts/FSFont.bmp',
-            'Interface/Fonts/RSFont.bmp',
-            'Interface/Fonts/RSWritten.bmp',
-            TOOLTIP_FONT_NAME,
-            'Interface/Fonts/MbriefFont2.bmp',
-            'Interface/Fonts/MbriefFont.bmp',
-        ].map((fontName) => {
-            BitmapFontWorkerPool.instance.addFont(fontName, ResourceManager.getResource(fontName))
+        ...[{name: 'Interface/FrontEnd/Menu_Font_Hi.bmp', charHeight: 43},
+            {name: 'Interface/FrontEnd/Menu_Font_Lo.bmp', charHeight: 43},
+            {name: 'Interface/Fonts/FSFont.bmp', charHeight: 17},
+            {name: 'Interface/Fonts/RSFont.bmp', charHeight: 17},
+            {name: 'Interface/Fonts/RSWritten.bmp', charHeight: 26},
+            {name: TOOLTIP_FONT_NAME, charHeight: 11},
+            {name: 'Interface/Fonts/MbriefFont2.bmp', charHeight: 17},
+            {name: 'Interface/Fonts/MbriefFont.bmp', charHeight: 17},
+        ].map((f) => {
+            const imgData = ResourceManager.getImageData(f.name)
+            const fontData = new BitmapFontData(imgData, f.charHeight)
+            BitmapFontWorkerPool.instance.addFont(f.name, fontData)
         })
     ])
     console.timeEnd('Total asset loading time')
@@ -130,7 +132,7 @@ export async function start() {
     })
     DependencySpriteWorkerPool.instance.setupPool({
         teleportManImageData: teleportManImageData,
-        tooltipFontData: ResourceManager.getResource(TOOLTIP_FONT_NAME) as BitmapFontData,
+        tooltipFontData: new BitmapFontData(ResourceManager.getImageData(TOOLTIP_FONT_NAME), 11),
         plusSign: ResourceManager.getImageData('Interface/Dependencies/+.bmp'),
         equalSign: ResourceManager.getImageData('Interface/Dependencies/=.bmp'),
         depInterfaceBuildImageData: depInterfaceBuildImageData,

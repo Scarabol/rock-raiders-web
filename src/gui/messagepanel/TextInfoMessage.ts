@@ -13,8 +13,9 @@ export class TextInfoMessage {
     }
 
     static async fromConfig(cfg: TextInfoMessageEntryCfg, maxWidth: number): Promise<TextInfoMessage> {
-        const textImage = await BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, cfg.text, maxWidth)
         const infoImage = cfg.imageFilename ? ResourceManager.getImage(cfg.imageFilename) : undefined
+        maxWidth = maxWidth - (infoImage?.width || 0)
+        const textImage = await BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, cfg.text, maxWidth)
         return new TextInfoMessage(textImage, infoImage, cfg.sfxName)
     }
 }

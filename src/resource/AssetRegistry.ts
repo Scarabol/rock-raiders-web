@@ -38,7 +38,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addAsset(this.assetLoader.loadObjectiveTexts, 'Languages/ObjectiveText.txt')
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.image)
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.contrastOverlay)
-        Object.values(gameConfig.reward.flics).forEach((f) => this.addAsset(this.assetLoader.loadFlhAssetDefault, f.flhFilepath))
+        Object.values(gameConfig.reward.flics).forEach((f) => this.addAsset(this.assetLoader.loadFlhAssetDefault, f.flhFilepath, true))
         this.addLWSFile('Interface/FrontEnd/Rock_Wipe/RockWipe.lws')
         this.assetLoader.vfs.filterEntryNames(`Interface/FrontEnd/Rock_Wipe/.+\\.uv`).forEach((assetPath) => {
             this.addAsset(this.assetLoader.loadUVFile, assetPath)

@@ -1,7 +1,12 @@
 import { VirtualFile } from './VirtualFile'
 
+export type VFSEncoding = 'default' | 'windows-1250' | 'windows-1251' | 'windows-1252' | 'windows-1255'
+
 export class VirtualFileSystem {
     readonly files: Map<string, VirtualFile> = new Map()
+
+    constructor(readonly encoding: VFSEncoding = 'default') {
+    }
 
     registerFile(file: VirtualFile) {
         this.files.set(file.fileName.toLowerCase(), file)

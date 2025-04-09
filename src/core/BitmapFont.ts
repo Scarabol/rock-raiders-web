@@ -3,16 +3,15 @@ import { SpriteImage } from './Sprite'
 
 export class BitmapFontData {
     readonly charCodeMap: Map<number, ImageData> = new Map()
-    readonly charHeight: number
     readonly alphaColor: { r: number, g: number, b: number }
     readonly spaceWidth: number
 
-    constructor(fontImageData: ImageData) {
-        // TODO Russian language version has 23 rows
-        const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
+    constructor(fontImageData: ImageData, readonly charHeight: number) {
+        if (!fontImageData) throw new Error('No font image data given')
+        if (charHeight < 1) throw new Error(`Invalid char height (${charHeight}) given`)
+        const cols = 10, rows = Math.floor(fontImageData.height / charHeight)
         // XXX find better way to detect char dimensions
         const maxCharWidth = fontImageData.width / cols
-        this.charHeight = fontImageData.height / rows
         this.alphaColor = getPixel(fontImageData, 0, 0)
 
         function isLimiterColor(imgData: ImageData, index: number): boolean {
@@ -114,7 +113,7 @@ export class BitmapFont {
                 } else {
                     const letter = word.charAt(c)
                     if (charCode !== 13) { // ignore carriage return
-                        console.error(`Ignoring letter '${letter}' (${charCode}) of word "${text}" not found in charset!`)
+                        console.error(`Ignoring letter '${letter}' (${charCode}) of word "${text}" not found in charset of size ${this.data.charCodeMap.size}!`)
                     }
                 }
             }
