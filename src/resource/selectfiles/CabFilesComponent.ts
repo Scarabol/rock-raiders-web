@@ -17,7 +17,7 @@ export class CabFilesComponent extends AbstractFormFilesComponent {
         const cabHeader = await files[0].arrayBuffer()
         const cabVolume = await files[1].arrayBuffer()
         console.time('Parsing CAB files')
-        const cabFile = new CabFile(cabHeader, cabVolume, false).parse()
+        const cabFile = new CabFile(cabHeader, cabVolume).parse()
         console.timeEnd('Parsing CAB files')
         console.time('Unpack CAB files')
         const allFiles = await cabFile.loadAllFiles()
