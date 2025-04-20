@@ -16,7 +16,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { UnderAttackEvent, WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { GameState } from '../model/GameState'
 import { PathFinder } from '../terrain/PathFinder'
-import { Vector2, Vector3 } from 'three'
+import { Vector2, Vector3, Euler } from 'three'
 import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
 import { MaterialEntity } from '../model/material/MaterialEntity'
 import { TILESIZE } from '../../params'
@@ -463,9 +463,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             })
         })
         raider.sceneEntity.position.copy(new Vector3(0, 0, 4)) // XXX Why is this offset needed?
-        const euler = sceneEntity.rotation.clone()
-        euler.y = Math.PI // XXX Why is this rotation needed?
-        raider.sceneEntity.rotation.copy(euler)
+        raider.sceneEntity.rotation.copy(new Euler(0, Math.PI, 0)) // XXX Why is this rotation needed?
         sceneEntity.depositParent?.add(raider.sceneEntity)
         const parentScale = new Vector3(1, 1, 1)
         raider.sceneEntity.parent?.getWorldScale(parentScale)
