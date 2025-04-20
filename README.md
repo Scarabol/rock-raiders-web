@@ -66,7 +66,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Advisor not shown in tutorials near icon panel
 - Orange smoke column above lava tiles missing
 - Add tiny rockies running around after crumbling
-- Raider scene entity position/rotation not correct when thrown by rocky
 - Two buttons in priority list can be hovered/pressed/released at the same time
 - Use pro-meshes to render high-detail walls in first person and shoulder view
 - Bats don't appear in flocks
