@@ -112,7 +112,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         this.doIdle(behaviorComponent, pathFinder, rockyPos, stats, entity, crystals)
                         break
                     case RockMonsterBehaviorState.GOTO_CRYSTAL:
-                        if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH || positionComponent.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING) {
+                        if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH || positionComponent.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING && positionComponent.surface.building?.pathSurfaces.includes(positionComponent.surface) !== false) {
                             const prevTargetComponent = components.get(WorldTargetComponent)
                             this.ecs.removeComponent(entity, WorldTargetComponent)
                             this.ecs.removeComponent(entity, HeadingComponent)
@@ -236,7 +236,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         }
                         break
                     case RockMonsterBehaviorState.MELEE_ATTACK:
-                        if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH || positionComponent.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING) {
+                        if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH || positionComponent.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING && positionComponent.surface.building?.pathSurfaces.includes(positionComponent.surface) !== false) {
                             const prevTargetComponent = components.get(WorldTargetComponent)
                             this.ecs.removeComponent(entity, WorldTargetComponent)
                             this.ecs.removeComponent(entity, HeadingComponent)
@@ -301,7 +301,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         }
                         break
                     case RockMonsterBehaviorState.GOTO_WALL:
-                        if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH || positionComponent.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING) {
+                        if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH || positionComponent.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING && positionComponent.surface.building?.pathSurfaces.includes(positionComponent.surface) !== false) {
                             const prevTargetComponent = components.get(WorldTargetComponent)
                             this.ecs.removeComponent(entity, WorldTargetComponent)
                             this.ecs.removeComponent(entity, HeadingComponent)
