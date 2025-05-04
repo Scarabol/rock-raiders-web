@@ -116,7 +116,7 @@ export class Surface {
             surface.markDiscovered()
             for (const neighbor of surface.neighbors8) {
                 if (neighbor.surfaceType.floor || neighbor.surfaceType === SurfaceType.HIDDEN_CAVERN || neighbor.surfaceType === SurfaceType.HIDDEN_SLUG_HOLE) {
-                    if (!neighbor.discovered) {
+                    if (!neighbor.discovered || neighbor.surfaceType === SurfaceType.HIDDEN_CAVERN || neighbor.surfaceType === SurfaceType.HIDDEN_SLUG_HOLE) {
                         stack.push(neighbor)
                         caveFound = true
                     }
