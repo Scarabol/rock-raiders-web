@@ -4,7 +4,7 @@
  * File format description: http://www.martinreddy.net/gfx/3d/LWSC.txt
  */
 
-import { Euler, KeyframeTrack, NumberKeyframeTrack, Quaternion, QuaternionKeyframeTrack, StringKeyframeTrack, Vector3, VectorKeyframeTrack } from 'three'
+import { Euler, KeyframeTrack, Matrix4, NumberKeyframeTrack, Quaternion, QuaternionKeyframeTrack, StringKeyframeTrack, Vector3, VectorKeyframeTrack } from 'three'
 import { degToRad } from 'three/src/math/MathUtils'
 import { getFilename } from '../../core/Util'
 import { VERBOSE } from '../../params'
@@ -22,9 +22,8 @@ export class LWSCObject {
     isNull: boolean = false
     sfxName: string = ''
     parentObjInd: number = 0 // index is 1 based, 0 means no parent
-    pivot: number[] = []
+    readonly pivot: Vector3 = new Vector3()
     readonly keyframeTracks: KeyframeTrack[] = []
-    readonly positionTracks: VectorKeyframeTrack[] = []
     readonly opacityTracks: NumberKeyframeTrack[] = []
     castShadow: boolean = false
     receiveShadow: boolean = false
@@ -114,24 +113,50 @@ export class LWSCParser {
         for (; this.lineIndex < this.lines.length; this.lineIndex++) {
             let line = this.lines[this.lineIndex]
             if (!line) {
-                if (currentObject.pivot?.some((v) => v > 0)) {
-                    const translatedPositionTracks = currentObject.positionTracks.map((t) => {
-                        const mappedValues = t.values.map((v, c) => {
-                            // TODO Remove workaround of doom, otherwise telepthings.lwo which uses pivot point for rotation has offset from model
-                            if ((c % 3) === 0) {
-                                v += 0.08
-                            } else if ((c % 3) === 2) {
-                                v += 0.17
-                            }
-                            v -= currentObject.pivot[(c % 3)]
-                            return v
-                        })
-                        t.values.set(mappedValues)
-                        return t
-                    })
-                    currentObject.keyframeTracks.push(...translatedPositionTracks)
-                } else {
-                    currentObject.keyframeTracks.push(...currentObject.positionTracks)
+                const positionTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name === ".position")
+                const rotationTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name == ".quaternion")
+                const scaleTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name === ".scale")
+                const invPivotMat = new Matrix4().makeTranslation(currentObject.pivot).invert()
+                const positionMat = new Matrix4()
+                const rotation = new Quaternion()
+                const rotationMat = new Matrix4()
+                const scaleMat = new Matrix4()
+                const calcMat = new Matrix4()
+                const newPosition = new Vector3()
+                const newRotation = new Quaternion()
+                const newScale = new Vector3()
+                const minTimesLength = Math.min(positionTrack?.times.length ?? 0, rotationTrack?.times.length ?? 0, scaleTrack?.times.length ?? 0)
+                if (positionTrack?.times.length !== minTimesLength || rotationTrack?.times.length !== minTimesLength || scaleTrack?.times.length !== minTimesLength) {
+                    console.error(`track lengths don't match: positionTrack=${positionTrack?.times.length}, rotationTrack=${rotationTrack?.times.length}, scaleTrack=${scaleTrack?.times.length}`)
+                }
+                for (let i = 0; i < minTimesLength; i += 1) {
+                    positionMat.makeTranslation(
+                        positionTrack.values[i*positionTrack.getValueSize() + 0],
+                        positionTrack.values[i*positionTrack.getValueSize() + 1],
+                        positionTrack.values[i*positionTrack.getValueSize() + 2],
+                    )
+                    rotationMat.makeRotationFromQuaternion(rotation.set(
+                        rotationTrack.values[i*rotationTrack.getValueSize() + 0],
+                        rotationTrack.values[i*rotationTrack.getValueSize() + 1],
+                        rotationTrack.values[i*rotationTrack.getValueSize() + 2],
+                        rotationTrack.values[i*rotationTrack.getValueSize() + 3],
+                    ))
+                    scaleMat.makeScale(
+                        scaleTrack.values[i*scaleTrack.getValueSize() + 0],
+                        scaleTrack.values[i*scaleTrack.getValueSize() + 1],
+                        scaleTrack.values[i*scaleTrack.getValueSize() + 2],
+                    )
+                    calcMat.identity().multiply(positionMat).multiply(rotationMat).multiply(invPivotMat).multiply(scaleMat).decompose(newPosition, newRotation, newScale)
+                    positionTrack.values[i*positionTrack.getValueSize() + 0] = newPosition.x
+                    positionTrack.values[i*positionTrack.getValueSize() + 1] = newPosition.y
+                    positionTrack.values[i*positionTrack.getValueSize() + 2] = newPosition.z
+                    rotationTrack.values[i*rotationTrack.getValueSize() + 0] = newRotation.x
+                    rotationTrack.values[i*rotationTrack.getValueSize() + 1] = newRotation.y
+                    rotationTrack.values[i*rotationTrack.getValueSize() + 2] = newRotation.z
+                    rotationTrack.values[i*rotationTrack.getValueSize() + 3] = newRotation.w
+                    scaleTrack.values[i*scaleTrack.getValueSize() + 0] = newScale.x
+                    scaleTrack.values[i*scaleTrack.getValueSize() + 1] = newScale.y
+                    scaleTrack.values[i*scaleTrack.getValueSize() + 2] = newScale.z
                 }
                 return currentObject
             }
@@ -189,7 +214,7 @@ export class LWSCParser {
                     new Quaternion().setFromEuler(new Euler(pitch, heading, bank, 'YXZ'), true).toArray(relRot, relRot.length)
                     new Vector3(infos[6], infos[7], infos[8]).toArray(relScale, relScale.length)
                 }
-                currentObject.positionTracks.push(new VectorKeyframeTrack(`.position`, times, relPos))
+                currentObject.keyframeTracks.push(new VectorKeyframeTrack(`.position`, times, relPos))
                 currentObject.keyframeTracks.push(new QuaternionKeyframeTrack(`.quaternion`, times, relRot))
                 currentObject.keyframeTracks.push(new VectorKeyframeTrack(`.scale`, times, relScale))
                 this.lineIndex += lenFrames * 2
@@ -236,8 +261,12 @@ export class LWSCParser {
                 }
                 currentObject.opacityTracks.push(new NumberKeyframeTrack(`.opacity`, times, opacities))
             } else if (key === 'PivotPoint') {
-                currentObject.pivot = value.split(' ').map((n) => parseFloat(n))
-                if (currentObject.pivot?.[0]) currentObject.pivot[0] *= -1 // flip x-axis
+                const pivotElements = value.split(' ').map((n) => parseFloat(n))
+                if (pivotElements.length === 3) {
+                    currentObject.pivot.set(-pivotElements[0] /* flip x-axis */, pivotElements[1], pivotElements[2])
+                } else {
+                    console.error(`Number of elements for PivotPoint is not 3, but: ${pivotElements.length}`)
+                }
             } else if (VERBOSE) {
                 console.warn(`Unhandled line in object block: ${line}; key: ${key}; value: ${value}`) // XXX implement all LWS features
             }
