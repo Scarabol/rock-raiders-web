@@ -56,10 +56,6 @@ export class TerrainLoader {
                         surface.containedOres = currentCryOre / 2
                     }
                 }
-                if (surfaceType === SurfaceType.WATER || surfaceType === SurfaceType.LAVA5) {
-                    surface.mesh.geometry.computeVertexNormals()
-                    worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.geometry.attributes.uv))
-                }
 
                 terrain.surfaces[c].push(surface)
             }
@@ -84,6 +80,11 @@ export class TerrainLoader {
                             surface.discovered = true
                             if (surface.neighbors.some((n) => n.surfaceType.floor)) {
                                 switch (surface.surfaceType) {
+                                    case SurfaceType.LAVA5:
+                                        // fallthrough
+                                    case SurfaceType.WATER:
+                                        worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.geometry.attributes.uv))
+                                        break
                                     case SurfaceType.SLUG_HOLE:
                                         terrain.slugHoles.add(surface)
                                         break
