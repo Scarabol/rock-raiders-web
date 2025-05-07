@@ -137,6 +137,11 @@ export class Surface {
     private markDiscovered() {
         if (this.neighbors8.some((n) => n.discovered && n.surfaceType.floor)) {
             switch (this.surfaceType) {
+                case SurfaceType.LAVA5:
+                    // fallthrough
+                case SurfaceType.WATER:
+                    this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.geometry.attributes.uv))
+                    break
                 case SurfaceType.HIDDEN_CAVERN:
                     this.surfaceType = SurfaceType.GROUND
                     this.needsMeshUpdate = true
