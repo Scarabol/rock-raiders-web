@@ -22,14 +22,14 @@
     "@ffmpeg/core": "^0.12.10",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/types": "^0.12.4",
-    "@types/node": "^22.13.10",
+    "@types/node": "^24.0.3",
     "@types/offscreencanvas": "^2019.7.3",
     "@types/pako": "^2.0.3",
-    "@types/three": "^0.174.0",
-    "@zip.js/zip.js": "^2.7.57",
+    "@types/three": "^0.177.0",
+    "@zip.js/zip.js": "^2.7.62",
     "pako": "^2.1.0",
-    "three": "^0.174.0",
-    "typescript": "^5.8.2",
-    "vite": "^6.2.2"
+    "three": "^0.177.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   }
 }
