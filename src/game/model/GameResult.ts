@@ -66,6 +66,6 @@ export class GameResult {
     static random(): GameResult {
         const randomLevelConf = PRNG.unsafe.sample(GameConfig.instance.levels.filter((c) => c.levelName.toLowerCase().startsWith('level')))
         if (!randomLevelConf) throw new Error('Could not find random level configuration')
-        return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GameResultState.COMPLETE, PRNG.unsafe.randInt(6), PRNG.unsafe.randInt(10), 10, 942, undefined)
+        return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GameResultState.COMPLETE, PRNG.unsafe.randInt(6), PRNG.unsafe.randInt(10), 10, 49062000, undefined)
     }
 }

@@ -166,9 +166,8 @@ export class GameScreen {
         // TODO Disable scene to avoid further selections
         EventBroker.publish(new DeselectAll())
         const numMaxAirRaiders = this.levelConf.oxygenRate ? this.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT : MAX_RAIDER_BASE
-        const gameTimeSeconds = Math.round(this.worldMgr.gameTimeMs / 1000)
         const canvas = resultState === GameResultState.COMPLETE ? await this.screenMaster.createScreenshot() : undefined
-        const result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, numMaxAirRaiders, gameTimeSeconds, canvas)
+        const result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, numMaxAirRaiders, this.worldMgr.gameTimeMs, canvas)
         if (resultState === GameResultState.COMPLETE) SaveGameManager.setLevelScore(this.levelConf.levelName, result.score)
         if (!this.levelConf.disableEndTeleport) await this.worldMgr.teleportEnd()
         this.worldMgr.stop()
