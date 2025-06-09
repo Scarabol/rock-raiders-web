@@ -1,4 +1,4 @@
-import { BufferGeometry, RepeatWrapping, SRGBColorSpace, Texture } from 'three'
+import { BufferGeometry, NearestFilter, RepeatWrapping, SRGBColorSpace, Texture } from 'three'
 import { getFilename, getPath } from '../core/Util'
 import { VERBOSE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
@@ -163,6 +163,7 @@ export class ResourceManager {
             texture.name = textureFilepath
             texture.needsUpdate = true // without everything is just dark
             texture.colorSpace = SRGBColorSpace
+            texture.magFilter = NearestFilter
             return texture
         })
     }
