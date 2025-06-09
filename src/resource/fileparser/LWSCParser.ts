@@ -204,7 +204,10 @@ export class LWSCParser {
                     if (infos.length !== lenInfos) console.warn(`Number of infos (${infos.length}) does not match with specified count (${lenInfos})`)
                     line = this.lines[this.lineIndex + c * 2 + 1]
                     const keyframeIndex = parseInt(line.split(' ')[0], 10) // other entries in line should be zeros
-                    const timeFromIndex = (keyframeIndex - this.firstFrame) / (this.numOfKeyframes - 1) * this.lwscData.durationSeconds
+                    let timeFromIndex = 0
+                    if (this.numOfKeyframes > 1) {
+                        timeFromIndex = (keyframeIndex - this.firstFrame) / (this.numOfKeyframes - 1) * this.lwscData.durationSeconds
+                    }
                     times.push(timeFromIndex)
                     // LightWave coordinate system (left-handed) to three.js coordinate system (right-handed)
                     new Vector3(-infos[0], infos[1], infos[2]).toArray(relPos, relPos.length)
