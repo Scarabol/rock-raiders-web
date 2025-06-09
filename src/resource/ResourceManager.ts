@@ -114,30 +114,29 @@ export class ResourceManager {
     }
 
     static getMeshTexture(textureFilepath: string, meshPath: string): Texture[] {
-        const lTextureFilename = textureFilepath?.toLowerCase()
-        const lMeshFilepath = meshPath?.toLowerCase() + lTextureFilename
-        const imgData = this.resourceByName.getOrUpdate(lMeshFilepath, () => {
-            return this.getTextureImageDataFromSharedPaths(lTextureFilename)
-        })
-        const texture = this.createTexture(imgData, textureFilepath)
-        return texture ? [texture] : []
-    }
-
-    private static getTextureImageDataFromSharedPaths(lTextureFilename: string): ImageData {
-        const ugSharedFilename = `vehicles/sharedug/${lTextureFilename}`
-        return this.resourceByName.getOrUpdate(ugSharedFilename, () => {
-            const worldSharedFilename = `world/shared/${lTextureFilename}`
-            return this.resourceByName.getOrUpdate(worldSharedFilename, () => {
-                return null
-            })
-        })
+        for (const path of [
+            "" + meshPath + textureFilepath,
+            `vehicles/sharedug/${textureFilepath}`,
+            `world/shared/${textureFilepath}`,
+        ]) {
+            const imgData = this.resourceByName.get(path.toLowerCase())
+            if (imgData) {
+                const texture = this.createTexture(imgData, path)
+                return texture ? [texture] : []
+            }
+        }
+        // ignore known texture issues
+        if (VERBOSE || !['teofoilreflections.jpg', 'wingbase3.bmp', 'a_side.bmp', 'a_top.bmp', 'sand.bmp', 'display.bmp'].includes(textureFilepath)) {
+            console.warn(`Could not find texture ${textureFilepath}`)
+        }
+        return []
     }
 
     static getSurfaceTexture(textureFilepath: string, rotation: number): Texture | undefined {
         const texture = this.getTexture(textureFilepath)
         if (!texture) return undefined
         if (rotation === 0) return texture
-        return this.textureCache.getOrUpdate(textureFilepath, () => new Map()).getOrUpdate(rotation, () => {
+        return this.textureCache.getOrUpdate(textureFilepath.toLowerCase(), () => new Map()).getOrUpdate(rotation, () => {
             const rotatedTexture = texture.clone()
             rotatedTexture.center.set(0.5, 0.5)
             rotatedTexture.rotation = rotation
@@ -150,18 +149,15 @@ export class ResourceManager {
             throw new Error(`textureFilepath must not be undefined, null or empty - was ${textureFilepath}`)
         }
         const imgData = this.resourceByName.get(textureFilepath.toLowerCase())
+        if (!imgData) {
+            console.warn(`Could not find texture ${textureFilepath}`)
+            return undefined
+        }
         return this.createTexture(imgData, textureFilepath)
     }
 
-    private static createTexture(imgData: ImageData, textureFilepath: string): Texture | undefined {
-        if (!imgData) {
-            // ignore known texture issues
-            if (VERBOSE || !['teofoilreflections.jpg', 'wingbase3.bmp', 'a_side.bmp', 'a_top.bmp', 'sand.bmp', 'display.bmp'].includes(textureFilepath)) {
-                console.warn(`Could not find texture ${textureFilepath}`)
-            }
-            return undefined
-        }
-        return this.textureCache.getOrUpdate(textureFilepath, () => new Map()).getOrUpdate(0, () => {
+    private static createTexture(imgData: ImageData, textureFilepath: string): Texture {
+        return this.textureCache.getOrUpdate(textureFilepath.toLowerCase(), () => new Map()).getOrUpdate(0, () => {
             // without repeat wrapping some entities are not fully textured
             const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
             texture.name = textureFilepath
