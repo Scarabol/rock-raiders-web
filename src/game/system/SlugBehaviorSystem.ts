@@ -20,6 +20,8 @@ import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { HeadingComponent } from '../component/HeadingComponent'
 import { EventBroker } from '../../event/EventBroker'
 import { PRNG } from '../factory/PRNG'
+import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
+import { MapMarkerChange, MapMarkerType } from '../component/MapMarkerComponent'
 
 const SLUG_SUCK_DISTANCE_SQ = 25 * 25
 const SLUG_ENTER_DISTANCE_SQ = 5 * 5
@@ -132,6 +134,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             this.worldMgr.entityMgr.removeEntity(entity)
                             sceneEntity.setAnimation(SlugActivity.Enter, () => {
                                 EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_SLUG_GONE, positionComponent))
+                                EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
                                 this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntity)
                                 this.ecs.removeEntity(entity)
                             })

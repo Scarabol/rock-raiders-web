@@ -33,6 +33,8 @@ import { BeamUpComponent } from '../component/BeamUpComponent'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { PRNG } from '../factory/PRNG'
+import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
+import { MapMarkerChange, MapMarkerType } from '../component/MapMarkerComponent'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -364,6 +366,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 sceneEntity.setAnimation(RockMonsterActivity.Enter, () => {
                                     GameState.totalCrystals -= behaviorComponent.numCrystalsEaten
                                     EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
+                                    EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
                                     this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntity)
                                     this.ecs.removeEntity(entity)
                                 })
