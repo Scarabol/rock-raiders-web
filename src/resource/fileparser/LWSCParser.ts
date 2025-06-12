@@ -113,9 +113,9 @@ export class LWSCParser {
         for (; this.lineIndex < this.lines.length; this.lineIndex++) {
             let line = this.lines[this.lineIndex]
             if (!line) {
-                const positionTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name === ".position")
-                const rotationTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name == ".quaternion")
-                const scaleTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name === ".scale")
+                const positionTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name === '.position')
+                const rotationTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name == '.quaternion')
+                const scaleTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name === '.scale')
                 const invPivotMat = new Matrix4().makeTranslation(currentObject.pivot).invert()
                 const positionMat = new Matrix4()
                 const rotation = new Quaternion()
@@ -131,32 +131,32 @@ export class LWSCParser {
                 }
                 for (let i = 0; i < minTimesLength; i += 1) {
                     positionMat.makeTranslation(
-                        positionTrack.values[i*positionTrack.getValueSize() + 0],
-                        positionTrack.values[i*positionTrack.getValueSize() + 1],
-                        positionTrack.values[i*positionTrack.getValueSize() + 2],
+                        positionTrack.values[i * positionTrack.getValueSize() + 0],
+                        positionTrack.values[i * positionTrack.getValueSize() + 1],
+                        positionTrack.values[i * positionTrack.getValueSize() + 2],
                     )
                     rotationMat.makeRotationFromQuaternion(rotation.set(
-                        rotationTrack.values[i*rotationTrack.getValueSize() + 0],
-                        rotationTrack.values[i*rotationTrack.getValueSize() + 1],
-                        rotationTrack.values[i*rotationTrack.getValueSize() + 2],
-                        rotationTrack.values[i*rotationTrack.getValueSize() + 3],
+                        rotationTrack.values[i * rotationTrack.getValueSize() + 0],
+                        rotationTrack.values[i * rotationTrack.getValueSize() + 1],
+                        rotationTrack.values[i * rotationTrack.getValueSize() + 2],
+                        rotationTrack.values[i * rotationTrack.getValueSize() + 3],
                     ))
                     scaleMat.makeScale(
-                        scaleTrack.values[i*scaleTrack.getValueSize() + 0],
-                        scaleTrack.values[i*scaleTrack.getValueSize() + 1],
-                        scaleTrack.values[i*scaleTrack.getValueSize() + 2],
+                        scaleTrack.values[i * scaleTrack.getValueSize() + 0],
+                        scaleTrack.values[i * scaleTrack.getValueSize() + 1],
+                        scaleTrack.values[i * scaleTrack.getValueSize() + 2],
                     )
                     calcMat.identity().multiply(positionMat).multiply(rotationMat).multiply(invPivotMat).multiply(scaleMat).decompose(newPosition, newRotation, newScale)
-                    positionTrack.values[i*positionTrack.getValueSize() + 0] = newPosition.x
-                    positionTrack.values[i*positionTrack.getValueSize() + 1] = newPosition.y
-                    positionTrack.values[i*positionTrack.getValueSize() + 2] = newPosition.z
-                    rotationTrack.values[i*rotationTrack.getValueSize() + 0] = newRotation.x
-                    rotationTrack.values[i*rotationTrack.getValueSize() + 1] = newRotation.y
-                    rotationTrack.values[i*rotationTrack.getValueSize() + 2] = newRotation.z
-                    rotationTrack.values[i*rotationTrack.getValueSize() + 3] = newRotation.w
-                    scaleTrack.values[i*scaleTrack.getValueSize() + 0] = newScale.x
-                    scaleTrack.values[i*scaleTrack.getValueSize() + 1] = newScale.y
-                    scaleTrack.values[i*scaleTrack.getValueSize() + 2] = newScale.z
+                    positionTrack.values[i * positionTrack.getValueSize() + 0] = newPosition.x
+                    positionTrack.values[i * positionTrack.getValueSize() + 1] = newPosition.y
+                    positionTrack.values[i * positionTrack.getValueSize() + 2] = newPosition.z
+                    rotationTrack.values[i * rotationTrack.getValueSize() + 0] = newRotation.x
+                    rotationTrack.values[i * rotationTrack.getValueSize() + 1] = newRotation.y
+                    rotationTrack.values[i * rotationTrack.getValueSize() + 2] = newRotation.z
+                    rotationTrack.values[i * rotationTrack.getValueSize() + 3] = newRotation.w
+                    scaleTrack.values[i * scaleTrack.getValueSize() + 0] = newScale.x
+                    scaleTrack.values[i * scaleTrack.getValueSize() + 1] = newScale.y
+                    scaleTrack.values[i * scaleTrack.getValueSize() + 2] = newScale.z
                 }
                 return currentObject
             }
