@@ -37,7 +37,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)
-                if (!components.get(MonsterStatsComponent).stats.CanBeHitByFence) continue
+                if (!components.get(MonsterStatsComponent).stats.canBeHitByFence) continue
                 const positionComponent = components.get(PositionComponent)
                 fenceProtectedSurfaces.forEach((f) => {
                     if (f.getCenterWorld2D().distanceToSquared(positionComponent.getPosition2D()) >= FENCE_RANGE_SQ) return
@@ -59,13 +59,13 @@ export class ElectricFenceSystem extends AbstractGameSystem {
 
     private addBeamX(beamPos: Vector3, short: boolean) {
         beamPos.x -= TILESIZE
-        const lwsFilename = short ? GameConfig.instance.miscObjects.ShortElectricFenceBeam : GameConfig.instance.miscObjects.LongElectricFenceBeam
+        const lwsFilename = short ? GameConfig.instance.miscObjects.shortElectricFenceBeam : GameConfig.instance.miscObjects.longElectricFenceBeam
         this.worldMgr.sceneMgr.addMiscAnim(lwsFilename, beamPos, Math.PI / 2, false)
     }
 
     private addBeamZ(beamPos: Vector3, short: boolean) {
         beamPos.z -= TILESIZE
-        const lwsFilename = short ? GameConfig.instance.miscObjects.ShortElectricFenceBeam : GameConfig.instance.miscObjects.LongElectricFenceBeam
+        const lwsFilename = short ? GameConfig.instance.miscObjects.shortElectricFenceBeam : GameConfig.instance.miscObjects.longElectricFenceBeam
         this.worldMgr.sceneMgr.addMiscAnim(lwsFilename, beamPos, 0, false)
     }
 
@@ -125,7 +125,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             }
         })
         toAdd.forEach((s) => {
-            s.stud = this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.ElectricFenceStud, s.getCenterWorld(), 0, true)
+            s.stud = this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.electricFenceStud, s.getCenterWorld(), 0, true)
             this.worldMgr.entityMgr.surfacesWithStuds.add(s)
         })
         return studPositions
@@ -133,7 +133,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
 
     addBeamEffect(studProtectedSurfaces: Surface[]) {
         const longBeams = studProtectedSurfaces.map((surface) => {
-            const lwsFilename = GameConfig.instance.miscObjects.LongElectricFenceBeam
+            const lwsFilename = GameConfig.instance.miscObjects.longElectricFenceBeam
             const beamPos = surface.getCenterWorld()
             const surfaceLeft = this.worldMgr.sceneMgr.terrain.getSurface(surface.x - 1, surface.y)
             const surfaceRight = this.worldMgr.sceneMgr.terrain.getSurface(surface.x + 1, surface.y)
@@ -153,7 +153,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             const neighbors = fenceSurface.neighbors.filter((n) => !!n.fence || n.building?.primarySurface === n || n.building?.secondarySurface === n)
             neighbors.forEach((n) => {
                 const beamHeading = new Vector2(n.y - fenceSurface.y, n.x - fenceSurface.x).angle() // y is actually z axis here
-                shortBeams.push({lwsFilename: GameConfig.instance.miscObjects.ShortElectricFenceBeam, beamPos: fenceSurface.getCenterWorld(), beamHeading})
+                shortBeams.push({lwsFilename: GameConfig.instance.miscObjects.shortElectricFenceBeam, beamPos: fenceSurface.getCenterWorld(), beamHeading})
             })
         })
         const nextBeam = PRNG.animation.sample([...longBeams, ...shortBeams])

@@ -1,4 +1,4 @@
-import { BaseButtonCfg, ButtonCfg } from '../../cfg/ButtonCfg'
+import { ButtonCfg } from '../../cfg/ButtonCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { Rect } from '../../core/Rect'
 import { GameConfig } from '../../cfg/GameConfig'
@@ -23,13 +23,13 @@ export class BriefingPanelCfg extends PanelCfg {
         if (!dialogCfg.textWindow) throw new Error('No text window config given')
         this.textWindow = {...dialogCfg.textWindow}
         this.textWindow.y -= 10 // XXX Why offset needed? Better use help window?
-        this.nextButtonCfg = Object.assign(new BaseButtonCfg(), {
+        this.nextButtonCfg = Object.assign(new ButtonCfg(), {
             buttonType: 'Next briefing paragraph',
             relX: 394,
             relY: 214,
-            normalFile: GameConfig.instance.main.nextButton640x480,
+            normalFile: GameConfig.instance.main.nextButton,
         })
-        this.backButtonCfg = Object.assign(new BaseButtonCfg(), {
+        this.backButtonCfg = Object.assign(new ButtonCfg(), {
             buttonType: 'Previous briefing paragraph',
             relX: 54,
             relY: 214,

@@ -55,7 +55,8 @@ export class LevelLoader {
         const levelConf = GameConfig.instance.levels.find((l) => l.levelName.equalsIgnoreCase(levelName))
         if (!levelConf) throw new Error(`Could not find level configuration for "${levelName}"`)
         const levelObjective = ResourceManager.getResource(levelConf.objectiveText) as Record<string, LevelObjectiveTextEntry>
-        levelConf.objectiveTextCfg = levelObjective[levelName.toLowerCase()]
+        const objectiveTextCfg = levelObjective[levelName.toLowerCase()]
+        if (!objectiveTextCfg) throw new Error(`Could not find level objective details`)
         const terrainMap = ResourceManager.getResource(levelConf.terrainMap) as TerrainMapData
         if (!terrainMap) throw new Error(`Could not load terrain data for "${levelConf.terrainMap}"`)
         const predugMap = ResourceManager.getResource(levelConf.predugMap) as TerrainMapData
@@ -84,7 +85,7 @@ export class LevelLoader {
             emergeMap: this.checkMap(levelConf.emergeMap, terrainMap.width, terrainMap.height),
             nerpScript: NerpParser.parse(levelConf.nerpFile),
             nerpMessages: ResourceManager.getResource(levelConf.nerpMessageFile) ?? [],
-            objectiveTextCfg: levelConf.objectiveTextCfg,
+            objectiveTextCfg: objectiveTextCfg,
             objectiveImage: levelConf.objectiveImage640x480,
             priorities: levelConf.priorities,
             disableStartTeleport: levelConf.disableStartTeleport || DEV_MODE,
@@ -98,7 +99,7 @@ export class LevelLoader {
             emergeCreature: getMonsterEntityTypeByName(levelConf.emergeCreature),
             emergeTimeOutMs: levelConf.emergeTimeOut / 1500 * 60 * 1000, // 1500 specifies 1 minute
             noMultiSelect: levelConf.noMultiSelect,
-            fogColor: this.checkRGB(levelConf.fogColourRGB),
+            fogColor: levelConf.fogColourRGB,
         }
     }
 
@@ -110,10 +111,5 @@ export class LevelLoader {
             return undefined
         }
         return map.level
-    }
-
-    static checkRGB(rgbInput: number[] | undefined): [number, number, number] {
-        if (!Array.isArray(rgbInput) || rgbInput.length !== 3 || rgbInput.some((n) => isNaN(n))) throw new Error(`Invalid RGB value (${rgbInput}) given`)
-        return rgbInput.map((n) => Math.max(0, Math.min(255, n)) / 255) as [number, number, number]
     }
 }

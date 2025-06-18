@@ -1,15 +1,17 @@
-import { CfgHelper } from './CfgHelper'
+import { ConfigSetFromRecord } from './Configurable'
+import { CfgEntry } from './CfgEntry'
 
-export class OverwriteCfg {
+export class OverwriteCfg implements ConfigSetFromRecord {
     title: string = ''
     text: string = ''
     ok: string = ''
     cancel: string = ''
 
-    setFromValue(cfgValue: Record<string, string>): void {
-        this.title = CfgHelper.parseLabel(CfgHelper.getValue(cfgValue, 'title'))
-        this.text = CfgHelper.parseLabel(CfgHelper.getValue(cfgValue, 'text'))
-        this.ok = CfgHelper.parseLabel(CfgHelper.getValue(cfgValue, 'ok'))
-        this.cancel = CfgHelper.parseLabel(CfgHelper.getValue(cfgValue, 'cancel'))
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.title = cfgValue.getValue('title').toLabel()
+        this.text = cfgValue.getValue('text').toLabel()
+        this.ok = cfgValue.getValue('ok').toLabel()
+        this.cancel = cfgValue.getValue('cancel').toLabel()
+        return this
     }
 }

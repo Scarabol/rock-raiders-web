@@ -1,6 +1,7 @@
-import { CfgHelper } from './CfgHelper'
+import { ConfigSetFromEntryValue } from './Configurable'
+import { CfgEntryValue } from './CfgEntry'
 
-export class MenuLabelItemCfg {
+export class MenuLabelItemCfg implements ConfigSetFromEntryValue {
     actionName: string = ''
     x: number = 0
     y: number = 0
@@ -12,30 +13,32 @@ export class MenuLabelItemCfg {
     target: string = ''
     flag: string = ''
 
-    constructor(cfgObj: any) {
-        if (cfgObj.length === 5 || cfgObj.length === 6) {
-            this.actionName = CfgHelper.assertString(cfgObj[0])
-            this.x = CfgHelper.assertNumber(cfgObj[1])
-            this.y = CfgHelper.assertNumber(cfgObj[2])
-            this.label = CfgHelper.parseLabel(cfgObj[3])
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const array = cfgValue.toArray(':', undefined)
+        if (array.length === 5 || array.length === 6) {
+            this.actionName = array[0].toString()
+            this.x = array[1].toNumber()
+            this.y = array[2].toNumber()
+            this.label = array[3].toLabel()
             if (this.actionName.toLowerCase() === 'next') {
-                this.target = CfgHelper.assertString(cfgObj[4])
+                this.target = array[4].toString()
             }
-            this.flag = CfgHelper.assertString(cfgObj[5] || '')
+            this.flag = (array[5] || '').toString()
             if (this.flag && this.flag !== 'NotInTuto') console.warn(`Unexpected menu label flag (${this.flag}) given`)
-        } else if (cfgObj.length === 8) {
-            this.actionName = CfgHelper.assertString(cfgObj[0])
-            this.x = CfgHelper.assertNumber(cfgObj[1])
-            this.y = CfgHelper.assertNumber(cfgObj[2])
-            this.imgNormal = CfgHelper.assertString(cfgObj[3])
-            this.imgHover = CfgHelper.assertString(cfgObj[4])
-            this.imgPressed = CfgHelper.assertString(cfgObj[5])
-            this.tooltipKey = CfgHelper.assertString(cfgObj[6])
+        } else if (array.length === 8) {
+            this.actionName = array[0].toString()
+            this.x = array[1].toNumber()
+            this.y = array[2].toNumber()
+            this.imgNormal = array[3].toFileName()
+            this.imgHover = array[4].toFileName()
+            this.imgPressed = array[5].toFileName()
+            this.tooltipKey = array[6].toFileName()
             if (this.actionName.toLowerCase() === 'next') {
-                this.target = CfgHelper.assertString(cfgObj[7])
+                this.target = array[7].toString()
             }
         } else {
-            throw new Error(`Unexpected cfg object length: ${cfgObj.length}`)
+            throw new Error(`Unexpected cfg value length: ${array.length}`)
         }
+        return this
     }
 }

@@ -23,7 +23,7 @@ export class ManVehicleJob extends RaiderJob {
             this.workplaces = walkableSurface.building.getTrainingTargets()
         } else {
             const hopOnSpot = walkableSurface.getRandomPosition()
-            const getInRadius = this.vehicle.stats.PickSphere / 2
+            const getInRadius = this.vehicle.stats.pickSphere / 2
             this.workplaces = [PathTarget.fromLocation(hopOnSpot, getInRadius * getInRadius)]
         }
     }

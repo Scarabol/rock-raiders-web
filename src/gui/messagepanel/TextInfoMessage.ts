@@ -1,5 +1,5 @@
 import { SpriteImage } from '../../core/Sprite'
-import { TextInfoMessageEntryCfg } from '../../cfg/TextInfoMessageEntryCfg'
+import { TextInfoMessageEntryCfg } from '../../cfg/TextInfoMessageCfg'
 import { DEFAULT_FONT_NAME } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'

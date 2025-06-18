@@ -30,9 +30,9 @@ export class BoulderSystem extends AbstractGameSystem {
                     boulderComponent.mesh.position.x += step.x
                     boulderComponent.mesh.position.z += step.y
                 } else {
-                    const boulderExplode = boulderComponent.entityType === EntityType.BOULDER_ICE ? GameConfig.instance.miscObjects.BoulderExplodeIce : GameConfig.instance.miscObjects.BoulderExplode
+                    const boulderExplode = boulderComponent.entityType === EntityType.BOULDER_ICE ? GameConfig.instance.miscObjects.boulderExplodeIce : GameConfig.instance.miscObjects.boulderExplode
                     this.worldMgr.sceneMgr.addMiscAnim(boulderExplode, boulderComponent.mesh.position, 0, false)
-                    const boulderDamage = this.boulderStats.damageByEntityType.get(boulderComponent.targetBuildingType.entityType)?.[boulderComponent.targetLevel] || this.boulderStats.defaultDamage
+                    const boulderDamage = this.boulderStats.damageByEntityType[boulderComponent.targetBuildingType.entityType]?.[boulderComponent.targetLevel] || this.boulderStats.defaultDamage
                     const buildingComponents = this.ecs.getComponents(boulderComponent.targetEntity)
                     const healthComponent = buildingComponents.get(HealthComponent)
                     healthComponent.changeHealth(-boulderDamage)

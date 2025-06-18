@@ -5,7 +5,6 @@ import { BaseEvent } from '../../event/EventTypeMap'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameScreen } from '../GameScreen'
 import { HideTooltip } from '../../event/GuiCommand'
-import { BitmapFontData } from '../../core/BitmapFont'
 import { GameState } from '../../game/model/GameState'
 import { PositionComponent } from '../../game/component/PositionComponent'
 import { Vector3 } from 'three'
@@ -99,7 +98,8 @@ export class NamingLayer extends ScaledLayer {
 
     private onKeyPress(event: KeyboardEvent): boolean {
         if (!this.showBackdrop) return false
-        if (BitmapFontData.chars.includes(event.key)) {
+        const keyCode = event.key.charCodeAt(0)
+        if (event.key.length === 1 && keyCode >= 32 && keyCode < 180) {
             if (this.firstKey) {
                 this.firstKey = false
                 this.raiderName = event.key

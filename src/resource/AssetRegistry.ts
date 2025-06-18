@@ -38,7 +38,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addAsset(this.assetLoader.loadObjectiveTexts, 'Languages/ObjectiveText.txt')
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.image)
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.contrastOverlay)
-        Array.from(gameConfig.reward.flics.values()).forEach((f) => this.addAsset(this.assetLoader.loadFlhAssetDefault, f.flhFilepath))
+        Object.values(gameConfig.reward.flics).forEach((f) => this.addAsset(this.assetLoader.loadFlhAssetDefault, f.flhFilepath))
         this.addLWSFile('Interface/FrontEnd/Rock_Wipe/RockWipe.lws')
         this.assetLoader.vfs.filterEntryNames(`Interface/FrontEnd/Rock_Wipe/.+\\.uv`).forEach((assetPath) => {
             this.addAsset(this.assetLoader.loadUVFile, assetPath)
@@ -77,14 +77,14 @@ export class AssetRegistry extends Map<string, GameAsset> {
             this.addAsset(this.assetLoader.loadMapAsset, level.predugMap)
             this.addAsset(this.assetLoader.loadMapAsset, level.terrainMap)
             this.addAsset(this.assetLoader.loadMapAsset, level.blockPointersMap, true)
-            this.addAsset(this.assetLoader.loadMapAsset, level.cryOreMap)
+            this.addAsset(this.assetLoader.loadMapAsset, level.cryOreMap, true)
             this.addAsset(this.assetLoader.loadMapAsset, level.pathMap, true)
             if (level.fallinMap) this.addAsset(this.assetLoader.loadMapAsset, level.fallinMap)
             if (level.erodeMap) this.addAsset(this.assetLoader.loadMapAsset, level.erodeMap)
             if (level.emergeMap) this.addAsset(this.assetLoader.loadMapAsset, level.emergeMap, true)
             this.addAsset(this.assetLoader.loadObjectListAsset, level.oListFile)
             this.addAsset(this.assetLoader.loadNerpAsset, level.nerpFile)
-            const content = this.assetLoader.vfs.getFile(level.nerpMessageFile).toText(true)
+            const content = this.assetLoader.vfs.getFile(level.nerpMessageFile).toText()
             const nerpMessages = NerpMsgParser.parseNerpMessages(content)
             ResourceManager.resourceByName.set(level.nerpMessageFile.toLowerCase(), nerpMessages)
             nerpMessages.forEach((msg) => {
@@ -114,9 +114,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         await yieldToMainThread()
         // load vehicles
         Object.values(GameConfig.instance.vehicleTypes).forEach((v) => {
-            Array.ensure(v).forEach((vType) => {
-                this.addMeshObjects(vType)
-            })
+            v.forEach((vType) => this.addMeshObjects(vType))
         })
         // load bubbles
         Object.values(gameConfig.bubbles).forEach((b) => {
@@ -170,7 +168,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
             this.addAsset(this.assetLoader.loadWadImageAsset, cfg.imgDisabledFilepath)
         })
         // sounds
-        gameConfig.samples.pathToSfxKeys.forEach((sndKeys, sndPath) => {
+        Object.entries(gameConfig.samples.pathToSfxKeys).forEach(([sndPath, sndKeys]) => {
             this.addAsset(this.assetLoader.loadWavAsset, sndPath, true, sndKeys)
         })
         await Promise.all(this.inProgress)

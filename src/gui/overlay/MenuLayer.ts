@@ -18,8 +18,8 @@ export class MenuLayer extends BaseElement {
 
     constructor(menuCfg: MenuEntryCfg) {
         super()
-        this.relX = menuCfg.position[0]
-        this.relY = menuCfg.position[1]
+        this.relX = menuCfg.position.x
+        this.relY = menuCfg.position.y
         this.menuImage = ResourceManager.getImage(menuCfg.menuImage)
         BitmapFontWorkerPool.instance.createTextImage(menuCfg.menuFont, menuCfg.fullName)
             .then((textImage) => this.titleImage = textImage)

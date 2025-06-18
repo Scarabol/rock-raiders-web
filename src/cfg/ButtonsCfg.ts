@@ -1,7 +1,8 @@
-import { BaseConfig } from './BaseConfig'
-import { BaseButtonCfg, ButtonCfg } from './ButtonCfg'
+import { ButtonCfg } from './ButtonCfg'
+import { ConfigSetFromRecord } from './Configurable'
+import { CfgEntry } from './CfgEntry'
 
-export class ButtonsCfg extends BaseConfig {
+export class ButtonsCfg implements ConfigSetFromRecord {
     panelRadar: ButtonRadarCfg = new ButtonRadarCfg()
     panelCrystalSideBar: ButtonCrystalSideBarCfg = new ButtonCrystalSideBarCfg()
     panelTopPanel: ButtonTopCfg = new ButtonTopCfg()
@@ -11,110 +12,115 @@ export class ButtonsCfg extends BaseConfig {
     panelInfoDock: ButtonInfoDockCfg = new ButtonInfoDockCfg()
     panelEncyclopedia: Record<string, unknown> = {} // not used in the game
 
-    parseValue(unifiedKey: string, cfgValue: any[]): any {
-        const btnCfgValue: any = {}
-        cfgValue.forEach(arr => btnCfgValue[arr[0]] = arr)
-        if (unifiedKey === 'panelRadar'.toLowerCase()) {
-            return new ButtonRadarCfg().setFromCfgObj(btnCfgValue)
-        } else if (unifiedKey === 'panelCrystalSideBar'.toLowerCase()) {
-            return new ButtonCrystalSideBarCfg().setFromCfgObj(btnCfgValue)
-        } else if (unifiedKey === 'panelTopPanel'.toLowerCase()) {
-            return new ButtonTopCfg().setFromCfgObj(btnCfgValue)
-        } else if (unifiedKey === 'panelInformation'.toLowerCase()) {
-            return new ButtonInformationCfg().setFromCfgObj(btnCfgValue)
-        } else if (unifiedKey === 'panelPriorityList'.toLowerCase()) {
-            return new ButtonPriorityListCfg().setFromCfgObj(btnCfgValue)
-        } else if (unifiedKey === 'panelCameraControl'.toLowerCase()) {
-            return new ButtonCameraControlCfg().setFromCfgObj(btnCfgValue)
-        } else if (unifiedKey === 'panelInfoDock'.toLowerCase()) {
-            return new ButtonInfoDockCfg().setFromCfgObj(btnCfgValue)
-        } else if (unifiedKey === 'panelEncyclopedia'.toLowerCase()) {
-            return null // not used in the game
-        } else {
-            return btnCfgValue
-        }
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.panelRadar.setFromRecord(cfgValue)
+        this.panelCrystalSideBar.setFromRecord(cfgValue)
+        this.panelTopPanel.setFromRecord(cfgValue)
+        this.panelInformation.setFromRecord(cfgValue)
+        this.panelPriorityList.setFromRecord(cfgValue)
+        this.panelCameraControl.setFromRecord(cfgValue)
+        this.panelInfoDock.setFromRecord(cfgValue)
+        return this
     }
 }
 
-export class ButtonRadarCfg extends BaseConfig {
-    panelButtonRadarToggle: ButtonCfg = new BaseButtonCfg()
-    panelButtonRadarTaggedObjectView: ButtonCfg = new BaseButtonCfg()
-    panelButtonRadarZoomIn: ButtonCfg = new BaseButtonCfg()
-    panelButtonRadarZoomOut: ButtonCfg = new BaseButtonCfg()
-    panelButtonRadarMapView: ButtonCfg = new BaseButtonCfg()
+export class ButtonRadarCfg implements ConfigSetFromRecord {
+    panelButtonRadarToggle: ButtonCfg = new ButtonCfg()
+    panelButtonRadarTaggedObjectView: ButtonCfg = new ButtonCfg()
+    panelButtonRadarZoomIn: ButtonCfg = new ButtonCfg()
+    panelButtonRadarZoomOut: ButtonCfg = new ButtonCfg()
+    panelButtonRadarMapView: ButtonCfg = new ButtonCfg()
 
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.panelButtonRadarToggle.setFromValue(cfgValue.findValueByPrefix('PanelButton_Radar_Toggle'))
+        this.panelButtonRadarTaggedObjectView.setFromValue(cfgValue.findValueByPrefix('PanelButton_Radar_TaggedObjectView'))
+        this.panelButtonRadarZoomIn.setFromValue(cfgValue.findValueByPrefix('PanelButton_Radar_ZoomIn'))
+        this.panelButtonRadarZoomOut.setFromValue(cfgValue.findValueByPrefix('PanelButton_Radar_ZoomOut'))
+        this.panelButtonRadarMapView.setFromValue(cfgValue.findValueByPrefix('PanelButton_Radar_MapView'))
+        return this
     }
 }
 
-export class ButtonCrystalSideBarCfg extends BaseConfig {
-    panelButtonCrystalSideBarOre: ButtonCfg = new BaseButtonCfg()
-    panelButtonCrystalSideBarCrystals: ButtonCfg = new BaseButtonCfg()
+export class ButtonCrystalSideBarCfg implements ConfigSetFromRecord {
+    panelButtonCrystalSideBarOre: ButtonCfg = new ButtonCfg()
+    panelButtonCrystalSideBarCrystals: ButtonCfg = new ButtonCfg()
 
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.panelButtonCrystalSideBarOre.setFromValue(cfgValue.findValueByPrefix('PanelButton_CrystalSideBar_Ore'))
+        this.panelButtonCrystalSideBarCrystals.setFromValue(cfgValue.findValueByPrefix('PanelButton_CrystalSideBar_Crystals'))
+        return this
     }
 }
 
-export class ButtonTopCfg extends BaseConfig {
-    panelButtonTopPanelCallToArms: ButtonCfg = new BaseButtonCfg()
-    panelButtonTopPanelOptions: ButtonCfg = new BaseButtonCfg()
-    panelButtonTopPanelPriorities: ButtonCfg = new BaseButtonCfg()
+export class ButtonTopCfg implements ConfigSetFromRecord {
+    panelButtonTopPanelCallToArms: ButtonCfg = new ButtonCfg()
+    panelButtonTopPanelOptions: ButtonCfg = new ButtonCfg()
+    panelButtonTopPanelPriorities: ButtonCfg = new ButtonCfg()
 
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.panelButtonTopPanelCallToArms.setFromValue(cfgValue.findValueByPrefix('PanelButton_TopPanel_CallToArms'))
+        this.panelButtonTopPanelOptions.setFromValue(cfgValue.findValueByPrefix('PanelButton_TopPanel_Options'))
+        this.panelButtonTopPanelPriorities.setFromValue(cfgValue.findValueByPrefix('PanelButton_TopPanel_Priorities'))
+        return this
     }
 }
 
-export class ButtonInformationCfg extends BaseConfig {
-    panelButtonInformationToggle: ButtonCfg = new BaseButtonCfg()
-    panelButtonInformationFunction: ButtonCfg = new BaseButtonCfg()
+export class ButtonInformationCfg implements ConfigSetFromRecord {
+    panelButtonInformationToggle: ButtonCfg = new ButtonCfg()
+    panelButtonInformationFunction: ButtonCfg = new ButtonCfg()
 
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.panelButtonInformationToggle.setFromValue(cfgValue.findValueByPrefix('PanelButton_Information_Toggle'))
+        this.panelButtonInformationFunction.setFromValue(cfgValue.findValueByPrefix('PanelButton_Information_Function'))
+        return this
     }
 }
 
-export class ButtonPriorityListCfg extends BaseConfig {
+export class ButtonPriorityListCfg implements ConfigSetFromRecord {
     panelButtonPriorityListDisable: ButtonCfg[] = []
     panelButtonPriorityListUpOne: ButtonCfg[] = []
-    panelButtonPriorityListClose: ButtonCfg = new BaseButtonCfg() // not used in the game
-    panelButtonPriorityListReset: ButtonCfg = new BaseButtonCfg()
+    panelButtonPriorityListClose: ButtonCfg = new ButtonCfg() // not used in the game
+    panelButtonPriorityListReset: ButtonCfg = new ButtonCfg()
 
-    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if (unifiedKey.match(/panelButtonPriorityListDisable\d+/i)) {
-            this.panelButtonPriorityListDisable.push(this.parseValue(unifiedKey, cfgValue))
-            return true
-        } else if (unifiedKey.match(/panelButtonPriorityListUpOne\d+/i)) {
-            this.panelButtonPriorityListUpOne.push(this.parseValue(unifiedKey, cfgValue))
-            return true
-        } else {
-            return super.assignValue(objKey, unifiedKey, cfgValue)
-        }
-    }
-
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
-    }
-}
-
-export class ButtonCameraControlCfg extends BaseConfig {
-    panelButtonCameraControlZoomIn: ButtonCfg = new BaseButtonCfg()
-    panelButtonCameraControlZoomOut: ButtonCfg = new BaseButtonCfg()
-    panelButtonCameraControlCycleBuildings: ButtonCfg = new BaseButtonCfg()
-    panelButtonCameraControlRotate: ButtonCfg = new BaseButtonCfg()
-
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
+    setFromRecord(cfgValue: CfgEntry): this {
+        cfgValue.forEachCfgEntryValue((value) => {
+            if (value.toArray(',', undefined)[0].toString().match(/PanelButton_PriorityList_Disable\d+/i)) {
+                this.panelButtonPriorityListDisable.push(new ButtonCfg().setFromValue(value))
+            }
+        })
+        cfgValue.forEachCfgEntryValue((value) => {
+            if (value.toArray(',', undefined)[0].toString().match(/PanelButton_PriorityList_UpOne\d+/i)) {
+                this.panelButtonPriorityListUpOne.push(new ButtonCfg().setFromValue(value))
+            }
+        })
+        this.panelButtonPriorityListClose.setFromValue(cfgValue.findValueByPrefix('PanelButton_PriorityList_Close'))
+        this.panelButtonPriorityListReset.setFromValue(cfgValue.findValueByPrefix('PanelButton_PriorityList_Reset'))
+        return this
     }
 }
 
-export class ButtonInfoDockCfg extends BaseConfig {
-    panelButtonInfoDockGoto: ButtonCfg = new BaseButtonCfg()
-    panelButtonInfoDockClose: ButtonCfg = new BaseButtonCfg()
+export class ButtonCameraControlCfg implements ConfigSetFromRecord {
+    panelButtonCameraControlZoomIn: ButtonCfg = new ButtonCfg()
+    panelButtonCameraControlZoomOut: ButtonCfg = new ButtonCfg()
+    panelButtonCameraControlCycleBuildings: ButtonCfg = new ButtonCfg()
+    panelButtonCameraControlRotate: ButtonCfg = new ButtonCfg()
 
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.panelButtonCameraControlZoomIn.setFromValue(cfgValue.findValueByPrefix('PanelButton_CameraControl_ZoomIn'))
+        this.panelButtonCameraControlZoomOut.setFromValue(cfgValue.findValueByPrefix('PanelButton_CameraControl_ZoomOut'))
+        this.panelButtonCameraControlCycleBuildings.setFromValue(cfgValue.findValueByPrefix('PanelButton_CameraControl_CycleBuildings'))
+        this.panelButtonCameraControlRotate.setFromValue(cfgValue.findValueByPrefix('PanelButton_CameraControl_Rotate'))
+        return this
+    }
+}
+
+export class ButtonInfoDockCfg implements ConfigSetFromRecord {
+    panelButtonInfoDockGoto: ButtonCfg = new ButtonCfg()
+    panelButtonInfoDockClose: ButtonCfg = new ButtonCfg()
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.panelButtonInfoDockGoto.setFromValue(cfgValue.findValueByPrefix('PanelButton_InfoDock_Goto'))
+        this.panelButtonInfoDockClose.setFromValue(cfgValue.findValueByPrefix('PanelButton_InfoDock_Close'))
+        return this
     }
 }

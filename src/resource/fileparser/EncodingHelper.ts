@@ -1,3 +1,19 @@
+export class EncodingHelper {
+    static currentEncoding = 'default'
+
+    static decodeString(encoded: string): string {
+        return this.decode([...encoded].map((s) => s.charCodeAt(0)))
+    }
+
+    static decode(charCodes: number[]): string {
+        if (this.currentEncoding !== 'default') {
+            return new TextDecoder(this.currentEncoding).decode(new Uint8Array(charCodes))
+        } else {
+            return String.fromCharCode(...charCodes.map((c) => encodeChar[c]))
+        }
+    }
+}
+
 export const encodeChar: number[] = []
 
 for (let c = 0; c < 256; c++) {

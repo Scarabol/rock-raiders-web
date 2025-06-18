@@ -16,11 +16,11 @@ export class LoadSaveLayer extends MainMenuLayer {
         super(menuCfg)
         this.menuCfg = GameConfig.instance.menu
         const saveImage = this.menuCfg.saveImage
-        this.addButton(0, saveImage.Pos1[0], saveImage.Pos1[1], loading)
-        this.addButton(1, saveImage.Pos2[0], saveImage.Pos2[1], loading)
-        this.addButton(2, saveImage.Pos3[0], saveImage.Pos3[1], loading)
-        this.addButton(3, saveImage.Pos4[0], saveImage.Pos4[1], loading)
-        this.addButton(4, saveImage.Pos5[0], saveImage.Pos5[1], loading)
+        this.addButton(0, saveImage.pos1.x, saveImage.pos1.y, loading)
+        this.addButton(1, saveImage.pos2.x, saveImage.pos2.y, loading)
+        this.addButton(2, saveImage.pos3.x, saveImage.pos3.y, loading)
+        this.addButton(3, saveImage.pos4.x, saveImage.pos4.y, loading)
+        this.addButton(4, saveImage.pos5.x, saveImage.pos5.y, loading)
         this.loadSaveTextWindow = new MainMenuWindow(this.menuCfg.saveText.window)
         this.items.push(this.loadSaveTextWindow)
         if (loading) {

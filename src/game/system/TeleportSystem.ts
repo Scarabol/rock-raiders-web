@@ -86,7 +86,7 @@ export class TeleportSystem extends AbstractGameSystem {
                         let healthComponent: HealthComponent
                         if (raider.entityType === EntityType.PILOT) {
                             healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
-                            this.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.OxygenCoef))
+                            this.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.oxygenCoef))
                             const infoComp = this.worldMgr.ecs.addComponent(raider.entity, new RaiderInfoComponent(raider.sceneEntity))
                             this.worldMgr.sceneMgr.addSprite(infoComp.bubbleSprite)
                             infoComp.setHungerIndicator((raider as Raider).foodLevel)
@@ -116,10 +116,10 @@ export class TeleportSystem extends AbstractGameSystem {
                 if (this.requestedVehicleTypes.length > 0) {
                     const spawnedVehicleType = this.requestedVehicleTypes.find((vType) => {
                         const stats = VehicleFactory.getVehicleStatsByType(vType)
-                        if (GameState.numCrystal < stats.CostCrystal) return false
+                        if (GameState.numCrystal < stats.costCrystal) return false
                         const teleportBuilding = teleports.find((t) => t.canTeleportIn(vType))
                         if (!teleportBuilding) return false
-                        GameState.numCrystal -= stats.CostCrystal
+                        GameState.numCrystal -= stats.costCrystal
                         EventBroker.publish(new MaterialAmountChanged())
                         const vehicle = VehicleFactory.createVehicleFromType(vType, this.worldMgr)
                         const worldPosition = (teleportBuilding.waterPathSurface ?? teleportBuilding.primaryPathSurface).getCenterWorld2D()

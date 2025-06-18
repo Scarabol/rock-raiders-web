@@ -68,7 +68,7 @@ export class BuildingEntity {
         this.powerOffSprite.visible = this.isPowered()
         this.sceneEntity.add(this.powerOffSprite)
         this.worldMgr.sceneMgr.addSprite(this.powerOffSprite)
-        const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false, GameConfig.instance.getRockFallDamage(entityType, this.level)))
+        const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.damageCausesCallToArms, 24, 14, this.sceneEntity, false, GameConfig.instance.getRockFallDamage(entityType, this.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
@@ -212,7 +212,7 @@ export class BuildingEntity {
     }
 
     isPowered(): boolean {
-        return this.isReady() && this.powerSwitch && (this.stats.SelfPowered || this.stats.PowerBuilding || this.energized)
+        return this.isReady() && this.powerSwitch && (this.stats.selfPowered || this.stats.powerBuilding || this.energized)
     }
 
     upgrade() {
@@ -228,8 +228,8 @@ export class BuildingEntity {
         components.get(HealthComponent).rockFallDamage = GameConfig.instance.getRockFallDamage(this.entityType, this.level)
         EventBroker.publish(new DeselectAll())
         EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
-        this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.UpgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.heading, false)
-        components.get(ScannerComponent)?.setRange(this.stats.SurveyRadius?.[this.level] ?? 0)
+        this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.upgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.heading, false)
+        components.get(ScannerComponent)?.setRange(this.stats.surveyRadius?.[this.level] ?? 0)
         this.sceneEntity.setUpgradeLevel(this.level.toString(2).padStart(4, '0'))
     }
 
@@ -310,7 +310,7 @@ export class BuildingEntity {
     }
 
     updateEnergyState() {
-        if (this.isReady() && this.powerSwitch && (this.energized || (GameState.usedCrystals + this.crystalDrain <= GameState.numCrystal && GameState.numCrystal > 0)) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.energized))) {
+        if (this.isReady() && this.powerSwitch && (this.energized || (GameState.usedCrystals + this.crystalDrain <= GameState.numCrystal && GameState.numCrystal > 0)) && (this.stats.powerBuilding || this.surfaces.some((s) => s.energized))) {
             this.setEnergized(true)
         } else {
             this.setEnergized(false)
@@ -322,17 +322,17 @@ export class BuildingEntity {
             this.energized = energized
             if (this.energized) {
                 this.changeUsedCrystals(this.crystalDrain)
-                if (this.stats.PowerBuilding) this.worldMgr.powerGrid.addEnergySource(this.surfaces)
-                if (this.stats.EngineSound && !this.engineSoundId && !SaveGameManager.preferences.muteDevSounds) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true)
-                if (this.stats.OxygenCoef) this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
+                if (this.stats.powerBuilding) this.worldMgr.powerGrid.addEnergySource(this.surfaces)
+                if (this.stats.engineSound && !this.engineSoundId && !SaveGameManager.preferences.muteDevSounds) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.engineSound, true)
+                if (this.stats.oxygenCoef) this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.oxygenCoef))
                 const components = this.worldMgr.ecs.getComponents(this.entity)
                 if (!components.has(ScannerComponent)) {
-                    const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
+                    const scannerRange = this.stats.surveyRadius?.[this.level] ?? 0
                     if (scannerRange > 0 && this.primarySurface) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(scannerRange))
                 }
             } else {
                 this.changeUsedCrystals(-this.crystalDrain)
-                if (this.stats.PowerBuilding) this.worldMgr.powerGrid.removeEnergySource(this.surfaces)
+                if (this.stats.powerBuilding) this.worldMgr.powerGrid.removeEnergySource(this.surfaces)
                 this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
                 this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
             }
@@ -349,7 +349,7 @@ export class BuildingEntity {
     }
 
     get crystalDrain(): number {
-        return Array.ensure(this.stats.CrystalDrain)[this.level] || 0
+        return Array.ensure(this.stats.crystalDrain)[this.level] || 0
     }
 
     private changeUsedCrystals(changedCrystals: number) {
@@ -392,7 +392,7 @@ export class BuildingEntity {
     }
 
     getMaxCarry(): number {
-        return this.stats.MaxCarry[this.level] ?? 0
+        return this.stats.maxCarry[this.level] ?? 0
     }
 
     pickupItem(item: MaterialEntity): void {

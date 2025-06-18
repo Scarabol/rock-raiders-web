@@ -70,8 +70,9 @@ export class RewardScreen {
             this.btnLayer.animationFrame.notifyRedraw()
             return true
         })
+        // TODO Unify handling all images, boxes, texts and flics by keys
         const keyToIndex = ['crystals', 'ore', 'diggable', 'constructions', 'caverns', 'figures', 'rockmonsters', 'oxygen', 'timer', 'score']
-        this.cfg.flics.forEach((flic, key) => {
+        Object.entries(this.cfg.flics).forEach(([key, flic]) => {
             const flicIndex = keyToIndex.indexOf(key)
             const flicImages = ResourceManager.getResource(flic.flhFilepath) ?? []
             this.flics[flicIndex] = new FlicAnimOverlay(this.resultsLayer.animationFrame, flicImages, flic.rect.x, flic.rect.y, '') // XXX Consider width/height of rect to scale/clip?
@@ -255,8 +256,8 @@ export class RewardScreen {
                     const descriptionTextImg = this.texts[this.resultIndex]
                     if (!descriptionTextImg) return
                     context.clearRect(0, 0, this.descriptionTextLayer.fixedWidth, this.descriptionTextLayer.fixedHeight)
-                    const tx = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos[0] : 305
-                    const ty = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos[1] : 195
+                    const tx = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos.x : 305
+                    const ty = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos.y : 195
                     context.drawImage(descriptionTextImg, tx - descriptionTextImg.width / 2, ty)
                 }
                 this.backgroundLayer.show()

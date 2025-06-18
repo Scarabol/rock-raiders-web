@@ -13,13 +13,13 @@ export class MovableStatsComponent extends AbstractGameComponent {
 
     constructor(stats: MovableEntityStats) {
         super()
-        this.routeSpeed = stats.RouteSpeed
-        this.pathCoef = stats.PathCoef
-        this.rubbleCoef = stats.RubbleCoef
-        this.enterWall = stats.RandomEnterWall
-        this.crossLand = stats.CrossLand
-        this.crossWater = stats.CrossWater
-        this.crossLava = stats.CrossLava
+        this.routeSpeed = stats.routeSpeed
+        this.pathCoef = stats.pathCoef
+        this.rubbleCoef = stats.rubbleCoef
+        this.enterWall = stats.randomEnterWall
+        this.crossLand = stats.crossLand
+        this.crossWater = stats.crossWater
+        this.crossLava = stats.crossLava
     }
 
     getSpeed(isOnPath: boolean, isOnRubble: boolean): number {

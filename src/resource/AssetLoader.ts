@@ -89,7 +89,7 @@ export class AssetLoader {
     }
 
     async loadObjectiveTexts(name: string) {
-        const text = this.vfs.getFile(name).toText(true)
+        const text = this.vfs.getFile(name).toText()
         return new ObjectiveTextParser().parseObjectiveTextFile(text)
     }
 
@@ -188,6 +188,6 @@ export class AssetLoader {
     }
 
     async loadCreditsFile(filename: string) {
-        return this.vfs.getFile(this.vfs.filterEntryNames(filename)[0]).toText(true)
+        return this.vfs.getFile(this.vfs.filterEntryNames(filename)[0]).toText()
     }
 }

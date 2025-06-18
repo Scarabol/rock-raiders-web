@@ -2,35 +2,13 @@ import { createContext, createDummyImgData, getPixel, setPixel } from './ImageHe
 import { SpriteImage } from './Sprite'
 
 export class BitmapFontData {
-    // actually chars are font dependent and have to be externalized in future
-    // maybe CP850 was used... not sure, doesn't fit...
-    static readonly chars: string[] = [
-        ' ', '!', '"', '#', '$', '%', '&', '`', '(', ')',
-        '*', '+', ',', '-', '.', '/', '0', '1', '2', '3',
-        '4', '5', '6', '7', '8', '9', ':', ';', '<', '=',
-        '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
-        'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-        'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[',
-        '\\', ']', '^', '_', '\'', 'a', 'b', 'c', 'd', 'e',
-        'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-        'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
-        'z', 'Ä', 'Å', 'Á', 'À', 'Â', 'Ã', 'Ą', 'ä', 'å',
-        'á', 'à', 'â', 'ã', 'ą', 'Ë', 'E̊', 'É', 'È', 'Ê',
-        'Ę', 'ë', 'e̊', 'é', 'è', 'ê', 'ę', 'Ï', 'Í', 'Ì',
-        'Î', 'ï', 'í', 'ì', 'î', 'Ö', 'Ó', 'Ò', 'Ô', 'Õ',
-        'ö', 'ó', 'ò', 'ô', 'õ', 'Ü', 'Ú', 'Ù', 'Û', 'ü',
-        'ú', 'ù', 'û', 'Ç', 'Ć', 'ç', 'ć', 'Æ', 'æ', 'Ø',
-        'ø', 'Ł', 'ł', 'Œ', 'œ', '¿', '¡', 'Ź', 'Ż', 'ź',
-        'ż', 'Ś', 'ś', 'ß', '', '°', 'ᵃ', 'Ñ', 'Ń', 'ñ',
-        'ń',
-    ] // XXX complete this character list
-
-    readonly letterMap: Map<string, ImageData> = new Map()
+    readonly charCodeMap: Map<number, ImageData> = new Map()
     readonly charHeight: number
     readonly alphaColor: { r: number, g: number, b: number }
     readonly spaceWidth: number
 
     constructor(fontImageData: ImageData) {
+        // TODO Russian language version has 23 rows
         const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
         // XXX find better way to detect char dimensions
         const maxCharWidth = fontImageData.width / cols
@@ -55,19 +33,19 @@ export class BitmapFontData {
             return imgData.width
         }
 
-        for (let i = 0; i < BitmapFontData.chars.length; i++) {
+        for (let i = 0; i < cols * rows; i++) {
             let imgData = this.extractData(fontImageData, (i % 10) * maxCharWidth, Math.floor(i / 10) * this.charHeight, maxCharWidth)
             const actualWidth = getActualCharacterWidth(imgData)
             if (actualWidth > 0) {
                 imgData = this.extractData(imgData, 0, 0, actualWidth)
             } else {
-                console.warn(`Could not determine actual character width for '${BitmapFontData.chars[i]}'. Adding dummy sprite to letter map`)
+                console.warn(`Could not determine actual character width for '${i}'. Adding dummy sprite to letter map`)
                 imgData = createDummyImgData(maxCharWidth, this.charHeight)
             }
-            this.letterMap.set(BitmapFontData.chars[i], imgData)
+            this.charCodeMap.set(i + 32, imgData) // Config files use custom encoding with offset (32) to bitmap fonts index
         }
 
-        this.spaceWidth = this.letterMap.get(' ')?.width || 10
+        this.spaceWidth = this.charCodeMap.get(' '.charCodeAt(0))?.width || 10
     }
 
     extractData(imgData: ImageData, startX: number, startY: number, width: number): ImageData {
@@ -98,7 +76,7 @@ export class BitmapFont {
             const rowY = index * this.data.charHeight
             let letterX = 0
             for (let c = 0; c < row.text.length; c++) {
-                const letterImgData = this.data.letterMap.get(row.text.charAt(c))
+                const letterImgData = this.data.charCodeMap.get(row.text.charCodeAt(c))
                 if (letterImgData) {
                     for (let x = letterX; x < letterX + letterImgData.width; x++) {
                         for (let y = 0; y < letterImgData.height; y++) {
@@ -129,12 +107,12 @@ export class BitmapFont {
         text.replaceAll('\t', '    ').split(' ').forEach((word) => {
             let wordWidth = 0
             for (let c = 0; c < word.length; c++) {
-                const letter = word.charAt(c)
-                const letterImg = this.data.letterMap.get(letter)
+                const charCode = word.charCodeAt(c)
+                const letterImg = this.data.charCodeMap.get(charCode)
                 if (letterImg) {
                     wordWidth += letterImg.width
                 } else {
-                    const charCode = word.charCodeAt(c)
+                    const letter = word.charAt(c)
                     if (charCode !== 13) { // ignore carriage return
                         console.error(`Ignoring letter '${letter}' (${charCode}) of word "${text}" not found in charset!`)
                     }

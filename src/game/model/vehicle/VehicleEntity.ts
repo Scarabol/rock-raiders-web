@@ -144,8 +144,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             const pathSurface = surface.neighbors.find((n) => n.building?.entityType === EntityType.DOCKS)?.building?.primaryPathSurface
             const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable()) ?? pathSurface
             if (spawnSurface) {
-                for (let c = 0; c < this.stats.CostOre; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, spawnSurface.getRandomPosition())
-                for (let c = 0; c < this.stats.CostCrystal; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, spawnSurface.getRandomPosition())
+                for (let c = 0; c < this.stats.costOre; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, spawnSurface.getRandomPosition())
+                for (let c = 0; c < this.stats.costCrystal; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, spawnSurface.getRandomPosition())
             }
             this.dropDriver()
         }
@@ -197,8 +197,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             if (rockySceneEntity.currentAnimation === RockMonsterActivity.Unpowered) {
                 const positionComponent = components.get(PositionComponent)
                 const rockyPosition2D = positionComponent.getPosition2D()
-                const wakeRadius = components.get(MonsterStatsComponent).stats.WakeRadius
-                if (vehiclePosition2D.distanceToSquared(rockyPosition2D) < Math.pow(wakeRadius + this.stats.CollRadius, 2)) {
+                const wakeRadius = components.get(MonsterStatsComponent).stats.wakeRadius
+                if (vehiclePosition2D.distanceToSquared(rockyPosition2D) < Math.pow(wakeRadius + this.stats.collRadius, 2)) {
                     rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                         this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
                         this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
@@ -251,7 +251,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     getSpeed(): number {
-        return this.stats.RouteSpeed[this.level]
+        return this.stats.routeSpeed[this.level]
     }
 
     getRouteActivity(): AnimEntityActivity {
@@ -404,7 +404,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (this.driver !== driver) this.dropDriver()
         this.driver = driver
         this.driver.vehicle = this
-        if (this.stats.InvisibleDriver) {
+        if (this.stats.invisibleDriver) {
             this.driver.sceneEntity.visible = false
         } else {
             const positionComponent = this.worldMgr.ecs.getComponents(this.driver.entity).get(PositionComponent)
@@ -417,7 +417,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.REMOVE))
         const driverScannerComponent = this.worldMgr.ecs.getComponents(this.driver.entity).get(ScannerComponent)
         if (driverScannerComponent) this.worldMgr.ecs.addComponent(this.entity, driverScannerComponent)
-        if (this.stats.EngineSound && !this.engineSoundId && !SaveGameManager.preferences.muteDevSounds) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true)
+        if (this.stats.engineSound && !this.engineSoundId && !SaveGameManager.preferences.muteDevSounds) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.engineSound, true)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
@@ -440,7 +440,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.driver.sceneEntity.visible = true
         const scannerComponent = this.worldMgr.ecs.getComponents(this.entity).get(ScannerComponent)
         if (scannerComponent) this.worldMgr.ecs.getComponents(this.driver.entity).add(scannerComponent)
-        const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
+        const scannerRange = this.stats.surveyRadius?.[this.level] ?? 0
         if (!scannerRange) {
             this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
             EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.UPDATE, this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position))
@@ -451,9 +451,9 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     getRequiredTraining(): RaiderTraining {
-        if (this.stats.CrossLand && !this.stats.CrossLava && !this.stats.CrossWater) {
+        if (this.stats.crossLand && !this.stats.crossLava && !this.stats.crossWater) {
             return RaiderTraining.DRIVER
-        } else if (!this.stats.CrossLand && !this.stats.CrossLava && this.stats.CrossWater) {
+        } else if (!this.stats.crossLand && !this.stats.crossLava && this.stats.crossWater) {
             return RaiderTraining.SAILOR
         }
         return RaiderTraining.PILOT
@@ -467,7 +467,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     doubleSelect(): boolean {
-        if (!this.selected || !this.stats.CanDoubleSelect || !this.driver) return false
+        if (!this.selected || !this.stats.canDoubleSelect || !this.driver) return false
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.doubleSelect()
         return true
     }
@@ -477,7 +477,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     canClear(): boolean {
-        return this.stats.CanClearRubble
+        return this.stats.canClearRubble
     }
 
     hasCapacity(): boolean {
@@ -489,7 +489,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     getCarryCapacity(): number {
-        return this.stats.MaxCarry?.[this.level] || 0
+        return this.stats.maxCarry?.[this.level] || 0
     }
 
     unblockBuildingPowerPath() {
@@ -518,7 +518,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.level = parseInt(upgradeLevel, 2)
         const components = this.worldMgr.ecs.getComponents(this.entity)
         components.get(HealthComponent).rockFallDamage = GameConfig.instance.getRockFallDamage(this.entityType, this.level)
-        const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
+        const scannerRange = this.stats.surveyRadius?.[this.level] ?? 0
         if (scannerRange) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(scannerRange))
     }
 
@@ -563,7 +563,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     canLoad(): boolean {
         const surfsToCheck = this.getNearbySurfaces()
-        const canPickupVehicle = this.stats.CarryVehicles && !this.carriedVehicle && !this.portering && this.worldMgr.entityMgr.vehicles.some((v) => v.stats.VehicleCanBeCarried && surfsToCheck.includes(v.getSurface()))
+        const canPickupVehicle = this.stats.carryVehicles && !this.carriedVehicle && !this.portering && this.worldMgr.entityMgr.vehicles.some((v) => v.stats.vehicleCanBeCarried && surfsToCheck.includes(v.getSurface()))
         const vehicleSurface = this.getSurface()
         const canPickupMaterial = this.worldMgr.entityMgr.materials.some((m) => m.getSurface() === vehicleSurface)
         return canPickupVehicle || canPickupMaterial
@@ -571,8 +571,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     pickupNearbyEntity(): void {
         const surfsToCheck = this.getNearbySurfaces()
-        if (this.stats.CarryVehicles && !this.carriedVehicle) {
-            this.carriedVehicle = PRNG.movement.sample(this.worldMgr.entityMgr.vehicles.filter((v) => v.stats.VehicleCanBeCarried && surfsToCheck.includes(v.getSurface())))
+        if (this.stats.carryVehicles && !this.carriedVehicle) {
+            this.carriedVehicle = PRNG.movement.sample(this.worldMgr.entityMgr.vehicles.filter((v) => v.stats.vehicleCanBeCarried && surfsToCheck.includes(v.getSurface())))
             if (this.carriedVehicle) {
                 this.loadCarriedVehicle()
                 return

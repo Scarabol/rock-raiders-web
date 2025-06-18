@@ -6,12 +6,11 @@ import { RaiderTrainingCompleteEvent, SetSpaceToContinueEvent } from '../../even
 import { PlaySoundEvent } from '../../event/GuiCommand'
 import { Panel } from '../base/Panel'
 import { TextInfoMessage } from './TextInfoMessage'
-import { TextInfoMessageCfg } from './TextInfoMessageCfg'
+import { TextInfoMessageCfg, TextInfoMessageEntryCfg } from '../../cfg/TextInfoMessageCfg'
 import { AIR_LEVEL_LEVEL_LOW, AIR_LEVEL_WARNING_STEP } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AirLevelChanged, GameResultEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../../event/WorldEvents'
 import { GameResultState } from '../../game/model/GameResult'
-import { TextInfoMessageEntryCfg } from '../../cfg/TextInfoMessageEntryCfg'
 import { GameConfig } from '../../cfg/GameConfig'
 import { Button } from '../base/Button'
 import { EventBroker } from '../../event/EventBroker'
@@ -43,18 +42,18 @@ export class MessagePanel extends Panel {
         this.imgNoAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_noair.bmp')
 
         this.btnNext = this.addChild(new Button({
-            normalFile: GameConfig.instance.main.nextButton640x480,
-            relX: GameConfig.instance.main.nextButtonPos640x480[0] - this.relX,
-            relY: GameConfig.instance.main.nextButtonPos640x480[1] - this.relY,
+            normalFile: GameConfig.instance.main.nextButton,
+            relX: GameConfig.instance.main.nextButtonPos.x - this.relX,
+            relY: GameConfig.instance.main.nextButtonPos.y - this.relY,
             tooltipText: GameConfig.instance.getTooltipText('ToolTip_NextMessage'),
         }, true))
         this.btnNext.onClick = () => {
             EventBroker.publish(new BaseEvent(EventKey.NERP_MESSAGE_NEXT))
         }
         this.btnRepeat = this.addChild(new Button({
-            normalFile: GameConfig.instance.main.backButton640x480,
-            relX: GameConfig.instance.main.backButtonPos640x480[0] - this.relX,
-            relY: GameConfig.instance.main.backButtonPos640x480[1] - this.relY,
+            normalFile: GameConfig.instance.main.backButton,
+            relX: GameConfig.instance.main.backButtonPos.x - this.relX,
+            relY: GameConfig.instance.main.backButtonPos.y - this.relY,
             tooltipText: GameConfig.instance.getTooltipText('ToolTip_Back')
         }))
         this.btnRepeat.onClick = () => {
@@ -74,7 +73,9 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(textInfoMessageConfig.textManTrained))
         this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(textInfoMessageConfig.textUnitUpgraded))
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessageEvent) => {
-            this.setTimedMessage({text: event.text, imageFilename: '', sfxName: ''}, event.arrowDisabled ? event.messageTimeoutMs : 0, event.arrowDisabled)
+            const customMessageCfg = new TextInfoMessageEntryCfg()
+            customMessageCfg.text = event.text
+            this.setTimedMessage(customMessageCfg, event.arrowDisabled ? event.messageTimeoutMs : 0, event.arrowDisabled)
         })
         this.registerEventListener(EventKey.NERP_MESSAGE_NEXT, () => {
             this.removeMessage()
@@ -131,7 +132,7 @@ export class MessagePanel extends Panel {
     private setTimedMessage(cfg: TextInfoMessageEntryCfg, timeout: number, arrowHidden: boolean) {
         this.btnNext.hidden = arrowHidden || this.suppressArrow
         this.btnRepeat.hidden = !!cfg.imageFilename
-        const maxMessageWidth = 380 - this.x - 20 // NextButtonPos640x480.x - panel.x
+        const maxMessageWidth = GameConfig.instance.main.nextButtonPos.x - this.x - 20
         this.textInfoMessageCache.getOrUpdate(cfg, () => TextInfoMessage.fromConfig(cfg, maxMessageWidth)).then((msg: TextInfoMessage) => {
             this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
             this.currentMessage = msg
@@ -165,9 +166,9 @@ export class MessagePanel extends Panel {
 
     updatePosition() {
         super.updatePosition()
-        this.btnNext.relY = GameConfig.instance.main.nextButtonPos640x480[1] - this.y
+        this.btnNext.relY = GameConfig.instance.main.nextButtonPos.y - this.y
         this.btnNext.updatePosition()
-        this.btnRepeat.relY = GameConfig.instance.main.backButtonPos640x480[1] - this.y
+        this.btnRepeat.relY = GameConfig.instance.main.backButtonPos.y - this.y
         this.btnRepeat.updatePosition()
     }
 

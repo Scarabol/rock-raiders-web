@@ -25,8 +25,8 @@ export class MainMenuIconButton extends MainMenuBaseItem {
         this.state.onHideTooltip = () => EventBroker.publish(new HideTooltip(tooltipText))
         this.width = Math.max(this.imgNormal?.width || 0, this.imgHover?.width || 0, this.imgPressed?.width || 0)
         this.height = Math.max(this.imgNormal?.height || 0, this.imgHover?.height || 0, this.imgPressed?.height || 0)
-        this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x
-        this.y = layer.cfg.position[1] + cfg.y
+        this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position.x + cfg.x
+        this.y = layer.cfg.position.y + cfg.y
         this.actionName = cfg.actionName
         if (this.actionName?.equalsIgnoreCase('Next')) this.targetIndex = Number(cfg.target.slice('menu'.length)) - 1
     }

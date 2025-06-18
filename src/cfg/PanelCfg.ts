@@ -1,23 +1,26 @@
-import { BaseConfig } from './BaseConfig'
+import { ConfigSetFromEntryValue, ConfigSetFromRecord } from './Configurable'
+import { CfgEntry, CfgEntryValue } from './CfgEntry'
 
-export class PanelCfg extends BaseConfig {
+export class PanelCfg implements ConfigSetFromEntryValue {
     filename: string = ''
     xOut: number = 0
     yOut: number = 0
     xIn: number = 0
     yIn: number = 0
 
-    setFromCfgObj(cfgObj: any): this {
-        if (!Array.isArray(cfgObj) || cfgObj.length !== 5) {
-            throw new Error(`Invalid config value given: ${cfgObj}`)
-        }
-        [this.filename, this.xOut, this.yOut, this.xIn, this.yIn] = cfgObj
-        if (!this.filename) throw new Error(`No filename given in ${cfgObj}`)
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const array = cfgValue.toArray(',', 5)
+        this.filename = array[0].toFileName()
+        this.xOut = array[1].toNumber()
+        this.yOut = array[2].toNumber()
+        this.xIn = array[3].toNumber()
+        this.yIn = array[4].toNumber()
+        if (!this.filename) throw new Error(`No filename given in ${array}`)
         return this
     }
 }
 
-export class PanelsCfg extends BaseConfig {
+export class PanelsCfg implements ConfigSetFromRecord {
     panelRadar: PanelCfg = new PanelCfg()
     panelRadarFill: PanelCfg = new PanelCfg()
     panelRadarOverlay: PanelCfg = new PanelCfg()
@@ -31,7 +34,19 @@ export class PanelsCfg extends BaseConfig {
     panelInfoDock: PanelCfg = new PanelCfg()
     panelEncyclopedia: PanelCfg = new PanelCfg()
 
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        return new PanelCfg().setFromCfgObj(cfgValue)
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.panelRadar.setFromValue(cfgValue.getValue('Panel_Radar'))
+        this.panelRadarFill.setFromValue(cfgValue.getValue('Panel_RadarFill'))
+        this.panelRadarOverlay.setFromValue(cfgValue.getValue('Panel_RadarOverlay'))
+        this.panelMessages.setFromValue(cfgValue.getValue('Panel_Messages'))
+        this.panelMessagesSide.setFromValue(cfgValue.getValue('Panel_MessagesSide'))
+        this.panelCrystalSideBar.setFromValue(cfgValue.getValue('Panel_CrystalSideBar'))
+        this.panelTopPanel.setFromValue(cfgValue.getValue('Panel_TopPanel'))
+        this.panelInformation.setFromValue(cfgValue.getValue('Panel_Information'))
+        this.panelPriorityList.setFromValue(cfgValue.getValue('Panel_PriorityList'))
+        this.panelCameraControl.setFromValue(cfgValue.getValue('Panel_CameraControl'))
+        this.panelInfoDock.setFromValue(cfgValue.getValue('Panel_InfoDock'))
+        this.panelEncyclopedia.setFromValue(cfgValue.getValue('Panel_Encyclopedia'))
+        return this
     }
 }

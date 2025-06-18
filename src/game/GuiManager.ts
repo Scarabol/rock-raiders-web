@@ -104,10 +104,10 @@ export class GuiManager {
         EventBroker.subscribe(EventKey.COMMAND_BUILDING_BEAMUP, () => {
             const building = entityMgr.selection.building
             if (!building) return
-            for (let c = 0; c < building.stats.CostOre; c++) {
+            for (let c = 0; c < building.stats.costOre; c++) {
                 MaterialSpawner.spawnMaterial(building.worldMgr, EntityType.ORE, building.primarySurface.getRandomPosition())
             }
-            for (let c = 0; c < building.stats.CostCrystal; c++) {
+            for (let c = 0; c < building.stats.costCrystal; c++) {
                 MaterialSpawner.spawnMaterial(building.worldMgr, EntityType.CRYSTAL, building.primarySurface.getRandomPosition())
             }
             building.carriedItems.forEach((m) => building.worldMgr.entityMgr.placeMaterial(m, building.primarySurface.getRandomPosition()))
@@ -225,13 +225,13 @@ export class GuiManager {
                 sceneEntity.position.copy(position)
                 sceneEntity.rotation.y = PRNG.animation.random() * 2 * Math.PI
                 sceneMgr.addSceneEntity(sceneEntity)
-                sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.OohScary))
+                sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.oohScary))
                 sceneEntity.setAnimation(DynamiteActivity.Normal, () => {
                     sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
                         const birdScarer = worldMgr.ecs.addEntity()
                         worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
                         entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
-                        sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BirdScarer, position, PRNG.animation.random() * 2 * Math.PI, false, () => {
+                        sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.birdScarer, position, PRNG.animation.random() * 2 * Math.PI, false, () => {
                             sceneMgr.disposeSceneEntity(sceneEntity)
                             entityMgr.removeEntity(birdScarer)
                             worldMgr.ecs.removeEntity(birdScarer)

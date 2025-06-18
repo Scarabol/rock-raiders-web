@@ -1,3 +1,6 @@
+import { ConfigSetFromEntryValue } from './Configurable'
+import { CfgEntryValue } from './CfgEntry'
+
 export class BaseButtonCfg {
     buttonType: string = ''
     normalFile: string = ''
@@ -13,11 +16,19 @@ export class BaseButtonCfg {
     tooltipSfx: string = ''
 }
 
-export class ButtonCfg extends BaseButtonCfg {
-    constructor(cfgValue: any) {
-        super()
-        if (cfgValue.length !== 9) throw new Error(`Invalid number of arguments (${cfgValue.length}) given for button configuration expected 9`);
-        [this.buttonType, this.normalFile, this.highlightFile, this.pressedFile, this.relX, this.relY, this.width, this.height, this.tooltipKey] = cfgValue
+export class ButtonCfg extends BaseButtonCfg implements ConfigSetFromEntryValue {
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const value = cfgValue.toArray(',', 9)
+        this.buttonType = value[0].toString()
+        this.normalFile = value[1].toFileName()
+        this.highlightFile = value[2].toFileName()
+        this.pressedFile = value[3].toFileName()
+        this.relX = value[4].toNumber()
+        this.relY = value[5].toNumber()
+        this.width = value[6].toNumber()
+        this.height = value[7].toNumber()
+        this.tooltipKey = value[8].toString()
+        return this
     }
 }
 
@@ -33,17 +44,21 @@ export class InfoButtonCfg extends BaseButtonCfg {
     }
 }
 
-export class IconPanelBackButtonCfg extends BaseButtonCfg {
+export class IconPanelBackButtonCfg extends BaseButtonCfg implements ConfigSetFromEntryValue {
     constructor() {
         super()
         this.buttonType = 'InterfaceBackButton'
         this.relX = 4
         this.relY = 14
-        this.width = 28
-        this.height = 28
     }
 
-    setFromValue(cfgValue: [number, number, string, string, string, string]) {
-        [this.width, this.height, this.highlightFile, this.pressedFile, this.tooltipText] = cfgValue
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const value = cfgValue.toArray(':', 5)
+        this.width = value[0].toNumber()
+        this.height = value[1].toNumber()
+        this.highlightFile = value[2].toFileName()
+        this.pressedFile = value[3].toFileName()
+        this.tooltipText = value[4].toLabel()
+        return this
     }
 }

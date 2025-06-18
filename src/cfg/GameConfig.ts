@@ -1,10 +1,8 @@
-import { InfoMessagesCfg } from '../gui/infodock/InfoMessagesCfg'
-import { TextInfoMessageCfg } from '../gui/messagepanel/TextInfoMessageCfg'
-import { BaseConfig } from './BaseConfig'
+import { InfoMessagesCfg } from './InfoMessagesCfg'
+import { TextInfoMessageCfg } from './TextInfoMessageCfg'
 import { BubblesCfg } from './BubblesCfg'
 import { IconPanelBackButtonCfg } from './ButtonCfg'
 import { ButtonsCfg } from './ButtonsCfg'
-import { CfgHelper } from './CfgHelper'
 import { DialogCfg } from './DialogCfg'
 import { GameStatsCfg } from './GameStatsCfg'
 import { LevelEntryCfg } from './LevelsCfg'
@@ -12,25 +10,27 @@ import { MainCfg } from './MainCfg'
 import { GameMenuCfg } from './MenuCfg'
 import { PanelsCfg } from './PanelCfg'
 import { PanelRotationControlCfg } from './PanelRotationControlCfg'
-import { PrioritiesImagePositionsCfg, PriorityButtonsCfg } from './PriorityButtonsCfg'
+import { PrioritiesImagePositionsCfg, PriorityButtonListCfg } from './PriorityButtonsCfg'
 import { RewardCfg } from './RewardCfg'
 import { TexturesCfg } from './TexturesCfg'
 import { MiscObjectsCfg } from './MiscObjectsCfg'
 import { RockFallStyle } from './RockFallStyle'
 import { EntityType, getEntityTypeByName } from '../game/model/EntityType'
 import { ObjInfoCfg } from './ObjInfoCfg'
-import { WeaponTypeCfg } from './WeaponTypeCfg'
+import { WeaponTypeListCfg } from './WeaponTypeCfg'
 import { SamplesCfg } from './SamplesCfg'
 import { InterfaceSurroundImagesEntryCfg } from './InterfaceSurroundImagesCfg'
 import { AdvisorPositionCfg, AdvisorTypeCfg } from './AdvisorCfg'
 import { PointersCfg } from './PointersCfg'
-import { TILESIZE, VERBOSE } from '../params'
+import { TILESIZE } from '../params'
 import { InterfaceBuildImagesCfg, InterfaceImagesCfg } from './InterfaceImageCfg'
+import { ConfigSetFromRecord } from './Configurable'
+import { CfgEntry } from './CfgEntry'
 
 export type EntityDependency = { entityType: EntityType, minLevel: number, itemKey: string }
 export type EntityDependencyChecked = EntityDependency & { isOk: boolean }
 
-export class GameConfig extends BaseConfig {
+export class GameConfig implements ConfigSetFromRecord {
     static readonly instance = new GameConfig()
 
     main: MainCfg = new MainCfg()
@@ -48,7 +48,7 @@ export class GameConfig extends BaseConfig {
     interfaceBackButton: IconPanelBackButtonCfg = new IconPanelBackButtonCfg()
     interfaceBuildImages: InterfaceBuildImagesCfg = new InterfaceBuildImagesCfg()
     interfaceSurroundImages: InterfaceSurroundImagesEntryCfg[] = []
-    priorityImages: PriorityButtonsCfg = new PriorityButtonsCfg()
+    priorityImages: PriorityButtonListCfg = new PriorityButtonListCfg()
     prioritiesImagePositions: PrioritiesImagePositionsCfg = new PrioritiesImagePositionsCfg()
     miscObjects: MiscObjectsCfg = new MiscObjectsCfg()
     bubbles: BubblesCfg = new BubblesCfg()
@@ -57,7 +57,7 @@ export class GameConfig extends BaseConfig {
     samples: SamplesCfg = new SamplesCfg()
     textures: TexturesCfg = new TexturesCfg()
     objectNames: Record<string, string> = {}
-    vehicleTypes: Record<string, string> = {}
+    vehicleTypes: Record<string, string[]> = {}
     rockMonsterTypes: Record<string, string> = {}
     buildingTypes: Record<string, string> = {}
     upgradeTypes: Record<string, string> = {}
@@ -66,156 +66,123 @@ export class GameConfig extends BaseConfig {
     objTtSFXs: Record<string, string> = {}
     advisor: Record<string, AdvisorTypeCfg> = {}
     advisorPositions: Record<string, AdvisorPositionCfg> = {}
-    weaponTypes = new class implements Record<string, WeaponTypeCfg> {
-        [x: string]: WeaponTypeCfg
-
-        smallLazer = new WeaponTypeCfg()
-        bigLazer = new WeaponTypeCfg()
-        boulder = new WeaponTypeCfg()
-        pusher = new WeaponTypeCfg()
-        laserShot = new WeaponTypeCfg()
-        freezer = new WeaponTypeCfg()
-        rockFallIn = new WeaponTypeCfg()
-    }
+    weaponTypes: WeaponTypeListCfg = new WeaponTypeListCfg()
     dependencies: Record<string, EntityDependency[]> = {}
     levels: LevelEntryCfg[] = []
     tooltips: Record<string, string> = {}
     upgradeNames: string[] = []
     tooltipIcons: Record<string, string> = {}
 
-    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if ('Main'.equalsIgnoreCase(unifiedKey)) {
-            this.main.setFromCfgObj(cfgValue)
-        } else if ('Dialog'.equalsIgnoreCase(unifiedKey)) {
-            this.dialog.setFromCfgObj(cfgValue)
-        } else if ('Reward'.equalsIgnoreCase(unifiedKey)) {
-            this.reward.setFromCfgObj(cfgValue)
-        } else if ('Menu'.equalsIgnoreCase(unifiedKey)) {
-            this.menu.setFromCfgObj(cfgValue)
-        } else if ('ToolTipInfo'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.toolTipInfo[cfgKey.toLowerCase()] = CfgHelper.parseLabel(value as string))
-        } else if ('SurfaceTypeDescriptions'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue as Record<string, [string, string]>).forEach(([cfgKey, v]) => {
-                this.surfaceTypeDescriptions[this.stripKey(cfgKey)] = {objectName: v[0], sfxKey: v[1]}
-            })
-        } else if ('ObjInfo'.equalsIgnoreCase(unifiedKey)) {
-            this.objInfo.setFromCfgObj(cfgValue)
-        } else if ('Pointers'.equalsIgnoreCase(unifiedKey)) {
-            this.pointers.setFromValue(cfgValue)
-        } else if ('InterfaceImages'.equalsIgnoreCase(unifiedKey)) {
-            this.interfaceImages.setFromValue(cfgValue)
-        } else if ('PanelRotationControl'.equalsIgnoreCase(unifiedKey)) {
-            this.panelRotationControl.setFromCfgObj(cfgValue)
-        } else if ('Panels640x480'.equalsIgnoreCase(unifiedKey)) {
-            this.panels.setFromCfgObj(cfgValue)
-        } else if ('Buttons640x480'.equalsIgnoreCase(unifiedKey)) {
-            this.buttons.setFromCfgObj(cfgValue)
-        } else if ('InterfaceBackButton'.equalsIgnoreCase(unifiedKey)) {
-            this.interfaceBackButton.setFromValue(cfgValue)
-        } else if ('InterfaceBuildImages'.equalsIgnoreCase(unifiedKey)) {
-            this.interfaceBuildImages.setFromValue(cfgValue)
-        } else if ('InterfaceSurroundImages'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([num, cfg]) => {
-                const [imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2] = cfg as [string, number, number, number, number, string, number, number]
-                this.interfaceSurroundImages[Number(num)] = {imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2}
-            })
-        } else if ('PriorityImages'.equalsIgnoreCase(unifiedKey)) {
-            this.priorityImages.setFromCfgObj(cfgValue)
-        } else if ('PrioritiesImagePositions'.equalsIgnoreCase(unifiedKey)) {
-            this.prioritiesImagePositions.setFromCfgObj(cfgValue)
-        } else if ('Bubbles'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
-                const bubblesKey = Object.keys(this.bubbles).find((k) => k.equalsIgnoreCase(cfgKey?.replace('_', '')))
-                if (bubblesKey) {
-                    this.bubbles[bubblesKey] = (value as string)?.toLowerCase()
-                } else {
-                    console.warn(`Unexpected key (${cfgKey}) given`)
-                }
-            })
-        } else if ('RockFallStyles'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.rockFallStyles[cfgKey.toLowerCase()] = new RockFallStyle(value))
-        } else if ('TextMessagesWithImages'.equalsIgnoreCase(unifiedKey)) {
-            this.textMessagesWithImages.setFromCfgObj(cfgValue)
-        } else if ('Samples'.equalsIgnoreCase(unifiedKey)) {
-            this.samples.setFromCfgObj(cfgValue)
-        } else if ('Textures'.equalsIgnoreCase(unifiedKey)) {
-            this.textures.setFromCfgObj(cfgValue)
-        } else if ('ObjectNames'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objectNames[cfgKey.toLowerCase()] = CfgHelper.parseLabel(value as string))
-        } else if ('VehicleTypes'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.vehicleTypes[cfgKey.toLowerCase()] = value as string)
-        } else if ('RockMonsterTypes'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.rockMonsterTypes[cfgKey.toLowerCase()] = value as string)
-        } else if ('BuildingTypes'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.buildingTypes[cfgKey.toLowerCase()] = value as string)
-        } else if ('UpgradeTypes'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.upgradeTypes[cfgKey.toLowerCase()] = value as string)
-        } else if ('InfoMessages'.equalsIgnoreCase(unifiedKey)) {
-            this.infoMessages.setFromValue(cfgValue)
-        } else if ('Stats'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
-                const statsKey = Object.keys(this.stats).find((k) => k.equalsIgnoreCase(cfgKey?.replace('-', '')))
-                if (statsKey) {
-                    this.stats[statsKey].setFromCfgObj(value)
-                } else {
-                    console.warn(`Unexpected key (${cfgKey}) given`)
-                }
-            })
-        } else if ('ObjTtSFXs'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objTtSFXs[cfgKey.toLowerCase()] = value as string)
-        } else if ('Advisor'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.advisor[cfgKey.toLowerCase()] = new AdvisorTypeCfg(value))
-        } else if ('AdvisorPositions640x480'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.advisorPositions[cfgKey.toLowerCase()] = new AdvisorPositionCfg(value))
-        } else if ('WeaponTypes'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
-                const weaponTypeKey = Object.keys(this.weaponTypes).find((k) => k.equalsIgnoreCase(cfgKey))
-                if (weaponTypeKey) {
-                    this.weaponTypes[weaponTypeKey].setFromCfgObj(value)
-                } else if (VERBOSE) {
-                    console.warn(`Unexpected weapon type key (${cfgKey}) given`)
-                }
-            })
-        } else if ('Dependencies'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
-                if (!cfgKey.toLowerCase().startsWith('AlwaysCheck:'.toLowerCase())) {
-                    console.warn(`Ignoring unexpected dependency check '${cfgKey}'`)
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.main.setFromRecord(cfgValue.getRecord('Main'))
+        this.dialog.setFromRecord(cfgValue.getRecord('Dialog'))
+        this.reward.setFromRecord(cfgValue.getRecord('Reward'))
+        this.menu.setFromRecord(cfgValue.getRecord('Menu'))
+        cfgValue.getRecord('ToolTipInfo').forEachCfgEntryValue((value, cfgKey) => this.toolTipInfo[cfgKey.toLowerCase()] = value.toLabel())
+        cfgValue.getRecord('SurfaceTypeDescriptions').forEachCfgEntryValue((value, cfgKey) => {
+            const array = value.toArray(',', 2)
+            this.surfaceTypeDescriptions[this.stripSurfaceTypeKey(cfgKey)] = {objectName: array[0].toLabel(), sfxKey: array[1].toString()}
+        })
+        this.objInfo.setFromRecord(cfgValue.getRecord('ObjInfo'))
+        this.pointers.setFromRecord(cfgValue.getRecord('Pointers'))
+        this.interfaceImages.setFromRecord(cfgValue.getRecord('InterfaceImages'))
+        this.panelRotationControl.setFromRecord(cfgValue.getRecord('PanelRotationControl'))
+        this.panels.setFromRecord(cfgValue.getRecord('Panels640x480'))
+        this.buttons.setFromRecord(cfgValue.getRecord('Buttons640x480'))
+        this.interfaceBackButton.setFromValue(cfgValue.getValue('InterfaceBackButton'))
+        this.interfaceBuildImages.setFromRecord(cfgValue.getRecord('InterfaceBuildImages'))
+        cfgValue.getRecord('InterfaceSurroundImages').forEachCfgEntryValue((cfg, numStr) => {
+            const num = Number(numStr)
+            if (isNaN(num)) {
+                console.warn(`Unexpected InterfaceSurroundImages key (${numStr}) given; expected number`)
+                return
+            }
+            this.interfaceSurroundImages[num] = new InterfaceSurroundImagesEntryCfg().setFromValue(cfg)
+        })
+        this.priorityImages.setFromRecord(cfgValue.getRecord('PriorityImages'))
+        this.prioritiesImagePositions.setFromRecord(cfgValue.getRecord('PrioritiesImagePositions'))
+        this.miscObjects.setFromRecord(cfgValue.getRecord('MiscObjects'))
+        cfgValue.getRecord('Bubbles').forEachCfgEntryValue((value, cfgKey) => {
+            const bubblesKey = Object.keys(this.bubbles).find((k) => k.equalsIgnoreCase(cfgKey?.replace('_', '')))
+            if (bubblesKey) {
+                this.bubbles[bubblesKey] = value.toFileName().toLowerCase()
+            } else {
+                console.warn(`Unexpected key (${cfgKey}) given`)
+            }
+        })
+        cfgValue.getRecord('RockFallStyles').forEachCfgEntryValue((value, cfgKey) => this.rockFallStyles[cfgKey.toLowerCase()] = new RockFallStyle().setFromValue(value))
+        this.textMessagesWithImages.setFromRecord(cfgValue.getRecord('TextMessagesWithImages'))
+        this.samples.setFromRecord(cfgValue.getRecord('Samples'))
+        this.textures.setFromRecord(cfgValue.getRecord('Textures'))
+        cfgValue.getRecord('ObjectNames').forEachCfgEntryValue((value, cfgKey) => this.objectNames[cfgKey.toLowerCase()] = value.toLabel())
+        cfgValue.getRecord('VehicleTypes').forEachCfgEntryValue((value, cfgKey) => this.vehicleTypes[cfgKey.toLowerCase()] = value.toArray(',', undefined).map((v) => v.toFileName()))
+        cfgValue.getRecord('RockMonsterTypes').forEachCfgEntryValue((value, cfgKey) => this.rockMonsterTypes[cfgKey.toLowerCase()] = value.toFileName())
+        cfgValue.getRecord('BuildingTypes').forEachCfgEntryValue((value, cfgKey) => this.buildingTypes[cfgKey.toLowerCase()] = value.toFileName())
+        cfgValue.getRecord('UpgradeTypes').forEachCfgEntryValue((value, cfgKey) => this.upgradeTypes[cfgKey.toLowerCase()] = value.toFileName())
+        this.infoMessages.setFromRecord(cfgValue.getRecord('InfoMessages'))
+        this.stats.setFromRecord(cfgValue.getRecord('Stats'))
+        cfgValue.getRecord('ObjTtSFXs').forEachCfgEntryValue((value, cfgKey) => this.objTtSFXs[cfgKey.toLowerCase()] = value.toString())
+        cfgValue.getRecord('Advisor').forEachCfgEntryValue((value, cfgKey) => this.advisor[cfgKey.toLowerCase()] = new AdvisorTypeCfg().setFromValue(value))
+        cfgValue.getRecord('AdvisorPositions640x480').forEachCfgEntryValue((value, cfgKey) => this.advisorPositions[cfgKey.toLowerCase()] = new AdvisorPositionCfg().setFromValue(value))
+        this.weaponTypes.setFromRecord(cfgValue.getRecord('WeaponTypes'))
+        cfgValue.getRecord('Dependencies').forEachCfgEntryValue((value, cfgKey) => {
+            if (cfgKey.toLowerCase().startsWith('AlwaysCheck:'.toLowerCase())) {
+                const entityTypeStr = cfgKey.split(':')[1]
+                const entityType = getEntityTypeByName(entityTypeStr)
+                if (!entityType) {
+                    console.warn(`Skipping unmatched entity type "${entityTypeStr}" given`)
                     return
                 }
-                const entityType: EntityType = getEntityTypeByName(cfgKey.split(':')[1])
-                this.dependencies[entityType.toLowerCase()] = (value as [string, number, string][])
-                    .map((d): EntityDependency => ({entityType: getEntityTypeByName(d[0]), minLevel: d[1], itemKey: d[0]}))
-            })
-        } else if ('Levels'.equalsIgnoreCase(unifiedKey)) {
-            Object.keys(cfgValue).forEach((levelName) => {
-                if (!levelName.toLowerCase().startsWith('tutorial') && !levelName.toLowerCase().startsWith('level')) return // ignore incomplete test levels and duplicates
-                const levelConf = new LevelEntryCfg(levelName).setFromCfgObj(cfgValue[levelName])
-                const tileSize = levelConf.blockSize
-                if (tileSize !== TILESIZE) console.warn(`Unexpected tile size in level configuration: ${tileSize}`)
-                this.levels.push(levelConf)
-            })
-        } else if ('ToolTips'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.tooltips[cfgKey.toLowerCase()] = CfgHelper.parseLabel(value as string))
-        } else if ('UpgradeNames'.equalsIgnoreCase(unifiedKey)) {
-            this.upgradeNames = Object.values(cfgValue)
-        } else if ('ToolTipIcons'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.tooltipIcons[this.stripKey(cfgKey)] = CfgHelper.parseLabel(value as string))
-        } else {
-            return super.assignValue(objKey, unifiedKey, cfgValue)
-        }
-        return true
+                this.dependencies[entityType.toLowerCase()] = value.toArray(',', undefined).map((dependency): EntityDependency => {
+                    const depEntry = dependency.toArray(':', 2)
+                    const entityTypeStr = depEntry[0].toString()
+                    return {
+                        entityType: getEntityTypeByName(entityTypeStr),
+                        minLevel: depEntry[1].toNumber(),
+                        itemKey: entityTypeStr
+                    }
+                })
+            } else {
+                console.warn(`Ignoring unexpected dependency check '${cfgKey}'`)
+            }
+        })
+        cfgValue.getRecord('Levels').forEachEntry((levelName, entry) => {
+            if (!levelName.toLowerCase().startsWith('tutorial') && !levelName.toLowerCase().startsWith('level')) return // ignore incomplete test levels and duplicates
+            const levelConf = new LevelEntryCfg(levelName).setFromRecord(entry)
+            const tileSize = levelConf.blockSize
+            if (tileSize !== TILESIZE) console.warn(`Unexpected tile size in level configuration: ${tileSize}`)
+            this.levels.push(levelConf)
+        })
+        cfgValue.getRecord('ToolTips').forEachCfgEntryValue((value, cfgKey) => this.tooltips[cfgKey.toLowerCase()] = value.toLabel())
+        cfgValue.getRecord('UpgradeNames').forEachCfgEntryValue((value) => ((v) => {
+            this.upgradeNames.push(v.toLabel())
+        })(value))
+        cfgValue.getRecord('TooltipIcons').forEachCfgEntryValue((value, cfgKey) => {
+            const tooltipKey = this.stripTooltipKey(cfgKey)
+            this.tooltipIcons[tooltipKey] = value.toFileName()
+        })
+        return this
     }
 
-    stripKey(cfgKey: string) {
-        const keyParts = cfgKey.split('_')
-        if (keyParts.length > 1) {
-            keyParts.shift()
-            return keyParts.flatMap((s) => s.split(/(?<!^)(?=[A-Z])/)) // split with camel case
-                .filter((s) => s.toLowerCase().hashCode() !== 3317793)
-                .join('').toLowerCase()
+    private stripSurfaceTypeKey(cfgKey: string) {
+        const surfaceTypeVal = cfgKey.toLowerCase().replaceAll(/[_-]/g, '')
+        const index = surfaceTypeVal.indexOf('surfacetype')
+        return surfaceTypeVal.substring(index < 0 ? 0 : index)
+    }
+
+    private stripTooltipKey(cfgKey: string) {
+        const keyVal = cfgKey.toLowerCase().replaceAll(/[_-]/g, '')
+        let index: number = 0
+        const toolTypeIndex = keyVal.indexOf('tooltype')
+        if (toolTypeIndex >= 0) {
+            index = toolTypeIndex
         } else {
-            return cfgKey.toLowerCase()
+            const abilityTypeIndex = keyVal.indexOf('abilitytype')
+            if (abilityTypeIndex >= 0) {
+                index = abilityTypeIndex
+            }
         }
+        return keyVal.substring(index)
     }
 
     getTooltipText(tooltipKey: string | undefined): string {
@@ -224,7 +191,7 @@ export class GameConfig extends BaseConfig {
     }
 
     getRockFallDamage(entityType: EntityType, level: number = 0): number {
-        return this.weaponTypes.rockFallIn.damageByEntityType.get(entityType)?.[level] || 0
+        return this.weaponTypes.rockFallIn.damageByEntityType[entityType]?.[level] || 0
     }
 
     getAllLevels(): LevelEntryCfg[] {

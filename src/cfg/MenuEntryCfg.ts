@@ -1,12 +1,13 @@
-import { BaseConfig } from './BaseConfig'
 import { MenuCycleItemCfg } from './MenuCycleItemCfg'
 import { MenuLabelItemCfg } from './MenuLabelItemCfg'
 import { MenuSliderItemCfg } from './MenuSliderItemCfg'
+import { ConfigSetFromEntryValue, ConfigSetFromRecord } from './Configurable'
+import { CfgEntry, CfgEntryValue } from './CfgEntry'
 
-export class MenuEntryCfg extends BaseConfig {
+export class MenuEntryCfg implements ConfigSetFromRecord {
     fullName: string = ''
     title: string = ''
-    position: [number, number] = [0, 0]
+    position: { x: number, y: number } = {x: 0, y: 0}
     menuFont: string = ''
     loFont: string = ''
     hiFont: string = ''
@@ -19,50 +20,56 @@ export class MenuEntryCfg extends BaseConfig {
     itemsLabel: MenuLabelItemCfg[] = []
     itemsSlider: MenuSliderItemCfg[] = []
     itemsCycle: MenuCycleItemCfg[] = []
-    anchored: number[] = [0, 0]
+    anchored: { x: number, y: number } = {x: 0, y: 0}
     canScroll: boolean = false
 
-    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if (unifiedKey.match(/item\d+/i)) {
-            const lActionName = cfgValue[0].toLowerCase()
-            if (lActionName === 'next' || lActionName === 'trigger') {
-                this.itemsLabel.push(new MenuLabelItemCfg(cfgValue))
-            } else if (lActionName === 'slider') {
-                this.itemsSlider.push(new MenuSliderItemCfg(cfgValue))
-            } else if (lActionName === 'cycle') {
-                this.itemsCycle.push(new MenuCycleItemCfg(cfgValue))
-            } else {
-                console.warn(`Unexpected item action name: ${cfgValue[0]}`)
-                return false
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.fullName = cfgValue.getValue('FullName').toLabel()
+        this.title = cfgValue.getValue('Title').toLabel()
+        this.position = cfgValue.getValue('Position').toPos(':')
+        this.menuFont = cfgValue.getValue('MenuFont').toFileName()
+        this.loFont = cfgValue.getValue('LoFont').toFileName()
+        this.hiFont = cfgValue.getValue('HiFont').toFileName()
+        this.itemCount = cfgValue.getValue('ItemCount').toNumber()
+        const menuImgVal = cfgValue.getValue('MenuImage')
+        this.menuImage = menuImgVal.toArray(':', undefined)[0].toFileName()
+        this.autoCenter = cfgValue.getValue('AutoCenter').toBoolean()
+        this.displayTitle = cfgValue.getValue('DisplayTitle').toBoolean()
+        cfgValue.forEachCfgEntryValue((value, key) => {
+            if (key.match(/Overlay\d+/i)) {
+                this.overlays.push(new MenuEntryOverlayCfg().setFromValue(value))
             }
-            return true
-        } else if (unifiedKey.match(/overlay\d+/i)) {
-            this.overlays.push(new MenuEntryOverlayCfg(cfgValue))
-            return true
-        }
-        return super.assignValue(objKey, unifiedKey, cfgValue)
-    }
-
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        if (unifiedKey === 'fullname' || unifiedKey === 'title') {
-            return cfgValue.replace(/_/g, ' ')
-        } else if (unifiedKey === 'menuimage') { // XXX What mean numbers behind the image file name? Like: ...bmp,0,0,1
-            return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue)?.toLowerCase()
-        } else {
-            return super.parseValue(unifiedKey, cfgValue)
-        }
+        })
+        this.playRandom = cfgValue.getValue('PlayRandom').toBoolean()
+        cfgValue.forEachCfgEntryValue((value, key) => {
+            if (!key.match(/Item\d+/i)) return
+            if (value.toArray(':', undefined)[0].toString().match(/Next|Trigger/i)) {
+                this.itemsLabel.push(new MenuLabelItemCfg().setFromValue(value))
+            } else if (value.toArray(':', undefined)[0].toString().match(/Slider/i)) {
+                this.itemsSlider.push(new MenuSliderItemCfg().setFromValue(value))
+            } else if (value.toArray(':', undefined)[0].toString().match(/Cycle/i)) {
+                this.itemsCycle.push(new MenuCycleItemCfg().setFromValue(value))
+            }
+        })
+        this.anchored = cfgValue.getValue('Anchored').toPos(':')
+        this.canScroll = cfgValue.getValue('CanScroll').toBoolean()
+        return this
     }
 }
 
-export class MenuEntryOverlayCfg {
-    flhFilepath: string
-    sfxName: string
-    x: number
-    y: number
+export class MenuEntryOverlayCfg implements ConfigSetFromEntryValue {
+    flhFilepath: string = ''
+    sfxName: string = ''
+    x: number = 0
+    y: number = 0
 
-    constructor(cfgValue: any) {
-        [this.flhFilepath, this.sfxName, this.x, this.y] = cfgValue
-        this.flhFilepath = `Data/${this.flhFilepath}`
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const value = cfgValue.toArray(':', 4)
+        this.flhFilepath = `Data/${(value[0].toFileName())}`
+        this.sfxName = value[1].toString()
         if (this.sfxName.equalsIgnoreCase('SFX_NULL')) this.sfxName = ''
+        this.x = value[2].toNumber()
+        this.y = value[3].toNumber()
+        return this
     }
 }

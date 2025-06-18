@@ -37,7 +37,8 @@ export async function start() {
     if (cfgFiles.length < 1) throw new Error('Invalid second WAD file given! No config file present at root level.')
     if (cfgFiles.length > 1) console.warn(`Found multiple config files (${cfgFiles}) will proceed with first one "${cfgFiles[0]}" only`)
     const result = CfgFileParser.parse(vfs.getFile(cfgFiles[0]).toArray())
-    GameConfig.instance.setFromCfgObj(result)
+    console.log('Game configuration parsed', result)
+    GameConfig.instance.setFromRecord(result)
     if (SaveGameManager.preferences.playVideos) await screenMaster.videoLayer.playVideo(`data/${GameConfig.instance.main.rrAvi}`)
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')
     const cursorImageName = GameConfig.instance.pointers.standard.fileName

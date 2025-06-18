@@ -1,12 +1,33 @@
-import { BaseConfig } from './BaseConfig'
 import { EntityType, getEntityTypeByName } from '../game/model/EntityType'
+import { ConfigSetFromRecord } from './Configurable'
+import { CfgEntry } from './CfgEntry'
 
-export class WeaponTypeCfg extends BaseConfig {
-    readonly damageByEntityType: Map<EntityType, number[]> = new Map()
+export class WeaponTypeListCfg implements ConfigSetFromRecord {
+    smallLazer = new WeaponTypeCfg()
+    bigLazer = new WeaponTypeCfg()
+    boulder = new WeaponTypeCfg()
+    pusher = new WeaponTypeCfg()
+    laserShot = new WeaponTypeCfg()
+    freezer = new WeaponTypeCfg()
+    rockFallIn = new WeaponTypeCfg()
 
-    slowDeath: number[] = []
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.smallLazer.setFromRecord(cfgValue.getRecord('SmallLazer'))
+        this.bigLazer.setFromRecord(cfgValue.getRecord('BigLazer'))
+        this.boulder.setFromRecord(cfgValue.getRecord('Boulder'))
+        this.pusher.setFromRecord(cfgValue.getRecord('Pusher'))
+        this.laserShot.setFromRecord(cfgValue.getRecord('LaserShot'))
+        this.freezer.setFromRecord(cfgValue.getRecord('Freezer'))
+        this.rockFallIn.setFromRecord(cfgValue.getRecord('RockFallIn'))
+        return this
+    }
+}
+
+export class WeaponTypeCfg implements ConfigSetFromRecord {
+    readonly damageByEntityType: Partial<Record<EntityType, number[]>> = {}
+
     defaultDamage: number = 0
-    rechargeTimeMs: number = 0
+    rechargeTime: number = 0
     weaponRange: number = 0
     ammo: number = 0 // 0 = infinite
 
@@ -15,20 +36,25 @@ export class WeaponTypeCfg extends BaseConfig {
     wallDestroyTimeLoose: number = 0 // Dirt
     dischargeRate: number = 0
 
-    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if (unifiedKey.equalsIgnoreCase('RechargeTime')) {
-            this.rechargeTimeMs = isNaN(cfgValue) ? cfgValue : cfgValue / 25 * 1000 // 25 = 1 second
-            return true
-        } else if (unifiedKey.equalsIgnoreCase('DefaultDamage')) {
-            const firstValue = Array.isArray(cfgValue) ? cfgValue[0] : cfgValue // XXX Numbers like 0.01 are given as array
-            return super.assignValue(objKey, unifiedKey, firstValue)
-        } else {
-            const entityType = getEntityTypeByName(unifiedKey)
+    setFromRecord(cfgValue: CfgEntry): this {
+        cfgValue.forEachCfgEntryValue((value, key) => {
+            const entityType = getEntityTypeByName(key)
             if (entityType) {
-                this.damageByEntityType.set(entityType, cfgValue as number[])
-                return true
+                this.damageByEntityType[entityType] = value.toArray(':', undefined).map((v) => v.toNumber())
             }
-            return super.assignValue(objKey, unifiedKey, cfgValue)
-        }
+        })
+        this.defaultDamage = cfgValue.getValue('DefaultDamage').toNumber()
+        this.rechargeTime = cfgValue.getValue('RechargeTime').toNumber()
+        this.weaponRange = cfgValue.getValue('WeaponRange').toNumber()
+        this.ammo = cfgValue.getValue('Ammo').toNumber()
+        this.wallDestroyTimeHard = cfgValue.getValue('WallDestroyTime_Hard').toNumber()
+        this.wallDestroyTimeMedium = cfgValue.getValue('WallDestroyTime_Medium').toNumber()
+        this.wallDestroyTimeLoose = cfgValue.getValue('WallDestroyTime_Loose').toNumber()
+        this.dischargeRate = cfgValue.getValue('DischargeRate').toNumber()
+        return this
+    }
+
+    get rechargeTimeMs(): number {
+        return this.rechargeTime / 25 * 1000 // 25 = 1 second
     }
 }

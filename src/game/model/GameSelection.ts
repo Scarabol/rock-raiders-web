@@ -59,7 +59,7 @@ export class GameSelection {
             } else {
                 this.building = undefined
             }
-        } else if (this.building?.stats.CanDoubleSelect) {
+        } else if (this.building?.stats.canDoubleSelect) {
             if (this.building.doubleSelect()) {
                 this.doubleSelect = this.building
                 added = true
@@ -120,7 +120,7 @@ export class GameSelection {
                     before.push(v)
                     added = true
                 }
-            } else if (v.stats.CanDoubleSelect && !!v.driver) {
+            } else if (v.stats.canDoubleSelect && !!v.driver) {
                 if (v.doubleSelect()) {
                     this.doubleSelect = v
                     added = true

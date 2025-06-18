@@ -27,7 +27,7 @@ export class PriorityList {
 
     reset() {
         this.current.length = 0
-        this.current.push(...this.levelDefault.map(entry => new PriorityEntry(entry))) // use deep copy to avoid interference
+        this.current.push(...this.levelDefault.map((entry) => new PriorityEntry(entry))) // use deep copy to avoid interference
         EventBroker.publish(new UpdatePriorities(this.current))
     }
 

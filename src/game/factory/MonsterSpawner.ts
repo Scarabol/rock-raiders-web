@@ -49,7 +49,7 @@ export class MonsterSpawner {
                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                 const spiderStats = GameConfig.instance.stats.smallSpider
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(spiderStats))
-                if (spiderStats.RandomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - spiderStats.RandomMoveTime) * 1000))
+                if (spiderStats.randomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - spiderStats.randomMoveTime) * 1000))
                 break
             case EntityType.BAT:
                 positionComponent.floorOffset = TILESIZE / 4
@@ -57,7 +57,7 @@ export class MonsterSpawner {
                 sceneEntity.setAnimation(AnimEntityActivity.Route)
                 const batStats = GameConfig.instance.stats.bat
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(batStats))
-                if (batStats.RandomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - batStats.RandomMoveTime) * 1000))
+                if (batStats.randomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - batStats.randomMoveTime) * 1000))
                 worldMgr.ecs.addComponent(entity, new RaiderScareComponent(RaiderScareRange.BAT))
                 worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
                     worldMgr.ecs.removeComponent(entity, RaiderScareComponent)

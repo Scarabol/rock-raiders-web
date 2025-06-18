@@ -126,7 +126,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
-                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
+                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.smashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.findVehicleInRange(rockyPos, ROCKY_MELEE_ATTACK_DISTANCE_SQ)
@@ -173,7 +173,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         if (behaviorComponent.boulder) {
                             const drivingVehicleCloseBy = drivingVehiclePositions.find((pos) => pos.distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (drivingVehicleCloseBy) {
-                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BoulderExplode, behaviorComponent.boulder.getWorldPosition(new Vector3()), behaviorComponent.boulder.rotation.y, false)
+                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.boulderExplode, behaviorComponent.boulder.getWorldPosition(new Vector3()), behaviorComponent.boulder.rotation.y, false)
                                 sceneEntity.removeAllCarried()
                                 behaviorComponent.boulder = undefined
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
@@ -220,7 +220,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     }
                                 } else {
                                     // XXX Adjust balancing for resting
-                                    const chanceToRestPerSecond = stats.RestPercent / 20
+                                    const chanceToRestPerSecond = stats.restPercent / 20
                                     if (PRNG.movement.random() < chanceToRestPerSecond * elapsedMs / 1000) {
                                         const prevState = behaviorComponent.state
                                         behaviorComponent.state = RockMonsterBehaviorState.RESTING
@@ -250,7 +250,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
-                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
+                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.smashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.findVehicleInRange(rockyPos, ROCKY_MELEE_ATTACK_DISTANCE_SQ)
@@ -283,7 +283,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         }, 0, () => {
                                             const buildingComponents = this.ecs.getComponents(targetBuilding.entity)
                                             const healthComponent = buildingComponents.get(HealthComponent)
-                                            healthComponent.changeHealth(stats.RepairValue)
+                                            healthComponent.changeHealth(stats.repairValue)
                                             if (healthComponent.triggerAlarm) EventBroker.publish(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
                                         })
                                     } else if (!components.has(WorldTargetComponent)) {
@@ -315,7 +315,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
-                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
+                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.smashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.findVehicleInRange(rockyPos, ROCKY_MELEE_ATTACK_DISTANCE_SQ)
@@ -334,8 +334,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         behaviorComponent.state = RockMonsterBehaviorState.GATHER
                                         sceneEntity.setAnimation(RockMonsterActivity.Gather, () => {
                                             sceneEntity.setAnimation(AnimEntityActivity.StandCarry)
-                                            behaviorComponent.boulder = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Boulder)
-                                            if (!behaviorComponent.boulder) throw new Error(`Cannot spawn boulder missing mesh "${GameConfig.instance.miscObjects.Boulder}"`)
+                                            behaviorComponent.boulder = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.boulder)
+                                            if (!behaviorComponent.boulder) throw new Error(`Cannot spawn boulder missing mesh "${GameConfig.instance.miscObjects.boulder}"`)
                                             const boulderTexture = ResourceManager.getTexture('Creatures/RMonster/greyrock.bmp') // XXX Read boulder texture from config?
                                             if (boulderTexture) behaviorComponent.boulder.material.forEach((m) => m.map = boulderTexture)
                                             sceneEntity.pickupEntity(behaviorComponent.boulder)
@@ -393,7 +393,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
     private doIdle(behaviorComponent: RockMonsterBehaviorComponent, pathFinder: PathFinder, rockyPos: Vector2, stats: MonsterEntityStats, entity: number, crystals: MaterialEntity[]) {
         if (behaviorComponent.boulder) {
             behaviorComponent.state = RockMonsterBehaviorState.BOULDER_ATTACK
-        } else if (behaviorComponent.numCrystalsEaten < stats.Capacity && crystals.length > 0) {
+        } else if (behaviorComponent.numCrystalsEaten < stats.capacity && crystals.length > 0) {
             const closestCrystal = pathFinder.findClosestObj(rockyPos, crystals, stats, 1)
             if (closestCrystal) {
                 behaviorComponent.state = RockMonsterBehaviorState.GOTO_CRYSTAL
@@ -427,7 +427,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             if (vehicleInMeleeRange.position.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
                 const vehicleComponents = this.ecs.getComponents(vehicleInMeleeRange.entity)
                 const healthComponent = vehicleComponents.get(HealthComponent)
-                healthComponent.changeHealth(stats.RepairValue)
+                healthComponent.changeHealth(stats.repairValue)
                 if (healthComponent.triggerAlarm) EventBroker.publish(new UnderAttackEvent(vehicleComponents.get(PositionComponent)))
             }
         })

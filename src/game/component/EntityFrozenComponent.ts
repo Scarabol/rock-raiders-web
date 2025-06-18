@@ -3,6 +3,7 @@ import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { WorldManager } from '../WorldManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Vector3 } from 'three'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class EntityFrozenComponent extends AbstractGameComponent {
     readonly iceCubeEntity: AnimatedSceneEntity
@@ -10,7 +11,7 @@ export class EntityFrozenComponent extends AbstractGameComponent {
     constructor(worldMgr: WorldManager, entity: number, freezerTimeMs: number, position: Vector3, heading: number) {
         super()
         this.iceCubeEntity = new AnimatedSceneEntity()
-        this.iceCubeEntity.addAnimated(ResourceManager.getAnimatedData('MiscAnims/IceCube'))
+        this.iceCubeEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.iceCube))
         this.iceCubeEntity.setAnimation('Start', () => {
             this.iceCubeEntity.setAnimation('Normal', () => {
                 this.iceCubeEntity.setAnimation('Melt', () => {

@@ -34,7 +34,7 @@ export class SelectBuildingPanel extends IconSubPanel {
             let event: ChangeTooltip
             if (this.buildingMissingOreForUpgrade) {
                 event = new ChangeTooltip(upgradeItem.tooltipDisabled, 0, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX, () => {
-                    return TooltipSpriteBuilder.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, this.buildingMissingOreForUpgrade)
+                    return TooltipSpriteBuilder.getBuildingMissingOreForUpgradeTooltipSprite(this.buildingMissingOreForUpgrade)
                 })
             } else {
                 event = new ChangeTooltip(upgradeItem.tooltipDisabled, 0, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX)

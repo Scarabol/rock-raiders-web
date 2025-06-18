@@ -9,12 +9,12 @@ export enum RaiderTraining {
 }
 
 export interface RaiderTrainingStats {
-    TrainDriver: boolean[]
-    TrainRepair: boolean[]
-    TrainScanner: boolean[]
-    TrainPilot: boolean[]
-    TrainSailor: boolean[]
-    TrainDynamite: boolean[]
+    trainDriver: boolean[]
+    trainRepair: boolean[]
+    trainScanner: boolean[]
+    trainPilot: boolean[]
+    trainSailor: boolean[]
+    trainDynamite: boolean[]
 }
 
 export class RaiderTrainings {
@@ -30,17 +30,17 @@ export class RaiderTrainings {
     static toStatsProperty(training: RaiderTraining): keyof RaiderTrainingStats {
         switch (training) {
             case RaiderTraining.DRIVER:
-                return 'TrainDriver'
+                return 'trainDriver'
             case RaiderTraining.ENGINEER:
-                return 'TrainRepair'
+                return 'trainRepair'
             case RaiderTraining.GEOLOGIST:
-                return 'TrainScanner'
+                return 'trainScanner'
             case RaiderTraining.PILOT:
-                return 'TrainPilot'
+                return 'trainPilot'
             case RaiderTraining.SAILOR:
-                return 'TrainSailor'
+                return 'trainSailor'
             case RaiderTraining.DEMOLITION:
-                return 'TrainDynamite'
+                return 'trainDynamite'
             default:
                 throw new Error(`Unexpected training value given: ${training} (${RaiderTraining[training]})`)
         }

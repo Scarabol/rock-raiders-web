@@ -129,9 +129,9 @@ export class BuildPlacementMarker {
         if (!this.buildingType) return
         const barrierLocations = this.getBarrierLocations()
         const stats = this.buildingType.stats
-        const neededCrystals = stats?.CostCrystal || 0
-        const neededBricks = stats?.CostRefinedOre || 0
-        const neededOres = stats?.CostOre || 0
+        const neededCrystals = stats?.costCrystal || 0
+        const neededBricks = stats?.costRefinedOre || 0
+        const neededOres = stats?.costOre || 0
         const needsAnything = neededCrystals || neededOres || neededBricks
         const primarySurface = this.buildingMarkerPrimary.getSurface()
         const site = new BuildingSite(this.worldMgr, primarySurface, this.buildingMarkerSecondary.getVisibleSurface(), this.powerPathMarkerPrimary.getVisibleSurface(), this.powerPathMarkerSecondary.getVisibleSurface(), this.buildingType)

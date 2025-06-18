@@ -11,7 +11,7 @@ export class SurfaceType {
     reinforcable: boolean = false
     hasRubble: boolean = false
     cursor: Cursor = 'standard'
-    statsDrillName?: 'HardDrillTime' | 'LooseDrillTime' | 'SoilDrillTime' | 'SeamDrillTime'
+    statsDrillName?: 'hardDrillTime' | 'looseDrillTime' | 'soilDrillTime' | 'seamDrillTime'
     statsLaserName?: 'wallDestroyTimeHard' | 'wallDestroyTimeMedium' | 'wallDestroyTimeLoose'
     canHaveFence: boolean = false
     connectsPath: boolean = false
@@ -54,7 +54,7 @@ export class SurfaceType {
         digable: true,
         reinforcable: true,
         cursor: 'surfaceTypeHard',
-        statsDrillName: 'HardDrillTime',
+        statsDrillName: 'hardDrillTime',
         statsLaserName: 'wallDestroyTimeHard',
         mapSurfaceColor: '#7000B0',
     })
@@ -66,7 +66,7 @@ export class SurfaceType {
         digable: true,
         reinforcable: true,
         cursor: 'surfaceTypeMedium',
-        statsDrillName: 'LooseDrillTime',
+        statsDrillName: 'looseDrillTime',
         statsLaserName: 'wallDestroyTimeMedium',
         mapSurfaceColor: '#9000D0',
     })
@@ -78,7 +78,7 @@ export class SurfaceType {
         digable: true,
         reinforcable: true,
         cursor: 'surfaceTypeLoose',
-        statsDrillName: 'SoilDrillTime',
+        statsDrillName: 'soilDrillTime',
         statsLaserName: 'wallDestroyTimeLoose',
         mapSurfaceColor: '#B000F0',
     })
@@ -107,7 +107,7 @@ export class SurfaceType {
         digable: true,
         reinforcable: true,
         cursor: 'surfaceTypeOreSeam',
-        statsDrillName: 'SeamDrillTime',
+        statsDrillName: 'seamDrillTime',
         mapSurfaceColor: '#963c00',
     })
     static readonly WATER = new SurfaceType({
@@ -120,7 +120,7 @@ export class SurfaceType {
         digable: true,
         reinforcable: true,
         cursor: 'surfaceTypeCrystalSeam',
-        statsDrillName: 'SeamDrillTime',
+        statsDrillName: 'seamDrillTime',
         mapSurfaceColor: '#aafa00',
     })
     static readonly RECHARGE_SEAM = new SurfaceType({

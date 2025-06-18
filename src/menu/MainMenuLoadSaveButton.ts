@@ -28,7 +28,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
             BitmapFontWorkerPool.instance.createTextImage(layer.cfg.hiFont, buttonLabel),
         ]).then((textImages) => {
             [this.labelImgLo, this.labelImgHi] = textImages
-            this.width = Math.max(this.labelImgLo?.width || 0, this.labelImgHi?.width || 0) + menuCfg.saveImage.BigWidth
+            this.width = Math.max(this.labelImgLo?.width || 0, this.labelImgHi?.width || 0) + menuCfg.saveImage.bigWidth
             this.height = Math.max(this.labelImgLo?.height || 0, this.labelImgHi?.height || 0)
         })
         this.targetIndex = index
@@ -38,10 +38,10 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
             this.overlay = new FlicAnimOverlay(this.layer.animationFrame, flicImages, overlayCfg.x, overlayCfg.y, overlayCfg.sfxName)
         }
         this.actionName = loading ? `load_game_${index}` : `save_game_${index}`
-        this.saveGameImgWidthLo = menuCfg.saveImage.Width
-        this.saveGameImgHeightLo = menuCfg.saveImage.Height
-        this.saveGameImgWidthHi = menuCfg.saveImage.BigWidth
-        this.saveGameImgHeightHi = menuCfg.saveImage.BigHeight
+        this.saveGameImgWidthLo = menuCfg.saveImage.width
+        this.saveGameImgHeightLo = menuCfg.saveImage.height
+        this.saveGameImgWidthHi = menuCfg.saveImage.bigWidth
+        this.saveGameImgHeightHi = menuCfg.saveImage.bigHeight
     }
 
     set onPressed(callback: UiElementCallback) {

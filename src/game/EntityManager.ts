@@ -144,7 +144,7 @@ export class EntityManager {
     }
 
     getGetToolTargets(): PathTarget[] {
-        return this.getPoweredBuildingByStatsProperty('ToolStore').map((b) => b.getToolPathTarget).filter((b) => !!b)
+        return this.getPoweredBuildingByStatsProperty('toolStore').map((b) => b.getToolPathTarget).filter((b) => !!b)
     }
 
     private getPoweredBuildingByStatsProperty(statsKey: keyof BuildingEntityStats) {
@@ -156,15 +156,15 @@ export class EntityManager {
     }
 
     getRaiderUpgradePathTarget(): PathTarget[] {
-        return this.getPoweredBuildingByStatsProperty('ToolStore').flatMap((b) => b.getTrainingTargets())
+        return this.getPoweredBuildingByStatsProperty('toolStore').flatMap((b) => b.getTrainingTargets())
     }
 
     getRaiderEatPathTarget(): PathTarget[] {
-        return this.getPoweredBuildingByStatsProperty('SnaxULike').flatMap((b) => b.getTrainingTargets())
+        return this.getPoweredBuildingByStatsProperty('snaxULike').flatMap((b) => b.getTrainingTargets())
     }
 
     getVehicleUpgradePathTargets(): PathTarget[] {
-        return this.getPoweredBuildingByStatsProperty('UpgradeBuilding').map((b) => PathTarget.fromBuilding(b, b.getDropPosition2D(), 1, b.primarySurface.getCenterWorld2D()))
+        return this.getPoweredBuildingByStatsProperty('upgradeBuilding').map((b) => PathTarget.fromBuilding(b, b.getDropPosition2D(), 1, b.primarySurface.getCenterWorld2D()))
     }
 
     hasBuilding(buildingType: EntityType): boolean {
@@ -182,7 +182,7 @@ export class EntityManager {
     }
 
     hasUpgradeSite(): boolean {
-        return this.buildings.some((b) => b.isPowered() && b.stats.UpgradeBuilding)
+        return this.buildings.some((b) => b.isPowered() && b.stats.upgradeBuilding)
     }
 
     getRaiderFightTargets(): PathTarget[] {
@@ -190,7 +190,7 @@ export class EntityManager {
             .map((m) => ({entity: m, components: this.worldMgr.ecs.getComponents(m)}))
             .filter((e) => {
                 return e.components.get(HealthComponent).health > 0 &&
-                    e.components.get(MonsterStatsComponent).stats.CanBeShotAt &&
+                    e.components.get(MonsterStatsComponent).stats.canBeShotAt &&
                     e.components.get(AnimatedSceneEntityComponent).sceneEntity.currentAnimation !== RockMonsterActivity.Unpowered &&
                     e.components.get(SlugBehaviorComponent)?.state !== SlugBehaviorState.EMERGE
             })

@@ -1,12 +1,11 @@
 import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
-import { BaseConfig } from './BaseConfig'
-import { LevelObjectiveTextEntry } from '../resource/fileparser/ObjectiveTextParser'
-import { VERBOSE } from '../params'
 import { GameConfig } from './GameConfig'
 import { SaveGameManager } from '../resource/SaveGameManager'
-import { CfgHelper } from './CfgHelper'
+import { VERBOSE } from '../params'
+import { ConfigSetFromEntryValue, ConfigSetFromRecord } from './Configurable'
+import { CfgEntry, CfgEntryValue } from './CfgEntry'
 
-export class LevelEntryCfg extends BaseConfig {
+export class LevelEntryCfg implements ConfigSetFromRecord {
     fullName: string = ''
     endGameAvi1: string = ''
     endGameAvi2: string = ''
@@ -25,11 +24,11 @@ export class LevelEntryCfg extends BaseConfig {
     digDepth: number = 40
     roughLevel: number = 6
     roofHeight: number = 40
-    useRoof: string = ''
+    useRoof: boolean = true
     selBoxHeight: number = 10
-    fpRotLightRGB: number[] = [0, 0, 0]
+    fpRotLightRGB: [r: number, g: number, b: number] = [0, 0, 0]
     fogColourRGB: [r: number, g: number, b: number] = [0, 0, 0]
-    highFogColourRGB: number[] = [0, 0, 0]
+    highFogColourRGB: [r: number, g: number, b: number] = [0, 0, 0]
     fogRate: number = 0
     fallinMultiplier: number = 0 // time in seconds that is multiplied with fall in map value to get time between fall ins
     numberOfLandSlidesTillCaveIn: number = 0 // TODO after this number of fallins the area of effect is increased from 1 to 6
@@ -45,7 +44,7 @@ export class LevelEntryCfg extends BaseConfig {
     cryOreMap: string = ''
     pathMap: string = ''
     noGather: boolean = false
-    textureSet?: string
+    textureSet: string = ''
     rockFallStyle: string = ''
     emergeCreature: string = ''
     safeCaverns: boolean = true
@@ -55,7 +54,6 @@ export class LevelEntryCfg extends BaseConfig {
     nerpFile: string = ''
     nerpMessageFile: string = ''
     objectiveText: string = ''
-    objectiveTextCfg?: LevelObjectiveTextEntry
     objectiveImage640x480?: ObjectiveImageCfg
     erodeTriggerTime: number = 0 // 1, 20, 40, 60, 120 time in seconds to trigger a new erosion
     erodeErodeTime: number = 0 // 1, 5, 7, 20, 30, 40, 60 time in seconds until next erosion level is reached
@@ -70,35 +68,76 @@ export class LevelEntryCfg extends BaseConfig {
     menuBMP: string[] = []
 
     constructor(readonly levelName: string) {
-        super()
     }
 
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        if (unifiedKey === 'fullName'.toLowerCase()) {
-            return cfgValue.replace(/_/g, ' ')
-        } else if (unifiedKey === 'priorities') {
-            return Object.entries<boolean>(cfgValue).map(([name, enabled]) => new LevelPrioritiesEntryConfig(name, enabled))
-        } else if (unifiedKey === 'reward') {
-            return new LevelRewardConfig().setFromCfgObj(cfgValue)
-        } else if (unifiedKey === 'objectiveimage640x480') {
-            return new ObjectiveImageCfg(cfgValue)
-        } else if (unifiedKey === 'textureset') {
-            return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue).toLowerCase()
-        } else if (unifiedKey === 'rockfallstyle') { // value given twice for level07
-            return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue).toLowerCase()
-        } else if (unifiedKey === 'emergecreature') { // value given twice for level20
-            return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue).toLowerCase()
-        } else if (unifiedKey === 'nerpfile') {
-            cfgValue = cfgValue?.toLowerCase()
-            if (cfgValue?.endsWith('.npl')) {
-                const nerpFile = cfgValue.replace('.npl', '.nrn')
-                if (VERBOSE) console.warn(`Binary NERP file (.npl) not supported, using NERP text script (.nrn) instead from "${nerpFile}"`)
-                return nerpFile
-            }
-            return cfgValue
-        } else {
-            return super.parseValue(unifiedKey, cfgValue)
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.fullName = cfgValue.getValue('FullName').toLabel()
+        this.endGameAvi1 = cfgValue.getValue('EndGameAvi1').toFileName()
+        this.endGameAvi2 = cfgValue.getValue('EndGameAvi2').toFileName()
+        this.allowRename = cfgValue.getValue('AllowRename').toBoolean()
+        this.recallOLObjects = cfgValue.getValue('RecallOLObjects').toBoolean()
+        this.generateSpiders = cfgValue.getValue('GenerateSpiders').toBoolean()
+        this.video = cfgValue.getValue('Video').toFileName()
+        this.disableEndTeleport = cfgValue.getValue('DisableEndTeleport').toBoolean()
+        this.disableStartTeleport = cfgValue.getValue('DisableStartTeleport').toBoolean()
+        this.emergeTimeOut = cfgValue.getValue('EmergeTimeOut').toNumber()
+        this.boulderAnimation = cfgValue.getValue('BoulderAnimation').toFileName()
+        this.noMultiSelect = cfgValue.getValue('NoMultiSelect').toBoolean()
+        this.noAutoEat = cfgValue.getValue('NoAutoEat').toBoolean()
+        this.disableToolTipSound = cfgValue.getValue('DisableToolTipSound').toBoolean()
+        this.blockSize = cfgValue.getValue('BlockSize').toNumber()
+        this.digDepth = cfgValue.getValue('DigDepth').toNumber()
+        this.roughLevel = cfgValue.getValue('RoughLevel').toNumber()
+        this.roofHeight = cfgValue.getValue('RoofHeight').toNumber()
+        this.useRoof = cfgValue.getValue('UseRoof').toBoolean()
+        this.selBoxHeight = cfgValue.getValue('SelBoxHeight').toNumber()
+        this.fpRotLightRGB = cfgValue.getValue('FpRotLightRGB').toRGB(this.fpRotLightRGB)
+        this.fogColourRGB = cfgValue.getValue('FogColourRGB').toRGB()
+        this.highFogColourRGB = cfgValue.getValue('HighFogColourRGB').toRGB()
+        this.fogRate = cfgValue.getValue('FogRate').toNumber()
+        this.fallinMultiplier = cfgValue.getValue('FallinMultiplier').toNumber()
+        this.numberOfLandSlidesTillCaveIn = cfgValue.getValue('NumberOfLandSlidesTillCaveIn').toNumber()
+        this.noFallins = cfgValue.getValue('NoFallins').toBoolean()
+        this.oxygenRate = cfgValue.getValue('OxygenRate').toNumber()
+        this.surfaceMap = cfgValue.getValue('SurfaceMap').toFileName()
+        this.predugMap = cfgValue.getValue('PredugMap').toFileName()
+        this.terrainMap = cfgValue.getValue('TerrainMap').toFileName()
+        this.emergeMap = cfgValue.getValue('EmergeMap').toFileName()
+        this.erodeMap = cfgValue.getValue('ErodeMap').toFileName()
+        this.fallinMap = cfgValue.getValue('FallinMap').toFileName()
+        this.blockPointersMap = cfgValue.getValue('BlockPointersMap').toFileName()
+        this.cryOreMap = cfgValue.getValue('CryOreMap').toFileName()
+        this.pathMap = cfgValue.getValue('PathMap').toFileName()
+        this.noGather = cfgValue.getValue('NoGather').toBoolean()
+        this.textureSet = cfgValue.getValue('TextureSet').toTextureSet()
+        this.rockFallStyle = cfgValue.getValue('RockFallStyle').toString()
+        this.emergeCreature = cfgValue.getValue('EmergeCreature').toString()
+        this.safeCaverns = cfgValue.getValue('SafeCaverns').toBoolean()
+        this.seeThroughWalls = cfgValue.getValue('SeeThroughWalls').toBoolean()
+        this.oListFile = cfgValue.getValue('OListFile').toFileName()
+        this.ptlFile = cfgValue.getValue('PtlFile').toFileName()
+        this.nerpFile = cfgValue.getValue('NerpFile').toFileName()
+        if (this.nerpFile?.toLowerCase().endsWith('.npl')) {
+            this.nerpFile = this.nerpFile.replace('.npl', '.nrn')
+            if (VERBOSE) console.warn(`Binary NERP file (.npl) not supported, using NERP text script (.nrn) instead from "${this.nerpFile}"`)
         }
+        this.nerpMessageFile = cfgValue.getValue('NerpMessageFile').toFileName()
+        this.objectiveText = cfgValue.getValue('ObjectiveText').toFileName()
+        const valObjectiveImage = cfgValue.getValue('ObjectiveImage640x480')
+        if (valObjectiveImage) this.objectiveImage640x480 = new ObjectiveImageCfg().setFromValue(valObjectiveImage)
+        this.erodeTriggerTime = cfgValue.getValue('ErodeTriggerTime').toNumber()
+        this.erodeErodeTime = cfgValue.getValue('ErodeErodeTime').toNumber()
+        this.erodeLockTime = cfgValue.getValue('ErodeLockTime').toNumber()
+        this.nextLevel = cfgValue.getValue('NextLevel').toLevelReference()
+        this.levelLinks = cfgValue.getValue('LevelLinks').toArray(',', undefined).map((v) => v.toLevelReference())
+        this.frontEndX = cfgValue.getValue('FrontEndX').toNumber()
+        this.frontEndY = cfgValue.getValue('FrontEndY').toNumber()
+        this.frontEndOpen = cfgValue.getValue('FrontEndOpen').toBoolean()
+        cfgValue.getRecord('Priorities').forEachCfgEntryValue((value, name) => this.priorities.push(new LevelPrioritiesEntryConfig(name, value.toBoolean())))
+        const valReward = cfgValue.getRecordOptional('Reward')
+        if (valReward) this.reward = new LevelRewardConfig().setFromRecord(valReward)
+        this.menuBMP = cfgValue.getValue('MenuBMP').toArray(',', 3).map((v) => v.toFileName())
+        return this
     }
 
     isLocked(): boolean {
@@ -158,63 +197,65 @@ export class LevelPrioritiesEntryConfig {
     }
 }
 
-export class LevelRewardConfig extends BaseConfig {
+export class LevelRewardConfig implements ConfigSetFromRecord {
     enable: boolean = true
-    modifier?: number
-    importance?: LevelRewardImportanceConfig
-    quota?: LevelRewardQuotaConfig
+    modifier: number = 0
+    importance: LevelRewardImportanceConfig | undefined
+    quota: LevelRewardQuotaConfig | undefined
 
-    parseValue(unifiedKey: string, cfgValue: Record<string, unknown>): any {
-        if (unifiedKey === 'importance') {
-            return new LevelRewardImportanceConfig(cfgValue)
-        } else if (unifiedKey === 'quota') {
-            return new LevelRewardQuotaConfig(cfgValue)
-        } else {
-            return super.parseValue(unifiedKey, cfgValue)
-        }
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.enable = cfgValue.getValue('Enable').toBoolean()
+        this.modifier = cfgValue.getValue('Modifier').toNumber()
+        this.importance = new LevelRewardImportanceConfig().setFromRecord(cfgValue.getRecord('Importance'))
+        this.quota = new LevelRewardQuotaConfig().setFromRecord(cfgValue.getRecord('Quota'))
+        return this
     }
 }
 
-export class LevelRewardImportanceConfig {
-    readonly crystals: number = 0
-    readonly timer: number = 0
-    readonly caverns: number = 0
-    readonly constructions: number = 0
-    readonly oxygen: number = 0
-    readonly figures: number = 0
+export class LevelRewardImportanceConfig implements ConfigSetFromRecord {
+    crystals: number = 0
+    timer: number = 0
+    caverns: number = 0
+    constructions: number = 0
+    oxygen: number = 0
+    figures: number = 0
 
-    constructor(cfgObj: Record<string, unknown>) {
-        this.crystals = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'crystals', this.crystals))
-        this.timer = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'timer', this.timer))
-        this.caverns = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'caverns', this.caverns))
-        this.constructions = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'constructions', this.constructions))
-        this.oxygen = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'oxygen', this.oxygen))
-        this.figures = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'figures', this.figures))
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.crystals = cfgValue.getValue('crystals').toNumber()
+        this.timer = cfgValue.getValue('timer').toNumber()
+        this.caverns = cfgValue.getValue('caverns').toNumber()
+        this.constructions = cfgValue.getValue('constructions').toNumber()
+        this.oxygen = cfgValue.getValue('oxygen').toNumber()
+        this.figures = cfgValue.getValue('figures').toNumber()
+        return this
     }
 }
 
-export class LevelRewardQuotaConfig {
-    readonly crystals: number = 0
-    readonly timerMs: number = 0
-    readonly caverns: number = 0
-    readonly constructions: number = 0
+export class LevelRewardQuotaConfig implements ConfigSetFromRecord {
+    crystals: number = 0
+    timerMs: number = 0
+    caverns: number = 0
+    constructions: number = 0
 
-    constructor(cfgObj: Record<string, unknown>) {
-        this.crystals = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'crystals', this.crystals))
-        this.timerMs = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'timer', this.timerMs)) * 1000
-        this.caverns = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'caverns', this.caverns))
-        this.constructions = CfgHelper.assertNumber(CfgHelper.getValue(cfgObj, 'constructions', this.constructions))
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.crystals = cfgValue.getValue('crystals').toNumber()
+        this.timerMs = cfgValue.getValue('timer').toNumber() * 1000
+        this.caverns = cfgValue.getValue('caverns').toNumber()
+        this.constructions = cfgValue.getValue('constructions').toNumber()
+        return this
     }
 }
 
-export class ObjectiveImageCfg {
-    readonly filename: string
-    readonly x: number
-    readonly y: number
+export class ObjectiveImageCfg implements ConfigSetFromEntryValue {
+    filename: string = ''
+    x: number = 0
+    y: number = 0
 
-    constructor(cfgValue: [string, number, number]) {
-        this.filename = CfgHelper.assertString(cfgValue[0])
-        this.x = CfgHelper.assertNumber(cfgValue[1])
-        this.y = CfgHelper.assertNumber(cfgValue[2])
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const array = cfgValue.toArray(',', 3)
+        this.filename = array[0].toFileName()
+        this.x = array[1].toNumber()
+        this.y = array[2].toNumber()
+        return this
     }
 }

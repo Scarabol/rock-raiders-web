@@ -53,7 +53,7 @@ export class MainMenuLayer extends ScaledLayer {
             context.clearRect(0, 0, this.fixedWidth, this.fixedHeight)
             if (this.menuImage) context.drawImage(this.menuImage, 0, -this.scrollY)
             this.overlay?.draw(context)
-            if (titleImage) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position[1])
+            if (titleImage) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position.y)
             this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context))
         }
         new Map<keyof HTMLElementEventMap, POINTER_EVENT>([

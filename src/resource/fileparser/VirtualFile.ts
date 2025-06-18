@@ -1,5 +1,3 @@
-import { encodeChar } from './EncodingHelper'
-
 export class VirtualFile {
     private buffer?: ArrayBuffer
     private text?: string
@@ -40,13 +38,10 @@ export class VirtualFile {
         return new DataView(this.view.buffer, this.view.byteOffset, this.view.byteLength)
     }
 
-    toText(decode: boolean = false): string {
+    toText(): string {
         if (this.text !== undefined && this.text !== null) return this.text
         this.text = '' // otherwise text starts with 'undefined'
-        this.toArray().forEach((c) => {
-            const decoded = decode ? encodeChar[c] : c
-            return this.text += String.fromCharCode(decoded)
-        })
+        this.toArray().forEach((c) => this.text += String.fromCharCode(c)) // Shorthand with spread operator (...) exceeds call stack size
         return this.text
     }
 }

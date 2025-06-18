@@ -154,7 +154,7 @@ export class ObjectListLoader {
         const healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
-        this.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.OxygenCoef))
+        this.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.oxygenCoef))
         const infoComp = this.worldMgr.ecs.addComponent(raider.entity, new RaiderInfoComponent(raider.sceneEntity))
         this.worldMgr.sceneMgr.addSprite(infoComp.bubbleSprite)
         infoComp.setHungerIndicator(raider.foodLevel)

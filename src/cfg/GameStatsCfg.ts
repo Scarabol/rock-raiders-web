@@ -1,886 +1,1039 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { BaseConfig } from './BaseConfig'
 import { RaiderTrainingStats } from '../game/model/raider/RaiderTraining'
-import { isNum } from '../core/Util'
+import { ConfigSetFromRecord } from './Configurable'
+import { CfgEntry } from './CfgEntry'
 
 export interface PickSphereStats {
-    PickSphere: number
-    CollRadius: number
-    CollHeight: number
+    pickSphere: number
+    collRadius: number
+    collHeight: number
 }
 
 export interface DoubleSelectStats {
-    CanDoubleSelect: boolean
+    canDoubleSelect: boolean
 }
 
 export interface MovableEntityStats extends PickSphereStats {
-    RouteSpeed: number[]
-    CrossLand: boolean
-    CrossWater: boolean
-    CrossLava: boolean
-    RubbleCoef: number
-    PathCoef: number
-    RandomEnterWall: boolean
+    routeSpeed: number[]
+    crossLand: boolean
+    crossWater: boolean
+    crossLava: boolean
+    rubbleCoef: number
+    pathCoef: number
+    randomEnterWall: boolean
 }
 
-export class VehicleEntityStats extends BaseConfig implements MovableEntityStats, DoubleSelectStats, PickSphereStats {
-    PickSphere: number = 0
-    CollRadius: number = 0
-    CollHeight: number = 0
-    CanDoubleSelect: boolean = false
-    CostOre: number = 0
-    CostCrystal: number = 0
-    InvisibleDriver: boolean = false
-    EngineSound: string = ''
-    CanClearRubble: boolean = false
-    RouteSpeed: number[] = []
-    SoilDrillTime: number[] = []
-    LooseDrillTime: number[] = []
-    MedDrillTime: number[] = []
-    HardDrillTime: number[] = []
-    SeamDrillTime: number[] = []
-    SurveyRadius: number[] = []
-    OxygenCoef: number = 0
-    PathCoef: number = 1
-    RubbleCoef: number = 1
-    RandomEnterWall: boolean = false
-    CrossLand: boolean = false
-    CrossWater: boolean = false
-    CrossLava: boolean = false
-    MaxCarry: number[] = []
-    CarryVehicles: boolean = false
-    VehicleCanBeCarried: boolean = false
-    UpgradeCostOre: number[] = []
-    UpgradeCostStuds: number[] = []
-}
+export class VehicleEntityStats implements MovableEntityStats, DoubleSelectStats, PickSphereStats, ConfigSetFromRecord {
+    pickSphere: number = 0
+    collRadius: number = 0
+    collHeight: number = 0
+    canDoubleSelect: boolean = false
+    costOre: number = 0
+    costCrystal: number = 0
+    invisibleDriver: boolean = false
+    engineSound: string = ''
+    canClearRubble: boolean = false
+    routeSpeed: number[] = []
+    soilDrillTime: number[] = []
+    looseDrillTime: number[] = []
+    medDrillTime: number[] = []
+    hardDrillTime: number[] = []
+    seamDrillTime: number[] = []
+    surveyRadius: number[] = []
+    oxygenCoef: number = 0
+    pathCoef: number = 1
+    rubbleCoef: number = 1
+    randomEnterWall: boolean = false
+    crossLand: boolean = false
+    crossWater: boolean = false
+    crossLava: boolean = false
+    maxCarry: number[] = []
+    carryVehicles: boolean = false
+    vehicleCanBeCarried: boolean = false
+    upgradeCostOre: number[] = []
+    upgradeCostStuds: number[] = []
 
-export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats, RaiderTrainingStats {
-    Levels: number = 0
-    SelfPowered: boolean = false
-    PowerBuilding: boolean = false
-    PickSphere: number = 0
-    CollRadius: number = 0
-    CollHeight: number = 0
-    ToolStore: boolean = false
-    TrainDriver: boolean[] = []
-    TrainRepair: boolean[] = []
-    TrainScanner: boolean[] = []
-    TrainPilot: boolean[] = []
-    TrainSailor: boolean[] = []
-    TrainDynamite: boolean[] = []
-    CostOre: number = 0
-    CostRefinedOre: number = 0
-    CostCrystal: number = 0
-    UpgradeBuilding: boolean = false
-    SnaxULike: boolean = false
-    SurveyRadius: number[] = []
-    CrystalDrain: number | number[] = 0
-    OxygenCoef: number = 0
-    EngineSound: string = ''
-    CanDoubleSelect: boolean = false
-    MaxCarry: number[] = []
-    DamageCausesCallToArms: boolean = false
-    FunctionCoef: number[] = []
-
-    get maxLevel(): number {
-        return this.Levels - 1
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.pickSphere = cfgValue.getValue('PickSphere').toNumber()
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber()
+        this.collHeight = cfgValue.getValue('CollHeight').toNumber()
+        this.canDoubleSelect = cfgValue.getValue('CanDoubleSelect').toBoolean()
+        this.costOre = cfgValue.getValue('CostOre').toNumber()
+        this.costCrystal = cfgValue.getValue('CostCrystal').toNumber()
+        this.invisibleDriver = cfgValue.getValue('InvisibleDriver').toBoolean()
+        this.engineSound = cfgValue.getValue('EngineSound').toString()
+        this.canClearRubble = cfgValue.getValue('CanClearRubble').toBoolean()
+        this.routeSpeed = cfgValue.getValue('RouteSpeed').toArray(':', undefined).map((v) => v.toNumber())
+        this.soilDrillTime = cfgValue.getValue('SoilDrillTime').toArray(':', undefined).map((v) => v.toNumber())
+        this.looseDrillTime = cfgValue.getValue('LooseDrillTime').toArray(':', undefined).map((v) => v.toNumber())
+        this.medDrillTime = cfgValue.getValue('MedDrillTime').toArray(':', undefined).map((v) => v.toNumber())
+        this.hardDrillTime = cfgValue.getValue('HardDrillTime').toArray(':', undefined).map((v) => v.toNumber())
+        this.seamDrillTime = cfgValue.getValue('SeamDrillTime').toArray(':', undefined).map((v) => v.toNumber())
+        this.surveyRadius = cfgValue.getValue('SurveyRadius').toArray(':', undefined).map((v) => v.toNumber())
+        this.oxygenCoef = cfgValue.getValue('OxygenCoef').toNumber(this.oxygenCoef)
+        this.pathCoef = cfgValue.getValue('PathCoef').toNumber(this.pathCoef)
+        this.rubbleCoef = cfgValue.getValue('RubbleCoef').toNumber(this.rubbleCoef)
+        this.randomEnterWall = cfgValue.getValue('RandomEnterWall').toBoolean()
+        this.crossLand = cfgValue.getValue('CrossLand').toBoolean()
+        this.crossWater = cfgValue.getValue('CrossWater').toBoolean()
+        this.crossLava = cfgValue.getValue('CrossLava').toBoolean()
+        this.maxCarry = cfgValue.getValue('MaxCarry').toArray(':', undefined).map((v) => v.toNumber())
+        this.carryVehicles = cfgValue.getValue('CarryVehicles').toBoolean()
+        this.vehicleCanBeCarried = cfgValue.getValue('VehicleCanBeCarried').toBoolean()
+        this.upgradeCostOre = cfgValue.getValue('UpgradeCostOre').toArray(':', undefined).map((v) => v.toNumber())
+        this.upgradeCostStuds = cfgValue.getValue('UpgradeCostStuds').toArray(':', undefined).map((v) => v.toNumber())
+        return this
     }
 }
 
-export class MonsterEntityStats extends BaseConfig implements MovableEntityStats {
-    PickSphere: number = 0
-    RestPercent: number = 100.0
-    CollRadius: number = 0
-    CollRadiusSq: number = 0
-    CollHeight: number = 0
-    RouteSpeed: number[] = []
-    PathCoef: number = 1
-    RubbleCoef: number = 1
-    RandomEnterWall: boolean = false
-    RandomMove: boolean = false
-    RandomMoveTime: number = 0
-    CrossLand: boolean = false
-    CrossLava: boolean = false
-    CrossWater: boolean = false
-    CanBeHitByFence: boolean = false
-    CanBeShotAt: boolean = false
-    CanFreeze: boolean = false
-    FreezerTime: number = 0
-    FreezerTimeMs: number = 0
-    FreezerDamage: number = 0
-    CanLaser: boolean = false
-    LaserDamage: number = 0
-    CanPush: boolean = false
-    PusherDist: number = 0
-    PusherDamage: number = 0
-    WakeRadius: number = 0
-    Capacity: number = 0
-    RepairValue: number = 0
-    AttackRadiusSq: number = 0
-    AlertRadiusSq: number = 0
+export class BuildingEntityStats implements DoubleSelectStats, RaiderTrainingStats, ConfigSetFromRecord {
+    levels: number = 0
+    selfPowered: boolean = false
+    powerBuilding: boolean = false
+    pickSphere: number = 0
+    collRadius: number = 0
+    collHeight: number = 0
+    toolStore: boolean = false
+    trainDriver: boolean[] = []
+    trainRepair: boolean[] = []
+    trainScanner: boolean[] = []
+    trainPilot: boolean[] = []
+    trainSailor: boolean[] = []
+    trainDynamite: boolean[] = []
+    costOre: number = 0
+    costRefinedOre: number = 0
+    costCrystal: number = 0
+    upgradeBuilding: boolean = false
+    snaxULike: boolean = false
+    surveyRadius: number[] = []
+    crystalDrain: number | number[] = 0
+    oxygenCoef: number = 0
+    engineSound: string = ''
+    canDoubleSelect: boolean = false
+    maxCarry: number[] = []
+    damageCausesCallToArms: boolean = false
+    functionCoef: number[] = []
 
-    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if ('CanBeShotAt'.equalsIgnoreCase(unifiedKey) && Array.isArray(cfgValue)) {
-            this.CanBeShotAt = cfgValue[0] // value may be specified twice in original config
-            return true
-        } else if ('AttackRadius'.equalsIgnoreCase(unifiedKey)) {
-            this.AttackRadiusSq = cfgValue * cfgValue
-            return true
-        } else if ('AlertRadius'.equalsIgnoreCase(unifiedKey)) {
-            this.AlertRadiusSq = cfgValue * cfgValue
-            return true
-        } else if ('CollRadius'.equalsIgnoreCase(unifiedKey)) {
-            this.CollRadiusSq = cfgValue * cfgValue
-            return super.assignValue(objKey, unifiedKey, cfgValue)
-        } else if ('FreezerTime'.equalsIgnoreCase(unifiedKey)) {
-            this.FreezerTimeMs = cfgValue * 1000 / 25 // given as 25 per second
-            return super.assignValue(objKey, unifiedKey, cfgValue)
-        } else if ('RestPercent'.equalsIgnoreCase(unifiedKey)) {
-            this.RestPercent = cfgValue / 100
-            return true
-        } else {
-            return super.assignValue(objKey, unifiedKey, cfgValue)
-        }
-    }
-}
-
-export class PilotStats extends BaseConfig implements MovableEntityStats, PickSphereStats {
-    Levels: number = 4
-    RouteSpeed: number[] = [1.10, 1.10, 1.10, 1.10]
-    SoilDrillTime: number[] = [4.0, 4.0, 4.0, 4.0] // Time in seconds to drill through the rock.
-    LooseDrillTime: number[] = [4.0, 4.0, 4.0, 4.0]
-    MedDrillTime: number[] = [8.0, 8.0, 8.0, 8.0]
-    HardDrillTime: number[] = [0.0, 0.0, 0.0, 0.0] // Zero means the object cannot drill the rock type
-    SeamDrillTime: number[] = [10.0, 10.0, 10.0, 10.0] // Either or both ore or crystal.
-    UpgradeTime: number[] = [30.0, 45.0, 60.0, 60.0] // Last entry is ignored as it can never upgrade from that.
-    CollRadius: number = 5.0
-    CollHeight: number = 12.0
-    TrackDist: number = 40.0
-    SingleWidthDig: boolean[] = [true, true, true, true]
-    PickSphere: number = 10.0
-    RepairValue: number[] = [10.0, 15.0, 20.0, 25.0]
-    SurveyRadius: number[] = [3, 3, 3, 3]
-    Drillsound: string = 'SND_pilotdrill'
-    Drillfadesound: string = 'SND_pilotdrillfade'
-    RestPercent: number = 60.0
-    EnergyDecayRate: number = 0.25
-    CanClearRubble: boolean = true
-    NumOfToolsCanCarry: number[] = [2, 3, 4, 5]
-    RandomEnterWall: boolean = false
-    CrossLand: boolean = true
-    CrossWater: boolean = false
-    CrossLava: boolean = false
-    RubbleCoef: number = 0.5
-    PathCoef: number = 2.0
-    RouteAvoidance: boolean = true
-    UseManTeleporter: boolean = true
-    AwarenessRange: number = 10.0
-    OxygenCoef: number = -1.0
-    CanStrafe: boolean = true
-    EnterToolStore: boolean = true
-    ShowHealthBar: boolean = true
-
-    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if ('RestPercent'.equalsIgnoreCase(unifiedKey)) {
-            if (!isNum(cfgValue)) {
-                console.warn(`Unexpected value "${cfgValue}" given for "${objKey}"`)
-            } else {
-                this.RestPercent = cfgValue / 100
-                return true
-            }
-        }
-        return super.assignValue(objKey, unifiedKey, cfgValue)
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.levels = cfgValue.getValue('Levels').toNumber()
+        this.selfPowered = cfgValue.getValue('SelfPowered').toBoolean()
+        this.powerBuilding = cfgValue.getValue('PowerBuilding').toBoolean()
+        this.pickSphere = cfgValue.getValue('PickSphere').toNumber()
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber()
+        this.collHeight = cfgValue.getValue('CollHeight').toNumber()
+        this.toolStore = cfgValue.getValue('ToolStore').toBoolean()
+        this.trainDriver = cfgValue.getValue('TrainDriver').toArray(':', undefined).map((v) => v.toBoolean())
+        this.trainRepair = cfgValue.getValue('TrainRepair').toArray(':', undefined).map((v) => v.toBoolean())
+        this.trainScanner = cfgValue.getValue('TrainScanner').toArray(':', undefined).map((v) => v.toBoolean())
+        this.trainPilot = cfgValue.getValue('TrainPilot').toArray(':', undefined).map((v) => v.toBoolean())
+        this.trainSailor = cfgValue.getValue('TrainSailor').toArray(':', undefined).map((v) => v.toBoolean())
+        this.trainDynamite = cfgValue.getValue('TrainDynamite').toArray(':', undefined).map((v) => v.toBoolean())
+        this.costOre = cfgValue.getValue('CostOre').toNumber()
+        this.costRefinedOre = cfgValue.getValue('CostRefinedOre').toNumber()
+        this.costCrystal = cfgValue.getValue('CostCrystal').toNumber()
+        this.upgradeBuilding = cfgValue.getValue('UpgradeBuilding').toBoolean()
+        this.snaxULike = cfgValue.getValue('SnaxULike').toBoolean()
+        this.surveyRadius = cfgValue.getValue('SurveyRadius').toArray(':', undefined).map((v) => v.toNumber())
+        this.crystalDrain = cfgValue.getValue('CrystalDrain').toArray(':', undefined).map((v) => v.toNumber())
+        this.oxygenCoef = cfgValue.getValue('OxygenCoef').toNumber()
+        this.engineSound = cfgValue.getValue('EngineSound').toString()
+        this.canDoubleSelect = cfgValue.getValue('CanDoubleSelect').toBoolean()
+        this.maxCarry = cfgValue.getValue('MaxCarry').toArray(':', undefined).map((v) => v.toNumber())
+        this.damageCausesCallToArms = cfgValue.getValue('DamageCausesCallToArms').toBoolean()
+        this.functionCoef = cfgValue.getValue('FunctionCoef').toArray(':', undefined).map((v) => v.toNumber())
+        return this
     }
 
     get maxLevel(): number {
-        return this.Levels - 1
+        return this.levels - 1
+    }
+}
+
+export class MonsterEntityStats implements MovableEntityStats, ConfigSetFromRecord {
+    pickSphere: number = 0
+    restPercent: number = 100.0
+    collRadius: number = 0
+    collHeight: number = 0
+    routeSpeed: number[] = []
+    pathCoef: number = 1
+    rubbleCoef: number = 1
+    randomEnterWall: boolean = false
+    randomMove: boolean = false
+    randomMoveTime: number = 0
+    crossLand: boolean = false
+    crossLava: boolean = false
+    crossWater: boolean = false
+    canBeHitByFence: boolean = false
+    canBeShotAt: boolean = false
+    canFreeze: boolean = false
+    freezerTime: number = 0
+    freezerDamage: number = 0
+    canLaser: boolean = false
+    laserDamage: number = 0
+    canPush: boolean = false
+    pusherDist: number = 0
+    pusherDamage: number = 0
+    wakeRadius: number = 0
+    capacity: number = 0
+    repairValue: number = 0
+    attackRadius: number = 0
+    alertRadius: number = 0
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.pickSphere = cfgValue.getValue('PickSphere').toNumber()
+        this.restPercent = cfgValue.getValue('RestPercent').toNumber(this.restPercent) / 100
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber()
+        this.collHeight = cfgValue.getValue('CollHeight').toNumber()
+        this.routeSpeed = cfgValue.getValue('RouteSpeed').toArray(':', undefined).map((v) => v.toNumber())
+        this.pathCoef = cfgValue.getValue('PathCoef').toNumber(this.pathCoef)
+        this.rubbleCoef = cfgValue.getValue('RubbleCoef').toNumber(this.rubbleCoef)
+        this.randomEnterWall = cfgValue.getValue('RandomEnterWall').toBoolean()
+        this.randomMove = cfgValue.getValue('RandomMove').toBoolean()
+        this.randomMoveTime = cfgValue.getValue('RandomMoveTime').toNumber()
+        this.crossLand = cfgValue.getValue('CrossLand').toBoolean()
+        this.crossLava = cfgValue.getValue('CrossLava').toBoolean()
+        this.crossWater = cfgValue.getValue('CrossWater').toBoolean()
+        this.canBeHitByFence = cfgValue.getValue('CanBeHitByFence').toBoolean()
+        this.canBeShotAt = cfgValue.getValue('CanBeShotAt').toBoolean()
+        this.canFreeze = cfgValue.getValue('CanFreeze').toBoolean()
+        this.freezerTime = cfgValue.getValue('FreezerTime').toNumber()
+        this.freezerDamage = cfgValue.getValue('FreezerDamage').toNumber()
+        this.canLaser = cfgValue.getValue('CanLaser').toBoolean()
+        this.laserDamage = cfgValue.getValue('LaserDamage').toNumber()
+        this.canPush = cfgValue.getValue('CanPush').toBoolean()
+        this.pusherDist = cfgValue.getValue('PusherDist').toNumber()
+        this.pusherDamage = cfgValue.getValue('PusherDamage').toNumber()
+        this.wakeRadius = cfgValue.getValue('WakeRadius').toNumber()
+        this.capacity = cfgValue.getValue('Capacity').toNumber()
+        this.repairValue = cfgValue.getValue('RepairValue').toNumber()
+        this.attackRadius = cfgValue.getValue('AttackRadius').toNumber()
+        this.alertRadius = cfgValue.getValue('AlertRadius').toNumber()
+        return this
+    }
+
+    get freezerTimeMs(): number {
+        return this.freezerTime * 1000 / 25 // given as 25 per second
+    }
+}
+
+export class PilotStats implements MovableEntityStats, PickSphereStats, ConfigSetFromRecord {
+    levels: number = 4
+    routeSpeed: number[] = [1.10, 1.10, 1.10, 1.10]
+    soilDrillTime: number[] = [4.0, 4.0, 4.0, 4.0] // Time in seconds to drill through the rock.
+    looseDrillTime: number[] = [4.0, 4.0, 4.0, 4.0]
+    medDrillTime: number[] = [8.0, 8.0, 8.0, 8.0]
+    hardDrillTime: number[] = [0.0, 0.0, 0.0, 0.0] // Zero means the object cannot drill the rock type
+    seamDrillTime: number[] = [10.0, 10.0, 10.0, 10.0] // Either or both ore or crystal.
+    upgradeTime: number[] = [30.0, 45.0, 60.0, 60.0] // Last entry is ignored as it can never upgrade from that.
+    collRadius: number = 5.0
+    collHeight: number = 12.0
+    trackDist: number = 40.0
+    pickSphere: number = 10.0
+    repairValue: number[] = [10.0, 15.0, 20.0, 25.0]
+    surveyRadius: number[] = [3, 3, 3, 3]
+    drillSound: string = 'SND_pilotdrill'
+    drillFadeSound: string = 'SND_pilotdrillfade'
+    restPercent: number = 60.0
+    energyDecayRate: number = 0.25
+    canClearRubble: boolean = true
+    numOfToolsCanCarry: number[] = [2, 3, 4, 5]
+    randomEnterWall: boolean = false
+    crossLand: boolean = true
+    crossWater: boolean = false
+    crossLava: boolean = false
+    rubbleCoef: number = 0.5
+    pathCoef: number = 2.0
+    routeAvoidance: boolean = true
+    useManTeleporter: boolean = true
+    awarenessRange: number = 10.0
+    oxygenCoef: number = -1.0
+    canStrafe: boolean = true
+    enterToolStore: boolean = true
+    showHealthBar: boolean = true
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.levels = cfgValue.getValue('Levels').toNumber()
+        this.routeSpeed = cfgValue.getValue('RouteSpeed').toArray(':', undefined).map((v) => v.toNumber())
+        this.soilDrillTime = cfgValue.getValue('SoilDrillTime').toArray(':', undefined).map((v) => v.toNumber())
+        this.looseDrillTime = cfgValue.getValue('LooseDrillTime').toArray(':', undefined).map((v) => v.toNumber())
+        this.medDrillTime = cfgValue.getValue('MedDrillTime').toArray(':', undefined).map((v) => v.toNumber())
+        this.hardDrillTime = cfgValue.getValue('HardDrillTime').toArray(':', undefined).map((v) => v.toNumber())
+        this.seamDrillTime = cfgValue.getValue('SeamDrillTime').toArray(':', undefined).map((v) => v.toNumber())
+        this.upgradeTime = cfgValue.getValue('UpgradeTime').toArray(':', undefined).map((v) => v.toNumber())
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber()
+        this.collHeight = cfgValue.getValue('CollHeight').toNumber()
+        this.trackDist = cfgValue.getValue('TrackDist').toNumber()
+        this.pickSphere = cfgValue.getValue('PickSphere').toNumber()
+        this.repairValue = cfgValue.getValue('RepairValue').toArray(':', undefined).map((v) => v.toNumber())
+        this.surveyRadius = cfgValue.getValue('SurveyRadius').toArray(':', undefined).map((v) => v.toNumber())
+        this.drillSound = cfgValue.getValue('DrillSound').toString()
+        this.drillFadeSound = cfgValue.getValue('DrillFadeSound').toString()
+        this.restPercent = cfgValue.getValue('RestPercent').toNumber() / 100
+        this.energyDecayRate = cfgValue.getValue('EnergyDecayRate').toNumber()
+        this.canClearRubble = cfgValue.getValue('CanClearRubble').toBoolean()
+        this.numOfToolsCanCarry = cfgValue.getValue('NumOfToolsCanCarry').toArray(':', undefined).map((v) => v.toNumber())
+        this.randomEnterWall = cfgValue.getValue('RandomEnterWall').toBoolean()
+        this.crossLand = cfgValue.getValue('CrossLand').toBoolean()
+        this.crossWater = cfgValue.getValue('CrossWater').toBoolean()
+        this.crossLava = cfgValue.getValue('CrossLava').toBoolean()
+        this.rubbleCoef = cfgValue.getValue('RubbleCoef').toNumber()
+        this.pathCoef = cfgValue.getValue('PathCoef').toNumber()
+        this.routeAvoidance = cfgValue.getValue('RouteAvoidance').toBoolean()
+        this.useManTeleporter = cfgValue.getValue('UseLegoManTeleporter').toBoolean()
+        this.awarenessRange = cfgValue.getValue('AwarenessRange').toNumber()
+        this.oxygenCoef = cfgValue.getValue('OxygenCoef').toNumber()
+        this.canStrafe = cfgValue.getValue('CanStrafe').toBoolean()
+        this.enterToolStore = cfgValue.getValue('EnterToolStore').toBoolean()
+        this.showHealthBar = cfgValue.getValue('ShowHealthBar').toBoolean()
+        return this
+    }
+
+    get maxLevel(): number {
+        return this.levels - 1
     }
 }
 
 export class RockMonsterStats extends MonsterEntityStats {
-    RouteSpeed: number[] = [0.8]
-    TrackDist: number = 50.0
-    CollRadius: number = 10.0
-    CollHeight: number = 22.0
-    AlertRadius: number = 60.0
-    HealthDecayRate: number = 0.6 // Reduce health by 'n' every second.
-    PickSphere: number = 22.0
-    RepairValue: number = -10.0
-    CanScare: boolean = true
-    RestPercent: number = 20.0
-    CarryMinHealth: number = 15.0
-    PainThreshold: number = 20.0
-    StampRadius: number = 80.0
-    AttackRadius: number = 160.0
-    CanSteal: boolean = true
-    CrossLand: boolean = true
-    RubbleCoef: number = 1.5
-    GrabMinifigure: boolean = true
-    RouteAvoidance: boolean = true
-    BumpDamage: boolean = true
-    AttackPaths: boolean = true
-    SplitOnZeroHealth: boolean = true
-    CanBeHitByFence: boolean = true
-    Capacity: number = 6 // How many crystals it can eat
-    PathCoef: number = 0.5
+    routeSpeed: number[] = [0.8]
+    trackDist: number = 50.0
+    collRadius: number = 10.0
+    collHeight: number = 22.0
+    alertRadius: number = 60.0
+    healthDecayRate: number = 0.6 // Reduce health by 'n' every second.
+    pickSphere: number = 22.0
+    repairValue: number = -10.0
+    canScare: boolean = true
+    restPercent: number = 20.0
+    carryMinHealth: number = 15.0
+    painThreshold: number = 20.0
+    stampRadius: number = 80.0
+    attackRadius: number = 160.0
+    canSteal: boolean = true
+    crossLand: boolean = true
+    rubbleCoef: number = 1.5
+    grabMinifigure: boolean = true
+    routeAvoidance: boolean = true
+    bumpDamage: boolean = true
+    attackPaths: boolean = true
+    splitOnZeroHealth: boolean = true
+    canBeHitByFence: boolean = true
+    capacity: number = 6 // How many crystals it can eat
+    pathCoef: number = 0.5
     // Statistics about the weapons
-    CanBeShotAt: boolean = true // Can this monster be shot at
-    CanFreeze: boolean = true // Can this object be frozen
-    FreezerTime: number = 25.0 // Time this object is frozen for
-    FreezerDamage: number = 5.0 // Damage that freezing causes
-    CanLaser: boolean = true // Can this object be lasered
-    LaserDamage: number = 110.0 // Damage sustained by a laser
-    CanPush: boolean = true // Can this object be pusher'ed
-    PusherDist: number = 20.0 // Distance the object is pushed 40=1 block
-    PusherDamage: number = 2.0 // Damage that the pusher gun causes
-    WakeRadius: number = 25.0
-    ScaredByBigBangs: boolean = true
-    RemoveReinforcement: boolean = true
-    ShowHealthBar: boolean = true
+    canBeShotAt: boolean = true // Can this monster be shot at
+    canFreeze: boolean = true // Can this object be frozen
+    freezerTime: number = 25.0 // Time this object is frozen for
+    freezerDamage: number = 5.0 // Damage that freezing causes
+    canLaser: boolean = true // Can this object be lasered
+    laserDamage: number = 110.0 // Damage sustained by a laser
+    canPush: boolean = true // Can this object be pusher'ed
+    pusherDist: number = 20.0 // Distance the object is pushed 40=1 block
+    pusherDamage: number = 2.0 // Damage that the pusher gun causes
+    wakeRadius: number = 25.0
+    scaredByBigBangs: boolean = true
+    removeReinforcement: boolean = true
+    showHealthBar: boolean = true
 }
 
 export class SmallSpiderStats extends MonsterEntityStats {
-    RouteSpeed: number[] = [2.0]
-    TrackDist: number = 10.0
-    CollRadius: number = 0.0
-    CollHeight: number = 0.0
-    PickSphere: number = 6.0
-    AlertRadius: number = 40.0
-    RandomMove: boolean = true
-    RandomEnterWall: boolean = true
-    CauseSlip: boolean = true
-    CrossLand: boolean = true
-    RubbleCoef: number = 0.2
-    DontShowDamage: boolean = true
-    DontShowOnRadar: boolean = true
-    ScaredByBigBangs: boolean = true
+    routeSpeed: number[] = [2.0]
+    trackDist: number = 10.0
+    collRadius: number = 0.0
+    collHeight: number = 0.0
+    pickSphere: number = 6.0
+    alertRadius: number = 40.0
+    randomMove: boolean = true
+    randomEnterWall: boolean = true
+    causeSlip: boolean = true
+    crossLand: boolean = true
+    rubbleCoef: number = 0.2
+    dontShowDamage: boolean = true
+    dontShowOnRadar: boolean = true
+    scaredByBigBangs: boolean = true
 }
 
 export class BatStats extends MonsterEntityStats {
-    RouteSpeed: number[] = [1.0]
-    TrackDist: number = 10.0
-    CollRadius: number = 10.0
-    AlertRadius: number = 10.0 // Alert radius (causes attack mode)
-    RandomMove: boolean = true // Random movement
+    routeSpeed: number[] = [1.0]
+    trackDist: number = 10.0
+    collRadius: number = 10.0
+    alertRadius: number = 10.0 // Alert radius (causes attack mode)
+    randomMove: boolean = true // Random movement
     randomMoveTime: number = 10
-    CanScare: boolean = true // Scare away the player
-    ScaredByBigBangs: boolean = true
+    canScare: boolean = true // Scare away the player
+    scaredByBigBangs: boolean = true
     // Flock parameters.
-    Flocks: boolean = true // Set this to create a flock for this object.
-    FlocksDebug: boolean = false // If this is set the actual objects animation is displayed at the debug position.
-    FlocksSmooth: boolean = true // Smooths out the orientation of the flocks elements.
-    FlocksSize: number = 8 // Number of the given item in the flock.  (Default 5)
-    FlocksTurn: number = 0.6 // Turning speed of the bat. (0.6 default)
-    FlocksSpeed: number = 1.5 // Velocity of the flock. (2.0 default)
-    FlocksTightness: number = 0.8 // Tightness of the flock. (2.0 default)
-    FlocksGoalUpdate: number = 2.0 // How often the flocks goal is updated (25 per second).  (2.0 default)
-    FlocksRandomness: number = 6.0 // Randomness of goals. (2.0 default)
-    FlocksHeight: number = 22.0 // Height above the ground of the flock elements.  (30.0 default)
-    CrossLand: boolean = true
-    CrossWater: boolean = true
-    CrossLava: boolean = true
-    DontShowDamage: boolean = true
+    flocks: boolean = true // Set this to create a flock for this object.
+    flocksDebug: boolean = false // If this is set the actual objects animation is displayed at the debug position.
+    flocksSmooth: boolean = true // Smooths out the orientation of the flocks elements.
+    flocksSize: number = 8 // Number of the given item in the flock.  (Default 5)
+    flocksTurn: number = 0.06 // Turning speed of the bat. (0.06 default)
+    flocksSpeed: number = 1.5 // Velocity of the flock. (2.0 default)
+    flocksTightness: number = 0.8 // Tightness of the flock. (2.0 default)
+    flocksGoalUpdate: number = 2.0 // How often the flocks goal is updated (25 per second).  (2.0 default)
+    flocksRandomness: number = 6.0 // Randomness of goals. (2.0 default)
+    flocksHeight: number = 22.0 // Height above the ground of the flock elements.  (30.0 default)
+    crossLand: boolean = true
+    crossWater: boolean = true
+    crossLava: boolean = true
+    dontShowDamage: boolean = true
 }
 
 export class TinyRMStats extends MonsterEntityStats {
-    RouteSpeed: number[] = [1.2]
-    TrackDist: number = 10.0
-    CollRadius: number = 0.0
-    CollHeight: number = 5.0
-    PickSphere: number = 6.0
-    AlertRadius: number = 40.0
-    CrossLand: boolean = true
-    RubbleCoef: number = 1.5
-    DontShowDamage: boolean = true
-    DontShowOnRadar: boolean = true
-    ScaredByPlayer: boolean = true
-    ScaredByBigBangs: boolean = true
+    routeSpeed: number[] = [1.2]
+    trackDist: number = 10.0
+    collRadius: number = 0.0
+    collHeight: number = 5.0
+    pickSphere: number = 6.0
+    alertRadius: number = 40.0
+    crossLand: boolean = true
+    rubbleCoef: number = 1.5
+    dontShowDamage: boolean = true
+    dontShowOnRadar: boolean = true
+    scaredByPlayer: boolean = true
+    scaredByBigBangs: boolean = true
 }
 
 export class TinyIMStats extends MonsterEntityStats {
-    RouteSpeed: number[] = [1.2]
-    TrackDist: number = 10.0
-    CollRadius: number = 0.0
-    CollHeight: number = 5.0
-    PickSphere: number = 6.0
-    AlertRadius: number = 40.0
-    CrossLand: boolean = true
-    RubbleCoef: number = 1.5
-    DontShowDamage: boolean = true
-    DontShowOnRadar: boolean = true
-    ScaredByPlayer: boolean = true
-    ScaredByBigBangs: boolean = true
+    routeSpeed: number[] = [1.2]
+    trackDist: number = 10.0
+    collRadius: number = 0.0
+    collHeight: number = 5.0
+    pickSphere: number = 6.0
+    alertRadius: number = 40.0
+    crossLand: boolean = true
+    rubbleCoef: number = 1.5
+    dontShowDamage: boolean = true
+    dontShowOnRadar: boolean = true
+    scaredByPlayer: boolean = true
+    scaredByBigBangs: boolean = true
 }
 
 export class SlugStats extends MonsterEntityStats {
-    RouteSpeed: number[] = [0.3]
-    TrackDist: number = 10.0
-    CollRadius: number = 3.0
-    CollHeight: number = 7.0
-    PickSphere: number = 12.0
-    AlertRadius: number = 40.0
-    CrossLand: boolean = true
-    RubbleCoef: number = 0.3
-    UseHoles: boolean = true
-    DrainPower: boolean = true
-    AttackRadius: number = 280.0
-    PainThreshold: number = 50.0
-    CanBeShotAt: boolean = true
-    CanLaser: boolean = true
-    LaserDamage: number = 5.0
-    CanPush: boolean = true // Can this object be pusher'ed
-    PusherDist: number = 60.0 // Distance the object is pushed
-    PusherDamage: number = 5.0 // Damage that the pusher gun causes
-    ShowHealthBar: boolean = true
-    ScaredByBigBangs: boolean = true
+    routeSpeed: number[] = [0.3]
+    trackDist: number = 10.0
+    collRadius: number = 3.0
+    collHeight: number = 7.0
+    pickSphere: number = 12.0
+    alertRadius: number = 40.0
+    crossLand: boolean = true
+    rubbleCoef: number = 0.3
+    useHoles: boolean = true
+    drainPower: boolean = true
+    attackRadius: number = 280.0
+    painThreshold: number = 50.0
+    canBeShotAt: boolean = true
+    canLaser: boolean = true
+    laserDamage: number = 5.0
+    canPush: boolean = true // Can this object be pusher'ed
+    pusherDist: number = 60.0 // Distance the object is pushed
+    pusherDamage: number = 5.0 // Damage that the pusher gun causes
+    showHealthBar: boolean = true
+    scaredByBigBangs: boolean = true
 }
 
 export class LavaMonsterStats extends MonsterEntityStats {
-    RouteSpeed: number[] = [0.8]
-    TrackDist: number = 50.0
-    CollRadius: number = 10.0
-    CollHeight: number = 22.0
-    AlertRadius: number = 60.0
-    HealthDecayRate: number = 0.6 // Reduce health by 'n' every second.
-    PickSphere: number = 22.0
-    RepairValue: number = -10.0
-    CanScare: boolean = true
-    RestPercent: number = 20.0
-    CarryMinHealth: number = 15.0
-    PainThreshold: number = 20.0
-    StampRadius: number = 80.0
-    AttackRadius: number = 160.0
-    CanSteal: boolean = true
-    CrossLand: boolean = true
-    RubbleCoef: number = 1.5
-    GrabMinifigure: boolean = true
-    Capacity: number = 7 // How many crystals it can eat
-    RouteAvoidance: boolean = true
-    BumpDamage: boolean = true
-    AttackPaths: boolean = true
-    SplitOnZeroHealth: boolean = true
-    CanBeHitByFence: boolean = true
-    PathCoef: number = 0.5
-    CrossLava: boolean = true
+    routeSpeed: number[] = [0.8]
+    trackDist: number = 50.0
+    collRadius: number = 10.0
+    collHeight: number = 22.0
+    alertRadius: number = 60.0
+    healthDecayRate: number = 0.6 // Reduce health by 'n' every second.
+    pickSphere: number = 22.0
+    repairValue: number = -10.0
+    canScare: boolean = true
+    restPercent: number = 20.0
+    carryMinHealth: number = 15.0
+    painThreshold: number = 20.0
+    stampRadius: number = 80.0
+    attackRadius: number = 160.0
+    canSteal: boolean = true
+    crossLand: boolean = true
+    rubbleCoef: number = 1.5
+    grabMinifigure: boolean = true
+    capacity: number = 7 // How many crystals it can eat
+    routeAvoidance: boolean = true
+    bumpDamage: boolean = true
+    attackPaths: boolean = true
+    splitOnZeroHealth: boolean = true
+    canBeHitByFence: boolean = true
+    pathCoef: number = 0.5
+    crossLava: boolean = true
     // Statistics about the weapons
-    CanBeShotAt: boolean = true // Can this monster be shot at
-    CanFreeze: boolean = true // Can this object be frozen
-    FreezerTime: number = 75.0 // Time this object is frozen for
-    FreezerDamage: number = 40.0 // Damage that freezing causes
-    CanLaser: boolean = true // Can this object be lasered
-    LaserDamage: number = 1.0 // Damage sustained by a laser
-    CanPush: boolean = true // Can this object be pusher'ed
-    PusherDist: number = 60.0 // Distance the object is pushed
-    PusherDamage: number = 5.0 // Damage that the pusher gun causes
-    WakeRadius: number = 25.0
-    ScaredByBigBangs: boolean = true
-    RemoveReinforcement: boolean = true
-    ShowHealthBar: boolean = true
+    canBeShotAt: boolean = true // Can this monster be shot at
+    canFreeze: boolean = true // Can this object be frozen
+    freezerTime: number = 75.0 // Time this object is frozen for
+    freezerDamage: number = 40.0 // Damage that freezing causes
+    canLaser: boolean = true // Can this object be lasered
+    laserDamage: number = 1.0 // Damage sustained by a laser
+    canPush: boolean = true // Can this object be pusher'ed
+    pusherDist: number = 60.0 // Distance the object is pushed
+    pusherDamage: number = 5.0 // Damage that the pusher gun causes
+    wakeRadius: number = 25.0
+    scaredByBigBangs: boolean = true
+    removeReinforcement: boolean = true
+    showHealthBar: boolean = true
 }
 
 export class IceMonsterStats extends MonsterEntityStats {
-    RouteSpeed: number[] = [0.8]
-    TrackDist: number = 50.0
-    CollRadius: number = 10.0
-    CollHeight: number = 22.0
-    AlertRadius: number = 60.0
-    HealthDecayRate: number = 0.6 // Reduce health by 'n' every second.
-    PickSphere: number = 22.0
-    RepairValue: number = -10.0
-    CanScare: boolean = true
-    RestPercent: number = 20.0
-    CarryMinHealth: number = 15.0
-    PainThreshold: number = 20.0
-    StampRadius: number = 80.0
-    AttackRadius: number = 120.0
-    CanSteal: boolean = true
-    CrossLand: boolean = true
-    RubbleCoef: number = 1.5
-    GrabMinifigure: boolean = true
-    Capacity: number = 5 // How many crystals it can eat
-    RouteAvoidance: boolean = true
-    BumpDamage: boolean = true
-    AttackPaths: boolean = true
-    SplitOnZeroHealth: boolean = true
-    CanBeHitByFence: boolean = true
-    PathCoef: number = 0.5
+    routeSpeed: number[] = [0.8]
+    trackDist: number = 50.0
+    collRadius: number = 10.0
+    collHeight: number = 22.0
+    alertRadius: number = 60.0
+    healthDecayRate: number = 0.6 // Reduce health by 'n' every second.
+    pickSphere: number = 22.0
+    repairValue: number = -10.0
+    canScare: boolean = true
+    restPercent: number = 20.0
+    carryMinHealth: number = 15.0
+    painThreshold: number = 20.0
+    stampRadius: number = 80.0
+    attackRadius: number = 120.0
+    canSteal: boolean = true
+    crossLand: boolean = true
+    rubbleCoef: number = 1.5
+    grabMinifigure: boolean = true
+    capacity: number = 5 // How many crystals it can eat
+    routeAvoidance: boolean = true
+    bumpDamage: boolean = true
+    attackPaths: boolean = true
+    splitOnZeroHealth: boolean = true
+    canBeHitByFence: boolean = true
+    pathCoef: number = 0.5
     // Statistics about the weapons
-    CanBeShotAt: boolean = true // Can this monster be shot at
-    CanFreeze: boolean = false // Can this object be frozen
-    FreezerTime: number = 0.0 // Time this object is frozen for
-    FreezerDamage: number = 0.0 // Damage that freezing causes
-    CanLaser: boolean = true // Can this object be lasered
-    LaserDamage: number = 110.0 // Damage sustained by a laser
-    CanPush: boolean = true // Can this object be pusher'ed
-    PusherDist: number = 60.0 // Distance the object is pushed
-    PusherDamage: number = 2.0 // Damage that the pusher gun causes
-    WakeRadius: number = 25.0
-    ScaredByBigBangs: boolean = true
-    RemoveReinforcement: boolean = true
-    ShowHealthBar: boolean = true
+    canBeShotAt: boolean = true // Can this monster be shot at
+    canFreeze: boolean = false // Can this object be frozen
+    freezerTime: number = 0.0 // Time this object is frozen for
+    freezerDamage: number = 0.0 // Damage that freezing causes
+    canLaser: boolean = true // Can this object be lasered
+    laserDamage: number = 110.0 // Damage sustained by a laser
+    canPush: boolean = true // Can this object be pusher'ed
+    pusherDist: number = 60.0 // Distance the object is pushed
+    pusherDamage: number = 2.0 // Damage that the pusher gun causes
+    wakeRadius: number = 25.0
+    scaredByBigBangs: boolean = true
+    removeReinforcement: boolean = true
+    showHealthBar: boolean = true
 }
 
 export class HoverboardStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No drill or carry)
-    RouteSpeed: number[] = [3.0, 3.0, 5.0, 5.0, 3.0, 3.0, 5.0, 5.0]
-    SurveyRadius: number[] = [0, 0, 0, 0, 4, 4, 4, 4]
-    TrackDist: number = 50.0
-    CollRadius: number = 8.0
-    CollHeight: number = 12.0
-    PickSphere: number = 16.0
-    CanBeDriven: boolean = true
-    CrossLand: boolean = true
-    UseSmallTeleporter: boolean = true
-    CanStrafe: boolean = true
-    CostCrystal: number = 1
-    UpgradeCostOre: number[] = [0, 5, 10, 0]
-    UpgradeCostStuds: number[] = [0, 1, 2, 0]
-    ShowHealthBar: boolean = true
-    EngineSound: string = 'SND_SmallEngine'
+    routeSpeed: number[] = [3.0, 3.0, 5.0, 5.0, 3.0, 3.0, 5.0, 5.0]
+    surveyRadius: number[] = [0, 0, 0, 0, 4, 4, 4, 4]
+    trackDist: number = 50.0
+    collRadius: number = 8.0
+    collHeight: number = 12.0
+    pickSphere: number = 16.0
+    canBeDriven: boolean = true
+    crossLand: boolean = true
+    useSmallTeleporter: boolean = true
+    canStrafe: boolean = true
+    costCrystal: number = 1
+    upgradeCostOre: number[] = [0, 5, 10, 0]
+    upgradeCostStuds: number[] = [0, 1, 2, 0]
+    showHealthBar: boolean = true
+    engineSound: string = 'SND_SmallEngine'
 }
 
 export class SmallHeliStats extends VehicleEntityStats {
-    RouteSpeed: number[] = [2.50]
-    TrackDist: number = 50.0
-    CollRadius: number = 10.0
-    CollHeight: number = 12.0
-    PickSphere: number = 20.0
-    CanBeDriven: boolean = true
-    CrossLand: boolean = true
-    CrossWater: boolean = true
-    CrossLava: boolean = true
-    UseSmallTeleporter: boolean = true
-    CanStrafe: boolean = true
-    CostCrystal: number = 3
-    ShowHealthBar: boolean = true
-    EngineSound: string = 'SND_HeliEngine'
+    routeSpeed: number[] = [2.50]
+    trackDist: number = 50.0
+    collRadius: number = 10.0
+    collHeight: number = 12.0
+    pickSphere: number = 20.0
+    canBeDriven: boolean = true
+    crossLand: boolean = true
+    crossWater: boolean = true
+    crossLava: boolean = true
+    useSmallTeleporter: boolean = true
+    canStrafe: boolean = true
+    costCrystal: number = 3
+    showHealthBar: boolean = true
+    engineSound: string = 'SND_HeliEngine'
 }
 
 export class SmallMlpStats extends VehicleEntityStats {
-    RouteSpeed: number[] = [0.50, 0.50, 0.50, 0.50]
-    TrackDist: number = 50.0
-    CollRadius: number = 12.0
-    CollHeight: number = 22.0
-    PickSphere: number = 26.0
-    CanBeDriven: boolean = true
-    CrossLand: boolean = true
-    UseSmallTeleporter: boolean = true
-    Tracker: boolean = true
-    CanDoubleSelect: boolean = true
-    CostCrystal: number = 3
-    UpgradeCostOre: number[] = [0, 0, 0, 10]
-    UpgradeCostStuds: number[] = [0, 0, 0, 2]
-    ShowHealthBar: boolean = true
-    EngineSound: string = 'SND_MediumEngine'
+    routeSpeed: number[] = [0.50, 0.50, 0.50, 0.50]
+    trackDist: number = 50.0
+    collRadius: number = 12.0
+    collHeight: number = 22.0
+    pickSphere: number = 26.0
+    canBeDriven: boolean = true
+    crossLand: boolean = true
+    useSmallTeleporter: boolean = true
+    tracker: boolean = true
+    canDoubleSelect: boolean = true
+    costCrystal: number = 3
+    upgradeCostOre: number[] = [0, 0, 0, 10]
+    upgradeCostStuds: number[] = [0, 0, 0, 2]
+    showHealthBar: boolean = true
+    engineSound: string = 'SND_MediumEngine'
 }
 
 export class SmallCatStats extends VehicleEntityStats {
-    RouteSpeed: number[] = [2.0, 3.0, 4.0]
-    TrackDist: number = 50.0
-    CollRadius: number = 12.0
-    CollHeight: number = 12.0
-    PickSphere: number = 26.0
-    CrossWater: boolean = true
-    CanBeDriven: boolean = true
-    UseWaterTeleporter: boolean = true
-    CostCrystal: number = 2
-    MaxCarry: number[] = [1, 1, 1]
-    GetInAtLand: boolean = true
-    GetOutAtLand: boolean = true
-    TakeCarryingDrivers: boolean = true
-    ShowHealthBar: boolean = true
-    EngineSound: string = 'SND_Catamaran'
+    routeSpeed: number[] = [2.0, 3.0, 4.0]
+    trackDist: number = 50.0
+    collRadius: number = 12.0
+    collHeight: number = 12.0
+    pickSphere: number = 26.0
+    crossWater: boolean = true
+    canBeDriven: boolean = true
+    useWaterTeleporter: boolean = true
+    costCrystal: number = 2
+    maxCarry: number[] = [1, 1, 1]
+    getInAtLand: boolean = true
+    getOutAtLand: boolean = true
+    takeCarryingDrivers: boolean = true
+    showHealthBar: boolean = true
+    engineSound: string = 'SND_Catamaran'
 }
 
 export class SmallDiggerStats extends VehicleEntityStats {
-    RouteSpeed: number[] = [2.0, 2.0, 4.0, 4.0, 2.0, 2.0, 4.0, 4.0]
-    SoilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-    LooseDrillTime: number[] = [2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0]
-    MedDrillTime: number[] = [4.0, 2.0, 4.0, 2.0, 4.0, 2.0, 4.0, 2.0]
-    HardDrillTime: number[] = [180.0, 150.0, 180.0, 150.0, 180.0, 150.0, 180.0, 150.0]
-    SeamDrillTime: number[] = [8.0, 4.0, 8.0, 4.0, 8.0, 4.0, 8.0, 4.0]
-    MaxCarry: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
-    SurveyRadius: number[] = [0, 0, 0, 0, 4, 4, 4, 4]
-    TrackDist: number = 50.0
-    CollRadius: number = 10.0
-    CollHeight: number = 12.0
-    PickSphere: number = 20.0
-    CanBeDriven: boolean = true
-    CrossLand: boolean = true
-    RouteAvoidance: boolean = true
-    UseSmallTeleporter: boolean = true
-    VehicleCanBeCarried: boolean = true
-    CostCrystal: number = 1
-    UpgradeCostOre: number[] = [0, 5, 10, 10]
-    UpgradeCostStuds: number[] = [0, 1, 2, 2]
-    ShowHealthBar: boolean = true
-    EngineSound: string = 'SND_SmallEngine'
+    routeSpeed: number[] = [2.0, 2.0, 4.0, 4.0, 2.0, 2.0, 4.0, 4.0]
+    soilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    looseDrillTime: number[] = [2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0]
+    medDrillTime: number[] = [4.0, 2.0, 4.0, 2.0, 4.0, 2.0, 4.0, 2.0]
+    hardDrillTime: number[] = [180.0, 150.0, 180.0, 150.0, 180.0, 150.0, 180.0, 150.0]
+    seamDrillTime: number[] = [8.0, 4.0, 8.0, 4.0, 8.0, 4.0, 8.0, 4.0]
+    maxCarry: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
+    surveyRadius: number[] = [0, 0, 0, 0, 4, 4, 4, 4]
+    trackDist: number = 50.0
+    collRadius: number = 10.0
+    collHeight: number = 12.0
+    pickSphere: number = 20.0
+    canBeDriven: boolean = true
+    crossLand: boolean = true
+    routeAvoidance: boolean = true
+    useSmallTeleporter: boolean = true
+    vehicleCanBeCarried: boolean = true
+    costCrystal: number = 1
+    upgradeCostOre: number[] = [0, 5, 10, 10]
+    upgradeCostStuds: number[] = [0, 1, 2, 2]
+    showHealthBar: boolean = true
+    engineSound: string = 'SND_SmallEngine'
 }
 
 export class SmallTruckStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No drill)
-    RouteSpeed: number[] = [2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0]
-    MaxCarry: number[] = [3, 3, 3, 3, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6]
-    CarryStart: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3]
-    SurveyRadius: number[] = [0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 4, 4, 4, 4]
-    TrackDist: number = 50.0
-    CollRadius: number = 10.0
-    CollHeight: number = 12.0
-    PickSphere: number = 20.0
-    CanBeDriven: boolean = true
-    CrossLand: boolean = true
-    UseSmallTeleporter: boolean = true
-    VehicleCanBeCarried: boolean = true
-    CostCrystal: number = 2
-    EnterToolStore: boolean = true
-    UpgradeCostOre: number[] = [5, 5, 10, 0]
-    UpgradeCostStuds: number[] = [1, 1, 2, 0]
-    ShowHealthBar: boolean = true
-    EngineSound: string = 'SND_SmallEngine'
+    routeSpeed: number[] = [2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0]
+    maxCarry: number[] = [3, 3, 3, 3, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6]
+    carryStart: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3]
+    surveyRadius: number[] = [0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 4, 4, 4, 4]
+    trackDist: number = 50.0
+    collRadius: number = 10.0
+    collHeight: number = 12.0
+    pickSphere: number = 20.0
+    canBeDriven: boolean = true
+    crossLand: boolean = true
+    useSmallTeleporter: boolean = true
+    vehicleCanBeCarried: boolean = true
+    costCrystal: number = 2
+    enterToolStore: boolean = true
+    upgradeCostOre: number[] = [5, 5, 10, 0]
+    upgradeCostStuds: number[] = [1, 1, 2, 0]
+    showHealthBar: boolean = true
+    engineSound: string = 'SND_SmallEngine'
 }
 
 export class BulldozerStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No drill)
-    RouteSpeed: number[] = [0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8]
-    MaxCarry: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2]
-    SurveyRadius: number[] = [0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5]
-    TrackDist: number = 80.0
-    CollRadius: number = 18.0
-    CollHeight: number = 26.0
-    PickSphere: number = 40.0
-    CrossLand: boolean = true
-    CanClearRubble: boolean = true
-    UseBigTeleporter: boolean = true
-    CanBeDriven: boolean = true
-    CostCrystal: number = 4
-    InvisibleDriver: boolean = true
-    UpgradeCostOre: number[] = [5, 5, 20, 0]
-    UpgradeCostStuds: number[] = [1, 1, 4, 0]
-    ShowHealthBar: boolean = true
-    EngineSound: string = 'SND_MediumEngine'
+    routeSpeed: number[] = [0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8]
+    maxCarry: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2]
+    surveyRadius: number[] = [0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5]
+    trackDist: number = 80.0
+    collRadius: number = 18.0
+    collHeight: number = 26.0
+    pickSphere: number = 40.0
+    crossLand: boolean = true
+    canClearRubble: boolean = true
+    useBigTeleporter: boolean = true
+    canBeDriven: boolean = true
+    costCrystal: number = 4
+    invisibleDriver: boolean = true
+    upgradeCostOre: number[] = [5, 5, 20, 0]
+    upgradeCostStuds: number[] = [1, 1, 4, 0]
+    showHealthBar: boolean = true
+    engineSound: string = 'SND_MediumEngine'
 }
 
 export class WalkerDiggerStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No carry)
-    RouteSpeed: number[] = [0.50, 0.50, 0.80, 0.80, 0.50, 0.50, 0.80, 0.80]
-    SoilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-    LooseDrillTime: number[] = [0.80, 0.40, 0.80, 0.40, 0.80, 0.40, 0.80, 0.40]
-    MedDrillTime: number[] = [2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0]
-    HardDrillTime: number[] = [180.0, 150.0, 180.0, 150.0, 180.0, 150.0, 180.0, 150.0]
-    SeamDrillTime: number[] = [4.0, 2.0, 4.0, 2.0, 4.0, 2.0, 4.0, 2.0]
-    SurveyRadius: number[] = [0, 0, 0, 0, 5, 5, 5, 5]
-    TrackDist: number = 80.0
-    CollRadius: number = 15.0
-    CollHeight: number = 33.0
-    PickSphere: number = 35.0
-    CrossLand: boolean = true
-    UseBigTeleporter: boolean = true
-    CostCrystal: number = 3
-    CanBeDriven: boolean = true
-    InvisibleDriver: boolean = true
-    CanStrafe: boolean = true
-    DrillSound: string = 'DrillSFX_Grinder'
-    DrillFadeSound: string = 'DrillSFX_GrinderFade'
-    UpgradeCostOre: number[] = [0, 5, 20, 20]
-    UpgradeCostStuds: number[] = [0, 1, 4, 4]
-    ShowHealthBar: boolean = true
-    EngineSound: string = 'SND_MediumEngine'
+    routeSpeed: number[] = [0.50, 0.50, 0.80, 0.80, 0.50, 0.50, 0.80, 0.80]
+    soilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    looseDrillTime: number[] = [0.80, 0.40, 0.80, 0.40, 0.80, 0.40, 0.80, 0.40]
+    medDrillTime: number[] = [2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0]
+    hardDrillTime: number[] = [180.0, 150.0, 180.0, 150.0, 180.0, 150.0, 180.0, 150.0]
+    seamDrillTime: number[] = [4.0, 2.0, 4.0, 2.0, 4.0, 2.0, 4.0, 2.0]
+    surveyRadius: number[] = [0, 0, 0, 0, 5, 5, 5, 5]
+    trackDist: number = 80.0
+    collRadius: number = 15.0
+    collHeight: number = 33.0
+    pickSphere: number = 35.0
+    crossLand: boolean = true
+    useBigTeleporter: boolean = true
+    costCrystal: number = 3
+    canBeDriven: boolean = true
+    invisibleDriver: boolean = true
+    canStrafe: boolean = true
+    drillSound: string = 'DrillSFX_Grinder'
+    drillFadeSound: string = 'DrillSFX_GrinderFade'
+    upgradeCostOre: number[] = [0, 5, 20, 20]
+    upgradeCostStuds: number[] = [0, 1, 4, 4]
+    showHealthBar: boolean = true
+    engineSound: string = 'SND_MediumEngine'
 }
 
 export class LargeDiggerStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No carry or scan)
-    RouteSpeed: number[] = [0.30, 0.30, 0.60, 0.60]
-    SoilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0]
-    LooseDrillTime: number[] = [0.40, 0.20, 0.40, 0.20]
-    MedDrillTime: number[] = [0.80, 0.40, 0.80, 0.40]
-    HardDrillTime: number[] = [1.0, 0.50, 1.0, 0.50]
-    SeamDrillTime: number[] = [1.0, 0.50, 1.0, 0.50]
-    TrackDist: number = 80.0
-    CollRadius: number = 22.0
-    CollHeight: number = 30.0
-    PickSphere: number = 50.0
-    CrossLand: boolean = true
-    UseBigTeleporter: boolean = true
-    Tracker: boolean = true
-    CanDoubleSelect: boolean = true
-    CanBeDriven: boolean = true
-    CostCrystal: number = 5
-    InvisibleDriver: boolean = true
-    DrillSound: string = 'DrillSFX_Grinder'
-    DrillFadeSound: string = 'DrillSFX_GrinderFade'
-    UpgradeCostOre: number[] = [0, 0, 15, 20]
-    UpgradeCostStuds: number[] = [0, 0, 3, 4]
-    ShowHealthBar: boolean = true
-    EngineSound: string = 'SND_LargeEngine'
+    routeSpeed: number[] = [0.30, 0.30, 0.60, 0.60]
+    soilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0]
+    looseDrillTime: number[] = [0.40, 0.20, 0.40, 0.20]
+    medDrillTime: number[] = [0.80, 0.40, 0.80, 0.40]
+    hardDrillTime: number[] = [1.0, 0.50, 1.0, 0.50]
+    seamDrillTime: number[] = [1.0, 0.50, 1.0, 0.50]
+    trackDist: number = 80.0
+    collRadius: number = 22.0
+    collHeight: number = 30.0
+    pickSphere: number = 50.0
+    crossLand: boolean = true
+    useBigTeleporter: boolean = true
+    tracker: boolean = true
+    canDoubleSelect: boolean = true
+    canBeDriven: boolean = true
+    costCrystal: number = 5
+    invisibleDriver: boolean = true
+    drillSound: string = 'DrillSFX_Grinder'
+    drillFadeSound: string = 'DrillSFX_GrinderFade'
+    upgradeCostOre: number[] = [0, 0, 15, 20]
+    upgradeCostStuds: number[] = [0, 0, 3, 4]
+    showHealthBar: boolean = true
+    engineSound: string = 'SND_LargeEngine'
 }
 
 export class LargeCatStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill] (No carry) (Drill???)
-    RouteSpeed: number[] = [1.50]
-    SurveyRadius: number[] = []
-    TrackDist: number = 80.0
-    CollRadius: number = 22.0
-    CollHeight: number = 25.0
-    PickSphere: number = 50.0
-    CanBeDriven: boolean = true
-    CrossWater: boolean = true
-    UseWaterTeleporter: boolean = true
-    ClassAsLarge: boolean = true
-    CarryVehicles: boolean = true
-    CostCrystal: number = 4
-    EngineSound: string = 'SND_Catamaran'
-    ShowHealthBar: boolean = true
+    routeSpeed: number[] = [1.50]
+    surveyRadius: number[] = []
+    trackDist: number = 80.0
+    collRadius: number = 22.0
+    collHeight: number = 25.0
+    pickSphere: number = 50.0
+    canBeDriven: boolean = true
+    crossWater: boolean = true
+    useWaterTeleporter: boolean = true
+    classAsLarge: boolean = true
+    carryVehicles: boolean = true
+    costCrystal: number = 4
+    engineSound: string = 'SND_Catamaran'
+    showHealthBar: boolean = true
 }
 
 export class LargeHeliStats extends VehicleEntityStats {
-    RouteSpeed: number[] = [0.30, 0.40, 0.50]
-    TrackDist: number = 80.0
-    CollRadius: number = 0.0
-    CollHeight: number = 0.0
-    PickSphere: number = 20.0
-    ShowHealthBar: boolean = true
-    EngineSound: string = 'SND_HeliEngine'
+    routeSpeed: number[] = [0.30, 0.40, 0.50]
+    trackDist: number = 80.0
+    collRadius: number = 0.0
+    collHeight: number = 0.0
+    pickSphere: number = 20.0
+    showHealthBar: boolean = true
+    engineSound: string = 'SND_HeliEngine'
 }
 
 export class LargeMlpStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No carry or speed) (Doesn't have drills, just lasers)
-    RouteSpeed: number[] = [0.40, 0.40, 0.40, 0.40, 0.40, 0.40, 0.40, 0.40]
-    SurveyRadius: number[] = [0, 0, 0, 0, 5, 5, 5, 5]
-    TrackDist: number = 80.0
-    CollRadius: number = 20.0
-    CollHeight: number = 24.0
-    PickSphere: number = 47.0
-    CrossLand: boolean = true
-    UseBigTeleporter: boolean = true
-    Tracker: boolean = true
-    CanDoubleSelect: boolean = true
-    CostCrystal: number = 4
-    CanBeDriven: boolean = true
-    InvisibleDriver: boolean = true
-    UpgradeCostOre: number[] = [0, 5, 0, 25]
-    UpgradeCostStuds: number[] = [0, 1, 0, 5]
-    ShowHealthBar: boolean = true
-    EngineSound: string = 'SND_LargeEngine'
+    routeSpeed: number[] = [0.40, 0.40, 0.40, 0.40, 0.40, 0.40, 0.40, 0.40]
+    surveyRadius: number[] = [0, 0, 0, 0, 5, 5, 5, 5]
+    trackDist: number = 80.0
+    collRadius: number = 20.0
+    collHeight: number = 24.0
+    pickSphere: number = 47.0
+    crossLand: boolean = true
+    useBigTeleporter: boolean = true
+    tracker: boolean = true
+    canDoubleSelect: boolean = true
+    costCrystal: number = 4
+    canBeDriven: boolean = true
+    invisibleDriver: boolean = true
+    upgradeCostOre: number[] = [0, 5, 0, 25]
+    upgradeCostStuds: number[] = [0, 1, 0, 5]
+    showHealthBar: boolean = true
+    engineSound: string = 'SND_LargeEngine'
 }
 
 export class BarracksStats extends BuildingEntityStats {
-    Levels: number = 3
-    TrackDist: number = 50.0
-    CollHeight: number = 23.0
-    CollRadius: number = 15.0
-    PickSphere: number = 30.0
-    CostOre: number = 15
-    CostRefinedOre: number = 3
-    CostCrystal: number = 3
-    SnaxULike: boolean = true
-    TrainDriver: boolean[] = [true, true, true]
-    CrystalDrain: number[] = [1, 1, 1]
-    DamageCausesCallToArms: boolean = true
-    OxygenCoef: number = 10.0
-    EngineSound: string = 'SND_BuildingHum'
-    ShowHealthBar: boolean = true
+    levels: number = 3
+    trackDist: number = 50.0
+    collHeight: number = 23.0
+    collRadius: number = 15.0
+    pickSphere: number = 30.0
+    costOre: number = 15
+    costRefinedOre: number = 3
+    costCrystal: number = 3
+    snaxULike: boolean = true
+    trainDriver: boolean[] = [true, true, true]
+    crystalDrain: number[] = [1, 1, 1]
+    damageCausesCallToArms: boolean = true
+    oxygenCoef: number = 10.0
+    engineSound: string = 'SND_BuildingHum'
+    showHealthBar: boolean = true
 }
 
 export class PowerStationStats extends BuildingEntityStats {
-    Levels: number = 2
-    TrackDist: number = 80.0
-    ProcessCrystal: boolean = true
-    CollHeight: number = 31.0
-    CollRadius: number = 15.0
-    PickSphere: number = 32.0
-    CostOre: number = 12
-    CostRefinedOre: number = 3
-    CostCrystal: number = 2
-    PowerBuilding: boolean = true
-    DamageCausesCallToArms: boolean = true
-    EngineSound: string = 'SND_PowerBuildingHum'
-    ShowHealthBar: boolean = true
+    levels: number = 2
+    trackDist: number = 80.0
+    processCrystal: boolean = true
+    collHeight: number = 31.0
+    collRadius: number = 15.0
+    pickSphere: number = 32.0
+    costOre: number = 12
+    costRefinedOre: number = 3
+    costCrystal: number = 2
+    powerBuilding: boolean = true
+    damageCausesCallToArms: boolean = true
+    engineSound: string = 'SND_PowerBuildingHum'
+    showHealthBar: boolean = true
 }
 
 export class OreRefineryStats extends BuildingEntityStats {
-    Levels: number = 4
-    TrackDist: number = 60.0
-    ProcessOre: boolean = true
-    CollHeight: number = 16.0
-    CollRadius: number = 15.0
-    PickSphere: number = 30.0
-    CostOre: number = 20
-    CostRefinedOre: number = 4
-    CostCrystal: number = 3
-    CrystalDrain: number[] = [1, 1, 1, 1]
-    DamageCausesCallToArms: boolean = true
-    MaxCarry: number[] = [5, 4, 3, 2]
-    EngineSound: string = 'SND_BuildingHum'
-    ShowHealthBar: boolean = true
+    levels: number = 4
+    trackDist: number = 60.0
+    processOre: boolean = true
+    collHeight: number = 16.0
+    collRadius: number = 15.0
+    pickSphere: number = 30.0
+    costOre: number = 20
+    costRefinedOre: number = 4
+    costCrystal: number = 3
+    crystalDrain: number[] = [1, 1, 1, 1]
+    damageCausesCallToArms: boolean = true
+    maxCarry: number[] = [5, 4, 3, 2]
+    engineSound: string = 'SND_BuildingHum'
+    showHealthBar: boolean = true
 }
 
 export class TeleportPadStats extends BuildingEntityStats {
-    Levels: number = 3
-    TrackDist: number = 60.0
-    SmallTeleporter: boolean = true
-    ManTeleporter: boolean = true
-    CollHeight: number = 20.0
-    CollRadius: number = 15.0
-    PickSphere: number = 30.0
-    CostOre: number = 8
-    CostRefinedOre: number = 2
-    CrystalDrain: number[] = [1, 1, 1]
-    DamageCausesCallToArms: boolean = true
-    TrainPilot: boolean[] = [true, true, true]
-    EngineSound: string = 'SND_BuildingHum'
-    ShowHealthBar: boolean = true
+    levels: number = 3
+    trackDist: number = 60.0
+    smallTeleporter: boolean = true
+    manTeleporter: boolean = true
+    collHeight: number = 20.0
+    collRadius: number = 15.0
+    pickSphere: number = 30.0
+    costOre: number = 8
+    costRefinedOre: number = 2
+    crystalDrain: number[] = [1, 1, 1]
+    damageCausesCallToArms: boolean = true
+    trainPilot: boolean[] = [true, true, true]
+    engineSound: string = 'SND_BuildingHum'
+    showHealthBar: boolean = true
 }
 
 export class TeleportBigStats extends BuildingEntityStats {
-    Levels: number = 2
-    TrackDist: number = 50.0
-    BigTeleporter: boolean = true
-    CollHeight: number = 17.0
-    CollRadius: number = 15.0
-    PickSphere: number = 30.0
-    CostOre: number = 20
-    CostRefinedOre: number = 4
-    CostCrystal: number = 2
-    CrystalDrain: number[] = [1, 1]
-    DamageCausesCallToArms: boolean = true
-    EngineSound: string = 'SND_BuildingHum'
-    ShowHealthBar: boolean = true
+    levels: number = 2
+    trackDist: number = 50.0
+    bigTeleporter: boolean = true
+    collHeight: number = 17.0
+    collRadius: number = 15.0
+    pickSphere: number = 30.0
+    costOre: number = 20
+    costRefinedOre: number = 4
+    costCrystal: number = 2
+    crystalDrain: number[] = [1, 1]
+    damageCausesCallToArms: boolean = true
+    engineSound: string = 'SND_BuildingHum'
+    showHealthBar: boolean = true
 }
 
 export class DocksStats extends BuildingEntityStats {
-    Levels: number = 1
-    TrackDist: number = 60.0
-    CollHeight: number = 20.0
-    CollRadius: number = 15.0
-    PickSphere: number = 30.0
-    CostOre: number = 8
-    CostRefinedOre: number = 2
-    CostCrystal: number = 1
-    WaterEntrances: number = 1
-    WaterTeleporter: boolean = true
-    CrystalDrain: number = 1
-    DamageCausesCallToArms: boolean = true
-    TrainSailor: boolean[] = [true]
-    EngineSound: string = 'SND_BuildingHum'
-    ShowHealthBar: boolean = true
+    levels: number = 1
+    trackDist: number = 60.0
+    collHeight: number = 20.0
+    collRadius: number = 15.0
+    pickSphere: number = 30.0
+    costOre: number = 8
+    costRefinedOre: number = 2
+    costCrystal: number = 1
+    waterEntrances: number = 1
+    waterTeleporter: boolean = true
+    crystalDrain: number = 1
+    damageCausesCallToArms: boolean = true
+    trainSailor: boolean[] = [true]
+    engineSound: string = 'SND_BuildingHum'
+    showHealthBar: boolean = true
 }
 
 export class ToolStationStats extends BuildingEntityStats {
-    Levels: number = 3
-    TrackDist: number = 50.0
-    ManTeleporter: boolean = true
-    CollHeight: number = 16.0
-    CollRadius: number = 15.0
-    PickSphere: number = 30.0
-    ToolStore: boolean = true
-    StoreObjects: boolean = true
-    SelfPowered: boolean = true
-    DamageCausesCallToArms: boolean = true
-    TrainDynamite: boolean[] = [false, false, true]
-    FunctionCoef: number[] = [1.0, 1.0, 1.0] // Function here is how long it takes to upgrade a minfigure
-    ShowHealthBar: boolean = true
+    levels: number = 3
+    trackDist: number = 50.0
+    manTeleporter: boolean = true
+    collHeight: number = 16.0
+    collRadius: number = 15.0
+    pickSphere: number = 30.0
+    toolStore: boolean = true
+    storeObjects: boolean = true
+    selfPowered: boolean = true
+    damageCausesCallToArms: boolean = true
+    trainDynamite: boolean[] = [false, false, true]
+    functionCoef: number[] = [1.0, 1.0, 1.0] // Function here is how long it takes to upgrade a minfigure
+    showHealthBar: boolean = true
 }
 
 export class GunStationStats extends BuildingEntityStats {
-    Levels: number = 2
-    TrackDist: number = 60.0
-    CollHeight: number = 33.0
-    CollRadius: number = 15.0
-    PickSphere: number = 30.0
-    CostOre: number = 15
-    CostRefinedOre: number = 3
-    CostCrystal: number = 1
-    Tracker: boolean = true
-    CanDoubleSelect: boolean = true
-    CrystalDrain: number[] = [1, 1]
-    DamageCausesCallToArms: boolean = true
-    FunctionCoef: number[] = [1.0, 0.5] // How much of a crystal it drains every time it fires...
-    EngineSound: string = 'SND_BuildingHum'
-    ShowHealthBar: boolean = true
+    levels: number = 2
+    trackDist: number = 60.0
+    collHeight: number = 33.0
+    collRadius: number = 15.0
+    pickSphere: number = 30.0
+    costOre: number = 15
+    costRefinedOre: number = 3
+    costCrystal: number = 1
+    tracker: boolean = true
+    canDoubleSelect: boolean = true
+    crystalDrain: number[] = [1, 1]
+    damageCausesCallToArms: boolean = true
+    functionCoef: number[] = [1.0, 0.5] // How much of a crystal it drains every time it fires...
+    engineSound: string = 'SND_BuildingHum'
+    showHealthBar: boolean = true
 }
 
 export class GeodomeStats extends BuildingEntityStats {
-    Levels: number = 3
-    TrackDist: number = 50.0
-    CollHeight: number = 20.0
-    CollRadius: number = 15.0
-    PickSphere: number = 30.0
-    CostOre: number = 15
-    CostRefinedOre: number = 3
-    CostCrystal: number = 3
-    SurveyRadius: number[] = [6, 8, 12]
-    CrystalDrain: number[] = [1, 1, 1]
-    DamageCausesCallToArms: boolean = true
-    TrainScanner: boolean[] = [true, true, true]
-    EngineSound: string = 'SND_BuildingHum'
-    ShowHealthBar: boolean = true
+    levels: number = 3
+    trackDist: number = 50.0
+    collHeight: number = 20.0
+    collRadius: number = 15.0
+    pickSphere: number = 30.0
+    costOre: number = 15
+    costRefinedOre: number = 3
+    costCrystal: number = 3
+    surveyRadius: number[] = [6, 8, 12]
+    crystalDrain: number[] = [1, 1, 1]
+    damageCausesCallToArms: boolean = true
+    trainScanner: boolean[] = [true, true, true]
+    engineSound: string = 'SND_BuildingHum'
+    showHealthBar: boolean = true
 }
 
 export class UpgradeStats extends BuildingEntityStats {
-    Levels: number = 2
-    TrackDist: number = 80.0
-    CollHeight: number = 40.0
-    CollRadius: number = 15.0
-    PickSphere: number = 32.0
-    CostOre: number = 20
-    CostRefinedOre: number = 4
-    CostCrystal: number = 3
-    UpgradeBuilding: boolean = true
-    CrystalDrain: number[] = [1, 1]
-    DamageCausesCallToArms: boolean = true
-    FunctionCoef: number[] = [0.8, 1.6] // Function is speed of upgrade animation.
-    TrainRepair: boolean[] = [true, true]
-    EngineSound: string = 'SND_BuildingHum'
-    ShowHealthBar: boolean = true
+    levels: number = 2
+    trackDist: number = 80.0
+    collHeight: number = 40.0
+    collRadius: number = 15.0
+    pickSphere: number = 32.0
+    costOre: number = 20
+    costRefinedOre: number = 4
+    costCrystal: number = 3
+    upgradeBuilding: boolean = true
+    crystalDrain: number[] = [1, 1]
+    damageCausesCallToArms: boolean = true
+    functionCoef: number[] = [0.8, 1.6] // Function is speed of upgrade animation.
+    trainRepair: boolean[] = [true, true]
+    engineSound: string = 'SND_BuildingHum'
+    showHealthBar: boolean = true
 }
 
-export class PowerCrystalStats extends BaseConfig {
-    TrackDist: number = 20.0
-    CollRadius: number = 0
-    CollHeight: number = 2.0
-    PickSphere: number = 6.0
+export class PowerCrystalStats implements ConfigSetFromRecord {
+    trackDist: number = 20.0
+    collRadius: number = 0
+    collHeight: number = 2.0
+    pickSphere: number = 6.0
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.trackDist = cfgValue.getValue('TrackDist').toNumber()
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber()
+        this.collHeight = cfgValue.getValue('CollHeight').toNumber()
+        this.pickSphere = cfgValue.getValue('PickSphere').toNumber()
+        return this
+    }
 }
 
-export class ProcessedOreStats extends BaseConfig {
-    TrackDist: number = 20.0
-    CollRadius: number = 0
-    CollHeight: number = 2.0
-    PickSphere: number = 8.0
+export class ProcessedOreStats implements ConfigSetFromRecord {
+    trackDist: number = 20.0
+    collRadius: number = 0
+    collHeight: number = 2.0
+    pickSphere: number = 8.0
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.trackDist = cfgValue.getValue('TrackDist').toNumber()
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber()
+        this.collHeight = cfgValue.getValue('CollHeight').toNumber()
+        this.pickSphere = cfgValue.getValue('PickSphere').toNumber()
+        return this
+    }
 }
 
-export class OreStats extends BaseConfig {
-    TrackDist: number = 20.0
-    CollRadius: number = 0
-    CollHeight: number = 2.0
-    PickSphere: number = 6.0
+export class OreStats implements ConfigSetFromRecord {
+    trackDist: number = 20.0
+    collRadius: number = 0
+    collHeight: number = 2.0
+    pickSphere: number = 6.0
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.trackDist = cfgValue.getValue('TrackDist').toNumber()
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber()
+        this.collHeight = cfgValue.getValue('CollHeight').toNumber()
+        this.pickSphere = cfgValue.getValue('PickSphere').toNumber()
+        return this
+    }
 }
 
-export class BoulderStats extends BaseConfig {
-    CollRadius: number = 2.0
+export class BoulderStats implements ConfigSetFromRecord {
+    collRadius: number = 2.0
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber()
+        return this
+    }
 }
 
-export class PusherStats extends BaseConfig {
-    CollRadius: number = 1.0
+export class PusherStats implements ConfigSetFromRecord {
+    collRadius: number = 1.0
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber()
+        return this
+    }
 }
 
-export class FreezerStats extends BaseConfig {
-    CollRadius: number = 1.0
+export class FreezerStats implements ConfigSetFromRecord {
+    collRadius: number = 1.0
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber()
+        return this
+    }
 }
 
-export class LaserShotStats extends BaseConfig {
-    ColRadius: number = 1.0
+export class LaserShotStats implements ConfigSetFromRecord {
+    collRadius: number = 1.0 // Original game has typo and specifies colRadius instead
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber(this.collRadius) // typo in original config ColRadius instead of CollRadius
+        return this
+    }
 }
 
-export class ElectricFenceStats extends BaseConfig {
-    TrackDist: number = 50.0
-    CollRadius: number = 5.0
-    CollHeight: number = 18.0
-    PickSphere: number = 20.0
-    DamageCausesCallToArms: boolean = true
+export class ElectricFenceStats implements ConfigSetFromRecord {
+    trackDist: number = 50.0
+    collRadius: number = 5.0
+    collHeight: number = 18.0
+    pickSphere: number = 20.0
+    damageCausesCallToArms: boolean = true
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.trackDist = cfgValue.getValue('TrackDist').toNumber()
+        this.collRadius = cfgValue.getValue('CollRadius').toNumber()
+        this.collHeight = cfgValue.getValue('CollHeight').toNumber()
+        this.pickSphere = cfgValue.getValue('PickSphere').toNumber()
+        this.damageCausesCallToArms = cfgValue.getValue('DamageCausesCallToArms').toBoolean()
+        return this
+    }
 }
 
-export class PathStats extends BaseConfig {
-    CostOre: number = 2
-    CostRefinedOre: number = 1
+export class PathStats implements ConfigSetFromRecord {
+    costOre: number = 2
+    costRefinedOre: number = 1
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.costOre = cfgValue.getValue('CostOre').toNumber()
+        this.costRefinedOre = cfgValue.getValue('CostRefinedOre').toNumber()
+        return this
+    }
 }
 
-export class GameStatsCfg implements Record<string, BaseConfig> {
-    [x: string]: BaseConfig
-
+export class GameStatsCfg implements ConfigSetFromRecord {
     pilot = new PilotStats()
     rockMonster = new RockMonsterStats()
     smallSpider = new SmallSpiderStats()
@@ -921,4 +1074,48 @@ export class GameStatsCfg implements Record<string, BaseConfig> {
     laserShot = new LaserShotStats()
     electricFence = new ElectricFenceStats()
     path = new PathStats()
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.pilot.setFromRecord(cfgValue.getRecord('Pilot'))
+        this.rockMonster.setFromRecord(cfgValue.getRecord('RockMonster'))
+        this.smallSpider.setFromRecord(cfgValue.getRecord('SmallSpider'))
+        this.bat.setFromRecord(cfgValue.getRecord('Bat'))
+        this.tinyRM.setFromRecord(cfgValue.getRecord('TinyRM'))
+        this.tinyIM.setFromRecord(cfgValue.getRecord('TinyIM'))
+        this.slug.setFromRecord(cfgValue.getRecord('Slug'))
+        this.lavaMonster.setFromRecord(cfgValue.getRecord('LavaMonster'))
+        this.iceMonster.setFromRecord(cfgValue.getRecord('IceMonster'))
+        this.hoverboard.setFromRecord(cfgValue.getRecord('Hoverboard'))
+        this.smallHeli.setFromRecord(cfgValue.getRecord('SmallHeli'))
+        this.smallMlp.setFromRecord(cfgValue.getRecord('SmallMlp'))
+        this.smallCat.setFromRecord(cfgValue.getRecord('SmallCat'))
+        this.smallDigger.setFromRecord(cfgValue.getRecord('SmallDigger'))
+        this.smallTruck.setFromRecord(cfgValue.getRecord('SmallTruck'))
+        this.bulldozer.setFromRecord(cfgValue.getRecord('Bulldozer'))
+        this.walkerDigger.setFromRecord(cfgValue.getRecord('WalkerDigger'))
+        this.largeDigger.setFromRecord(cfgValue.getRecord('LargeDigger'))
+        this.largeCat.setFromRecord(cfgValue.getRecord('LargeCat'))
+        this.largeHeli.setFromRecord(cfgValue.getRecord('LargeHeli'))
+        this.largeMlp.setFromRecord(cfgValue.getRecord('LargeMlp'))
+        this.barracks.setFromRecord(cfgValue.getRecord('Barracks'))
+        this.powerStation.setFromRecord(cfgValue.getRecord('PowerStation'))
+        this.oreRefinery.setFromRecord(cfgValue.getRecord('OreRefinery'))
+        this.teleportPad.setFromRecord(cfgValue.getRecord('TeleportPad'))
+        this.teleportBig.setFromRecord(cfgValue.getRecord('TeleportBig'))
+        this.docks.setFromRecord(cfgValue.getRecord('Docks'))
+        this.toolStation.setFromRecord(cfgValue.getRecord('ToolStation'))
+        this.gunStation.setFromRecord(cfgValue.getRecord('GunStation'))
+        this.geoDome.setFromRecord(cfgValue.getRecord('Geo-Dome'))
+        this.upgrade.setFromRecord(cfgValue.getRecord('Upgrade'))
+        this.powerCrystal.setFromRecord(cfgValue.getRecord('PowerCrystal'))
+        this.processedOre.setFromRecord(cfgValue.getRecord('ProcessedOre'))
+        this.ore.setFromRecord(cfgValue.getRecord('Ore'))
+        this.boulder.setFromRecord(cfgValue.getRecord('Boulder'))
+        this.pusher.setFromRecord(cfgValue.getRecord('Pusher'))
+        this.freezer.setFromRecord(cfgValue.getRecord('Freezer'))
+        this.laserShot.setFromRecord(cfgValue.getRecord('LaserShot'))
+        this.electricFence.setFromRecord(cfgValue.getRecord('ElectricFence'))
+        this.path.setFromRecord(cfgValue.getRecord('Path'))
+        return this
+    }
 }

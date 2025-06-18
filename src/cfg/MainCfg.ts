@@ -1,112 +1,74 @@
-import { BaseConfig } from './BaseConfig'
 import { Rect } from '../core/Rect'
+import { ConfigSetFromRecord } from './Configurable'
+import { CfgEntry } from './CfgEntry'
 
-export class MainCfg extends BaseConfig {
-    // TextureUsage = 3145728
-    creditsTextFile: string = 'Credits.txt'
-    creditsBackAVI: string = 'AVI/Loop.avi'
-    loadScreen: string = 'Languages/Loading.bmp'
-    // ShutdownScreen = Languages/ShutDown.bmp
-    progressBar: string = 'Interface/FrontEnd/gradient.bmp'
-    progressWindow: Rect = new Rect(142, 450, 353, 9)
-    loadingText: string = 'Lade'
-    // SharedTextures = World/Shared
-    // SharedObjects = World/Shared
-    nextButton640x480: string = 'Interface/MessagePanel/OKButton.bmp'
-    nextButtonPos640x480: number[] = [380, 447]
-    backButton640x480: string = 'Interface/MessagePanel/repeat.bmp'
-    backButtonPos640x480: number[] = [380, 462]
-    backArrow: string = 'Interface/MessagePanel/BackButton.bmp'
-    // WallProMeshes = TRUE
-    // DynamicPM = FALSE
-    // HPBlocks = 20
-    buildingUpgradeCostOre: number = 5
-    buildingUpgradeCostStuds: number = 1
-    textPauseTimeMs = 3000 // Time in seconds that the Text_ messages last.
-    // RubbleCoef = 10
-    startLevel: string = 'Tutorial01'
-    tutorialStartLevel: string = 'MoveTuto_01'
-    // Quality = Gouraud
-    // Dither = TRUE
-    // Filter = YES
-    // Blend = FALSE
-    // Sort = FALSE
-    // MipMap = TRUE
-    // LinearMipMap = TRUE
-    // MusicOn = FALSE
-    // SoundOn = TRUE
-    // CDStartTrack = 2
-    // CDTracks = 3
-    // TopSpotRGB = 127:127:127
-    // TrackSpotRGB = 000:255:000
-    ambientRGB: [r: number, g: number, b: number] = [10 / 255, 10 / 255, 10 / 255]
-    // FPLightRGB = 127:127:127
-    powerCrystalRGB: [r: number, g: number, b: number] = [0, 1, 0]
-    unpoweredCrystalRGB: [r: number, g: number, b: number] = [1, 0, 1]
-    // ToolTipRGB = 000:100:000
-    minDist = 150.0 // minimum camera distance
-    maxDist = 250.0 // maximum camera distance
-    minTilt = 0.0
-    maxTilt = 60.0
-    CameraSpeed = 7.0
-    // CameraDropOff = 0.5
-    // CameraAcceleration = 0.4
-    // MouseScrollIndent = 4
-    // MouseScrollBorder = 3
-    // TVClipDist = 800.0
-    // FPClipBlocks = 14
-    // HighPolyRange = 60.0f
-    // MedPolyRange = 100.0f
-    // DisplayAdvisor = TRUE
-    // OnlyBuildOnPaths = TRUE
-    // AlwaysRockFall = TRUE
-    // SelectionArrow = arrow.bmp
-    // MinEnergyForEat = 25.0
-    DynamiteDamageRadius = 75.0
-    DynamiteMaxDamage = 150.0
-    // BirdScarerRadius = 100.0
-    // StartMessage = Rock_Raiders
-    // Version = V.0.121
-    // StreamNERPSSpeach = TRUE
-    // FrontEnd = TRUE
-    // LoseFocusAndPause = TRUE
-    // DynamiteRadius = 400.0
-    // ShowDebugToolTips = FALSE
-    // AllowDebugKeys = FALSE
-    // AllowEditMode = FALSE
-    // DontPlayAvis = FALSE
-    rrAvi = 'avi/intro.avi'
-    // Avi = avi/lmi640.avi
-    // DDILogo = Languages/DDI_Logo.bmp
-    // DDILogoTime = 4.0
-    // HelpWindowOn = TRUE
-    // MinDistFor3DSoundsOnTopView = 80.0
-    // MaxDistFor3DSounds = 380.0
-    // RollOffFor3DSounds = 3
-    // RenameReplace = Rock_Raider
-    missionBriefingText: string = 'Einsatzbesprechung'
-    missionCompletedText: string = 'Einsatz erfolgreich!'
-    missionFailedText: string = 'Einsatz beendet'
-    tutorialIcon: string = 'Interface/Tutorial/Arrow01.bmp'
+export class MainCfg implements ConfigSetFromRecord {
+    creditsTextFile: string = ''
+    creditsBackAVI: string = ''
+    loadScreen: string = ''
+    progressBar: string = ''
+    progressWindow: Rect = new Rect()
+    loadingText: string = ''
+    nextButton: string = ''
+    nextButtonPos: { x: number, y: number } = {x: 0, y: 0}
+    backButton: string = ''
+    backButtonPos: { x: number, y: number } = {x: 0, y: 0}
+    backArrow: string = ''
+    buildingUpgradeCostOre: number = 0
+    buildingUpgradeCostStuds: number = 0
+    textPauseTimeMs = 0 // Time in seconds that the Text_ messages last.
+    startLevel: string = ''
+    tutorialStartLevel: string = ''
+    ambientRGB: [r: number, g: number, b: number] = [0, 0, 0]
+    powerCrystalRGB: [r: number, g: number, b: number] = [0, 0, 0]
+    unpoweredCrystalRGB: [r: number, g: number, b: number] = [0, 0, 0]
+    minDist: number = 0.0 // minimum camera distance
+    maxDist: number = 0.0 // maximum camera distance
+    minTilt: number = 0.0
+    maxTilt: number = 0.0
+    CameraSpeed: number = 0.0
+    DynamiteDamageRadius: number = 0.0
+    DynamiteMaxDamage: number = 0.0
+    rrAvi = ''
+    missionBriefingText: string = ''
+    missionCompletedText: string = ''
+    missionFailedText: string = ''
+    tutorialIcon: string = ''
 
-    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if (unifiedKey === 'ProgressWindow'.toLowerCase()) {
-            // cfgValue[0] = 'R' // XXX What is it good for?
-            this.progressWindow = Rect.fromArray(cfgValue[1])
-            return true
-        } else if (unifiedKey === 'TextPauseTime'.toLowerCase()) {
-            this.textPauseTimeMs = Math.round(cfgValue * 1000)
-        } else if (unifiedKey === 'PowerCrystalRGB'.toLowerCase()) {
-            this.powerCrystalRGB = cfgValue.map((n: number) => n / 255)
-            return true
-        } else if (unifiedKey === 'UnpoweredCrystalRGB'.toLowerCase()) {
-            this.unpoweredCrystalRGB = cfgValue.map((n: number) => n / 255)
-            return true
-        } else if (unifiedKey === 'AmbientRGB'.toLowerCase()) {
-            if (!Array.isArray(cfgValue) || cfgValue.length !== 3 || cfgValue.some((n) => isNaN(n))) throw new Error(`Invalid RGB value (${cfgValue}) given`)
-            this.ambientRGB = cfgValue.map((n) => Math.max(0, Math.min(255, n)) / 255) as [number, number, number]
-            return true
-        }
-        return super.assignValue(objKey, unifiedKey, cfgValue)
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.creditsTextFile = cfgValue.getValue('CreditsTextFile').toFileName()
+        this.creditsBackAVI = cfgValue.getValue('CreditsBackAVI').toFileName()
+        this.loadScreen = cfgValue.getValue('LoadScreen').toFileName()
+        this.progressBar = cfgValue.getValue('ProgressBar').toFileName()
+        // XXX Find better edge-case handling: "ProgressWindow" starts with "R:" instead of numbers
+        const rectVal = cfgValue.getValue('ProgressWindow').toArray(':', 2)[1]
+        this.progressWindow = Rect.fromArray(rectVal.toArray(',', 4).map((v) => v.toNumber()))
+        this.loadingText = cfgValue.getValue('LoadingText').toLabel()
+        this.nextButton = cfgValue.getValue('NextButton640x480').toFileName()
+        this.nextButtonPos = cfgValue.getValue('NextButtonPos640x480').toPos(',')
+        this.backButton = cfgValue.getValue('BackButton640x480').toFileName()
+        this.backButtonPos = cfgValue.getValue('BackButtonPos640x480').toPos(',')
+        this.backArrow = cfgValue.getValue('BackArrow').toFileName()
+        this.buildingUpgradeCostOre = cfgValue.getValue('BuildingUpgradeCostOre').toNumber()
+        this.buildingUpgradeCostStuds = cfgValue.getValue('BuildingUpgradeCostStuds').toNumber()
+        this.textPauseTimeMs = Math.round(cfgValue.getValue('TextPauseTime').toNumber() * 1000)
+        this.startLevel = cfgValue.getValue('StartLevel').toLevelReference()
+        this.tutorialStartLevel = cfgValue.getValue('TutorialStartLevel').toLevelReference()
+        this.ambientRGB = cfgValue.getValue('AmbientRGB').toRGB()
+        this.powerCrystalRGB = cfgValue.getValue('PowerCrystalRGB').toRGB()
+        this.unpoweredCrystalRGB = cfgValue.getValue('UnpoweredCrystalRGB').toRGB()
+        this.minDist = cfgValue.getValue('MinDist').toNumber()
+        this.maxDist = cfgValue.getValue('MaxDist').toNumber()
+        this.minTilt = cfgValue.getValue('MinTilt').toNumber()
+        this.maxTilt = cfgValue.getValue('MaxTilt').toNumber()
+        this.CameraSpeed = cfgValue.getValue('CameraSpeed').toNumber()
+        this.DynamiteDamageRadius = cfgValue.getValue('DynamiteDamageRadius').toNumber()
+        this.DynamiteMaxDamage = cfgValue.getValue('DynamiteMaxDamage').toNumber()
+        this.rrAvi = cfgValue.getValue('RrAvi').toFileName()
+        this.missionBriefingText = cfgValue.getValue('MissionBriefingText').toLabel()
+        this.missionCompletedText = cfgValue.getValue('MissionCompletedText').toLabel()
+        this.missionFailedText = cfgValue.getValue('MissionFailedText').toLabel()
+        this.tutorialIcon = cfgValue.getValue('TutorialIcon').toFileName()
+        return this
     }
 }

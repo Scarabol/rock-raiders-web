@@ -21,6 +21,7 @@ import { AdvisorLayer } from './layer/AdvisorLayer'
 import { EventBroker } from '../event/EventBroker'
 import { NamingLayer } from './layer/NamingLayer'
 import { PRNG } from '../game/factory/PRNG'
+import { EncodingHelper } from '../resource/fileparser/EncodingHelper'
 
 export class GameScreen {
     readonly worldMgr: WorldManager
@@ -86,8 +87,7 @@ export class GameScreen {
 
     private setupAndStartLevel() {
         if (!this.levelConf) throw new Error('No level config given')
-        console.log(`Starting level ${this.levelConf.levelName} - ${this.levelConf.fullName}`)
-        document.title = `${this.levelConf.fullName} - Rock Raiders Web`
+        document.title = `${EncodingHelper.decodeString(this.levelConf.fullName)} - Rock Raiders Web`
         const params = new URLSearchParams(window.location.search)
         if (DEV_MODE) {
             params.set('entry', this.levelConf.levelName)
@@ -113,8 +113,8 @@ export class GameScreen {
         EventBroker.publish(new InitRadarMap(this.sceneMgr.birdViewControls.target.clone(), this.sceneMgr.terrain))
         // gather level start details for game result score calculation
         GameState.totalDiggables = this.sceneMgr.terrain.countDiggables()
-        const crystalsInVehicles = [...this.entityMgr.vehicles, ...this.entityMgr.vehiclesUndiscovered].reduce((prev, v) => prev + v.stats.CostCrystal, 0)
-        const crystalsInBuildings = [...this.entityMgr.buildings, ...this.entityMgr.buildingsUndiscovered].reduce((prev, v) => prev + v.stats.CostCrystal, 0)
+        const crystalsInVehicles = [...this.entityMgr.vehicles, ...this.entityMgr.vehiclesUndiscovered].reduce((prev, v) => prev + v.stats.costCrystal, 0)
+        const crystalsInBuildings = [...this.entityMgr.buildings, ...this.entityMgr.buildingsUndiscovered].reduce((prev, v) => prev + v.stats.costCrystal, 0)
         const crystalsDropped = [...this.entityMgr.materials, ...this.entityMgr.materialsUndiscovered].count((m) => m.entityType === EntityType.CRYSTAL || m.entityType === EntityType.DEPLETED_CRYSTAL)
         const crystalsInLevel = this.sceneMgr.terrain.countCrystals() + crystalsInVehicles + crystalsInBuildings + crystalsDropped
         GameState.totalCrystals = Math.max(this.levelConf?.reward?.quota?.crystals || 0, crystalsInLevel) // Level 20 has only 17 crystals but quota of 20

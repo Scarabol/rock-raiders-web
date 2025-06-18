@@ -185,8 +185,8 @@ export class Raider implements Updatable, JobFulfiller {
             if (rockySceneEntity.currentAnimation === RockMonsterActivity.Unpowered) {
                 const positionComponent = components.get(PositionComponent)
                 const rockyPosition2D = positionComponent.getPosition2D()
-                const wakeRadius = components.get(MonsterStatsComponent).stats.WakeRadius
-                if (raiderPosition2D.distanceToSquared(rockyPosition2D) < Math.pow(wakeRadius + this.stats.CollRadius, 2)) {
+                const wakeRadius = components.get(MonsterStatsComponent).stats.wakeRadius
+                if (raiderPosition2D.distanceToSquared(rockyPosition2D) < Math.pow(wakeRadius + this.stats.collRadius, 2)) {
                     rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                         this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
                         this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
@@ -218,7 +218,7 @@ export class Raider implements Updatable, JobFulfiller {
             if (this.foodLevel > 0) this.foodLevel -= step.vec.lengthSq() / TILESIZE / TILESIZE / 5
             if (!!this.carries) {
                 // XXX Adjust balancing for resting
-                const chanceToRestPerSecond = this.stats.RestPercent / 20 * Math.max(0, 1 - this.foodLevel / this.stats.RestPercent)
+                const chanceToRestPerSecond = this.stats.restPercent / 20 * Math.max(0, 1 - this.foodLevel / this.stats.restPercent)
                 if (PRNG.movement.random() < chanceToRestPerSecond * elapsedMs / 1000) {
                     this.resting = true
                     this.sceneEntity.setAnimation('Activity_Rest', () => {
@@ -253,10 +253,10 @@ export class Raider implements Updatable, JobFulfiller {
 
     getSpeed(): number {
         const currentSurface = this.getSurface()
-        const pathMultiplier = currentSurface.isPath() ? this.stats.PathCoef : 1
-        const rubbleMultiplier = currentSurface.hasRubble() ? this.stats.RubbleCoef : 1
+        const pathMultiplier = currentSurface.isPath() ? this.stats.pathCoef : 1
+        const rubbleMultiplier = currentSurface.hasRubble() ? this.stats.rubbleCoef : 1
         const carriesMultiplier = !!this.carries ? RAIDER_CARRY_SLOWDOWN : 1
-        return this.stats.RouteSpeed[this.level] * pathMultiplier * rubbleMultiplier * carriesMultiplier
+        return this.stats.routeSpeed[this.level] * pathMultiplier * rubbleMultiplier * carriesMultiplier
     }
 
     getRouteActivity(): AnimationActivity {
@@ -424,24 +424,24 @@ export class Raider implements Updatable, JobFulfiller {
         const attacks = [
             {
                 tool: RaiderTool.LASER,
-                damage: stats.LaserDamage,
+                damage: stats.laserDamage,
                 weaponStats: GameConfig.instance.weaponTypes.laserShot,
                 bulletType: EntityType.LASER_SHOT,
-                misc: GameConfig.instance.miscObjects.LaserShot
+                misc: GameConfig.instance.miscObjects.laserShot
             },
             {
                 tool: RaiderTool.FREEZER_GUN,
-                damage: stats.FreezerDamage,
+                damage: stats.freezerDamage,
                 weaponStats: GameConfig.instance.weaponTypes.freezer,
                 bulletType: EntityType.FREEZER_SHOT,
-                misc: GameConfig.instance.miscObjects.Freezer
+                misc: GameConfig.instance.miscObjects.freezer
             },
             {
                 tool: RaiderTool.PUSHER_GUN,
-                damage: stats.PusherDamage,
+                damage: stats.pusherDamage,
                 weaponStats: GameConfig.instance.weaponTypes.pusher,
                 bulletType: EntityType.PUSHER_SHOT,
-                misc: GameConfig.instance.miscObjects.Pusher
+                misc: GameConfig.instance.miscObjects.pusher
             },
         ].filter((a) => this.hasTool(a.tool)).sort((l, r) => r.damage - l.damage)
         if (attacks.length < 1) {
@@ -527,7 +527,7 @@ export class Raider implements Updatable, JobFulfiller {
     addTraining(training: RaiderTraining) {
         this.trainings.add(training)
         if (training === RaiderTraining.GEOLOGIST) {
-            const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
+            const scannerRange = this.stats.surveyRadius?.[this.level] ?? 0
             if (scannerRange) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(scannerRange))
         }
     }
@@ -558,11 +558,11 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     maxTools(): number {
-        return this.stats.NumOfToolsCanCarry[this.level] ?? 2
+        return this.stats.numOfToolsCanCarry[this.level] ?? 2
     }
 
     getRepairValue(): number {
-        return this.stats.RepairValue[this.level] || 0
+        return this.stats.repairValue[this.level] || 0
     }
 
     getPosition(): Vector3 {

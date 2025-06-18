@@ -1,22 +1,36 @@
-export class AdvisorTypeCfg {
-    animFileName: string
-    loopStart: number // seconds
-    loopEnd: number // seconds
+import { ConfigSetFromEntryValue } from './Configurable'
+import { CfgEntryValue } from './CfgEntry'
 
-    constructor(cfgValue: any) {
-        ;[this.animFileName, this.loopStart, this.loopEnd] = cfgValue
+export class AdvisorTypeCfg implements ConfigSetFromEntryValue {
+    animFileName: string = ''
+    loopStart: number = 0 // seconds
+    loopEnd: number = 0 // seconds
+
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const array = cfgValue.toArray(',', 3)
+        this.animFileName = array[0].toFileName()
+        this.loopStart = array[1].toNumber()
+        this.loopEnd = array[2].toNumber()
+        return this
     }
 }
 
-export class AdvisorPositionCfg {
-    advisorType: string
-    null: null // NULL // unused and unknown meaning
-    sfx: null // SFX_NULL // unused and unknown meaning
-    x: number
-    y: number
-    panel: string
+export class AdvisorPositionCfg implements ConfigSetFromEntryValue {
+    advisorType: string = ''
+    null: string = '' // NULL // unused and unknown meaning
+    sfx: string = '' // SFX_NULL // unused and unknown meaning
+    x: number = 0
+    y: number = 0
+    panel: string = ''
 
-    constructor(cfgValue: any) {
-        ;[this.advisorType, this.null, this.sfx, this.x, this.y, this.panel] = cfgValue
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const array = cfgValue.toArray(',', 6)
+        this.advisorType = array[0].toFileName()
+        this.null = array[1].toString()
+        this.sfx = array[2].toString()
+        this.x = array[3].toNumber()
+        this.y = array[4].toNumber()
+        this.panel = array[5].toString()
+        return this
     }
 }

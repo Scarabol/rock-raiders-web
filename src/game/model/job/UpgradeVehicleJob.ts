@@ -27,8 +27,8 @@ export class UpgradeVehicleJob extends Job {
 
     onJobComplete(fulfiller: JobFulfiller): void {
         const costIndex = VehicleUpgrades.toCostIndex(this.upgrade)
-        const upgradeCostOre = this.vehicle.stats.UpgradeCostOre?.[costIndex] ?? 0
-        const upgradeCostBrick = this.vehicle.stats.UpgradeCostStuds?.[costIndex] ?? 0
+        const upgradeCostOre = this.vehicle.stats.upgradeCostOre?.[costIndex] ?? 0
+        const upgradeCostBrick = this.vehicle.stats.upgradeCostStuds?.[costIndex] ?? 0
         if (GameState.numBrick < upgradeCostBrick && GameState.numOre < upgradeCostOre) {
             console.log(`Cannot afford vehicle upgrade! Ore: ${GameState.numOre}/${upgradeCostOre} Bricks: ${GameState.numBrick}/${upgradeCostBrick}`)
             super.onJobComplete(fulfiller)
@@ -48,7 +48,7 @@ export class UpgradeVehicleJob extends Job {
         const opposite = building.worldMgr.sceneMgr.terrain.getSurface(2 * primaryPath.x - primary.x, 2 * primaryPath.y - primary.y)
         fulfiller.sceneEntity.headTowards(opposite.getCenterWorld2D())
         this.vehicle.upgrading = true
-        const upgradeAnimationSpeed = building.stats.FunctionCoef[building.level] || 1
+        const upgradeAnimationSpeed = building.stats.functionCoef[building.level] || 1
         building.sceneEntity.setAnimationSpeed(upgradeAnimationSpeed)
         building.sceneEntity.setAnimation(BuildingActivity.Upgrade, () => {
             building.sceneEntity.setAnimationSpeed(1)

@@ -34,10 +34,10 @@ export class LavaErosionComponent extends AbstractGameComponent {
         this.surface.setSurfaceType(erosionSurfaceType)
         if (addSmokeEffect) {
             const lwsFilename = PRNG.animation.sample([
-                GameConfig.instance.miscObjects.LavaErosionSmoke1,
-                GameConfig.instance.miscObjects.LavaErosionSmoke2,
-                GameConfig.instance.miscObjects.LavaErosionSmoke3,
-                GameConfig.instance.miscObjects.LavaErosionSmoke4,
+                GameConfig.instance.miscObjects.lavaErosionSmoke1,
+                GameConfig.instance.miscObjects.lavaErosionSmoke2,
+                GameConfig.instance.miscObjects.lavaErosionSmoke3,
+                GameConfig.instance.miscObjects.lavaErosionSmoke4,
             ])
             const smoke = this.surface.worldMgr.sceneMgr.addMiscAnim(lwsFilename, this.surface.getCenterWorld(), PRNG.animation.random() * 2 * Math.PI, false)
             smoke.meshList.forEach((m) => m.material.forEach((m) => m.color.setRGB(1, 0.5, 0)))

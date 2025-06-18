@@ -5,7 +5,7 @@ import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { Button } from '../base/Button'
 import { InfoDockPanel } from './InfoDockPanel'
-import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
+import { InfoMessagesEntryConfig } from '../../cfg/InfoMessagesCfg'
 
 export class InfoDockButton extends Button {
     messages: WorldLocationEvent[] = [] // newest message first

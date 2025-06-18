@@ -1,6 +1,6 @@
 import { ButtonPriorityListCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
-import { PrioritiesImagePositionsCfg, PriorityButtonsCfg, PriorityPositionsEntry } from '../../cfg/PriorityButtonsCfg'
+import { PrioritiesImagePositionsCfg, PriorityButtonListCfg, PriorityPositionsEntry } from '../../cfg/PriorityButtonsCfg'
 import { EventKey } from '../../event/EventKeyEnum'
 import { PriorityIdentifier } from '../../game/model/job/PriorityIdentifier'
 import { Button } from '../base/Button'
@@ -15,7 +15,7 @@ export class PriorityListPanel extends Panel {
     prioPositions: PriorityPositionsEntry[] = []
     prioByName: Map<PriorityIdentifier, Button> = new Map()
 
-    constructor(panelCfg: PanelCfg, buttonsCfg: ButtonPriorityListCfg, cfgPos: PrioritiesImagePositionsCfg, cfg: PriorityButtonsCfg) {
+    constructor(panelCfg: PanelCfg, buttonsCfg: ButtonPriorityListCfg, cfgPos: PrioritiesImagePositionsCfg, cfg: PriorityButtonListCfg) {
         super(panelCfg)
         buttonsCfg.panelButtonPriorityListDisable.forEach((buttonCfg, index) => {
             this.addChild(new Button(buttonCfg)).onClick = () => {

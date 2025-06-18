@@ -1,7 +1,6 @@
 import { CanvasTexture, Sprite, SpriteMaterial } from 'three'
 import { createContext } from '../core/ImageHelper'
 import { SpriteContext } from '../core/Sprite'
-import { rgbToHtmlHex } from '../core/Util'
 import { GameState } from '../game/model/GameState'
 import { Updatable } from '../game/model/Updateable'
 import { GameConfig } from '../cfg/GameConfig'
@@ -19,21 +18,21 @@ export class HealthBarSprite extends Sprite implements Updatable {
         this.position.set(0, yOffset, 0)
         this.scale.setScalar(scale)
         this.textureContext = createContext(HealthBarSprite.textureSize, HealthBarSprite.textureSize)
-        const barWidth = GameConfig.instance.objInfo.healthBarWidthHeight[0]
-        const barHeight = GameConfig.instance.objInfo.healthBarWidthHeight[1]
+        const barWidth = GameConfig.instance.objInfo.healthBarWidthHeight.x
+        const barHeight = GameConfig.instance.objInfo.healthBarWidthHeight.y
         const barBorderSize = GameConfig.instance.objInfo.healthBarBorderSize
         const sizeFactor = HealthBarSprite.textureSize / (barWidth + 2 * barBorderSize)
         const height = Math.round(sizeFactor * (barHeight + 2 * barBorderSize))
         const posY = Math.round((HealthBarSprite.textureSize - height) / 2)
-        this.textureContext.fillStyle = rgbToHtmlHex(GameConfig.instance.objInfo.healthBarBorderRGB)
+        this.textureContext.fillStyle = HealthBarSprite.rgbToHtmlHex(GameConfig.instance.objInfo.healthBarBorderRGB)
         this.textureContext.fillRect(0, posY, HealthBarSprite.textureSize, height)
         this.activeArea.x = Math.round(barBorderSize * sizeFactor)
         this.activeArea.y = posY + this.activeArea.x
-        this.textureContext.fillStyle = rgbToHtmlHex(GameConfig.instance.objInfo.healthBarBorderRGB.map((v) => v / 2))
+        this.textureContext.fillStyle = HealthBarSprite.rgbToHtmlHex(GameConfig.instance.objInfo.healthBarBorderRGB.map((v) => v / 2))
         this.textureContext.fillRect(this.activeArea.x, this.activeArea.y, HealthBarSprite.textureSize, height - this.activeArea.x)
         this.activeArea.w = HealthBarSprite.textureSize - 2 * this.activeArea.x
         this.activeArea.h = height - 2 * this.activeArea.x
-        this.textureContext.fillStyle = rgbToHtmlHex(GameConfig.instance.objInfo.healthBarRGB)
+        this.textureContext.fillStyle = HealthBarSprite.rgbToHtmlHex(GameConfig.instance.objInfo.healthBarRGB)
         this.textureContext.fillRect(this.activeArea.x, this.activeArea.y, this.activeArea.w, this.activeArea.h)
         this.material.map = new CanvasTexture(this.textureContext.canvas)
         this.visible = false
@@ -58,11 +57,16 @@ export class HealthBarSprite extends Sprite implements Updatable {
         const delta = this.targetStatus - this.actualStatus
         this.actualStatus += Math.sign(delta) * Math.min(Math.abs(delta), 0.03)
         const x = Math.max(0, Math.min(1, this.actualStatus))
-        this.textureContext.fillStyle = rgbToHtmlHex(GameConfig.instance.objInfo.healthBarRGB)
+        this.textureContext.fillStyle = HealthBarSprite.rgbToHtmlHex(GameConfig.instance.objInfo.healthBarRGB)
         this.textureContext.fillRect(this.activeArea.x, this.activeArea.y, this.activeArea.w, this.activeArea.h)
-        this.textureContext.fillStyle = rgbToHtmlHex(GameConfig.instance.objInfo.healthBarBackgroundRGB)
+        this.textureContext.fillStyle = HealthBarSprite.rgbToHtmlHex(GameConfig.instance.objInfo.healthBarBackgroundRGB)
         const redPosX = Math.round(this.activeArea.w * x)
         this.textureContext.fillRect(this.activeArea.x + redPosX, this.activeArea.y, this.activeArea.w - redPosX, this.activeArea.h)
         if (this.material.map) this.material.map.needsUpdate = true
+    }
+
+    private static rgbToHtmlHex(rgb: number[]): string {
+        if (rgb?.length !== 3) throw new Error(`Invalid RGB array given '${rgb}')`)
+        return `#${rgb.map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join('')}`
     }
 }

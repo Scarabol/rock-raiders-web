@@ -106,7 +106,7 @@ export class PathFinder {
         const endTileX = Math.floor(gridEnd.x / precision) * precision
         const endTileY = Math.floor(gridEnd.y / precision) * precision
         if (startTileX === endTileX && startTileY === endTileY) return [targetLocation]
-        const graphKey = `${precision} ${stats.CrossLand} ${stats.CrossWater} ${stats.CrossLava}`
+        const graphKey = `${precision} ${stats.crossLand} ${stats.crossWater} ${stats.crossLava}`
         const pathKey = `${graphKey} ${startTileX}/${startTileY} -> ${endTileX}/${endTileY}`
         const resultPath = this.cachedPathsByKey.getOrUpdate(pathKey, () => {
             const graph = this.graphByCacheKey.getOrUpdate(graphKey, () => this.createGraph(stats, precision))
@@ -161,11 +161,11 @@ export class PathFinder {
     static getWeight(surface: PathFindingSurfaceData, stats: MovableEntityStats): number {
         if (!surface.surfaceType.floor || !surface.discovered) return 0 // TODO consider EnterWall
         else if (surface.pathBlockedByBuilding) return 0 // TODO consider EnterToolstore
-        else if (surface.surfaceType.hasRubble) return 1 / (stats.RubbleCoef || 1)
-        else if (surface.surfaceType === SurfaceType.WATER) return stats.CrossWater ? 1 : 0
-        else if (surface.surfaceType === SurfaceType.LAVA5) return stats.CrossLava ? 1 : 0
-        else if (surface.surfaceType === SurfaceType.POWER_PATH || surface.surfaceType === SurfaceType.POWER_PATH_BUILDING) return 1 / (stats.PathCoef || 1)
-        return stats.CrossLand ? 1 : 0
+        else if (surface.surfaceType.hasRubble) return 1 / (stats.rubbleCoef || 1)
+        else if (surface.surfaceType === SurfaceType.WATER) return stats.crossWater ? 1 : 0
+        else if (surface.surfaceType === SurfaceType.LAVA5) return stats.crossLava ? 1 : 0
+        else if (surface.surfaceType === SurfaceType.POWER_PATH || surface.surfaceType === SurfaceType.POWER_PATH_BUILDING) return 1 / (stats.pathCoef || 1)
+        return stats.crossLand ? 1 : 0
     }
 
     resetGraphsAndCaches() {

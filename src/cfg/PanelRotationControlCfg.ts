@@ -1,37 +1,31 @@
-import { BaseConfig } from './BaseConfig'
+import { ConfigSetFromEntryValue, ConfigSetFromRecord } from './Configurable'
+import { CfgEntry, CfgEntryValue } from './CfgEntry'
 
-export class PanelRotationControlCfg extends BaseConfig {
-    centerPositionX: number = 484
-    centerPositionY: number = 445
-    radius: number = 30
+export class PanelRotationControlCfg implements ConfigSetFromRecord {
     leftImage: PanelRotationControlImageCfg = new PanelRotationControlImageCfg()
     upImage: PanelRotationControlImageCfg = new PanelRotationControlImageCfg()
     rightImage: PanelRotationControlImageCfg = new PanelRotationControlImageCfg()
     downImage: PanelRotationControlImageCfg = new PanelRotationControlImageCfg()
 
-    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if ('LeftImage'.equalsIgnoreCase(unifiedKey)) {
-            this.leftImage.setFromCfgObj(cfgValue)
-        } else if ('UpImage'.equalsIgnoreCase(unifiedKey)) {
-            this.upImage.setFromCfgObj(cfgValue)
-        } else if ('RightImage'.equalsIgnoreCase(unifiedKey)) {
-            this.rightImage.setFromCfgObj(cfgValue)
-        } else if ('DownImage'.equalsIgnoreCase(unifiedKey)) {
-            this.downImage.setFromCfgObj(cfgValue)
-        } else {
-            return super.assignValue(objKey, unifiedKey, cfgValue)
-        }
-        return true
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.leftImage.setFromValue(cfgValue.getValue('LeftImage'))
+        this.upImage.setFromValue(cfgValue.getValue('UpImage'))
+        this.rightImage.setFromValue(cfgValue.getValue('RightImage'))
+        this.downImage.setFromValue(cfgValue.getValue('DownImage'))
+        return this
     }
 }
 
-export class PanelRotationControlImageCfg extends BaseConfig {
-    imgHighlight?: string
+export class PanelRotationControlImageCfg implements ConfigSetFromEntryValue {
+    imgHighlight: string = ''
     x: number = 0
     y: number = 0
 
-    setFromCfgObj(cfgObj: any): this {
-        [this.imgHighlight, this.x, this.y] = cfgObj
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const value = cfgValue.toArray(',', 3)
+        this.imgHighlight = value[0].toFileName()
+        this.x = value[1].toNumber()
+        this.y = value[2].toNumber()
         return this
     }
 }

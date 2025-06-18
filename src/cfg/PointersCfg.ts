@@ -1,8 +1,9 @@
-import {CfgHelper} from "./CfgHelper";
+import { ConfigSetFromEntryValue, ConfigSetFromRecord } from './Configurable'
+import { CfgEntry, CfgEntryValue } from './CfgEntry'
 
 export type Cursor = keyof PointersCfg
 
-export class PointersCfg {
+export class PointersCfg implements ConfigSetFromRecord {
     blank: PointersEntryCfg = new PointersEntryCfg()
     standard: PointersEntryCfg = new PointersEntryCfg()
     drill: PointersEntryCfg = new PointersEntryCfg()
@@ -56,76 +57,79 @@ export class PointersCfg {
     surfaceTypeCrystalSeam: PointersEntryCfg = new PointersEntryCfg()
     surfaceTypeRechargeSeam: PointersEntryCfg = new PointersEntryCfg()
 
-    setFromValue(cfgValue: Record<string, PointersEntryValue>): void {
-        this.blank.setFromValue(CfgHelper.getValue(cfgValue, 'blank'))
-        this.standard.setFromValue(CfgHelper.getValue(cfgValue, 'standard'))
-        this.drill.setFromValue(CfgHelper.getValue(cfgValue, 'drill'))
-        this.cantDrill.setFromValue(CfgHelper.getValue(cfgValue, 'cantDrill'))
-        this.clear.setFromValue(CfgHelper.getValue(cfgValue, 'clear'))
-        this.go.setFromValue(CfgHelper.getValue(cfgValue, 'go'))
-        this.cantGo.setFromValue(CfgHelper.getValue(cfgValue, 'cantGo'))
-        this.teleport.setFromValue(CfgHelper.getValue(cfgValue, 'teleport'))
-        this.cantTeleport.setFromValue(CfgHelper.getValue(cfgValue, 'cantTeleport'))
-        this.reinforce.setFromValue(CfgHelper.getValue(cfgValue, 'reinforce'))
-        this.cantReinforce.setFromValue(CfgHelper.getValue(cfgValue, 'cantReinforce'))
-        this.selected.setFromValue(CfgHelper.getValue(cfgValue, 'selected'))
-        this.radarPan.setFromValue(CfgHelper.getValue(cfgValue, 'radarPan'))
-        this.trackObject.setFromValue(CfgHelper.getValue(cfgValue, 'trackObject'))
-        this.zoom.setFromValue(CfgHelper.getValue(cfgValue, 'zoom'))
-        this.cantZoom.setFromValue(CfgHelper.getValue(cfgValue, 'cantZoom'))
-        this.help.setFromValue(CfgHelper.getValue(cfgValue, 'help'))
-        this.cantHelp.setFromValue(CfgHelper.getValue(cfgValue, 'cantHelp'))
-        this.putDown.setFromValue(CfgHelper.getValue(cfgValue, 'putDown'))
-        this.getIn.setFromValue(CfgHelper.getValue(cfgValue, 'getIn'))
-        this.getOut.setFromValue(CfgHelper.getValue(cfgValue, 'getOut'))
-        this.okay.setFromValue(CfgHelper.getValue(cfgValue, 'okay'))
-        this.notOkay.setFromValue(CfgHelper.getValue(cfgValue, 'notOkay'))
-        this.canBuild.setFromValue(CfgHelper.getValue(cfgValue, 'canBuild'))
-        this.cannotBuild.setFromValue(CfgHelper.getValue(cfgValue, 'cannotBuild'))
-        this.dynamite.setFromValue(CfgHelper.getValue(cfgValue, 'dynamite'))
-        this.cantDynamite.setFromValue(CfgHelper.getValue(cfgValue, 'cantDynamite'))
-        this.pickUp.setFromValue(CfgHelper.getValue(cfgValue, 'pickUp'))
-        this.cantPickUp.setFromValue(CfgHelper.getValue(cfgValue, 'cantPickUp'))
-        this.pickUpOre.setFromValue(CfgHelper.getValue(cfgValue, 'pickUpOre'))
-        this.manCantDig.setFromValue(CfgHelper.getValue(cfgValue, 'manCantDig'))
-        this.vehicleCantDig.setFromValue(CfgHelper.getValue(cfgValue, 'vehicleCantDig'))
-        this.manDig.setFromValue(CfgHelper.getValue(cfgValue, 'manDig'))
-        this.vehicleDig.setFromValue(CfgHelper.getValue(cfgValue, 'vehicleDig'))
-        this.manCantPickUp.setFromValue(CfgHelper.getValue(cfgValue, 'manCantPickUp'))
-        this.vehicleCantPickUp.setFromValue(CfgHelper.getValue(cfgValue, 'vehicleCantPickUp'))
-        this.manPickUp.setFromValue(CfgHelper.getValue(cfgValue, 'manPickUp'))
-        this.vehiclePickUp.setFromValue(CfgHelper.getValue(cfgValue, 'vehiclePickUp'))
-        this.manCantGo.setFromValue(CfgHelper.getValue(cfgValue, 'manCantGo'))
-        this.vehicleCantGo.setFromValue(CfgHelper.getValue(cfgValue, 'vehicleCantGo'))
-        this.manGo.setFromValue(CfgHelper.getValue(cfgValue, 'manGo'))
-        this.vehicleGo.setFromValue(CfgHelper.getValue(cfgValue, 'vehicleGo'))
-        this.manClear.setFromValue(CfgHelper.getValue(cfgValue, 'manClear'))
-        this.vehicleClear.setFromValue(CfgHelper.getValue(cfgValue, 'vehicleClear'))
-        this.surfaceTypeImmovable.setFromValue(CfgHelper.getValue(cfgValue, 'surfaceTypeImmovable'))
-        this.surfaceTypeHard.setFromValue(CfgHelper.getValue(cfgValue, 'surfaceTypeHard'))
-        this.surfaceTypeMedium.setFromValue(CfgHelper.getValue(cfgValue, 'surfaceTypeMedium'))
-        this.surfaceTypeLoose.setFromValue(CfgHelper.getValue(cfgValue, 'surfaceTypeLoose'))
-        this.surfaceTypeSoil.setFromValue(CfgHelper.getValue(cfgValue, 'surfaceTypeSoil'))
-        this.surfaceTypeOreSeam.setFromValue(CfgHelper.getValue(cfgValue, 'surfaceTypeOreSeam'))
-        this.surfaceTypeCrystalSeam.setFromValue(CfgHelper.getValue(cfgValue, 'surfaceTypeCrystalSeam'))
-        this.surfaceTypeRechargeSeam.setFromValue(CfgHelper.getValue(cfgValue, 'surfaceTypeRechargeSeam'))
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.blank.setFromValue(cfgValue.getValue('Pointer_Blank'))
+        this.standard.setFromValue(cfgValue.getValue('Pointer_Standard'))
+        this.drill.setFromValue(cfgValue.getValue('Pointer_Drill'))
+        this.cantDrill.setFromValue(cfgValue.getValue('Pointer_CantDrill'))
+        this.clear.setFromValue(cfgValue.getValue('Pointer_Clear'))
+        this.go.setFromValue(cfgValue.getValue('Pointer_Go'))
+        this.cantGo.setFromValue(cfgValue.getValue('Pointer_CantGo'))
+        this.teleport.setFromValue(cfgValue.getValue('Pointer_Teleport'))
+        this.cantTeleport.setFromValue(cfgValue.getValue('Pointer_CantTeleport'))
+        this.reinforce.setFromValue(cfgValue.getValue('Pointer_Reinforce'))
+        this.cantReinforce.setFromValue(cfgValue.getValue('Pointer_CantReinforce'))
+        this.selected.setFromValue(cfgValue.getValue('Pointer_Selected'))
+        this.radarPan.setFromValue(cfgValue.getValue('Pointer_RadarPan'))
+        this.trackObject.setFromValue(cfgValue.getValue('Pointer_TrackObject'))
+        this.zoom.setFromValue(cfgValue.getValue('Pointer_Zoom'))
+        this.cantZoom.setFromValue(cfgValue.getValue('Pointer_CantZoom'))
+        this.help.setFromValue(cfgValue.getValue('Pointer_Help'))
+        this.cantHelp.setFromValue(cfgValue.getValue('Pointer_CantHelp'))
+        this.putDown.setFromValue(cfgValue.getValue('Pointer_PutDown'))
+        this.getIn.setFromValue(cfgValue.getValue('Pointer_GetIn'))
+        this.getOut.setFromValue(cfgValue.getValue('Pointer_GetOut'))
+        this.okay.setFromValue(cfgValue.getValue('Pointer_Okay'))
+        this.notOkay.setFromValue(cfgValue.getValue('Pointer_NotOkay'))
+        this.canBuild.setFromValue(cfgValue.getValue('Pointer_CanBuild'))
+        this.cannotBuild.setFromValue(cfgValue.getValue('Pointer_CannotBuild'))
+        this.dynamite.setFromValue(cfgValue.getValue('Pointer_Dynamite'))
+        this.cantDynamite.setFromValue(cfgValue.getValue('Pointer_CantDynamite'))
+        this.pickUp.setFromValue(cfgValue.getValue('Pointer_PickUp'))
+        this.cantPickUp.setFromValue(cfgValue.getValue('Pointer_CantPickUp'))
+        this.pickUpOre.setFromValue(cfgValue.getValue('Pointer_PickUpOre'))
+        this.manCantDig.setFromValue(cfgValue.getValue('Pointer_LegoManCantDig'))
+        this.vehicleCantDig.setFromValue(cfgValue.getValue('Pointer_VehicleCantDig'))
+        this.manDig.setFromValue(cfgValue.getValue('Pointer_LegoManDig'))
+        this.vehicleDig.setFromValue(cfgValue.getValue('Pointer_VehicleDig'))
+        this.manCantPickUp.setFromValue(cfgValue.getValue('Pointer_LegoManCantPickUp'))
+        this.vehicleCantPickUp.setFromValue(cfgValue.getValue('Pointer_VehicleCantPickUp'))
+        this.manPickUp.setFromValue(cfgValue.getValue('Pointer_LegoManPickUp'))
+        this.vehiclePickUp.setFromValue(cfgValue.getValue('Pointer_VehiclePickUp'))
+        this.manCantGo.setFromValue(cfgValue.getValue('Pointer_LegoManCantGo'))
+        this.vehicleCantGo.setFromValue(cfgValue.getValue('Pointer_VehicleCantGo'))
+        this.manGo.setFromValue(cfgValue.getValue('Pointer_LegoManGo'))
+        this.vehicleGo.setFromValue(cfgValue.getValue('Pointer_VehicleGo'))
+        this.manClear.setFromValue(cfgValue.getValue('Pointer_LegoManClear'))
+        this.vehicleClear.setFromValue(cfgValue.getValue('Pointer_VehicleClear'))
+        this.surfaceTypeImmovable.setFromValue(cfgValue.getValue('Pointer_SurfaceType_Immovable'))
+        this.surfaceTypeHard.setFromValue(cfgValue.getValue('Pointer_SurfaceType_Hard'))
+        this.surfaceTypeMedium.setFromValue(cfgValue.getValue('Pointer_SurfaceType_Medium'))
+        this.surfaceTypeLoose.setFromValue(cfgValue.getValue('Pointer_SurfaceType_Loose'))
+        this.surfaceTypeSoil.setFromValue(cfgValue.getValue('Pointer_SurfaceType_Soil'))
+        this.surfaceTypeOreSeam.setFromValue(cfgValue.getValue('Pointer_SurfaceType_OreSeam'))
+        this.surfaceTypeCrystalSeam.setFromValue(cfgValue.getValue('Pointer_SurfaceType_CrystalSeam'))
+        this.surfaceTypeRechargeSeam.setFromValue(cfgValue.getValue('Pointer_SurfaceType_RechargeSeam'))
+        return this
     }
 }
 
-type PointersEntryValue = string | [string, number, number]
-
-export class PointersEntryCfg {
+export class PointersEntryCfg implements ConfigSetFromEntryValue {
     fileName: string = ''
     flhStart: number = 0
     flhEnd: number = 0
 
-    setFromValue(cfgValue: PointersEntryValue) {
-        if (Array.isArray(cfgValue)) {
-            this.fileName = CfgHelper.assertString(cfgValue[0])
-            this.flhStart = CfgHelper.assertNumber(cfgValue[1])
-            this.flhEnd = CfgHelper.assertNumber(cfgValue[2])
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const array = cfgValue.toArray(',', undefined)
+        if (array.length === 3) {
+            this.fileName = array[0].toFileName()
+            this.flhStart = array[1].toNumber()
+            this.flhEnd = array[2].toNumber()
+        } else if (array.length === 1) {
+            this.fileName = array[0].toFileName()
         } else {
-            this.fileName = CfgHelper.assertString(cfgValue)
+            console.warn(`Unexpected pointers config (${array}) given; expected 3 or 1 values`)
         }
+        return this
     }
 }

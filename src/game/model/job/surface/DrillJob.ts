@@ -28,7 +28,7 @@ export class DrillJob extends ShareableJob {
             !surfaceDigPositions.every((p) => digPositions.some((d) => p.equals(d.targetLocation)))
         ) {
             const surfaceCenter = this.surface.getCenterWorld2D()
-            const fulfillerWorkRange = entity.stats.PickSphere / 2
+            const fulfillerWorkRange = entity.stats.pickSphere / 2
             digPositions = surfaceDigPositions.map((digPos) => {
                 const workPos = digPos.clone().sub(surfaceCenter).setLength(fulfillerWorkRange).add(digPos)
                 return PathTarget.fromLocation(workPos)

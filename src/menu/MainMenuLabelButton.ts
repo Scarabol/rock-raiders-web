@@ -20,10 +20,10 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
             if (!this.labelImgLo || !this.labelImgHi) return
             this.width = Math.max(this.labelImgLo.width, this.labelImgHi.width)
             this.height = Math.max(this.labelImgLo.height, this.labelImgHi.height)
-            this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x
+            this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position.x + cfg.x
             layer.animationFrame.notifyRedraw() // TODO create all images in loading phase
         })
-        this.y = layer.cfg.position[1] + cfg.y
+        this.y = layer.cfg.position.y + cfg.y
         this.actionName = cfg.actionName
         if (this.actionName?.equalsIgnoreCase('Next')) this.targetIndex = Number(cfg.target.slice('menu'.length)) - 1
     }

@@ -8,7 +8,7 @@ import { GameConfig } from '../../cfg/GameConfig'
 export class BeamUpComponent extends AbstractGameComponent {
     constructor(readonly entity: Raider | VehicleEntity | BuildingEntity | MaterialEntity) {
         super()
-        this.entity.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.MiniTeleportUp, this.entity.getPosition(), this.entity.sceneEntity.heading, false)
+        this.entity.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.miniTeleportUp, this.entity.getPosition(), this.entity.sceneEntity.heading, false)
         if (this.entity.worldMgr.sceneMgr.birdViewControls.lockedObject === entity.sceneEntity) this.entity.worldMgr.sceneMgr.birdViewControls.unlockCamera()
     }
 }

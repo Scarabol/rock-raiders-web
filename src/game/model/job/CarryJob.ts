@@ -81,7 +81,7 @@ export class CarryJob extends Job {
                 }
             case EntityType.DYNAMITE:
                 if (carryItem.targetSurface?.isDigable() && carryItem.targetSurface?.dynamiteJob === this) {
-                    const pickupRadius = carryItem.worldMgr.ecs.getComponents(carryItem.entity).get(SceneSelectionComponent)?.stats.PickSphere || 1
+                    const pickupRadius = carryItem.worldMgr.ecs.getComponents(carryItem.entity).get(SceneSelectionComponent)?.stats.pickSphere || 1
                     return carryItem.targetSurface.getDigPositions()
                         .map((p) => PathTarget.fromLocation(p, pickupRadius * pickupRadius))
                         .filter((p) => !!entity.findShortestPath(p))
@@ -184,7 +184,7 @@ export class CarryJob extends Job {
         this.carryItem.sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
             this.carryItem.worldMgr.ecs.removeComponent(this.carryItem.entity, RaiderScareComponent)
             this.carryItem.targetSurface.collapse()
-            this.carryItem.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.Explosion, this.carryItem.getPosition(), this.carryItem.sceneEntity.heading, false)
+            this.carryItem.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.explosion, this.carryItem.getPosition(), this.carryItem.sceneEntity.heading, false)
             EventBroker.publish(new DynamiteExplosionEvent(this.carryItem.getPosition2D()))
             this.carryItem.disposeFromWorld()
         })

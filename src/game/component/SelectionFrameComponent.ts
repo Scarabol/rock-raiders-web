@@ -10,11 +10,11 @@ export class SelectionFrameComponent extends AbstractGameComponent {
 
     constructor(parentObj: Object3D, stats: PickSphereStats, pickSphereHeightOffset: number = 0) {
         super()
-        this.selectionFrame = this.addSelectionFrame(parentObj, stats.PickSphere, parentObj.position, '#0f0')
+        this.selectionFrame = this.addSelectionFrame(parentObj, stats.pickSphere, parentObj.position, '#0f0')
         this.selectionFrame.position.y = pickSphereHeightOffset
-        this.selectionFrameDouble = this.addSelectionFrame(parentObj, stats.PickSphere, parentObj.position, '#f00')
+        this.selectionFrameDouble = this.addSelectionFrame(parentObj, stats.pickSphere, parentObj.position, '#f00')
         this.selectionFrameDouble.position.y = pickSphereHeightOffset
-        this.selectionFrameSecondary = this.addSelectionFrame(parentObj, stats.PickSphere, parentObj.position, '#ff0')
+        this.selectionFrameSecondary = this.addSelectionFrame(parentObj, stats.pickSphere, parentObj.position, '#ff0')
         this.selectionFrameSecondary.position.y = pickSphereHeightOffset
     }
 

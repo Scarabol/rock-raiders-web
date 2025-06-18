@@ -43,30 +43,30 @@ export class BulletSystem extends AbstractGameSystem {
                     bulletComponent.bulletAnim.position.z += step.y
                     targets.some((t) => {
                         const targetStats = t.stats
-                        if (!targetStats.CanBeShotAt) return false
+                        if (!targetStats.canBeShotAt) return false
                         const targetLocation = t.pos.getPosition2D()
                         const bulletPos = bulletComponent.bulletAnim.position
                         const bulletLocation = new Vector2(bulletPos.x, bulletPos.z)
-                        if (targetLocation.distanceToSquared(bulletLocation) >= targetStats.CollRadiusSq) return false
+                        if (targetLocation.distanceToSquared(bulletLocation) >= Math.pow(targetStats.collRadius, 2)) return false
                         if (bulletComponent.bulletType === EntityType.LASER_SHOT) {
-                            this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.LazerHit, t.pos.position, 0, false)
-                            t.health.changeHealth(-targetStats.LaserDamage)
+                            this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.lazerHit, t.pos.position, 0, false)
+                            t.health.changeHealth(-targetStats.laserDamage)
                         } else if (bulletComponent.bulletType === EntityType.FREEZER_SHOT) {
-                            this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.FreezerHit, t.pos.position, 0, false)
-                            t.health.changeHealth(-targetStats.FreezerDamage)
-                            if (targetStats.CanFreeze && !this.ecs.getComponents(t.entity).has(EntityFrozenComponent)) {
-                                const entityFrozenComponent = new EntityFrozenComponent(this.worldMgr, t.entity, targetStats.FreezerTimeMs, t.pos.position, t.heading)
+                            this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.freezerHit, t.pos.position, 0, false)
+                            t.health.changeHealth(-targetStats.freezerDamage)
+                            if (targetStats.canFreeze && !this.ecs.getComponents(t.entity).has(EntityFrozenComponent)) {
+                                const entityFrozenComponent = new EntityFrozenComponent(this.worldMgr, t.entity, targetStats.freezerTimeMs, t.pos.position, t.heading)
                                 this.ecs.removeComponent(t.entity, WorldTargetComponent)
                                 this.ecs.removeComponent(t.entity, HeadingComponent)
                                 this.ecs.addComponent(t.entity, entityFrozenComponent)
                             }
                         } else if (bulletComponent.bulletType === EntityType.PUSHER_SHOT) {
-                            this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.PusherHit, t.pos.position, 0, false)
-                            t.health.changeHealth(-targetStats.PusherDamage)
-                            if (targetStats.CanPush && !this.ecs.getComponents(t.entity).has(EntityPushedComponent)) {
+                            this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.pusherHit, t.pos.position, 0, false)
+                            t.health.changeHealth(-targetStats.pusherDamage)
+                            if (targetStats.canPush && !this.ecs.getComponents(t.entity).has(EntityPushedComponent)) {
                                 this.ecs.removeComponent(t.entity, WorldTargetComponent)
                                 this.ecs.removeComponent(t.entity, HeadingComponent)
-                                const pushTarget = t.pos.getPosition2D().add(step.clone().setLength(t.stats.PusherDist))
+                                const pushTarget = t.pos.getPosition2D().add(step.clone().setLength(t.stats.pusherDist))
                                 this.ecs.addComponent(t.entity, new WorldTargetComponent(pushTarget, 1))
                                 this.ecs.addComponent(t.entity, new EntityPushedComponent())
                             }

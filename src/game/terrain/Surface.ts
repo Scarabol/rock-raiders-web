@@ -138,7 +138,7 @@ export class Surface {
         if (this.neighbors8.some((n) => n.discovered && n.surfaceType.floor)) {
             switch (this.surfaceType) {
                 case SurfaceType.LAVA5:
-                    // fallthrough
+                // fallthrough
                 case SurfaceType.WATER:
                     this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.geometry.attributes.uv))
                     break
@@ -159,7 +159,7 @@ export class Surface {
                     if (floorNeighbor) { // TODO Same code as in terrain loader class
                         const position = new Vector3(0.5, this.terrain.getHeightOffset(this.x, this.y), 0.5)
                         const angle = Math.atan2(floorNeighbor.y - this.y, this.x - floorNeighbor.x) + Math.PI / 2
-                        const grp = this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.RechargeSparkle, position, angle, true)
+                        const grp = this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.rechargeSparkle, position, angle, true)
                         grp.scale.setScalar(1 / TILESIZE)
                         this.mesh.add(grp)
                     } else {

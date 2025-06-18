@@ -42,8 +42,8 @@ export class TooltipSpriteBuilder {
         return this.wrapTooltipSprite([tooltipTextImage], crystalsTextImage, oresTextImage, bricksTextImage)
     }
 
-    static async getBuildingMissingOreForUpgradeTooltipSprite(tooltipText: string, buildingMissingOreForUpgrade: number): Promise<SpriteImage> {
-        const tooltipTextImage = await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.toolTipInfo['orerequiredtext']}:`)
+    static async getBuildingMissingOreForUpgradeTooltipSprite(buildingMissingOreForUpgrade: number): Promise<SpriteImage> {
+        const tooltipTextImage = await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, GameConfig.instance.toolTipInfo['orerequiredtext'])
         const oresTextImage = []
         const oreImg = ResourceManager.getImage(GameConfig.instance.tooltipIcons['ore'])
         for (let c = 0; c < buildingMissingOreForUpgrade; c++) {

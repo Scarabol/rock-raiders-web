@@ -1,47 +1,65 @@
-import { BaseConfig } from './BaseConfig'
-import { BaseButtonCfg, ButtonCfg } from './ButtonCfg'
-import { CfgHelper } from './CfgHelper'
+import { BaseButtonCfg } from './ButtonCfg'
+import { ConfigSetFromEntryValue, ConfigSetFromRecord } from './Configurable'
+import { CfgEntry, CfgEntryValue } from './CfgEntry'
 
-export class PriorityButtonsCfg extends BaseConfig {
-    aiPriorityTrain: ButtonCfg = new BaseButtonCfg()
-    aiPriorityGetIn: ButtonCfg = new BaseButtonCfg()
-    aiPriorityCrystal: ButtonCfg = new BaseButtonCfg()
-    aiPriorityOre: ButtonCfg = new BaseButtonCfg()
-    aiPriorityRepair: ButtonCfg = new BaseButtonCfg()
-    aiPriorityClearing: ButtonCfg = new BaseButtonCfg()
-    aiPriorityDestruction: ButtonCfg = new BaseButtonCfg()
-    aiPriorityConstruction: ButtonCfg = new BaseButtonCfg()
-    aiPriorityReinforce: ButtonCfg = new BaseButtonCfg()
-    aiPriorityRecharge: ButtonCfg = new BaseButtonCfg()
+export class PriorityButtonListCfg implements ConfigSetFromRecord {
+    aiPriorityTrain: PriorityButtonCfg = new PriorityButtonCfg()
+    aiPriorityGetIn: PriorityButtonCfg = new PriorityButtonCfg()
+    aiPriorityCrystal: PriorityButtonCfg = new PriorityButtonCfg()
+    aiPriorityOre: PriorityButtonCfg = new PriorityButtonCfg()
+    aiPriorityRepair: PriorityButtonCfg = new PriorityButtonCfg()
+    aiPriorityClearing: PriorityButtonCfg = new PriorityButtonCfg()
+    aiPriorityDestruction: PriorityButtonCfg = new PriorityButtonCfg()
+    aiPriorityConstruction: PriorityButtonCfg = new PriorityButtonCfg()
+    aiPriorityReinforce: PriorityButtonCfg = new PriorityButtonCfg()
+    aiPriorityRecharge: PriorityButtonCfg = new PriorityButtonCfg()
 
-    parseValue(unifiedKey: string, cfgValue: any): ButtonCfg {
-        const [tooltipText, tooltipSfx] = Array.ensure(cfgValue[0])
-        return Object.assign(new BaseButtonCfg(), {
-            normalFile: cfgValue[1],
-            highlightFile: cfgValue[1],
-            pressedFile: cfgValue[2],
-            disabledFile: cfgValue[3],
-            tooltipText: CfgHelper.assertString(tooltipText),
-            tooltipSfx: CfgHelper.assertString(tooltipSfx || ''),
-        })
-    }
-}
-
-export class PrioritiesImagePositionsCfg extends BaseConfig {
-    positionByIndex: PriorityPositionsEntry[] = []
-
-    setFromCfgObj(cfgObj: any): this {
-        this.positionByIndex = Object.values(cfgObj).map(cfgValue => new PriorityPositionsEntry(cfgValue))
+    setFromRecord(cfgValue: CfgEntry): this {
+        this.aiPriorityTrain.setFromValue(cfgValue.getValue('AI_Priority_Train'))
+        this.aiPriorityGetIn.setFromValue(cfgValue.getValue('AI_Priority_GetIn'))
+        this.aiPriorityCrystal.setFromValue(cfgValue.getValue('AI_Priority_Crystal'))
+        this.aiPriorityOre.setFromValue(cfgValue.getValue('AI_Priority_Ore'))
+        this.aiPriorityRepair.setFromValue(cfgValue.getValue('AI_Priority_Repair'))
+        this.aiPriorityClearing.setFromValue(cfgValue.getValue('AI_Priority_Clearing'))
+        this.aiPriorityDestruction.setFromValue(cfgValue.getValue('AI_Priority_Destruction'))
+        this.aiPriorityConstruction.setFromValue(cfgValue.getValue('AI_Priority_Construction'))
+        this.aiPriorityReinforce.setFromValue(cfgValue.getValue('AI_Priority_Reinforce'))
+        this.aiPriorityRecharge.setFromValue(cfgValue.getValue('AI_Priority_Recharge'))
         return this
     }
 }
 
-export class PriorityPositionsEntry {
+export class PriorityButtonCfg extends BaseButtonCfg implements ConfigSetFromEntryValue {
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const value = cfgValue.toArray(':', 4)
+        const [tooltipText, tooltipSfx] = value[0].toArray('|', undefined)
+        this.normalFile = value[1].toFileName()
+        this.highlightFile = value[1].toFileName()
+        this.pressedFile = value[2].toFileName()
+        this.disabledFile = value[3].toFileName()
+        this.tooltipText = tooltipText?.toLabel() || ''
+        this.tooltipSfx = tooltipSfx?.toString() || ''
+        return this
+    }
+}
+
+export class PrioritiesImagePositionsCfg implements ConfigSetFromRecord {
+    positionByIndex: PriorityPositionsEntry[] = []
+
+    setFromRecord(cfgValue: CfgEntry): this {
+        cfgValue.forEachCfgEntryValue((value) => this.positionByIndex.push(new PriorityPositionsEntry().setFromValue(value)))
+        return this
+    }
+}
+
+export class PriorityPositionsEntry implements ConfigSetFromEntryValue {
     x: number
     y: number
 
-    constructor(cfgValue: any) {
-        this.x = CfgHelper.assertNumber(cfgValue[0])
-        this.y = CfgHelper.assertNumber(cfgValue[1])
+    setFromValue(cfgValue: CfgEntryValue): this {
+        const value = cfgValue.toPos(',')
+        this.x = value.x
+        this.y = value.y
+        return this
     }
 }

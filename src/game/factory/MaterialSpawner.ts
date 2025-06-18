@@ -38,24 +38,24 @@ export class MaterialSpawner {
         worldMgr.ecs.addComponent(material.entity, new PositionComponent(floorPosition, surface))
         switch (entityType) {
             case EntityType.ORE:
-                const oreMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Ore)
-                if (!oreMesh) throw new Error(`Cannot spawn ore missing mesh "${GameConfig.instance.miscObjects.Ore}"`)
+                const oreMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.ore)
+                if (!oreMesh) throw new Error(`Cannot spawn ore missing mesh "${GameConfig.instance.miscObjects.ore}"`)
                 material.sceneEntity.add(oreMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.ore))
                 material.priorityIdentifier = PriorityIdentifier.ORE
                 this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
             case EntityType.BRICK:
-                const brickMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.ProcessedOre)
-                if (!brickMesh) throw new Error(`Cannot spawn brick missing mesh "${GameConfig.instance.miscObjects.ProcessedOre}"`)
+                const brickMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.processedOre)
+                if (!brickMesh) throw new Error(`Cannot spawn brick missing mesh "${GameConfig.instance.miscObjects.processedOre}"`)
                 material.sceneEntity.add(brickMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.processedOre))
                 material.priorityIdentifier = PriorityIdentifier.ORE
                 this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
             case EntityType.CRYSTAL:
-                const energyCrystalMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Crystal)
-                if (!energyCrystalMesh) throw new Error(`Cannot spawn energy crystal missing mesh "${GameConfig.instance.miscObjects.Crystal}"`)
+                const energyCrystalMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.crystal)
+                if (!energyCrystalMesh) throw new Error(`Cannot spawn energy crystal missing mesh "${GameConfig.instance.miscObjects.crystal}"`)
                 energyCrystalMesh.material.forEach((m) => {
                     m.color.fromArray(GameConfig.instance.main.powerCrystalRGB)
                     m.emissive.fromArray(GameConfig.instance.main.powerCrystalRGB)
@@ -66,8 +66,8 @@ export class MaterialSpawner {
                 this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
             case EntityType.DEPLETED_CRYSTAL:
-                const depletedCrystalMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Crystal)
-                if (!depletedCrystalMesh) throw new Error(`Cannot spawn energy crystal missing mesh "${GameConfig.instance.miscObjects.Crystal}"`)
+                const depletedCrystalMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.crystal)
+                if (!depletedCrystalMesh) throw new Error(`Cannot spawn energy crystal missing mesh "${GameConfig.instance.miscObjects.crystal}"`)
                 depletedCrystalMesh.material.forEach((m) => {
                     m.color.fromArray(GameConfig.instance.main.unpoweredCrystalRGB)
                     m.emissive.fromArray(GameConfig.instance.main.unpoweredCrystalRGB)
@@ -78,26 +78,26 @@ export class MaterialSpawner {
                 this.addTooltip(worldMgr, material.entity, EntityType.CRYSTAL, () => 0)
                 break
             case EntityType.BARRIER:
-                material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.Barrier))
+                material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.barrier))
                 material.sceneEntity.setAnimation(BarrierActivity.Short)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {PickSphere: 10, CollRadius: 10, CollHeight: 0})) // XXX find any constant for pick sphere?
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {pickSphere: 10, collRadius: 10, collHeight: 0})) // XXX find any constant for pick sphere?
                 material.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
                 break
             case EntityType.DYNAMITE:
-                material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.Dynamite))
+                material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.dynamite))
                 material.sceneEntity.setAnimation(DynamiteActivity.Normal)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {PickSphere: 8, CollRadius: 8, CollHeight: 0})) // XXX find any constant for pick sphere?
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {pickSphere: 8, collRadius: 8, collHeight: 0})) // XXX find any constant for pick sphere?
                 material.priorityIdentifier = PriorityIdentifier.DESTRUCTION
                 material.requiredTraining = RaiderTraining.DEMOLITION
                 break
             case EntityType.ELECTRIC_FENCE:
-                const electricFenceMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.ElectricFence)
-                if (!electricFenceMesh) throw new Error(`Cannot spawn electric fence missing mesh "${GameConfig.instance.miscObjects.ElectricFence}"`)
+                const electricFenceMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.electricFence)
+                if (!electricFenceMesh) throw new Error(`Cannot spawn electric fence missing mesh "${GameConfig.instance.miscObjects.electricFence}"`)
                 material.sceneEntity.add(electricFenceMesh)
                 const statsFence = GameConfig.instance.stats.electricFence
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, statsFence))
                 material.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
-                const healthComponent = material.worldMgr.ecs.addComponent(material.entity, new HealthComponent(statsFence.DamageCausesCallToArms, statsFence.CollHeight, 10, material.sceneEntity, false, GameConfig.instance.getRockFallDamage(material.entityType, 0)))
+                const healthComponent = material.worldMgr.ecs.addComponent(material.entity, new HealthComponent(statsFence.damageCausesCallToArms, statsFence.collHeight, 10, material.sceneEntity, false, GameConfig.instance.getRockFallDamage(material.entityType, 0)))
                 material.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
                 material.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
                 material.worldMgr.ecs.addComponent(material.entity, new LastWillComponent(() => {
