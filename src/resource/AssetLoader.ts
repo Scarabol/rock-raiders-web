@@ -125,7 +125,7 @@ export class AssetLoader {
                     !lPath.endsWith('/stats.wav') &&
                     !lPath.endsWith('/dripsB.wav'.toLowerCase())
                 ) {
-                    console.error(`Could not find sound ${path}:\n` + errors.join('\n'))
+                    throw new Error(`Could not find sound ${path}:\n` + errors.join('\n'))
                 }
                 return undefined
             }
