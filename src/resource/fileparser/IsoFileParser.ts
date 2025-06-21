@@ -75,7 +75,7 @@ export class IsoFileParser {
         if (isDirectory && (parentName === '' || fileIdentifier !== '.') && fileIdentifier !== '..') {
             this.readDirectoryEntry(startOffset, filePathIdentifier)
         }
-        this.readDirectoryEntry(offset + lenDirRecord, parentName)
+        if (parentName) this.readDirectoryEntry(offset + lenDirRecord, parentName)
     }
 }
 
