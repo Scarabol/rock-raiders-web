@@ -1,5 +1,5 @@
 import './SelectFilesModal.css'
-import { VirtualFileSystem } from '../fileparser/VirtualFileSystem'
+import { VFSEncoding, VirtualFileSystem } from '../fileparser/VirtualFileSystem'
 import { SelectFilesAccordion } from './SelectFilesAccordion'
 import { SelectFilesForm } from './SelectFilesForm'
 import { CabFile } from '../fileparser/CabFile'
@@ -10,28 +10,41 @@ import { CueFileParser } from '../fileparser/CueFileParser'
 import { SelectFilesProgress } from './SelectFilesProgress'
 import { ZipFileParser } from '../fileparser/ZipFileParser'
 
-export class SelectFilesModal {
-    static readonly zipPacks: Record<string, string> = {
-        '🏴󠁧󠁢󠁥󠁮󠁧󠁿 / 🇺🇸': 'English',
-        '🇩🇪': 'German',
-        '🇩🇰': 'Danish',
-        '🇳🇱': 'Dutch',
-        '🇮🇱': 'Hebrew',
-        '🇮🇹': 'Italian',
-        '🇳🇴': 'Norwegian',
-        '🇵🇱': 'Polish',
-        '🇷🇺': 'Russian',
-        '🇪🇸': 'Spanish',
-        '🇸🇪': 'Swedish',
-        '🇫🇷': 'French',
-    }
+interface ZipPackConf {
+    flag: string
+    name: string
+    encoding: VFSEncoding
+}
 
-    static readonly wadFiles: { flag: string, code: string, name: string }[] = [
-        {flag: '🇨🇿', code: 'CZ', name: 'Czech'},
-        {flag: '🇭🇺', code: 'HR', name: 'Hungarian'},
-        {flag: '🇵🇹', code: 'PT', name: 'Portuguese'}, // TODO letter not found issue with ü (252) while bitmap font image has only 190 chars
-        {flag: '🇷🇸', code: 'RS', name: 'Serbian'},
-        {flag: '🇸🇮', code: 'SL', name: 'Slovenian'},
+interface WadFilesConf {
+    flag: string
+    code: string
+    name: string
+    encoding: VFSEncoding
+}
+
+export class SelectFilesModal {
+    static readonly zipPacks: ZipPackConf[] = [
+        {flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 / 🇺🇸', name: 'English', encoding: 'default'},
+        {flag: '🇩🇪', name: 'German', encoding: 'default'},
+        {flag: '🇩🇰', name: 'Danish', encoding: 'default'},
+        {flag: '🇳🇱', name: 'Dutch', encoding: 'default'},
+        {flag: '🇮🇱', name: 'Hebrew', encoding: 'windows-1255'},
+        {flag: '🇮🇹', name: 'Italian', encoding: 'default'},
+        {flag: '🇳🇴', name: 'Norwegian', encoding: 'default'},
+        {flag: '🇵🇱', name: 'Polish', encoding: 'windows-1250'},
+        {flag: '🇷🇺', name: 'Russian', encoding: 'windows-1251'},
+        {flag: '🇪🇸', name: 'Spanish', encoding: 'default'},
+        {flag: '🇸🇪', name: 'Swedish', encoding: 'default'},
+        {flag: '🇫🇷', name: 'French', encoding: 'default'},
+    ]
+
+    static readonly wadFiles: WadFilesConf[] = [
+        {flag: '🇨🇿', code: 'CZ', name: 'Czech', encoding: 'windows-1250'},
+        {flag: '🇭🇺', code: 'HR', name: 'Hungarian', encoding: 'windows-1250'},
+        {flag: '🇵🇹', code: 'PT', name: 'Portuguese', encoding: 'windows-1252'}, // TODO letter not found issue with ü (252) while bitmap font image has only 190 chars
+        {flag: '🇷🇸', code: 'RS', name: 'Serbian', encoding: 'windows-1251'},
+        {flag: '🇸🇮', code: 'SL', name: 'Slovenian', encoding: 'windows-1250'},
     ]
 
     // TODO Add Japan and Korean, requires OS font rendering and colors
@@ -62,18 +75,18 @@ export class SelectFilesModal {
         this.zipFilesProgress = new SelectFilesProgress()
         this.btnContainer = this.zipFilesPanel.appendChild(document.createElement('div'))
         this.btnContainer.classList.add('select-button-container')
-        Object.entries(SelectFilesModal.zipPacks).forEach(([flag, language]) => {
+        SelectFilesModal.zipPacks.forEach((f) => {
             const btn = this.btnContainer.appendChild(document.createElement('button'))
             this.buttons.push(btn)
-            btn.innerText = flag
-            btn.title = language
-            btn.setAttribute('download-name', language)
+            btn.innerText = f.flag
+            btn.title = f.name
+            btn.setAttribute('download-name', f.name)
             btn.addEventListener('click', async () => {
                 try {
                     this.buttons.forEach((btn) => btn.disabled = true)
                     this.zipFilesPanel.replaceChildren(this.zipFilesProgress.root)
                     const buffers = await Promise.all([0, 1].map((n) => {
-                        const url = `https://scarabol.github.io/wad-editor/mirror-archive.org/Rock%20Raiders%20%28${language}%29%20small.zip.part${n}`
+                        const url = `https://scarabol.github.io/wad-editor/mirror-archive.org/Rock%20Raiders%20%28${f.name}%29%20small.zip.part${n}`
                         const urlFileName = url.split('/').last()
                         if (!urlFileName) return new ArrayBuffer()
                         const fileName = decodeURIComponent(urlFileName)
@@ -88,7 +101,7 @@ export class SelectFilesModal {
                         offset += b.byteLength
                     })
                     console.log('ZIP download complete')
-                    const vfs = new VirtualFileSystem()
+                    const vfs = new VirtualFileSystem(f.encoding)
                     await new ZipFileParser(this.zipFilesProgress).readZipFile(vfs, zipFileContent)
                     this.onFilesLoaded(vfs)
                 } finally {
@@ -113,7 +126,7 @@ export class SelectFilesModal {
                 try {
                     this.buttons.forEach((btn) => btn.disabled = true)
                     this.zipFilesPanel.replaceChildren(this.zipFilesProgress.root)
-                    const vfs = new VirtualFileSystem()
+                    const vfs = new VirtualFileSystem(f.encoding)
                     await Promise.all([0, 1].map(async (n) => {
                         const url = `https://scarabol.github.io/wad-editor/mirror-archive.org/${f.code}/RR${n}.wad`
                         const urlFileName = url.split('/').last()
@@ -147,7 +160,7 @@ export class SelectFilesModal {
                 // Parse files from ISO image
                 const isoFile = new IsoFileParser(cueFile.isoFile)
                 const allFiles = await isoFile.loadAllFiles(cueBinFilesProgress)
-                const vfs = new VirtualFileSystem()
+                const vfs = new VirtualFileSystem() // TODO Set encoding when using local files
                 await Promise.all(allFiles.map(async (f) => {
                     if (f.fileName.equalsIgnoreCase('data1.hdr') || f.fileName.equalsIgnoreCase('data1.cab')) return // only cache unpacked files
                     await cachePutData(f.fileName.toLowerCase(), f.toBuffer())
@@ -173,7 +186,7 @@ export class SelectFilesModal {
                 const isoFileBuffer = await files[0].arrayBuffer()
                 const isoFile = new IsoFileParser(isoFileBuffer)
                 const allFiles = await isoFile.loadAllFiles(isoFilesProgress)
-                const vfs = new VirtualFileSystem()
+                const vfs = new VirtualFileSystem() // TODO Set encoding when using local files
                 await Promise.all(allFiles.map(async (f) => {
                     if (f.fileName.equalsIgnoreCase('data1.hdr') || f.fileName.equalsIgnoreCase('data1.cab')) return // only cache unpacked files
                     await cachePutData(f.fileName.toLowerCase(), f.toBuffer())
@@ -189,7 +202,7 @@ export class SelectFilesModal {
         this.optionList.addOption('Use local ISO file, usually seen as CD image <b>(no music)</b>:', isoFilesPanel)
         const wadFilesForm = new SelectFilesForm('Start with WAD files', ['RR0.wad', 'RR1.wad'], async (files: File[]) => {
             if (files.length !== 2) throw new Error(`Unexpected number of files (${files.length}) given`)
-            const vfs = new VirtualFileSystem()
+            const vfs = new VirtualFileSystem() // TODO Set encoding when using local files
             await Promise.all(files.map(async (file) => {
                 const lFileName = file.name.toLowerCase()
                 const buffer = await file.arrayBuffer()
@@ -213,7 +226,7 @@ export class SelectFilesModal {
                 console.time('Unpack CAB files')
                 const allFiles = await cabFile.loadAllFiles(cabFilesProgress)
                 console.timeEnd('Unpack CAB files')
-                const vfs = new VirtualFileSystem()
+                const vfs = new VirtualFileSystem() // TODO Set encoding when using local files
                 await Promise.all(allFiles.map(async (f) => {
                     await cachePutData(f.fileName.toLowerCase(), f.toBuffer())
                     vfs.registerFile(f)
