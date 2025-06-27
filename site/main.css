@@ -1,5 +1,5 @@
 html, body {
-    height: 100%;
+    height: 100vh;
     margin: 0;
     padding: 0;
     background: #333;
@@ -90,16 +90,47 @@ html, body {
 }
 
 .game-debug-layer {
+    box-sizing: border-box;
     position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
     z-index: 3000;
     background-color: #000;
     opacity: 40%;
     color: #fff;
     margin: 2%;
     padding: 0.5em;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+}
+
+.game-debug-message-container {
     overflow: auto;
+    overflow-wrap: break-word;
+}
+
+.game-debug-fps-canvas {
+    width: 160px;
+    height: 80px;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    scale: 1;
+    margin-left: -80px;
+}
+
+.game-debug-close-button {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.game-debug-copy-button {
+    width: 120px;
+    height: 50px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }

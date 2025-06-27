@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <title>Rock Raiders Web</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="icon" type="image/png" href="site/favicon-32x32.png"/>
     <link rel="stylesheet" href="site/main.css">
     <link rel="stylesheet" href="site/clear-cache-button.css">
@@ -18,6 +19,12 @@
         <button type="button" class="button-fullscreen" style="visibility: hidden">Full screen</button>
     </div>
     <div id="game-canvas-container" tabindex="0">
+    </div>
+    <div class="game-debug-layer" style="display: none">
+        <div class="game-debug-message-container"></div>
+        <canvas class="game-debug-fps-canvas"></canvas>
+        <button class="game-debug-close-button">X</button>
+        <button class="game-debug-copy-button">Copy to clipboard</button>
     </div>
     <button class="clear-cache-btn hide-after-loading-assets"
             onclick="indexedDB.deleteDatabase('RockRaidersWeb'); location.reload()">
