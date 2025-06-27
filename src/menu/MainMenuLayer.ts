@@ -27,6 +27,8 @@ export class MainMenuLayer extends ScaledLayer {
     overlayTimeout?: NodeJS.Timeout
     overlayIndex: number = 0
     overlay?: FlicAnimOverlay
+    lastScrollY: number = 0
+    hasScrolled: boolean = false
 
     constructor(menuCfg: MenuEntryCfg) {
         super()
@@ -72,7 +74,7 @@ export class MainMenuLayer extends ScaledLayer {
             const gameEvent = new GameWheelEvent(event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             this.setScrollY(gameEvent.deltaY)
-            this.updateItemsHoveredState(gameEvent.canvasX, gameEvent.canvasY)
+            this.updateItemsHoveredState(gameEvent.canvasX, gameEvent.canvasY, false)
             return true
         })
         document.addEventListener('visibilitychange', () => {
@@ -114,18 +116,27 @@ export class MainMenuLayer extends ScaledLayer {
 
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (event.eventEnum === POINTER_EVENT.MOVE) {
-            this.updateItemsHoveredState(event.canvasX, event.canvasY)
+            this.updateItemsHoveredState(event.canvasX, event.canvasY, false)
             if (this.cfg.canScroll) {
-                if (event.canvasY < MainMenuLayer.SCROLL_AREA_HEIGHT) {
-                    this.setScrollSpeedY(-(MainMenuLayer.SCROLL_AREA_HEIGHT - event.canvasY))
-                } else if (event.canvasY > this.fixedHeight - MainMenuLayer.SCROLL_AREA_HEIGHT) {
-                    this.setScrollSpeedY(event.canvasY - (this.fixedHeight - MainMenuLayer.SCROLL_AREA_HEIGHT))
+                if (event.pointerType === 'mouse') {
+                    if (event.canvasY < MainMenuLayer.SCROLL_AREA_HEIGHT) {
+                        this.setScrollSpeedY(-(MainMenuLayer.SCROLL_AREA_HEIGHT - event.canvasY))
+                    } else if (event.canvasY > this.fixedHeight - MainMenuLayer.SCROLL_AREA_HEIGHT) {
+                        this.setScrollSpeedY(event.canvasY - (this.fixedHeight - MainMenuLayer.SCROLL_AREA_HEIGHT))
+                    } else {
+                        this.setScrollSpeedY(0)
+                    }
                 } else {
-                    this.setScrollSpeedY(0)
+                    const sy = event.canvasY
+                    if (this.lastScrollY) {
+                        this.setScrollY(this.lastScrollY - sy)
+                        this.hasScrolled = true
+                    }
+                    this.lastScrollY = sy
                 }
             }
         } else if (event.eventEnum === POINTER_EVENT.DOWN) {
-            this.updateItemsHoveredState(event.canvasX, event.canvasY)
+            this.updateItemsHoveredState(event.canvasX, event.canvasY, false)
             if (event.button === MOUSE_BUTTON.MAIN) {
                 let needsRedraw = false
                 this.items.forEach((item) => needsRedraw = item.onMouseDown() || needsRedraw)
@@ -134,9 +145,10 @@ export class MainMenuLayer extends ScaledLayer {
                     return true
                 }
             }
+            this.lastScrollY = event.canvasY
         } else if (event.eventEnum === POINTER_EVENT.UP) {
-            this.updateItemsHoveredState(event.canvasX, event.canvasY)
-            if (event.button === MOUSE_BUTTON.MAIN) {
+            this.updateItemsHoveredState(event.canvasX, event.canvasY, this.hasScrolled)
+            if (event.button === MOUSE_BUTTON.MAIN && !this.hasScrolled) {
                 let needsRedraw = false
                 this.items.forEach((item) => needsRedraw = item.onMouseUp() || needsRedraw)
                 if (needsRedraw) {
@@ -144,6 +156,8 @@ export class MainMenuLayer extends ScaledLayer {
                     return true
                 }
             }
+            this.lastScrollY = 0
+            this.hasScrolled = false
         }
         if (this.needsRedraw()) this.animationFrame.notifyRedraw()
         return false
@@ -162,9 +176,9 @@ export class MainMenuLayer extends ScaledLayer {
         }
     }
 
-    private updateItemsHoveredState(sx: number, sy: number) {
+    private updateItemsHoveredState(sx: number, sy: number, forceRelease: boolean) {
         let needsRedraw = false
-        let hasHovered = false
+        let hasHovered = forceRelease
         this.items.forEach((item) => {
             if (!hasHovered) {
                 const absY = sy + (item.scrollAffected ? this.scrollY : 0)
