@@ -1,16 +1,14 @@
 import { SpriteContext } from '../core/Sprite'
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
-import { HTML_GAME_CANVAS_CONTAINER } from '../core'
+import { HTML_GAME_CONTAINER } from '../core'
 
 export class DebugHelper {
-    static readonly element: HTMLElement = HTML_GAME_CANVAS_CONTAINER.appendChild(document.createElement('div'))
-    static readonly messageContainer: HTMLElement = this.element.appendChild(document.createElement('div'))
+    static readonly element: HTMLElement = HTML_GAME_CONTAINER.querySelector('div.game-debug-layer')
+    static readonly messageContainer: HTMLElement = this.element.querySelector('div.game-debug-message-container')
     static readonly maxNumFpsValues = 150
-    static {
-        DebugHelper.element.classList.add('game-debug-layer')
-        DebugHelper.element.style.display = 'none'
-        DebugHelper.messageContainer.style.overflowWrap = 'break-word'
-    }
+    static readonly nativeLog = console.log
+    static readonly nativeWarn = console.warn
+    static readonly nativeError = console.error
 
     readonly context: SpriteContext
     readonly fpsValues: number[] = []
@@ -24,43 +22,29 @@ export class DebugHelper {
     animationFrame?: number
 
     constructor() {
-        const fpsCanvas = DebugHelper.element.appendChild(document.createElement('canvas'))
-        fpsCanvas.style.width = '160px'
-        fpsCanvas.style.height = '80px'
-        fpsCanvas.style.position = 'absolute'
-        fpsCanvas.style.left = '50%'
-        fpsCanvas.style.top = '0'
-        fpsCanvas.style.scale = '1'
-        fpsCanvas.style.marginLeft = '-80px'
+        const fpsCanvas = DebugHelper.element.querySelector<HTMLCanvasElement>('canvas.game-debug-fps-canvas')
         const context = fpsCanvas.getContext('2d')
         if (!context) throw new Error('Could not get context for fps rendering')
         this.context = context
-        const copyToClipboard = DebugHelper.element.appendChild(document.createElement('button'))
-        copyToClipboard.innerText = 'Copy to clipboard'
-        copyToClipboard.style.width = '120px'
-        copyToClipboard.style.height = '50px'
-        copyToClipboard.style.position = 'absolute'
-        copyToClipboard.style.top = '0'
-        copyToClipboard.style.right = '0'
+        const closeButton = DebugHelper.element.querySelector<HTMLButtonElement>('button.game-debug-close-button')
+        closeButton.onclick = () => DebugHelper.toggleDisplay()
+        const copyToClipboard = DebugHelper.element.querySelector<HTMLButtonElement>('button.game-debug-copy-button')
         copyToClipboard.onclick = () => {
             navigator.clipboard.writeText(Array.from(DebugHelper.messageContainer.children).map((e) => (e as HTMLElement).innerText).join('\n')).then()
         }
     }
 
     static intersectConsoleLogging() {
-        const nativeLog = console.log
-        const nativeWarn = console.warn
-        const nativeError = console.error
         console.log = (message?: any, ...optionalParams: any[]): void => {
-            nativeLog(message, ...optionalParams)
+            this.nativeLog(message, ...optionalParams)
             this.addDebugMessage(message, optionalParams, '#ffffff')
         }
         console.warn = (message?: any, ...optionalParams: any[]): void => {
-            nativeWarn(message, ...optionalParams)
+            this.nativeWarn(message, ...optionalParams)
             this.addDebugMessage(message, optionalParams, '#ffff00')
         }
         console.error = (message?: any, ...optionalParams: any[]) => {
-            nativeError(message, ...optionalParams)
+            this.nativeError(message, ...optionalParams)
             this.addDebugMessage(message, optionalParams, '#ff0000')
         }
     }
@@ -68,15 +52,20 @@ export class DebugHelper {
     static addDebugMessage(message: any, optionalParams: any[], color: string) {
         try {
             if (DebugHelper.messageContainer.children.length > 100 && DebugHelper.messageContainer.lastChild) DebugHelper.messageContainer.removeChild(DebugHelper.messageContainer.lastChild)
-            const msg = DebugHelper.messageContainer.insertBefore(document.createElement('DIV'), DebugHelper.messageContainer.firstChild)
+            const msg = DebugHelper.messageContainer.insertBefore(document.createElement('div'), DebugHelper.messageContainer.firstChild)
             msg.innerText = message
             optionalParams.forEach((p) => msg.innerText += `\n${JSON.stringify(p)}`)
             msg.style.padding = '0.1em'
             msg.style.color = color
             msg.style.userSelect = 'none'
         } catch (e) {
-            // do nothing to avoid circular calls
+            this.nativeError(e)
         }
+    }
+
+    static toggleDisplay(): void {
+        if (!this.element) return
+        this.element.style.display = this.element.style.display === 'none' ? 'block' : 'none'
     }
 
     show() {

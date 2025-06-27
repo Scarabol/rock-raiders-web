@@ -5,6 +5,7 @@ import { LoadingLayer } from './layer/LoadingLayer'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { HTML_GAME_CANVAS_CONTAINER, HTML_GAME_CONTAINER } from '../core'
 import { VideoLayer } from './layer/VideoLayer'
+import { DebugHelper } from './DebugHelper'
 
 export class ScreenMaster {
     readonly layers: AbstractLayer[] = []
@@ -52,10 +53,7 @@ export class ScreenMaster {
             this.dispatchEvent(new KeyboardEvent('keydown', {code: ' ', key: ' '}))
             setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: ' ', key: ' '})), 69)
         })
-        this.setupButton('button-debug', () => {
-            const debugLayers = Array.from(document.getElementsByClassName('game-debug-layer')) as HTMLElement[]
-            debugLayers.forEach((elem) => elem.style.display = elem.style.display === 'none' ? 'block' : 'none')
-        })
+        this.setupButton('button-debug', () => DebugHelper.toggleDisplay())
         this.setupButton('button-screenshot', () => {
             this.saveScreenshot()
         })
