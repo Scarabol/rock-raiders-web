@@ -44,7 +44,6 @@ export class NamingLayer extends ScaledLayer {
     }
 
     private onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
-        context.clearRect(0, 0, this.fixedWidth, this.fixedHeight)
         if (!this.showBackdrop) return
         context.fillStyle = 'rgba(0, 0, 0, 0.25)'
         context.fillRect(0, 0, this.fixedWidth, this.fixedHeight)

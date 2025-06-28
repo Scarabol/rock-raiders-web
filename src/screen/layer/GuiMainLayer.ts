@@ -39,7 +39,6 @@ export class GuiBaseLayer extends ScaledLayer {
             EventBroker.subscribe(eventType, callback)
         }
         this.animationFrame.onRedraw = (context) => {
-            context.clearRect(0, 0, this.canvas.width, this.canvas.height)
             this.rootElement.onRedraw(context)
         }
         new Map<keyof HTMLElementEventMap, POINTER_EVENT>([

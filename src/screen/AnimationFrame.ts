@@ -7,7 +7,7 @@ export class AnimationFrame {
     readonly context: SpriteContext
     readonly readbackContext: SpriteContext
     private lastAnimationRequest?: number
-    private redrawCallback?: AnimationFrameRedrawCallback
+    private onRedrawCallback?: AnimationFrameRedrawCallback
     scaleX: number = 1
     scaleY: number = 1
 
@@ -17,17 +17,25 @@ export class AnimationFrame {
     }
 
     set onRedraw(callback: AnimationFrameRedrawCallback) {
-        this.redrawCallback = callback
+        this.onRedrawCallback = callback
     }
 
     notifyRedraw() {
-        const callback = this.redrawCallback
-        if (!callback) return
+        const onRedraw = this.onRedrawCallback
+        if (!onRedraw) return
         this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
         this.lastAnimationRequest = requestAnimationFrame(() => {
-            callback(this.context)
-            callback(this.readbackContext)
+            AnimationFrame.clearAndRedrawContext(onRedraw, this.context)
+            AnimationFrame.clearAndRedrawContext(onRedraw, this.readbackContext)
         })
+    }
+
+    private static clearAndRedrawContext(onRedraw: AnimationFrameRedrawCallback, context: SpriteContext): void {
+        context.save()
+        context.setTransform(1, 0, 0, 1, 0, 0)
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height)
+        context.restore()
+        onRedraw(context)
     }
 
     scale(scaleX: number, scaleY: number) {
