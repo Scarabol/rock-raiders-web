@@ -126,7 +126,6 @@ export class RewardScreen {
             return false
         })
         this.btnLayer.animationFrame.onRedraw = (context) => {
-            context.clearRect(0, 0, this.btnLayer.canvas.width, this.btnLayer.canvas.height)
             this.btnSave.draw(context)
             this.btnAdvance.draw(context)
         }
@@ -233,7 +232,6 @@ export class RewardScreen {
         BitmapFontWorkerPool.instance.createTextImage(this.cfg.titleFont, this.resultText)
             .then((gameResultTextImg) => {
                 this.resultsLayer.animationFrame.onRedraw = (context) => {
-                    context.clearRect(0, 0, this.resultsLayer.fixedWidth, this.resultsLayer.fixedHeight)
                     for (let c = 0; c <= this.resultIndex; c++) {
                         const img = this.images[c]
                         if (img) context.drawImage(img.img, img.x, img.y)
@@ -255,7 +253,6 @@ export class RewardScreen {
                 this.descriptionTextLayer.animationFrame.onRedraw = (context) => {
                     const descriptionTextImg = this.texts[this.resultIndex]
                     if (!descriptionTextImg) return
-                    context.clearRect(0, 0, this.descriptionTextLayer.fixedWidth, this.descriptionTextLayer.fixedHeight)
                     const tx = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos.x : 305
                     const ty = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos.y : 195
                     context.drawImage(descriptionTextImg, tx - descriptionTextImg.width / 2, ty)

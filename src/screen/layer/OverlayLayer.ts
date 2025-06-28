@@ -50,7 +50,6 @@ export class OverlayLayer extends ScaledLayer {
         this.panelOptions.onContinueMission = () => this.setActivePanel(undefined)
         this.panelBriefing.onContinueMission = () => this.setActivePanel(undefined)
         this.animationFrame.onRedraw = (context) => {
-            context.clearRect(0, 0, this.canvas.width, this.canvas.height)
             this.rootElement.onRedraw(context)
         }
         this.animationFrame.notifyRedraw()
