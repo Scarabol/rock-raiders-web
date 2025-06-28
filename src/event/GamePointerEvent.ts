@@ -7,7 +7,7 @@ export class GamePointerEvent implements PointerEventInit {
     bubbles: boolean
     clientX: number
     clientY: number
-    pointerType: string
+    pointerType: '' | 'mouse' | 'pen' | 'touch'
     button: MOUSE_BUTTON
     ctrlKey: boolean
     metaKey: boolean
@@ -23,10 +23,22 @@ export class GamePointerEvent implements PointerEventInit {
         // all event attributes used by three.js controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
         this.clientX = event.clientX
         this.clientY = event.clientY
-        this.pointerType = event.pointerType
+        this.pointerType = GamePointerEvent.toPointerType(event.pointerType)
         this.button = event.button
         this.ctrlKey = event.ctrlKey
         this.metaKey = event.metaKey
         this.shiftKey = event.shiftKey
+    }
+
+    private static toPointerType(pointerType: string | undefined): '' | 'mouse' | 'pen' | 'touch' {
+        if (!pointerType) return ''
+        const lPointerType = pointerType.toLowerCase()
+        if (lPointerType === 'touch') {
+            return 'touch'
+        } else if (lPointerType === 'pen') {
+            return 'pen'
+        } else {
+            return 'mouse'
+        }
     }
 }
