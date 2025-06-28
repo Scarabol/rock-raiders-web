@@ -52,7 +52,6 @@ export class MainMenuLayer extends ScaledLayer {
         })
         if (this.cfg.playRandom) PRNG.unsafe.shuffle(this.cfg.overlays)
         this.animationFrame.onRedraw = (context) => {
-            context.clearRect(0, 0, this.fixedWidth, this.fixedHeight)
             if (this.menuImage) context.drawImage(this.menuImage, 0, -this.scrollY)
             this.overlay?.draw(context)
             if (titleImage) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position.y)

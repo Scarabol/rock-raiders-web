@@ -15,7 +15,6 @@ export class SelectionFrameLayer extends ScreenLayer {
         this.ratio = SaveGameManager.calcScreenRatio()
         this.animationFrame = new AnimationFrame(this.canvas, this.readbackCanvas)
         this.animationFrame.onRedraw = (context) => {
-            context.clearRect(0, 0, this.canvas.width, this.canvas.height)
             if (!this.selectionRect) return
             context.strokeStyle = 'rgba(128, 192, 192, 0.5)'
             context.lineWidth = 2
