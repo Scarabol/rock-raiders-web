@@ -13,11 +13,8 @@ import { WeaponTypeCfg } from '../cfg/WeaponTypeCfg'
 import { PositionComponent } from '../game/component/PositionComponent'
 
 export class JobCreateEvent extends BaseEvent {
-    job: Job
-
-    constructor(job: Job) {
+    constructor(readonly job: Job) {
         super(EventKey.JOB_CREATE)
-        this.job = job
     }
 }
 
@@ -34,8 +31,8 @@ export class RequestedVehiclesChanged extends BaseEvent {
 }
 
 export class MaterialAmountChanged extends BaseEvent {
-    numCrystal: number
-    totalOre: number
+    readonly numCrystal: number
+    readonly totalOre: number
 
     constructor() {
         super(EventKey.MATERIAL_AMOUNT_CHANGED)
@@ -45,7 +42,7 @@ export class MaterialAmountChanged extends BaseEvent {
 }
 
 export class UsedCrystalsChanged extends BaseEvent {
-    usedCrystals: number
+    readonly usedCrystals: number
 
     constructor() {
         super(EventKey.USED_CRYSTALS_CHANGED)
@@ -96,11 +93,8 @@ export class LevelSelectedEvent extends BaseEvent {
 }
 
 export class AirLevelChanged extends BaseEvent {
-    airLevel: number
-
-    constructor(airLevel: number) {
+    constructor(readonly airLevel: number) {
         super(EventKey.AIR_LEVEL_CHANGED)
-        this.airLevel = airLevel
     }
 }
 
@@ -117,11 +111,8 @@ export class NerpMessageEvent extends BaseEvent {
 }
 
 export class UpdatePriorities extends BaseEvent {
-    priorityList: PriorityEntry[]
-
-    constructor(priorityList: PriorityEntry[]) {
+    constructor(readonly priorityList: PriorityEntry[]) {
         super(EventKey.UPDATE_PRIORITIES)
-        this.priorityList = priorityList
     }
 }
 
@@ -144,10 +135,7 @@ export class MonsterLaserHitEvent extends BaseEvent {
 }
 
 export class WorldLocationEvent extends BaseEvent {
-    location: PositionComponent
-
-    constructor(eventType: keyof WorldLocationEventMap, location: PositionComponent) {
+    constructor(eventType: keyof WorldLocationEventMap, readonly location: PositionComponent) {
         super(eventType)
-        this.location = location
     }
 }
