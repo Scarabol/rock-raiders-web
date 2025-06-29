@@ -79,11 +79,10 @@ export class OverlayLayer extends ScaledLayer {
         this.addEventListener('wheel', (): boolean => this.panels.some((p) => !p.hidden))
     }
 
-    showBriefing(levelConf: LevelConfData) {
+    setupBriefing(levelConf: LevelConfData) {
         const objectiveSfx = `Stream_Objective_Levels::${levelConf.levelName}`.toLowerCase()
         this.panelBriefing.setup(GameConfig.instance.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage, objectiveSfx)
         this.panelBriefing.onContinueMission = () => this.setActivePanel(undefined)
-        this.setActivePanel(SaveGameManager.preferences.skipBriefings ? undefined : this.panelBriefing)
     }
 
     showResultBriefing(result: GameResultState, levelConf: LevelConfData, onContinue: () => void) {
