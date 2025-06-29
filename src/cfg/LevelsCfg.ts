@@ -133,7 +133,20 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
         this.frontEndX = cfgValue.getValue('FrontEndX').toNumber()
         this.frontEndY = cfgValue.getValue('FrontEndY').toNumber()
         this.frontEndOpen = cfgValue.getValue('FrontEndOpen').toBoolean()
-        cfgValue.getRecord('Priorities').forEachCfgEntryValue((value, name) => this.priorities.push(new LevelPrioritiesEntryConfig(name, value.toBoolean())))
+        cfgValue.getRecord('Priorities').forEachCfgEntryValue((value, name) => {
+            const prio = new LevelPrioritiesEntryConfig(name, value.toBoolean())
+            if ([ // XXX Prio list should be open for mods, BUT original specifies AI_Priority_Train, but does not show it in-game
+                PriorityIdentifier.GET_IN,
+                PriorityIdentifier.CRYSTAL,
+                PriorityIdentifier.ORE,
+                PriorityIdentifier.REPAIR,
+                PriorityIdentifier.CLEARING,
+                PriorityIdentifier.DESTRUCTION,
+                PriorityIdentifier.CONSTRUCTION,
+                PriorityIdentifier.REINFORCE,
+                PriorityIdentifier.RECHARGE,
+            ].includes(prio.key)) this.priorities.push(prio)
+        })
         const valReward = cfgValue.getRecordOptional('Reward')
         if (valReward) this.reward = new LevelRewardConfig().setFromRecord(valReward)
         this.menuBMP = cfgValue.getValue('MenuBMP').toArray(',', 3).map((v) => v.toFileName())
