@@ -1,7 +1,6 @@
 import { ButtonInfoDockCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventKey } from '../../event/EventKeyEnum'
-import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { InfoDockButton } from './InfoDockButton'
@@ -10,6 +9,7 @@ import { InformationPanel } from './InformationPanel'
 import { CameraControl, PlaySoundEvent } from '../../event/GuiCommand'
 import { WorldLocationEventMap } from '../../event/EventTypeMap'
 import { SaveGameManager } from '../../resource/SaveGameManager'
+import { WorldLocationEvent } from '../../event/WorldEvents'
 
 export class InfoDockPanel extends Panel {
     readonly stackButtons: InfoDockButton[] = []

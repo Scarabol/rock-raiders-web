@@ -25,7 +25,6 @@ import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
-import { GenericDeathEvent, WorldLocationEvent } from '../../../event/WorldLocationEvent'
 import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
@@ -42,6 +41,7 @@ import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 import { SelectionNameComponent } from '../../component/SelectionNameComponent'
 import { PRNG } from '../../factory/PRNG'
 import { SaveGameRaider } from '../../../resource/SaveGameManager'
+import { WorldLocationEvent } from '../../../event/WorldEvents'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -126,7 +126,7 @@ export class Raider implements Updatable, JobFulfiller {
     beamUp() {
         this.stopJob()
         const components = this.worldMgr.ecs.getComponents(this.entity)
-        EventBroker.publish(new GenericDeathEvent(components.get(PositionComponent)))
+        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_DEATH, components.get(PositionComponent)))
         components.get(SelectionFrameComponent)?.deselect()
         components.get(SelectionNameComponent)?.setVisible(false)
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)

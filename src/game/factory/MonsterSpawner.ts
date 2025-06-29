@@ -17,7 +17,6 @@ import { LastWillComponent } from '../component/LastWillComponent'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { MaterialSpawner } from './MaterialSpawner'
-import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { EventKey } from '../../event/EventKeyEnum'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 import { SlugBehaviorComponent, SlugBehaviorState } from '../component/SlugBehaviorComponent'
@@ -29,6 +28,7 @@ import { EventBroker } from '../../event/EventBroker'
 import { TooltipComponent } from '../component/TooltipComponent'
 import { SceneSelectionComponent } from '../component/SceneSelectionComponent'
 import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
+import { WorldLocationEvent } from '../../event/WorldEvents'
 
 export class MonsterSpawner {
     static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {

@@ -5,11 +5,12 @@ import { EventKey } from './EventKeyEnum'
 import { Vector2 } from 'three'
 import { GameResultState } from '../game/model/GameResult'
 import { LevelConfData } from '../game/LevelLoader'
-import { BaseEvent } from './EventTypeMap'
+import { BaseEvent, WorldLocationEventMap } from './EventTypeMap'
 import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { Surface } from '../game/terrain/Surface'
 import { GameEntity } from '../game/ECS'
 import { WeaponTypeCfg } from '../cfg/WeaponTypeCfg'
+import { PositionComponent } from '../game/component/PositionComponent'
 
 export class JobCreateEvent extends BaseEvent {
     job: Job
@@ -139,5 +140,14 @@ export class ShootLaserEvent extends BaseEvent {
 export class MonsterLaserHitEvent extends BaseEvent {
     constructor(readonly entity: GameEntity, readonly weaponCfg: WeaponTypeCfg) {
         super(EventKey.MONSTER_LASER_HIT)
+    }
+}
+
+export class WorldLocationEvent extends BaseEvent {
+    location: PositionComponent
+
+    constructor(eventType: keyof WorldLocationEventMap, location: PositionComponent) {
+        super(eventType)
+        this.location = location
     }
 }

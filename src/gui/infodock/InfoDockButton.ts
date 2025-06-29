@@ -1,11 +1,11 @@
 import { InfoButtonCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext } from '../../core/Sprite'
 import { clearTimeoutSafe } from '../../core/Util'
-import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { Button } from '../base/Button'
 import { InfoDockPanel } from './InfoDockPanel'
 import { InfoMessagesEntryConfig } from '../../cfg/InfoMessagesCfg'
+import { WorldLocationEvent } from '../../event/WorldEvents'
 
 export class InfoDockButton extends Button {
     messages: WorldLocationEvent[] = [] // newest message first

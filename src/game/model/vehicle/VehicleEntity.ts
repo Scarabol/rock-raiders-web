@@ -29,7 +29,6 @@ import { PositionComponent } from '../../component/PositionComponent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { VehicleUpgrade, VehicleUpgrades } from './VehicleUpgrade'
-import { GenericDeathEvent, WorldLocationEvent } from '../../../event/WorldLocationEvent'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
@@ -48,6 +47,7 @@ import { MaterialSpawner } from '../../factory/MaterialSpawner'
 import { MovableStatsComponent } from '../../component/MovableStatsComponent'
 import { PRNG } from '../../factory/PRNG'
 import { SaveGameManager } from '../../../resource/SaveGameManager'
+import { WorldLocationEvent } from '../../../event/WorldEvents'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -150,7 +150,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             this.dropDriver()
         }
         const components = this.worldMgr.ecs.getComponents(this.entity)
-        EventBroker.publish(new GenericDeathEvent(components.get(PositionComponent)))
+        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_DEATH, components.get(PositionComponent)))
         components.get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)

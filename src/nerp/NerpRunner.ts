@@ -11,11 +11,10 @@ import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL } from '../params'
-import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, RequestedRaidersChanged } from '../event/WorldEvents'
+import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, RequestedRaidersChanged, WorldLocationEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { MonsterSpawner } from '../game/factory/MonsterSpawner'
-import { SlugEmergeEvent } from '../event/WorldLocationEvent'
 import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEntityComponent'
 import { AnimEntityActivity, SlugActivity } from '../game/model/anim/AnimationActivity'
 import { SlugBehaviorComponent, SlugBehaviorState } from '../game/component/SlugBehaviorComponent'
@@ -348,7 +347,7 @@ export class NerpRunner {
             sceneEntity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             behaviorComponent.state = SlugBehaviorState.IDLE
         })
-        EventBroker.publish(new SlugEmergeEvent(components.get(PositionComponent)))
+        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_SLUG_EMERGE, components.get(PositionComponent)))
     }
 
     /**
