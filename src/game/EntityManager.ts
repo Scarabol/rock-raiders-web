@@ -348,7 +348,7 @@ export class EntityManager {
     }
 
     removeEntity(entity: GameEntity) {
-        const healthComponent = this.worldMgr.ecs.getComponents(entity)?.get(HealthComponent)
+        const healthComponent = this.worldMgr.ecs.getComponents(entity).get(HealthComponent)
         const healthBarSprite = healthComponent?.healthBarSprite
         if (healthBarSprite) {
             healthBarSprite.visible = false

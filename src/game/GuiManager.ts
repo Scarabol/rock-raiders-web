@@ -188,7 +188,7 @@ export class GuiManager {
             }
         })
         EventBroker.subscribe(EventKey.FOLLOWER_SET_LOOK_AT, (event: FollowerSetLookAtEvent) => {
-            const sceneEntity = worldMgr.ecs.getComponents(event.entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+            const sceneEntity = worldMgr.ecs.getComponents(event.entity).get(AnimatedSceneEntityComponent)?.sceneEntity
             if (sceneEntity) cameraControls.jumpTo(sceneEntity.getWorldPosition(new Vector3()))
         })
         EventBroker.subscribe(EventKey.COMMAND_REPAIR_LAVA, () => {

@@ -129,7 +129,7 @@ export class GameLayer extends ScreenLayer {
             cursorTarget.surface?.entity,
         ].map((e) => {
             if (!e) return null
-            return this.worldMgr.ecs.getComponents(e)?.get(TooltipComponent)
+            return this.worldMgr.ecs.getComponents(e).get(TooltipComponent)
         }).find((c) => !!c)
         if (!tooltipComponent) return
         EventBroker.publish(tooltipComponent.createEvent())

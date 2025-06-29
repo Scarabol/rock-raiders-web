@@ -363,7 +363,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             const fulfillerPos = this.getPosition2D()
             const matNearby = this.worldMgr.entityMgr.materials.find((m) => { // XXX Move to entity manager and optimize with quad tree
                 if (m.entityType !== this.job?.carryItem?.entityType || m.carryJob?.hasFulfiller() || m.carryJob?.jobState !== JobState.INCOMPLETE) return false
-                const pos = this.worldMgr.ecs.getComponents(m.entity)?.get(PositionComponent)
+                const pos = this.worldMgr.ecs.getComponents(m.entity).get(PositionComponent)
                 if (!pos) return false
                 return pos.getPosition2D().distanceToSquared(fulfillerPos) < Math.pow(3 * TILESIZE, 2) // XXX Improve range, since this is executed on each frame
             })

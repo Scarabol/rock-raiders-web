@@ -62,7 +62,7 @@ export class MaterialEntity {
         this.sceneEntity.position.copy(position)
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
         this.sceneEntity.visible = surface.discovered
-        const positionComponent = this.worldMgr.ecs.getComponents(this.entity)?.get(PositionComponent)
+        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
         if (positionComponent) {
             positionComponent.position.copy(position)
             positionComponent.surface = surface

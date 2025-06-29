@@ -383,7 +383,7 @@ export class NerpRunner {
             console.warn(`Invalid recorded entity index ${recordedEntity} given`, this.worldMgr.entityMgr.recordedEntities)
             return
         }
-        const sceneEntity = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity).get(AnimatedSceneEntityComponent)?.sceneEntity
         if (!sceneEntity) {
             console.warn(`Given entity ${entity} has no scene entity to jump to`)
             return
@@ -398,7 +398,7 @@ export class NerpRunner {
             console.warn(`Invalid monster entity index ${monster} given`, this.worldMgr.entityMgr.rockMonsters)
             return
         }
-        const sceneEntity = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity).get(AnimatedSceneEntityComponent)?.sceneEntity
         if (!sceneEntity) {
             console.warn(`Given entity ${entity} has no scene entity to jump to`)
             return
@@ -629,7 +629,7 @@ export class NerpRunner {
             console.warn(`Invalid entity ${recordedEntity} given`)
             return
         }
-        const sceneEntity = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity).get(AnimatedSceneEntityComponent)?.sceneEntity
         if (!sceneEntity) {
             console.warn(`Given entity ${entity} has no scene entity to point to`)
             return
