@@ -2,13 +2,13 @@ import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { Surface } from '../../../terrain/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
-import { JobFulfiller } from '../Job'
+import { Job, JobFulfiller } from '../Job'
 import { PriorityIdentifier } from '../PriorityIdentifier'
-import { ShareableJob } from '../ShareableJob'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { GameEntity } from '../../../ECS'
 
-export class DrillJob extends ShareableJob {
+export class DrillJob extends Job {
+    readonly fulfiller: JobFulfiller[] = []
     digPositionsByFulfiller: Map<GameEntity, PathTarget[]> = new Map()
 
     constructor(readonly surface: Surface) {
@@ -54,5 +54,20 @@ export class DrillJob extends ShareableJob {
 
     getJobBubble(): keyof BubblesCfg {
         return 'bubbleDrill'
+    }
+
+    assign(fulfiller: JobFulfiller) {
+        const index = this.fulfiller.indexOf(fulfiller)
+        if (fulfiller && index === -1) {
+            this.fulfiller.push(fulfiller)
+        }
+    }
+
+    unAssign(fulfiller: JobFulfiller) {
+        this.fulfiller.remove(fulfiller)
+    }
+
+    hasFulfiller(): boolean {
+        return this.fulfiller.length > 0
     }
 }
