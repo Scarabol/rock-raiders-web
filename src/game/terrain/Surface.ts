@@ -8,7 +8,6 @@ import { WorldManager } from '../WorldManager'
 import { BuildingEntity } from '../model/building/BuildingEntity'
 import { BuildingSite } from '../model/building/BuildingSite'
 import { EntityType } from '../model/EntityType'
-import { CarryJob } from '../model/job/CarryJob'
 import { ClearRubbleJob } from '../model/job/surface/ClearRubbleJob'
 import { DrillJob } from '../model/job/surface/DrillJob'
 import { ReinforceJob } from '../model/job/surface/ReinforceJob'
@@ -44,7 +43,7 @@ export class Surface {
     reinforced: boolean = false
     drillJob?: DrillJob
     reinforceJob?: ReinforceJob
-    dynamiteJob?: CarryJob
+    dynamiteJob?: Job
     clearRubbleJob?: ClearRubbleJob
     seamLevel: number = 0
     drillProgress: number = 0
