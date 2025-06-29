@@ -15,6 +15,7 @@ import { MaterialSpawner } from '../../factory/MaterialSpawner'
 import { JobState } from './JobState'
 import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
+import { Vector2 } from 'three'
 
 export class CarryJob extends Job {
     fulfiller?: JobFulfiller
@@ -77,7 +78,9 @@ export class CarryJob extends Job {
                 if (!carryItem.targetSite || carryItem.targetSite.complete || carryItem.targetSite.canceled) {
                     return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
                 } else {
-                    return [PathTarget.fromSite(carryItem.targetSite, carryItem.location)].filter((p) => !!entity.findShortestPath(p))
+                    const targetCenter = carryItem.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(carryItem.location).getCenterWorld2D()
+                    const focusPoint = carryItem.location.clone().add(new Vector2().copy(carryItem.location).sub(targetCenter))
+                    return [PathTarget.fromSite(carryItem.targetSite, carryItem.location, focusPoint)].filter((p) => !!entity.findShortestPath(p))
                 }
             case EntityType.DYNAMITE:
                 if (carryItem.targetSurface?.isDigable() && carryItem.targetSurface?.dynamiteJob === this) {
@@ -100,7 +103,7 @@ export class CarryJob extends Job {
     private findReachableBuildingSiteWithNeed(entityMgr: EntityManager, carryItem: MaterialEntity, entity: JobFulfiller) {
         return entityMgr.buildingSites
             .filter((b) => b.needs(carryItem.entityType))
-            .map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
+            .map((s) => PathTarget.fromSite(s, s.getRandomDropPosition(), undefined))
             .filter((p) => !!entity.findShortestPath(p))
     }
 
