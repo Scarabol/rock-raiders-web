@@ -11,11 +11,10 @@ import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL } from '../params'
-import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, RequestedRaidersChanged } from '../event/WorldEvents'
+import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, RequestedRaidersChanged, WorldLocationEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { MonsterSpawner } from '../game/factory/MonsterSpawner'
-import { SlugEmergeEvent } from '../event/WorldLocationEvent'
 import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEntityComponent'
 import { AnimEntityActivity, SlugActivity } from '../game/model/anim/AnimationActivity'
 import { SlugBehaviorComponent, SlugBehaviorState } from '../game/component/SlugBehaviorComponent'
@@ -348,7 +347,7 @@ export class NerpRunner {
             sceneEntity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             behaviorComponent.state = SlugBehaviorState.IDLE
         })
-        EventBroker.publish(new SlugEmergeEvent(components.get(PositionComponent)))
+        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_SLUG_EMERGE, components.get(PositionComponent)))
     }
 
     /**
@@ -383,7 +382,7 @@ export class NerpRunner {
             console.warn(`Invalid recorded entity index ${recordedEntity} given`, this.worldMgr.entityMgr.recordedEntities)
             return
         }
-        const sceneEntity = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity).get(AnimatedSceneEntityComponent)?.sceneEntity
         if (!sceneEntity) {
             console.warn(`Given entity ${entity} has no scene entity to jump to`)
             return
@@ -398,7 +397,7 @@ export class NerpRunner {
             console.warn(`Invalid monster entity index ${monster} given`, this.worldMgr.entityMgr.rockMonsters)
             return
         }
-        const sceneEntity = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity).get(AnimatedSceneEntityComponent)?.sceneEntity
         if (!sceneEntity) {
             console.warn(`Given entity ${entity} has no scene entity to jump to`)
             return
@@ -629,7 +628,7 @@ export class NerpRunner {
             console.warn(`Invalid entity ${recordedEntity} given`)
             return
         }
-        const sceneEntity = this.worldMgr.ecs.getComponents(entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity).get(AnimatedSceneEntityComponent)?.sceneEntity
         if (!sceneEntity) {
             console.warn(`Given entity ${entity} has no scene entity to point to`)
             return

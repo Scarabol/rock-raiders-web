@@ -5,24 +5,16 @@ import { EventKey } from './EventKeyEnum'
 import { Vector2 } from 'three'
 import { GameResultState } from '../game/model/GameResult'
 import { LevelConfData } from '../game/LevelLoader'
-import { BaseEvent } from './EventTypeMap'
+import { BaseEvent, WorldLocationEventMap } from './EventTypeMap'
 import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { Surface } from '../game/terrain/Surface'
 import { GameEntity } from '../game/ECS'
 import { WeaponTypeCfg } from '../cfg/WeaponTypeCfg'
+import { PositionComponent } from '../game/component/PositionComponent'
 
-export abstract class JobEvent extends BaseEvent {
-    job: Job
-
-    protected constructor(job: Job) {
+export class JobCreateEvent extends BaseEvent {
+    constructor(readonly job: Job) {
         super(EventKey.JOB_CREATE)
-        this.job = job
-    }
-}
-
-export class JobCreateEvent extends JobEvent {
-    constructor(job: Job) {
-        super(job)
     }
 }
 
@@ -39,8 +31,8 @@ export class RequestedVehiclesChanged extends BaseEvent {
 }
 
 export class MaterialAmountChanged extends BaseEvent {
-    numCrystal: number
-    totalOre: number
+    readonly numCrystal: number
+    readonly totalOre: number
 
     constructor() {
         super(EventKey.MATERIAL_AMOUNT_CHANGED)
@@ -50,7 +42,7 @@ export class MaterialAmountChanged extends BaseEvent {
 }
 
 export class UsedCrystalsChanged extends BaseEvent {
-    usedCrystals: number
+    readonly usedCrystals: number
 
     constructor() {
         super(EventKey.USED_CRYSTALS_CHANGED)
@@ -101,11 +93,8 @@ export class LevelSelectedEvent extends BaseEvent {
 }
 
 export class AirLevelChanged extends BaseEvent {
-    airLevel: number
-
-    constructor(airLevel: number) {
+    constructor(readonly airLevel: number) {
         super(EventKey.AIR_LEVEL_CHANGED)
-        this.airLevel = airLevel
     }
 }
 
@@ -122,11 +111,8 @@ export class NerpMessageEvent extends BaseEvent {
 }
 
 export class UpdatePriorities extends BaseEvent {
-    priorityList: PriorityEntry[]
-
-    constructor(priorityList: PriorityEntry[]) {
+    constructor(readonly priorityList: PriorityEntry[]) {
         super(EventKey.UPDATE_PRIORITIES)
-        this.priorityList = priorityList
     }
 }
 
@@ -145,5 +131,11 @@ export class ShootLaserEvent extends BaseEvent {
 export class MonsterLaserHitEvent extends BaseEvent {
     constructor(readonly entity: GameEntity, readonly weaponCfg: WeaponTypeCfg) {
         super(EventKey.MONSTER_LASER_HIT)
+    }
+}
+
+export class WorldLocationEvent extends BaseEvent {
+    constructor(eventType: keyof WorldLocationEventMap, readonly location: PositionComponent) {
+        super(eventType)
     }
 }

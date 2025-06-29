@@ -1,7 +1,6 @@
 import { AdvanceAfterRewardsEvent, BuildingsChangedEvent, DeselectAll, FollowerSetCanvasEvent, FollowerSetLookAtEvent, GuiBackButtonClicked, GuiBuildButtonClicked, GuiButtonBlinkEvent, GuiGetToolButtonClicked, GuiTrainRaiderButtonClicked, InitRadarMap, RaidersAmountChangedEvent, RaiderTrainingCompleteEvent, SelectionChanged, SelectionFrameChangeEvent, SetSpaceToContinueEvent, ShowGameResultEvent, ShowMissionAdvisorEvent, ShowMissionBriefingEvent, ShowOptionsEvent, UpdateRadarCamera, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain, VehicleUpgradeCompleteEvent } from './LocalEvents'
-import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, MonsterEmergeEvent, MonsterLaserHitEvent, NerpMessageEvent, NerpSuppressArrowEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, ShootLaserEvent, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged } from './WorldEvents'
+import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, MonsterEmergeEvent, MonsterLaserHitEvent, NerpMessageEvent, NerpSuppressArrowEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, ShootLaserEvent, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged, WorldLocationEvent } from './WorldEvents'
 import { CameraControl, CancelBuilding, CancelSurfaceJobs, ChangeBuildingPowerState, ChangeCameraEvent, ChangePreferences, ChangeTooltip, CreateClearRubbleJob, CreateDrillJob, CreateDynamiteJob, CreatePowerPath, CreateReinforceJob, DropBirdScarer, HideTooltip, MakeRubble, PickTool, PlaceFence, PlaySoundEvent, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade, RepairBuilding, RepairLava, SelectBuildMode, TrainRaider, UpgradeBuilding, UpgradeVehicle, VehicleBeamUp, VehicleCallMan, VehicleDriverGetOut, VehicleLoad, VehicleUnload } from './GuiCommand'
-import { CrystalFoundEvent, GenericDeathEvent, GenericMonsterEvent, LandslideEvent, PowerDrainEvent, RaiderDiscoveredEvent, SlugEmergeEvent, UnderAttackEvent, WorldLocationEvent } from './WorldLocationEvent'
 
 export class BaseEvent {
     constructor(readonly type: keyof EventTypeMap) {
@@ -102,16 +101,16 @@ export interface DefaultEventMap {
 }
 
 export interface WorldLocationEventMap {
-    'location-death': GenericDeathEvent
-    'location-monster': GenericMonsterEvent
+    'location-death': WorldLocationEvent
+    'location-monster': WorldLocationEvent
     'location-monster-gone': WorldLocationEvent
-    'location-crystal-found': CrystalFoundEvent
-    'location-under-attack': UnderAttackEvent
-    'location-landslide': LandslideEvent
-    'location-power-drain': PowerDrainEvent
-    'location-slug-emerge': SlugEmergeEvent
+    'location-crystal-found': WorldLocationEvent
+    'location-under-attack': WorldLocationEvent
+    'location-landslide': WorldLocationEvent
+    'location-power-drain': WorldLocationEvent
+    'location-slug-emerge': WorldLocationEvent
     'location-slug-gone': WorldLocationEvent
-    'location-raider-discovered': RaiderDiscoveredEvent
+    'location-raider-discovered': WorldLocationEvent
 }
 
 export interface EventTypeMap extends DefaultEventMap, WorldLocationEventMap {

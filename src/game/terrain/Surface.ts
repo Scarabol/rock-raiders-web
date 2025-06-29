@@ -1,14 +1,13 @@
 import { Raycaster, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../audio/SoundManager'
 import { DeselectAll, SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
-import { CavernDiscovered, JobCreateEvent, OreFoundEvent } from '../../event/WorldEvents'
-import { CrystalFoundEvent } from '../../event/WorldLocationEvent'
+import { CavernDiscovered, JobCreateEvent, OreFoundEvent, WorldLocationEvent } from '../../event/WorldEvents'
+import { EventKey } from '../../event/EventKeyEnum'
 import { DEV_MODE, SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../params'
 import { WorldManager } from '../WorldManager'
 import { BuildingEntity } from '../model/building/BuildingEntity'
 import { BuildingSite } from '../model/building/BuildingSite'
 import { EntityType } from '../model/EntityType'
-import { CarryJob } from '../model/job/CarryJob'
 import { ClearRubbleJob } from '../model/job/surface/ClearRubbleJob'
 import { DrillJob } from '../model/job/surface/DrillJob'
 import { ReinforceJob } from '../model/job/surface/ReinforceJob'
@@ -44,7 +43,7 @@ export class Surface {
     reinforced: boolean = false
     drillJob?: DrillJob
     reinforceJob?: ReinforceJob
-    dynamiteJob?: CarryJob
+    dynamiteJob?: Job
     clearRubbleJob?: ClearRubbleJob
     seamLevel: number = 0
     drillProgress: number = 0
@@ -202,7 +201,7 @@ export class Surface {
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
                 const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, seamDropPosition)
-                EventBroker.publish(new CrystalFoundEvent(this.worldMgr.ecs.getComponents(crystal.entity).get(PositionComponent)))
+                EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_CRYSTAL_FOUND, this.worldMgr.ecs.getComponents(crystal.entity).get(PositionComponent)))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
                 MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, seamDropPosition)
                 EventBroker.publish(new OreFoundEvent())
@@ -266,7 +265,7 @@ export class Surface {
         }
         for (let c = 0; c < droppedCrystals; c++) {
             const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, this.getRandomPosition())
-            EventBroker.publish(new CrystalFoundEvent(this.worldMgr.ecs.getComponents(crystal.entity).get(PositionComponent)))
+            EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_CRYSTAL_FOUND, this.worldMgr.ecs.getComponents(crystal.entity).get(PositionComponent)))
         }
     }
 

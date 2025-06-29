@@ -12,8 +12,8 @@ import { VERBOSE } from '../../params'
 import { SpriteContext } from '../../core/Sprite'
 
 export class PriorityListPanel extends Panel {
-    prioPositions: PriorityPositionsEntry[] = []
-    prioByName: Map<PriorityIdentifier, Button> = new Map()
+    readonly prioPositions: PriorityPositionsEntry[] = []
+    readonly prioByName: Map<PriorityIdentifier, Button> = new Map()
 
     constructor(panelCfg: PanelCfg, buttonsCfg: ButtonPriorityListCfg, cfgPos: PrioritiesImagePositionsCfg, cfg: PriorityButtonListCfg) {
         super(panelCfg)
@@ -49,25 +49,25 @@ export class PriorityListPanel extends Panel {
 
     private updateList(priorityList: PriorityEntry[]) {
         this.prioByName.forEach((btn) => btn.hidden = true)
-        let btnCount = 0
+        let btnIndex = 0
         let updated = false
-        priorityList.forEach((prioEntry, btnIndex) => {
+        priorityList.forEach((prioEntry, prioIndex) => {
             const prioButton = this.prioByName.get(prioEntry.key)
             if (!prioButton) {
                 if (VERBOSE) console.warn(`Could not find button for priority "${PriorityIdentifier[prioEntry.key]}"`)
                 return
             }
             updated = updated || prioButton.hidden || prioButton.disabled !== !prioEntry.enabled
-            prioButton.hidden = btnCount >= 9
+            prioButton.hidden = false
             prioButton.disabled = !prioEntry.enabled
-            prioButton.relX = this.prioPositions[btnCount].x
-            prioButton.relY = this.prioPositions[btnCount].y
+            prioButton.relX = this.prioPositions[btnIndex].x
+            prioButton.relY = this.prioPositions[btnIndex].y
             prioButton.updatePosition()
             prioButton.onClick = (cx: number, cy: number) => {
                 prioButton.hover = !!this.prioByName.get(priorityList[0].key)?.isInRect(cx, cy)
-                GameState.priorityList.pushToTop(btnIndex)
+                GameState.priorityList.pushToTop(prioIndex)
             }
-            btnCount++
+            btnIndex++
         })
         if (updated) this.notifyRedraw()
     }

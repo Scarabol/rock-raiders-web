@@ -10,7 +10,7 @@ export class TooltipComponent extends AbstractGameComponent {
 
     createEvent(): ChangeTooltip {
         const result = new ChangeTooltip(this.tooltipText, TOOLTIP_DELAY_TEXT_SCENE, this.sfxKey, TOOLTIP_DELAY_SFX, this.getTextImg)
-        result.tooltipKey = this.tooltipText + this.entity
+        result.tooltipKey = this.tooltipText + this.entity // change key to make it unique per entity
         return result
     }
 }

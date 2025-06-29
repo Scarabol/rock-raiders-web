@@ -1,7 +1,7 @@
 import { Vector2, Vector3 } from 'three'
 import { EventKey } from '../event/EventKeyEnum'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged, UpdateRadarEntityEvent } from '../event/LocalEvents'
-import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
+import { WorldLocationEvent } from '../event/WorldEvents'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingSite } from './model/building/BuildingSite'
@@ -207,7 +207,7 @@ export class EntityManager {
         this.raidersUndiscovered = EntityManager.removeInRect(this.raidersUndiscovered, minX, maxX, minZ, maxZ, (r) => {
             r.worldMgr.entityMgr.raiders.push(r)
             const positionComponent = r.worldMgr.ecs.getComponents(r.entity).get(PositionComponent)
-            EventBroker.publish(new RaiderDiscoveredEvent(positionComponent))
+            EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_RAIDER_DISCOVERED, positionComponent))
             this.worldMgr.ecs.addComponent(r.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
             EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, r.entity, MapMarkerChange.UPDATE, positionComponent.position))
         })
@@ -232,7 +232,7 @@ export class EntityManager {
                 driver.sceneEntity.visible = true
                 driver.worldMgr.entityMgr.raiders.push(driver)
                 const positionComponent = driver.worldMgr.ecs.getComponents(driver.entity).get(PositionComponent)
-                EventBroker.publish(new RaiderDiscoveredEvent(positionComponent))
+                EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_RAIDER_DISCOVERED, positionComponent))
                 this.worldMgr.ecs.addComponent(driver.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
                 EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, driver.entity, MapMarkerChange.UPDATE, positionComponent.position))
             }
@@ -348,7 +348,7 @@ export class EntityManager {
     }
 
     removeEntity(entity: GameEntity) {
-        const healthComponent = this.worldMgr.ecs.getComponents(entity)?.get(HealthComponent)
+        const healthComponent = this.worldMgr.ecs.getComponents(entity).get(HealthComponent)
         const healthBarSprite = healthComponent?.healthBarSprite
         if (healthBarSprite) {
             healthBarSprite.visible = false

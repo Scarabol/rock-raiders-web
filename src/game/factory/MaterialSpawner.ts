@@ -12,7 +12,8 @@ import { PriorityIdentifier } from '../model/job/PriorityIdentifier'
 import { RaiderTraining } from '../model/raider/RaiderTraining'
 import { HealthComponent } from '../component/HealthComponent'
 import { LastWillComponent } from '../component/LastWillComponent'
-import { GenericDeathEvent } from '../../event/WorldLocationEvent'
+import { EventKey } from '../../event/EventKeyEnum'
+import { WorldLocationEvent } from '../../event/WorldEvents'
 import { BeamUpComponent } from '../component/BeamUpComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../component/MapMarkerComponent'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
@@ -101,7 +102,7 @@ export class MaterialSpawner {
                 material.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
                 material.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
                 material.worldMgr.ecs.addComponent(material.entity, new LastWillComponent(() => {
-                    EventBroker.publish(new GenericDeathEvent(material.worldMgr.ecs.getComponents(material.entity).get(PositionComponent)))
+                    EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_DEATH, material.worldMgr.ecs.getComponents(material.entity).get(PositionComponent)))
                     material.worldMgr.entityMgr.removeEntity(material.entity)
                     if (material.targetSurface) {
                         material.targetSurface.fence = undefined

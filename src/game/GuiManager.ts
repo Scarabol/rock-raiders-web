@@ -1,7 +1,7 @@
 import { EventKey } from '../event/EventKeyEnum'
 import { CameraControl, CameraViewMode, ChangeBuildingPowerState, ChangeCameraEvent, PickTool, PlaySoundEvent, SelectBuildMode, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
 import { DeselectAll, FollowerSetLookAtEvent, SelectionChanged } from '../event/LocalEvents'
-import { JobCreateEvent } from '../event/WorldEvents'
+import { JobCreateEvent, WorldLocationEvent } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
 import { EatJob } from './model/job/raider/EatJob'
@@ -17,7 +17,6 @@ import { SelectionFrameComponent } from './component/SelectionFrameComponent'
 import { BeamUpComponent } from './component/BeamUpComponent'
 import { RepairBuildingJob } from './model/job/raider/RepairBuildingJob'
 import { MaterialSpawner } from './factory/MaterialSpawner'
-import { GenericDeathEvent } from '../event/WorldLocationEvent'
 import { PositionComponent } from './component/PositionComponent'
 import { RaiderTool } from './model/raider/RaiderTool'
 import { GameConfig } from '../cfg/GameConfig'
@@ -63,7 +62,7 @@ export class GuiManager {
         EventBroker.subscribe(EventKey.COMMAND_FENCE_BEAMUP, () => {
             const fence = entityMgr.selection.fence
             if (!fence) return
-            EventBroker.publish(new GenericDeathEvent(fence.worldMgr.ecs.getComponents(fence.entity).get(PositionComponent)))
+            EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_DEATH, fence.worldMgr.ecs.getComponents(fence.entity).get(PositionComponent)))
             fence.worldMgr.ecs.getComponents(fence.entity).get(SelectionFrameComponent)?.deselect()
             fence.worldMgr.ecs.removeComponent(fence.entity, SelectionFrameComponent)
             fence.worldMgr.entityMgr.removeEntity(fence.entity)
@@ -188,7 +187,7 @@ export class GuiManager {
             }
         })
         EventBroker.subscribe(EventKey.FOLLOWER_SET_LOOK_AT, (event: FollowerSetLookAtEvent) => {
-            const sceneEntity = worldMgr.ecs.getComponents(event.entity)?.get(AnimatedSceneEntityComponent)?.sceneEntity
+            const sceneEntity = worldMgr.ecs.getComponents(event.entity).get(AnimatedSceneEntityComponent)?.sceneEntity
             if (sceneEntity) cameraControls.jumpTo(sceneEntity.getWorldPosition(new Vector3()))
         })
         EventBroker.subscribe(EventKey.COMMAND_REPAIR_LAVA, () => {

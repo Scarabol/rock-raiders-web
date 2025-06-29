@@ -29,7 +29,7 @@ import { PositionComponent } from '../../component/PositionComponent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { VehicleUpgrade, VehicleUpgrades } from './VehicleUpgrade'
-import { GenericDeathEvent, WorldLocationEvent } from '../../../event/WorldLocationEvent'
+import { WorldLocationEvent } from '../../../event/WorldEvents'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
@@ -150,7 +150,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             this.dropDriver()
         }
         const components = this.worldMgr.ecs.getComponents(this.entity)
-        EventBroker.publish(new GenericDeathEvent(components.get(PositionComponent)))
+        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_DEATH, components.get(PositionComponent)))
         components.get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
@@ -363,7 +363,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             const fulfillerPos = this.getPosition2D()
             const matNearby = this.worldMgr.entityMgr.materials.find((m) => { // XXX Move to entity manager and optimize with quad tree
                 if (m.entityType !== this.job?.carryItem?.entityType || m.carryJob?.hasFulfiller() || m.carryJob?.jobState !== JobState.INCOMPLETE) return false
-                const pos = this.worldMgr.ecs.getComponents(m.entity)?.get(PositionComponent)
+                const pos = this.worldMgr.ecs.getComponents(m.entity).get(PositionComponent)
                 if (!pos) return false
                 return pos.getPosition2D().distanceToSquared(fulfillerPos) < Math.pow(3 * TILESIZE, 2) // XXX Improve range, since this is executed on each frame
             })

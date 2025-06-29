@@ -536,7 +536,6 @@ export class LWOBTextureLoader extends Loader {
 }
 
 class LWOBFileReader {
-
     private readonly dataView: DataView
     private offset: number = 0
 

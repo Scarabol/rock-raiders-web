@@ -1,7 +1,7 @@
 import { ButtonInfoDockCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventKey } from '../../event/EventKeyEnum'
-import { WorldLocationEvent } from '../../event/WorldLocationEvent'
+import { WorldLocationEvent } from '../../event/WorldEvents'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { InfoDockButton } from './InfoDockButton'
