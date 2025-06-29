@@ -70,6 +70,7 @@ export class SoundManager {
 
     static getSoundBuffer(sfxName: string): AudioBuffer | undefined {
         sfxName = sfxName.toLowerCase()
+        if (sfxName === 'sfx_null') return undefined
         return PRNG.unsafe.sample(this.sfxBuffersByKey.getOrUpdate(sfxName, () => {
             if (VERBOSE || !this.MISSING_SFX.includes(sfxName)) {
                 console.warn(`Could not find SFX with name '${sfxName}'`)
