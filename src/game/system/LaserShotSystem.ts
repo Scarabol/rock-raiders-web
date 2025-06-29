@@ -77,7 +77,7 @@ export class LaserShotSystem extends AbstractGameSystem {
         let beamLength = turretComponent.weaponCfg.weaponRange
         // TODO Check laser beam shot collision with buildings and vehicles
         const rockyPickSpheres = this.worldMgr.entityMgr.rockMonsters
-            .map((r) => this.ecs.getComponents(r)?.get(SceneSelectionComponent)?.pickSphere).filter((m) => !!m)
+            .map((r) => this.ecs.getComponents(r).get(SceneSelectionComponent)?.pickSphere).filter((m) => !!m)
         const rockyIntersection = this.raycaster.intersectObjects<PickSphereMesh>(rockyPickSpheres, false)[0]
         if (rockyIntersection) {
             beamLength = rockyIntersection.distance

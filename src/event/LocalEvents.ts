@@ -29,33 +29,33 @@ export enum SelectPanelType {
 }
 
 export class SelectionChanged extends BaseEvent {
-    selectPanelType: SelectPanelType = SelectPanelType.NONE
-    isGround: boolean
-    isPowerPath: boolean
-    canPlaceFence: boolean
-    isFloor: boolean
-    isSite: boolean
-    hasErosion: boolean
-    hasRepairLava: boolean
-    hasRubble: boolean
-    isDrillable: boolean
-    isReinforcable: boolean
-    someCarries: boolean
-    everyHasMaxLevel: boolean
-    canDoTraining: Map<RaiderTraining, boolean> = new Map()
-    canInstallUpgrade: Map<VehicleUpgrade, boolean> = new Map()
-    hasUpgradeSite: boolean
-    everyHasTool: Map<RaiderTool, boolean> = new Map()
-    buildingCanUpgrade: boolean
-    buildingMissingOreForUpgrade: number
-    buildingNeedsRepair: boolean
-    buildingCanSwitchPower: boolean
-    buildingPowerSwitchState: boolean
-    vehicleHasCallManJob: boolean
-    noVehicleWithDriver: boolean
-    vehicleWithCarried: boolean
-    someHasBirdScarer: boolean
-    someVehicleCanLoad: boolean
+    readonly selectPanelType: SelectPanelType = SelectPanelType.NONE
+    readonly isGround: boolean
+    readonly isPowerPath: boolean
+    readonly canPlaceFence: boolean
+    readonly isFloor: boolean
+    readonly isSite: boolean
+    readonly hasErosion: boolean
+    readonly hasRepairLava: boolean
+    readonly hasRubble: boolean
+    readonly isDrillable: boolean
+    readonly isReinforcable: boolean
+    readonly someCarries: boolean
+    readonly everyHasMaxLevel: boolean
+    readonly canDoTraining: Map<RaiderTraining, boolean> = new Map()
+    readonly canInstallUpgrade: Map<VehicleUpgrade, boolean> = new Map()
+    readonly hasUpgradeSite: boolean
+    readonly everyHasTool: Map<RaiderTool, boolean> = new Map()
+    readonly buildingCanUpgrade: boolean
+    readonly buildingMissingOreForUpgrade: number
+    readonly buildingNeedsRepair: boolean
+    readonly buildingCanSwitchPower: boolean
+    readonly buildingPowerSwitchState: boolean
+    readonly vehicleHasCallManJob: boolean
+    readonly noVehicleWithDriver: boolean
+    readonly vehicleWithCarried: boolean
+    readonly someHasBirdScarer: boolean
+    readonly someVehicleCanLoad: boolean
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.SELECTION_CHANGED)
@@ -79,7 +79,7 @@ export class SelectionChanged extends BaseEvent {
         this.buildingCanUpgrade = !!entityMgr.selection.building?.canUpgrade()
         this.buildingMissingOreForUpgrade = entityMgr.selection.building?.missingOreForUpgrade() || 0
         const buildingEntity = entityMgr.selection.building?.entity
-        const buildingHealthComponent = buildingEntity ? entityMgr.worldMgr.ecs.getComponents(buildingEntity)?.get(HealthComponent) : null
+        const buildingHealthComponent = buildingEntity ? entityMgr.worldMgr.ecs.getComponents(buildingEntity).get(HealthComponent) : undefined
         this.buildingNeedsRepair = buildingHealthComponent ? buildingHealthComponent.health < buildingHealthComponent.maxHealth : false
         this.buildingCanSwitchPower = !entityMgr.selection.building?.stats.selfPowered && !entityMgr.selection.building?.stats.powerBuilding && !!(entityMgr.selection.building?.energized || entityMgr.selection.building?.surfaces.some((s) => s.energized))
         this.buildingPowerSwitchState = !!entityMgr.selection.building?.powerSwitch
@@ -125,9 +125,9 @@ export class BuildingsChangedEvent extends BaseEvent {
 }
 
 export class RaidersAmountChangedEvent extends BaseEvent {
-    hasRaider: boolean
-    hasMaxRaiders: boolean
-    hasDemolition: boolean
+    readonly hasRaider: boolean
+    readonly hasMaxRaiders: boolean
+    readonly hasDemolition: boolean
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.RAIDER_AMOUNT_CHANGED)
@@ -150,10 +150,10 @@ export class VehicleUpgradeCompleteEvent extends BaseEvent {
 }
 
 export class InitRadarMap extends BaseEvent {
-    focusTile: { x: number, y: number }
-    surfaces: MapSurfaceRect[] = []
-    terrainWidth: number
-    terrainHeight: number
+    readonly focusTile: { x: number, y: number }
+    readonly surfaces: MapSurfaceRect[] = []
+    readonly terrainWidth: number
+    readonly terrainHeight: number
 
     constructor(mapFocus: Vector3, terrain: Terrain) {
         super(EventKey.INIT_RADAR_MAP)
@@ -167,9 +167,9 @@ export class InitRadarMap extends BaseEvent {
 }
 
 export class UpdateRadarTerrain extends BaseEvent {
-    surfaces: MapSurfaceRect[] = []
-    terrainWidth: number
-    terrainHeight: number
+    readonly surfaces: MapSurfaceRect[] = []
+    readonly terrainWidth: number
+    readonly terrainHeight: number
 
     constructor(terrain: Terrain) {
         super(EventKey.UPDATE_RADAR_TERRAIN)
@@ -182,7 +182,7 @@ export class UpdateRadarTerrain extends BaseEvent {
 }
 
 export class UpdateRadarSurface extends BaseEvent {
-    surfaceRect: MapSurfaceRect
+    readonly surfaceRect: MapSurfaceRect
 
     constructor(surface: Surface) {
         super(EventKey.UPDATE_RADAR_SURFACE)

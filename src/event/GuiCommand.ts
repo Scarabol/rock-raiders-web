@@ -43,20 +43,14 @@ export class PlaySoundEvent extends BaseEvent {
 }
 
 export class SelectBuildMode extends BaseEvent {
-    entityType: EntityType
-
-    constructor(entityType: EntityType) {
+    constructor(readonly entityType: EntityType) {
         super(EventKey.COMMAND_SELECT_BUILD_MODE)
-        this.entityType = entityType
     }
 }
 
 export class PickTool extends BaseEvent {
-    tool: RaiderTool
-
-    constructor(tool: RaiderTool) {
+    constructor(readonly tool: RaiderTool) {
         super(EventKey.COMMAND_PICK_TOOL)
-        this.tool = tool
     }
 }
 
@@ -103,11 +97,8 @@ export class BeamUpFence extends BaseEvent {
 }
 
 export class ChangeBuildingPowerState extends BaseEvent {
-    state: boolean
-
-    constructor(state: boolean) {
+    constructor(readonly state: boolean) {
         super(EventKey.COMMAND_CHANGE_BUILDING_POWER_STATE)
-        this.state = state
     }
 }
 
@@ -160,11 +151,8 @@ export class RaiderBeamUp extends BaseEvent {
 }
 
 export class TrainRaider extends BaseEvent {
-    training: RaiderTraining
-
-    constructor(training: RaiderTraining) {
+    constructor(readonly training: RaiderTraining) {
         super(EventKey.COMMAND_TRAIN_RAIDER)
-        this.training = training
     }
 }
 

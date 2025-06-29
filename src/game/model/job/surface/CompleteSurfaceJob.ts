@@ -4,12 +4,12 @@ import { MaterialEntity } from '../../material/MaterialEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { PriorityIdentifier } from '../PriorityIdentifier'
-import { ShareableJob } from '../ShareableJob'
-import { JobFulfiller } from '../Job'
+import { Job, JobFulfiller } from '../Job'
 import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
-export class CompleteSurfaceJob extends ShareableJob {
+export class CompleteSurfaceJob extends Job {
+    readonly fulfiller: JobFulfiller[] = []
     readonly workplace: PathTarget
 
     constructor(readonly surface: Surface, readonly placedItems: MaterialEntity[]) {
@@ -38,5 +38,20 @@ export class CompleteSurfaceJob extends ShareableJob {
 
     getJobBubble(): keyof BubblesCfg {
         return 'bubbleBuildPath'
+    }
+
+    assign(fulfiller: JobFulfiller) {
+        const index = this.fulfiller.indexOf(fulfiller)
+        if (fulfiller && index === -1) {
+            this.fulfiller.push(fulfiller)
+        }
+    }
+
+    unAssign(fulfiller: JobFulfiller) {
+        this.fulfiller.remove(fulfiller)
+    }
+
+    hasFulfiller(): boolean {
+        return this.fulfiller.length > 0
     }
 }

@@ -1,11 +1,10 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { HealthComponent } from '../component/HealthComponent'
 import { EventKey } from '../../event/EventKeyEnum'
-import { DynamiteExplosionEvent } from '../../event/WorldEvents'
+import { DynamiteExplosionEvent, WorldLocationEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
 import { SurfaceType } from '../terrain/SurfaceType'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
-import { LandslideEvent } from '../../event/WorldLocationEvent'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { PRNG } from '../factory/PRNG'
@@ -24,7 +23,7 @@ export class DamageSystem extends AbstractGameSystem {
         EventBroker.subscribe(EventKey.DYNAMITE_EXPLOSION, (event: DynamiteExplosionEvent) => {
             this.dynamiteExplosions.push(event)
         })
-        EventBroker.subscribe(EventKey.LOCATION_LANDSLIDE, (event: LandslideEvent) => {
+        EventBroker.subscribe(EventKey.LOCATION_LANDSLIDE, (event: WorldLocationEvent) => {
             this.landslides.push(event.location)
         })
     }

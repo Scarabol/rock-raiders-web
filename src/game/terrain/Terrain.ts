@@ -5,7 +5,8 @@ import { WorldManager } from '../WorldManager'
 import { PathFinder } from './PathFinder'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
-import { LandslideEvent } from '../../event/WorldLocationEvent'
+import { EventKey } from '../../event/EventKeyEnum'
+import { WorldLocationEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
 import { WALL_TYPE } from './WallType'
 import { EventBroker } from '../../event/EventBroker'
@@ -104,7 +105,7 @@ export class Terrain {
         const rockFallAnimName = this.levelConf.rockFallStyle.tunnel // fall-ins always come from (reinforcable) walls
         this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading, false)
         if (target.surfaceType.fallInAffected) target.setSurfaceType(SurfaceType.RUBBLE4)
-        EventBroker.publish(new LandslideEvent(new PositionComponent(target.getCenterWorld(), target)))
+        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_LANDSLIDE, new PositionComponent(target.getCenterWorld(), target)))
     }
 
     getFloorPosition(world: Vector2) {

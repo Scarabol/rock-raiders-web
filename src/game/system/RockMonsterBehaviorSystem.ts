@@ -13,14 +13,13 @@ import { WALL_TYPE } from '../terrain/WallType'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { HealthComponent } from '../component/HealthComponent'
 import { EventKey } from '../../event/EventKeyEnum'
-import { UnderAttackEvent, WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { GameState } from '../model/GameState'
 import { PathFinder } from '../terrain/PathFinder'
 import { Euler, Vector2, Vector3 } from 'three'
 import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
 import { MaterialEntity } from '../model/material/MaterialEntity'
 import { TILESIZE } from '../../params'
-import { DynamiteExplosionEvent, MonsterLaserHitEvent } from '../../event/WorldEvents'
+import { DynamiteExplosionEvent, MonsterLaserHitEvent, WorldLocationEvent } from '../../event/WorldEvents'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Raider } from '../model/raider/Raider'
@@ -284,7 +283,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                             const buildingComponents = this.ecs.getComponents(targetBuilding.entity)
                                             const healthComponent = buildingComponents.get(HealthComponent)
                                             healthComponent.changeHealth(stats.repairValue)
-                                            if (healthComponent.triggerAlarm) EventBroker.publish(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
+                                            if (healthComponent.triggerAlarm) EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_UNDER_ATTACK, buildingComponents.get(PositionComponent)))
                                         })
                                     } else if (!components.has(WorldTargetComponent)) {
                                         const buildingPathTargets = targetBuilding.getTrainingTargets()
@@ -428,7 +427,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 const vehicleComponents = this.ecs.getComponents(vehicleInMeleeRange.entity)
                 const healthComponent = vehicleComponents.get(HealthComponent)
                 healthComponent.changeHealth(stats.repairValue)
-                if (healthComponent.triggerAlarm) EventBroker.publish(new UnderAttackEvent(vehicleComponents.get(PositionComponent)))
+                if (healthComponent.triggerAlarm) EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_UNDER_ATTACK, vehicleComponents.get(PositionComponent)))
             }
         })
     }

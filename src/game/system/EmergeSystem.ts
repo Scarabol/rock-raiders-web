@@ -3,7 +3,7 @@ import { EmergeComponent } from '../component/EmergeComponent'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
 import { EntityType, MonsterEntityType } from '../model/EntityType'
-import { LevelSelectedEvent, MonsterEmergeEvent } from '../../event/WorldEvents'
+import { LevelSelectedEvent, MonsterEmergeEvent, WorldLocationEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
 import { Surface } from '../terrain/Surface'
 import { MonsterSpawner } from '../factory/MonsterSpawner'
@@ -11,7 +11,6 @@ import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityCo
 import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
-import { GenericMonsterEvent } from '../../event/WorldLocationEvent'
 import { WorldManager } from '../WorldManager'
 
 export class EmergeSystem extends AbstractGameSystem {
@@ -79,6 +78,6 @@ export class EmergeSystem extends AbstractGameSystem {
             this.ecs.addComponent(monster, new RaiderScareComponent(RaiderScareRange.ROCKY))
             this.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
         })
-        EventBroker.publish(new GenericMonsterEvent(positionComponent))
+        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
     }
 }

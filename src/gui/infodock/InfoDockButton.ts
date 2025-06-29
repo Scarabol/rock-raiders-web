@@ -1,7 +1,7 @@
 import { InfoButtonCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext } from '../../core/Sprite'
 import { clearTimeoutSafe } from '../../core/Util'
-import { WorldLocationEvent } from '../../event/WorldLocationEvent'
+import { WorldLocationEvent } from '../../event/WorldEvents'
 import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { Button } from '../base/Button'
 import { InfoDockPanel } from './InfoDockPanel'

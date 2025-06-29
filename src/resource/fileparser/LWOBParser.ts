@@ -442,7 +442,6 @@ export class LWOBParser {
                 case 'RIMG':
                     const sceneBackgroundFilepath = this.lwoReader.readString()
                     if (this.verbose) console.log(`Scene background (RIMG): ${sceneBackgroundFilepath}`)
-                    console.warn('Scene background image not yet implemented', sceneBackgroundFilepath)
                     break
                 case 'TFP0':
                 case 'TFP1':
@@ -536,7 +535,6 @@ export class LWOBTextureLoader extends Loader {
 }
 
 class LWOBFileReader {
-
     private readonly dataView: DataView
     private offset: number = 0
 

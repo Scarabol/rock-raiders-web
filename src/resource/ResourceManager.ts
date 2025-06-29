@@ -198,14 +198,14 @@ export class ResourceManager {
     static getLwscData(lwscFilepath: string): LWSCData {
         lwscFilepath = lwscFilepath.toLowerCase()
         if (!lwscFilepath.endsWith('.lws')) lwscFilepath += '.lws'
-        const lwscData = ResourceManager.getResource(lwscFilepath)
+        const lwscData = ResourceManager.getResource(lwscFilepath) as LWSCData
         if (!lwscData) throw new Error(`Could not get LWSC data for '${lwscFilepath}'`)
         return lwscData
     }
 
     static getAnimatedData(aeName: string): AnimEntityData {
         const aeFilename = `${aeName}/${aeName.split('/').last()}.ae`
-        const animData = ResourceManager.getResource(aeFilename)
+        const animData = ResourceManager.getResource(aeFilename) as AnimEntityData
         if (!animData) throw new Error(`Could not get animation data for: ${aeName}`)
         return animData
     }

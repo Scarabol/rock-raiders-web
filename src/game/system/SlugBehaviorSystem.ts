@@ -7,10 +7,9 @@ import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { PathTarget } from '../model/PathTarget'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { AnimEntityActivity, SlugActivity } from '../model/anim/AnimationActivity'
-import { PowerDrainEvent, WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameState } from '../model/GameState'
-import { MaterialAmountChanged } from '../../event/WorldEvents'
+import { MaterialAmountChanged, WorldLocationEvent } from '../../event/WorldEvents'
 import { SLUG_MAX_IDLE_TIME, SLUG_SUCK_TIME } from '../../params'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { MaterialSpawner } from '../factory/MaterialSpawner'
@@ -92,7 +91,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                         sceneEntity.headTowards(targetSurface.getCenterWorld2D())
                                         this.ecs.removeComponent(entity, WorldTargetComponent)
                                         this.worldMgr.ecs.removeComponent(entity, HeadingComponent)
-                                        EventBroker.publish(new PowerDrainEvent(new PositionComponent(positionComponent.position, positionComponent.surface)))
+                                        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_POWER_DRAIN, new PositionComponent(positionComponent.position, positionComponent.surface)))
                                     }
                                     sceneEntity.setAnimation(SlugActivity.Suck, () => {
                                         GameState.numCrystal--

@@ -3,7 +3,6 @@ import { ConfigSetFromEntryValue, ConfigSetFromRecord } from './Configurable'
 import { CfgEntry, CfgEntryValue } from './CfgEntry'
 
 export class PriorityButtonListCfg implements ConfigSetFromRecord {
-    aiPriorityTrain: PriorityButtonCfg = new PriorityButtonCfg()
     aiPriorityGetIn: PriorityButtonCfg = new PriorityButtonCfg()
     aiPriorityCrystal: PriorityButtonCfg = new PriorityButtonCfg()
     aiPriorityOre: PriorityButtonCfg = new PriorityButtonCfg()
@@ -15,7 +14,6 @@ export class PriorityButtonListCfg implements ConfigSetFromRecord {
     aiPriorityRecharge: PriorityButtonCfg = new PriorityButtonCfg()
 
     setFromRecord(cfgValue: CfgEntry): this {
-        this.aiPriorityTrain.setFromValue(cfgValue.getValue('AI_Priority_Train'))
         this.aiPriorityGetIn.setFromValue(cfgValue.getValue('AI_Priority_GetIn'))
         this.aiPriorityCrystal.setFromValue(cfgValue.getValue('AI_Priority_Crystal'))
         this.aiPriorityOre.setFromValue(cfgValue.getValue('AI_Priority_Ore'))

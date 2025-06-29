@@ -2,7 +2,8 @@ import { AbstractGameSystem, GameEntity } from '../ECS'
 import { BoulderComponent } from '../component/BoulderComponent'
 import { Vector2 } from 'three'
 import { HealthComponent } from '../component/HealthComponent'
-import { UnderAttackEvent } from '../../event/WorldLocationEvent'
+import { EventKey } from '../../event/EventKeyEnum'
+import { WorldLocationEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
 import { EntityType } from '../model/EntityType'
 import { GameConfig } from '../../cfg/GameConfig'
@@ -36,7 +37,7 @@ export class BoulderSystem extends AbstractGameSystem {
                     const buildingComponents = this.ecs.getComponents(boulderComponent.targetEntity)
                     const healthComponent = buildingComponents.get(HealthComponent)
                     healthComponent.changeHealth(-boulderDamage)
-                    if (healthComponent.triggerAlarm) EventBroker.publish(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
+                    if (healthComponent.triggerAlarm) EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_UNDER_ATTACK, buildingComponents.get(PositionComponent)))
                     this.worldMgr.entityMgr.removeEntity(entity)
                     this.worldMgr.sceneMgr.scene.remove(boulderComponent.mesh)
                     this.ecs.removeEntity(entity)

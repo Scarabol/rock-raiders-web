@@ -3,12 +3,12 @@ import { Surface } from '../../../terrain/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { PriorityIdentifier } from '../PriorityIdentifier'
-import { ShareableJob } from '../ShareableJob'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
-import { JobFulfiller } from '../Job'
+import { Job, JobFulfiller } from '../Job'
 import { EntityType } from '../../EntityType'
 
-export class ClearRubbleJob extends ShareableJob {
+export class ClearRubbleJob extends Job {
+    readonly fulfiller: JobFulfiller[] = []
     lastRubblePositions: PathTarget[] = []
 
     constructor(readonly surface: Surface) {
@@ -54,5 +54,20 @@ export class ClearRubbleJob extends ShareableJob {
 
     getJobBubble(): keyof BubblesCfg {
         return 'bubbleDig'
+    }
+
+    assign(fulfiller: JobFulfiller) {
+        const index = this.fulfiller.indexOf(fulfiller)
+        if (fulfiller && index === -1) {
+            this.fulfiller.push(fulfiller)
+        }
+    }
+
+    unAssign(fulfiller: JobFulfiller) {
+        this.fulfiller.remove(fulfiller)
+    }
+
+    hasFulfiller(): boolean {
+        return this.fulfiller.length > 0
     }
 }

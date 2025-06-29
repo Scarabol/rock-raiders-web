@@ -3,11 +3,11 @@ import { Surface } from '../../../terrain/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { PriorityIdentifier } from '../PriorityIdentifier'
-import { ShareableJob } from '../ShareableJob'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
-import { JobFulfiller } from '../Job'
+import { Job, JobFulfiller } from '../Job'
 
-export class ReinforceJob extends ShareableJob {
+export class ReinforceJob extends Job {
+    readonly fulfiller: JobFulfiller[] = []
     digPositions: PathTarget[] = []
 
     constructor(readonly surface: Surface) {
@@ -42,5 +42,20 @@ export class ReinforceJob extends ShareableJob {
 
     getJobBubble(): keyof BubblesCfg {
         return 'bubbleReinforce'
+    }
+
+    assign(fulfiller: JobFulfiller) {
+        const index = this.fulfiller.indexOf(fulfiller)
+        if (fulfiller && index === -1) {
+            this.fulfiller.push(fulfiller)
+        }
+    }
+
+    unAssign(fulfiller: JobFulfiller) {
+        this.fulfiller.remove(fulfiller)
+    }
+
+    hasFulfiller(): boolean {
+        return this.fulfiller.length > 0
     }
 }
