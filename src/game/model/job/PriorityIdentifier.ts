@@ -1,6 +1,6 @@
 export enum PriorityIdentifier { // This needs to be an actual enum, because it is serialized between workers
     NONE = 0, // useful for truthiness checks
-    TRAIN,
+    TRAIN, // not shown in original game
     GET_IN,
     CRYSTAL,
     ORE,

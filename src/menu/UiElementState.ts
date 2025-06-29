@@ -1,7 +1,6 @@
 export type UiElementCallback = () => void
 
 export class UiElementState {
-
     hidden: boolean = false
     disabled: boolean = false
     protected hovered: boolean = false

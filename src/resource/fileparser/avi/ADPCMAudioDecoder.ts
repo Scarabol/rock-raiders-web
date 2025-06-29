@@ -5,7 +5,6 @@ import { AVIAudioFormat } from './AVI'
 // Inspired by https://github.com/Snack-X/node-ms-adpcm/blob/master/index.js
 
 export class ADPCMAudioDecoder implements AVIAudioDecoder {
-
     static readonly ADAPTATION_TABLE = [
         230, 230, 230, 230, 307, 409, 512, 614,
         768, 614, 512, 409, 307, 230, 230, 230,
