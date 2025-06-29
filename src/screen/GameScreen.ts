@@ -106,7 +106,7 @@ export class GameScreen {
         this.worldMgr.setup(this.levelConf)
         this.sceneMgr.setupScene(this.levelConf)
         // setup GUI
-        this.overlayLayer.showBriefing(this.levelConf)
+        this.overlayLayer.setupBriefing(this.levelConf)
         GameState.priorityList.setList(this.levelConf.priorities)
         // load in non-space objects next
         new ObjectListLoader(this.worldMgr, this.levelConf.disableStartTeleport).loadObjectList(this.levelConf.objectList)
@@ -134,9 +134,13 @@ export class GameScreen {
         this.guiBottomLeftLayer.show()
         this.overlayLayer.show()
         this.sceneMgr.startScene().then(() => {
+            this.worldMgr.start()
+            this.overlayLayer.setActivePanel(SaveGameManager.preferences.skipBriefings ? undefined : this.overlayLayer.panelBriefing)
             this.screenMaster.loadingLayer.hide()
+        }).catch((e) => {
+            console.error(e)
+            // TODO Show dedicated critical error layer or debug layer
         })
-        this.worldMgr.start()
     }
 
     hide() {
