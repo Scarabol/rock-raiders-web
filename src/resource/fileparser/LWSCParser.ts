@@ -146,7 +146,7 @@ export class LWSCParser {
                         scaleTrack.values[i * scaleTrack.getValueSize() + 1],
                         scaleTrack.values[i * scaleTrack.getValueSize() + 2],
                     )
-                    calcMat.identity().multiply(positionMat).multiply(rotationMat).multiply(invPivotMat).multiply(scaleMat).decompose(newPosition, newRotation, newScale)
+                    calcMat.identity().multiply(positionMat).multiply(rotationMat).multiply(scaleMat).multiply(invPivotMat).decompose(newPosition, newRotation, newScale)
                     positionTrack.values[i * positionTrack.getValueSize() + 0] = newPosition.x
                     positionTrack.values[i * positionTrack.getValueSize() + 1] = newPosition.y
                     positionTrack.values[i * positionTrack.getValueSize() + 2] = newPosition.z
