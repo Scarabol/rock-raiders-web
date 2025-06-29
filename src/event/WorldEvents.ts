@@ -11,18 +11,12 @@ import { Surface } from '../game/terrain/Surface'
 import { GameEntity } from '../game/ECS'
 import { WeaponTypeCfg } from '../cfg/WeaponTypeCfg'
 
-export abstract class JobEvent extends BaseEvent {
+export class JobCreateEvent extends BaseEvent {
     job: Job
 
-    protected constructor(job: Job) {
+    constructor(job: Job) {
         super(EventKey.JOB_CREATE)
         this.job = job
-    }
-}
-
-export class JobCreateEvent extends JobEvent {
-    constructor(job: Job) {
-        super(job)
     }
 }
 
