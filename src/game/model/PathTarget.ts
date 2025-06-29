@@ -23,8 +23,8 @@ export class PathTarget {
         return new PathTarget(targetLocation, radiusSq, building, undefined, building.entity, focusPoint)
     }
 
-    static fromSite(site: BuildingSite, targetLocation: Vector2) {
-        return new PathTarget(targetLocation, ITEM_ACTION_RANGE_SQ, undefined, site, undefined, undefined)
+    static fromSite(site: BuildingSite, targetLocation: Vector2, focusPoint: Vector2 | undefined) {
+        return new PathTarget(targetLocation, ITEM_ACTION_RANGE_SQ, undefined, site, undefined, focusPoint)
     }
 
     static fromEntity(entity: GameEntity, targetLocation: Vector2, radiusSq: number) {
