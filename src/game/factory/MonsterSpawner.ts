@@ -3,6 +3,7 @@ import { EntityType, MonsterEntityType } from '../model/EntityType'
 import { WorldManager } from '../WorldManager'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
+import { FlockComponent, FlockEntity } from '../component/FlockComponent'
 import { HealthComponent } from '../component/HealthComponent'
 import { MapMarkerChange, MapMarkerType } from '../component/MapMarkerComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
@@ -53,9 +54,24 @@ export class MonsterSpawner {
                 break
             case EntityType.BAT:
                 positionComponent.floorOffset = TILESIZE / 4
-                sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/bat'))
-                sceneEntity.setAnimation(AnimEntityActivity.Route)
                 const batStats = GameConfig.instance.stats.bat
+                const flockEntities: FlockEntity[] = []
+                for (let c = 0; c < batStats.flocksSize; c++) {
+                    const flockSceneEntity: AnimatedSceneEntity = new AnimatedSceneEntity()
+                    flockSceneEntity.position.copy(sceneEntity.position)
+                    flockSceneEntity.rotation.copy(sceneEntity.rotation)
+                    flockSceneEntity.visible = sceneEntity.visible
+                    flockSceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/bat'))
+                    flockSceneEntity.setAnimation(AnimEntityActivity.Route)
+                    // Change the speed slightly to make the animation unsynchronized
+                    const speedModifier = 0.9 + 0.2 * (c + 0.5) / batStats.flocksSize
+                    flockSceneEntity.setAnimationSpeed(speedModifier)
+                    flockEntities.push({sceneEntity: flockSceneEntity, speed: batStats.flocksSpeed * speedModifier})
+                    worldMgr.sceneMgr.addSceneEntity(flockSceneEntity)
+                }
+                worldMgr.ecs.addComponent(entity, new FlockComponent(flockEntities, {
+                    separationDist: 10, separationMult: 1, cohesionDist: 10, cohesionMult: 1, alignmentMult: 0.2, inertiaMult: 2.5, speed: batStats.flocksSpeed,
+                }))
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(batStats))
                 if (batStats.randomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - batStats.randomMoveTime) * 1000))
                 worldMgr.ecs.addComponent(entity, new RaiderScareComponent(RaiderScareRange.BAT))
