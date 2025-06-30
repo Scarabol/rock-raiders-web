@@ -15,6 +15,7 @@ import { MovementSystem } from './system/MovementSystem'
 import { SceneEntityPositionSystem } from './system/SceneEntityPositionSystem'
 import { SceneEntityHeadingSystem } from './system/SceneEntityHeadingSystem'
 import { RandomMoveBehaviorSystem } from './system/RandomMoveBehaviorSystem'
+import { FlockBehaviorSystem } from './system/FlockBehaviorSystem'
 import { DamageSystem } from './system/DamageSystem'
 import { BeamUpSystem } from './system/BeamUpSystem'
 import { OxygenSystem } from './system/OxygenSystem'
@@ -61,6 +62,7 @@ export class WorldManager {
         this.ecs.addSystem(new SceneEntityPositionSystem())
         this.ecs.addSystem(new SceneEntityHeadingSystem())
         this.ecs.addSystem(new RandomMoveBehaviorSystem())
+        this.ecs.addSystem(new FlockBehaviorSystem())
         this.ecs.addSystem(new DamageSystem())
         this.ecs.addSystem(new BeamUpSystem(this))
         this.ecs.addSystem(new MapMarkerUpdateSystem())
