@@ -9,7 +9,7 @@ import { WorldManager } from '../game/WorldManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
-import { NerpScript } from './NerpScript'
+import { NerpReturnType, NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL } from '../params'
 import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, RequestedRaidersChanged, WorldLocationEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
@@ -95,7 +95,6 @@ export class NerpRunner {
 
     constructor(readonly worldMgr: WorldManager, readonly script: NerpScript, readonly messages: NerpMessage[]) {
         NerpRunner.timeAddedAfterSample = 0
-        this.script.statements.forEach((statement) => this.checkSyntax(statement))
         if (NerpRunner.debug) console.log(`Executing following script\n${this.script.lines.join('\n')}`)
         EventBroker.subscribe(EventKey.NERP_MESSAGE_NEXT, () => {
             this.currentMessage = -1
@@ -166,10 +165,9 @@ export class NerpRunner {
      * @param value
      * @return {number}
      */
-    checkRegisterValue(value: string): number {
-        const num = parseInt(value)
-        if (!isNum(num)) throw new Error(`Invalid register value (${value}) provided`)
-        return num
+    checkRegisterValue(value: number): number {
+        if (!isNum(value)) throw new Error(`Invalid register value (${value}) provided`)
+        return value
     }
 
     /**
@@ -187,7 +185,7 @@ export class NerpRunner {
      * @param register the register to set
      * @param value the value to set for the given register
      */
-    setR(register: string, value: string): void {
+    setR(register: string, value: number): void {
         const regNum = this.checkRegister(register)
         this.registers[regNum] = this.checkRegisterValue(value)
     }
@@ -197,7 +195,7 @@ export class NerpRunner {
      * @param register the register to add to
      * @param value the value to add to the given register
      */
-    addR(register: string, value: string): void {
+    addR(register: string, value: number): void {
         const regNum = this.checkRegister(register)
         this.registers[regNum] += this.checkRegisterValue(value)
     }
@@ -207,7 +205,7 @@ export class NerpRunner {
      * @param register the register to subtract from
      * @param value the value to subtract from the given register
      */
-    subR(register: string, value: string): void {
+    subR(register: string, value: number): void {
         const regNum = this.checkRegister(register)
         this.registers[regNum] -= this.checkRegisterValue(value)
     }
@@ -217,10 +215,9 @@ export class NerpRunner {
      * @param timer
      * @param value
      */
-    setTimer(timer: number, value: string): void {
-        const num = parseInt(value)
-        if (isNaN(num)) throw new Error(`Can't set timer to NaN value: ${value}`)
-        this.timers[timer] = new Date().getTime() + num
+    setTimer(timer: number, value: number): void {
+        if (isNaN(value)) throw new Error(`Can't set timer to NaN value: ${value}`)
+        this.timers[timer] = new Date().getTime() + value
     }
 
     /**
@@ -795,13 +792,13 @@ export class NerpRunner {
         console.warn('NERP function "setMonsterAttackNowT" not yet implemented', args)
     }
 
-    callMethod(methodName: string, methodArgs: any[]) {
+    callMethod(methodName: string, methodArgs: number[]): NerpReturnType {
         if (methodName === 'Stop') {
             throw new Error('Stop')
         } else if (methodName === 'TRUE') {
-            return true
+            return 1
         } else if (methodName === 'FALSE') {
-            return false
+            return 0
         }
         const setRegisterMatch = methodName.match(/^SetR([0-7])$/)
         if (setRegisterMatch) {
@@ -867,52 +864,6 @@ export class NerpRunner {
         throw new Error(`Undefined method: ${methodName}`)
     }
 
-    conditional(left: any, right: any) {
-        const conditionResult = this.executeStatement(left)
-        if (NerpRunner.debug) {
-            console.log(`Condition evaluated to ${conditionResult}`)
-        }
-        if (conditionResult) {
-            this.executeStatement(right)
-        }
-    }
-
-    executeStatement(expression: any) {
-        if (expression.invoke) {
-            const argValues = expression.invoke !== 'conditional' ? expression.args.map((e: any) => this.executeStatement(e)) : expression.args
-            const result = this.callMethod(expression.invoke, argValues)
-            if (result !== undefined && NerpRunner.debug) {
-                console.log(`Method ${expression.invoke}(${JSON.stringify(expression.args).slice(1, -1)}) returned: ${result}`)
-            }
-            return result
-        } else if (expression.comparator) {
-            const left: any = this.executeStatement(expression.left)
-            const right: any = this.executeStatement(expression.right)
-            if (expression.comparator === '=') {
-                return left === right
-            } else if (expression.comparator === '!=') {
-                return left !== right
-            } else if (expression.comparator === '<') {
-                return left < right
-            } else if (expression.comparator === '>') {
-                return left > right
-            } else {
-                console.log(expression)
-                throw new Error(`Unknown comparator: ${expression.comparator}`)
-            }
-        } else if (!isNaN(expression)) { // just a number
-            return expression
-        } else if (expression.jump) {
-            const jumpCounter = this.script.labelsByName.get(expression.jump)
-            if (jumpCounter === undefined) throw new Error(`Label '${expression.jump}' is unknown!`)
-            this.programCounter = jumpCounter
-            if (NerpRunner.debug) console.log(`Jumping to label '${expression.jump}' in line ${this.programCounter}`)
-        } else {
-            console.log(expression)
-            throw new Error(`Unknown expression in line ${this.programCounter}: ${expression}`)
-        }
-    }
-
     execute() {
         try {
             this.messageTimerMs = this.messageTimerMs > 0 ? this.messageTimerMs - NERP_EXECUTION_INTERVAL : 0
@@ -923,9 +874,7 @@ export class NerpRunner {
                     console.log(`${this.programCounter}: ${this.script.lines[this.programCounter]}`)
                     console.log(statement)
                 }
-                if (!statement.label) { // do nothing for label markers
-                    this.executeStatement(statement)
-                }
+                statement.execute(this)
             }
         } catch (e) {
             if ((e as Error).message === 'Stop') {
@@ -934,38 +883,6 @@ export class NerpRunner {
             console.error(e)
             console.error('FATAL ERROR! Script execution failed! You can NOT win anymore!')
             this.stop()
-        }
-    }
-
-    private checkSyntax(statement: any) {
-        const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.equalsIgnoreCase(statement.invoke))
-        const flashIconMatch = statement.invoke?.match(/^Flash(.+)Icon$/)
-        const setIconClickedMatch = statement.invoke?.match(/^Set(.+?)(?:Icon)?(?:Button)?Clicked$/)
-        const getIconClickedMatch = statement.invoke?.match(/^Get(.+?)(?:Icon)?(?:Button)?Clicked$/)
-        if (!statement.label &&
-            !statement.jump &&
-            !statement.comparator &&
-            isNaN(statement) &&
-            statement.invoke !== 'Stop' &&
-            (!!statement.invoke && !/^GetR([0-7])$/.test(statement.invoke)) &&
-            (!!statement.invoke && !/^AddR([0-7])$/.test(statement.invoke)) &&
-            (!!statement.invoke && !/^SubR([0-7])$/.test(statement.invoke)) &&
-            (!!statement.invoke && !/^SetR([0-7])$/.test(statement.invoke)) &&
-            !statement.invoke?.startsWith('SetTimer') &&
-            !statement.invoke?.startsWith('GetTimer') &&
-            !(flashIconMatch && NerpRunner.iconClickedConfig.some((c) => c.iconName.toLowerCase() === flashIconMatch[1]?.toLowerCase())) &&
-            !(setIconClickedMatch && NerpRunner.iconClickedConfig.some((c) => c.iconName.toLowerCase() === setIconClickedMatch[1]?.toLowerCase())) &&
-            !(getIconClickedMatch && NerpRunner.iconClickedConfig.some((c) => c.iconName.toLowerCase() === getIconClickedMatch[1]?.toLowerCase())) &&
-            !this[memberName as keyof NerpRunner]
-        ) {
-            console.warn(`Unexpected invocation "${statement.invoke}" found, NERP execution may fail!`, statement)
-        }
-        if (Array.isArray(statement.args)) {
-            statement.args.forEach((arg: any) => this.checkSyntax(arg))
-        }
-        if (statement.comparator) {
-            this.checkSyntax(statement.left)
-            this.checkSyntax(statement.right)
         }
     }
 }

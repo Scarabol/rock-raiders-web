@@ -1,5 +1,5 @@
 import { ResourceManager } from '../resource/ResourceManager'
-import { NerpScript } from './NerpScript'
+import { NerpComparator, NerpConditional, NerpInvocation, NerpJump, NerpLabel, NerpNumber, NerpScript, NerpStatement } from './NerpScript'
 import { isNum } from '../core/Util'
 
 export class NerpParser {
@@ -74,16 +74,13 @@ export class NerpParser {
                 .split(' ? ')
             const labelMatch = line.match(/(\S+):/)
             if (statement.length === 2) { // line contains condition (primary operator)
-                return {
-                    invoke: 'conditional',
-                    args: [this.preProcess(statement[0]), this.preProcess(statement[1])],
-                }
+                return new NerpConditional(this.readStatement(statement[0]), this.readStatement(statement[1]))
             } else if (labelMatch) { // keep label line number for later usage
                 const labelName = labelMatch[1].toLowerCase()
                 result.labelsByName.set(labelName, c)
-                return {label: labelName}
+                return new NerpLabel(labelName)
             } else if (statement.length === 1) { // just a call
-                return this.preProcess(statement[0])
+                return this.readStatement(statement[0])
             } else { // line contains more than 1 condition statement
                 throw new Error(`Can't deal with line: ${line}`)
             }
@@ -114,10 +111,10 @@ export class NerpParser {
         }
     }
 
-    private static preProcess(expression: string): unknown {
+    private static readStatement(expression: string): NerpStatement {
         expression = expression.trim().replace(/^_/, '') // remove whitespace and leading underscore
         const number = parseInt(expression)
-        if (isNum(number)) return number
+        if (isNum(number)) return new NerpNumber(number)
         const opSplit = expression.split(/ (=) | (!=) | (>) | (<) /).filter(e => e !== undefined)
         const brackets = expression.match(/^(.+)\((.+)\)$/)
         const spaceSplit = expression.split(' ')
@@ -125,22 +122,22 @@ export class NerpParser {
         const jumpMatch = expression.match(/^:([^:]+)$/)
         if (opSplit.length === 3) { // expression contains secondary operator
             const op = opSplit[1] as '=' | '!=' | '<' | '>'
-            return {left: this.preProcess(opSplit[0]), comparator: op, right: this.preProcess(opSplit[2])}
+            return new NerpComparator(this.readStatement(opSplit[0]), op, this.readStatement(opSplit[2]))
         } else if (brackets) {
-            const args = brackets[2].split(',').map(a => this.preProcess(a))
-            return {invoke: brackets[1], args: args}
+            const args: NerpStatement[] = brackets[2].split(',').map(a => this.readStatement(a))
+            return new NerpInvocation(brackets[1], args)
         } else if (spaceSplit.length > 1) { // space split must be the very last since most expressions contain space
-            const args = spaceSplit.length === 2 ? [this.preProcess(spaceSplit[1])] : spaceSplit.splice(1).map(a => this.preProcess(a))
-            return {invoke: spaceSplit[0], args: args}
+            const args = spaceSplit.length === 2 ? [this.readStatement(spaceSplit[1])] : spaceSplit.splice(1).map(a => this.readStatement(a))
+            return new NerpInvocation(spaceSplit[0], args)
         } else if (labelMatch) { // label definition
-            return {label: labelMatch[1]}
+            return new NerpLabel(labelMatch[1])
         } else if (jumpMatch) { // jump to label
-            return {jump: jumpMatch[1].toLowerCase()}
+            return new NerpJump(jumpMatch[1].toLowerCase())
         } else { // function call without args
             if (expression.match(/[ =?><!]/)) {
                 throw new Error('Invalid expression given, parsing must have failed before somewhere')
             }
-            return {invoke: expression, args: []}
+            return new NerpInvocation(expression, [])
         }
     }
 }
