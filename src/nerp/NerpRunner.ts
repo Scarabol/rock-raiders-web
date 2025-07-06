@@ -82,7 +82,7 @@ export class NerpRunner {
     // more state variables and switches
     messagePermit: boolean = true
     objectiveSwitch: boolean = true
-    objectiveShowing: number = 1
+    objectiveShowing: boolean = true
     sampleLengthMultiplier: number = 0
     timeForNoSample: number = 0
     currentMessage: number = -1
@@ -107,7 +107,7 @@ export class NerpRunner {
             this.stop()
         })
         EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
-            this.objectiveShowing = event.isShowing ? 1 : 0
+            this.objectiveShowing = event.isShowing
             this.objectiveSwitch = this.objectiveSwitch && event.isShowing
         })
         NerpRunner.iconClickedConfig.forEach((iconCLickedEntry: IconClickedEntry) => {
@@ -235,7 +235,7 @@ export class NerpRunner {
     /**
      * End the level successfully and show the score screen.
      */
-    setLevelCompleted() {
+    setLevelCompleted(): void {
         console.log('Nerp runner marks level as complete')
         EventBroker.publish(new GameResultEvent(GameResultState.COMPLETE))
     }
@@ -243,7 +243,7 @@ export class NerpRunner {
     /**
      * End the level as failure and show the score screen.
      */
-    setLevelFail() {
+    setLevelFail(): void {
         console.log(`NerpRunner marks level as failed; at line: ${this.script.lines[this.programCounter]}`)
         EventBroker.publish(new GameResultEvent(GameResultState.FAILED))
     }
@@ -252,7 +252,7 @@ export class NerpRunner {
      * Sets tutorial flags
      * @param value a bitmask to set flags with
      */
-    setTutorialFlags(value: number) {
+    setTutorialFlags(value: number): void {
         // seems like value must be interpreted bitwise and sets a certain flag on each bit
         // seen so far:
         // 0 = 0x00 allow any click anywhere anytime
@@ -267,7 +267,7 @@ export class NerpRunner {
         }
     }
 
-    setTutorialPointer(tutoBlockId: number, enabled: number) {
+    setTutorialPointer(tutoBlockId: number, enabled: number): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((t) => {
             if (enabled) {
@@ -278,33 +278,33 @@ export class NerpRunner {
         })
     }
 
-    setMessagePermit(allowMessages: number) {
+    setMessagePermit(allowMessages: number): void {
         this.messagePermit = !!allowMessages
     }
 
-    setBuildingsUpgradeLevel(typeName: EntityType, level: number) {
+    setBuildingsUpgradeLevel(typeName: EntityType, level: number): void {
         this.worldMgr.entityMgr.buildings.forEach(b => {
             if (b.entityType === typeName) b.setLevel(level)
         })
     }
 
-    setToolStoreLevel(level: number) {
+    setToolStoreLevel(level: number): void {
         this.setBuildingsUpgradeLevel(EntityType.TOOLSTATION, level)
     }
 
-    setTeleportPadLevel(level: number) {
+    setTeleportPadLevel(level: number): void {
         this.setBuildingsUpgradeLevel(EntityType.TELEPORT_PAD, level)
     }
 
-    setDocksLevel(level: number) {
+    setDocksLevel(level: number): void {
         this.setBuildingsUpgradeLevel(EntityType.DOCKS, level)
     }
 
-    setPowerStationLevel(level: number) {
+    setPowerStationLevel(level: number): void {
         this.setBuildingsUpgradeLevel(EntityType.POWER_STATION, level)
     }
 
-    setBarracksLevel(level: number) {
+    setBarracksLevel(level: number): void {
         this.setBuildingsUpgradeLevel(EntityType.BARRACKS, level)
     }
 
@@ -336,7 +336,7 @@ export class NerpRunner {
         return this.worldMgr.entityMgr.slugs.length
     }
 
-    generateSlug() {
+    generateSlug(): void {
         const slugHole = PRNG.nerp.sample(this.worldMgr.sceneMgr.terrain.slugHoles)
         if (!slugHole) return
         const slug = MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SLUG, slugHole.getRandomPosition(), PRNG.animation.random() * 2 * Math.PI)
@@ -362,21 +362,21 @@ export class NerpRunner {
         return GameState.numOreValue
     }
 
-    setMessageTimerValues(sampleLengthMultiplier: number, timeAddedAfterSample: number, timeForNoSample: number) {
+    setMessageTimerValues(sampleLengthMultiplier: number, timeAddedAfterSample: number, timeForNoSample: number): void {
         this.sampleLengthMultiplier = sampleLengthMultiplier
         NerpRunner.timeAddedAfterSample = timeAddedAfterSample
         this.timeForNoSample = timeForNoSample
     }
 
-    getMessageTimer() {
+    getMessageTimer(): number {
         return this.messageTimerMs
     }
 
-    cameraUnlock() {
+    cameraUnlock(): void {
         this.worldMgr.sceneMgr.birdViewControls.unlockCamera()
     }
 
-    cameraLockOnObject(recordedEntity: number) {
+    cameraLockOnObject(recordedEntity: number): void {
         const entity = this.worldMgr.entityMgr.recordedEntities[recordedEntity - 1]
         if (!entity) {
             console.warn(`Invalid recorded entity index ${recordedEntity} given`, this.worldMgr.entityMgr.recordedEntities)
@@ -390,7 +390,7 @@ export class NerpRunner {
         this.worldMgr.sceneMgr.birdViewControls.lockOnObject(sceneEntity)
     }
 
-    cameraLockOnMonster(monster: number) {
+    cameraLockOnMonster(monster: number): void {
         if (monster < 1) return
         const entity = this.worldMgr.entityMgr.rockMonsters[monster - 1]
         if (!entity) {
@@ -405,7 +405,7 @@ export class NerpRunner {
         this.worldMgr.sceneMgr.birdViewControls.lockOnObject(sceneEntity)
     }
 
-    setMessage(messageNumber: number, arrowDisabled: number) {
+    setMessage(messageNumber: number, arrowDisabled: number): void {
         if (!this.messagePermit) return
         if (messageNumber === 0) messageNumber = 1 // XXX Remove workaround for level 07
         if (messageNumber < 1) {
@@ -435,14 +435,14 @@ export class NerpRunner {
         EventBroker.publish(new BaseEvent(EventKey.NERP_MESSAGE_NEXT))
     }
 
-    setRockMonsterAtTutorial(tutoBlockId: number) {
+    setRockMonsterAtTutorial(tutoBlockId: number): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((t) => {
             EventBroker.publish(new MonsterEmergeEvent(t))
         })
     }
 
-    setCongregationAtTutorial(tutoBlockId: number) {
+    setCongregationAtTutorial(tutoBlockId: number): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} as congregation, using only first one`)
         const targetBlock = tutoBlocks[0]
@@ -450,7 +450,7 @@ export class NerpRunner {
         GameState.monsterCongregation = targetBlock.getCenterWorld2D()
     }
 
-    setCameraGotoTutorial(tutoBlockId: number) {
+    setCameraGotoTutorial(tutoBlockId: number): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} to move camera to, using only first one`)
         const targetBlock = tutoBlocks[0]
@@ -463,12 +463,12 @@ export class NerpRunner {
         this.setTutorialBlock(tutoBlockId, SurfaceType.GROUND)
     }
 
-    setTutorialBlockIsPath(tutoBlockId: number, state: number) {
+    setTutorialBlockIsPath(tutoBlockId: number, state: number): void {
         if (state !== 1) console.warn(`Unexpected state (${state}) given for setTutorialBlockIsPath`)
         this.setTutorialBlock(tutoBlockId, SurfaceType.POWER_PATH)
     }
 
-    private setTutorialBlock(tutoBlockId: number, surfaceType: SurfaceType) {
+    private setTutorialBlock(tutoBlockId: number, surfaceType: SurfaceType): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((s) => {
             s.setSurfaceType(surfaceType)
@@ -492,7 +492,7 @@ export class NerpRunner {
         return GameState.tutoBlockClicks.getOrUpdate(tutoBlockId, () => 0)
     }
 
-    setTutorialBlockClicks(tutoBlockId: number, numClicks: number) {
+    setTutorialBlockClicks(tutoBlockId: number, numClicks: number): void {
         GameState.tutoBlockClicks.set(tutoBlockId, numClicks)
     }
 
@@ -504,37 +504,37 @@ export class NerpRunner {
         })
     }
 
-    getOxygenLevel() {
-        return GameState.airLevel * 100
+    getOxygenLevel(): number {
+        return Math.round(GameState.airLevel * 100)
     }
 
-    getObjectiveSwitch(): boolean {
-        return this.objectiveSwitch
+    getObjectiveSwitch(): number {
+        return this.objectiveSwitch ? 1 : 0
     }
 
     getObjectiveShowing(): number {
-        return this.objectiveShowing
+        return this.objectiveShowing ? 1 : 0
     }
 
-    addPoweredCrystals(numCrystals: number) {
+    addPoweredCrystals(numCrystals: number): void {
         GameState.numCrystal += numCrystals
         EventBroker.publish(new MaterialAmountChanged())
     }
 
-    addStoredOre(numOre: number) {
+    addStoredOre(numOre: number): void {
         GameState.numOre += numOre
         EventBroker.publish(new MaterialAmountChanged())
     }
 
-    disallowAll() {
+    disallowAll(): void {
         // TODO Only used in tutorials
     }
 
-    getPoweredPowerStationsBuilt() {
+    getPoweredPowerStationsBuilt(): number {
         return this.worldMgr.entityMgr.buildings.count((b) => b.isPowered() && b.entityType === EntityType.POWER_STATION)
     }
 
-    getPoweredBarracksBuilt() {
+    getPoweredBarracksBuilt(): number {
         return this.worldMgr.entityMgr.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS)
     }
 
@@ -618,7 +618,7 @@ export class NerpRunner {
         this.worldMgr.gameSpeedMultiplier = speed / 100
     }
 
-    setRecordObjectPointer(recordedEntity: number) {
+    setRecordObjectPointer(recordedEntity: number): void {
         if (recordedEntity < 1) {
             this.worldMgr.sceneMgr.objectPointer.hide()
             return
@@ -640,7 +640,7 @@ export class NerpRunner {
      * Tutorial01
      * - Allow to select only raiders
      */
-    clickOnlyObjects() {
+    clickOnlyObjects(): void {
         // TODO Only used in tutorials
         console.warn('NERP function "clickOnlyObjects" not yet implemented')
     }
@@ -649,7 +649,7 @@ export class NerpRunner {
      * Tutorial01
      * - Allow to select only surfaces
      */
-    clickOnlyMap() {
+    clickOnlyMap(): void {
         // TODO Only used in tutorials
         console.warn('NERP function "clickOnlyMap" not yet implemented')
     }
@@ -657,17 +657,17 @@ export class NerpRunner {
     /**
      * Tutorial08
      */
-    clickOnlyCallToArms() {
+    clickOnlyCallToArms(): void {
         // TODO Only used in tutorials
         console.warn('NERP function "clickOnlyMap" not yet implemented')
     }
 
-    setCallToArms(args: any[]) {
+    setCallToArms(args: any[]): void {
         // TODO Only used in tutorials
         console.warn('NERP function "setCallToArms" not yet implemented', args)
     }
 
-    setTutorialCrystals(tutoBlockId: number, numOfCrystals: number) {
+    setTutorialCrystals(tutoBlockId: number, numOfCrystals: number): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((t) => {
             for (let c = 0; c < numOfCrystals; c++) {
@@ -677,11 +677,11 @@ export class NerpRunner {
         })
     }
 
-    setCrystalPriority(targetIndex: number) {
+    setCrystalPriority(targetIndex: number): void {
         GameState.priorityList.setPriorityIndex(PriorityIdentifier.CRYSTAL, 0)
     }
 
-    cameraZoomOut(zoomLevel: number) {
+    cameraZoomOut(zoomLevel: number): void {
         if (zoomLevel < 0 || zoomLevel > 100) {
             console.warn(`Invalid camera zoom out level ${zoomLevel}`)
             return
@@ -690,7 +690,7 @@ export class NerpRunner {
         this.worldMgr.sceneMgr.birdViewControls.setZoom(targetZoom)
     }
 
-    cameraZoomIn(zoomLevel: number) {
+    cameraZoomIn(zoomLevel: number): void {
         if (zoomLevel < GameConfig.instance.main.minDist || zoomLevel > GameConfig.instance.main.maxDist) {
             console.warn(`Unexpected camera zoom in level ${zoomLevel}. Must be in range from ${GameConfig.instance.main.minDist} to ${GameConfig.instance.main.maxDist}`)
             return
@@ -699,7 +699,7 @@ export class NerpRunner {
         this.worldMgr.sceneMgr.birdViewControls.setZoom(zoomLevel)
     }
 
-    makeSomeoneOnThisBlockPickUpSomethingOnThisBlock(tutoBlockId: number) {
+    makeSomeoneOnThisBlockPickUpSomethingOnThisBlock(tutoBlockId: number): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((t) => {
             const raider = PRNG.nerp.sample(this.worldMgr.entityMgr.raiders.filter((r) => r.getSurface() === t && r.isReadyToTakeAJob()))
@@ -710,7 +710,7 @@ export class NerpRunner {
         })
     }
 
-    setBuildingsTeleported(numBuildings: number) {
+    setBuildingsTeleported(numBuildings: number): void {
         this.buildingsTeleported = numBuildings
     }
 
