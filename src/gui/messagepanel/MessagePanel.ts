@@ -151,7 +151,7 @@ export class MessagePanel extends Panel {
     }
 
     private unsetMessage(cfg: TextInfoMessageEntryCfg) {
-        this.textInfoMessageCache.getOrUpdate(cfg, () => TextInfoMessage.fromConfig(cfg, this.img.width)).then((msg: TextInfoMessage) => {
+        this.textInfoMessageCache.getOrUpdate(cfg, () => TextInfoMessage.fromConfig(cfg, this.width)).then((msg: TextInfoMessage) => {
             if (this.currentMessage === msg) this.removeMessage()
         })
     }
@@ -180,11 +180,11 @@ export class MessagePanel extends Panel {
         const infoImage = this.currentMessage?.infoImage
         if (textImage) {
             let txtX = (this.btnNext.relX - textImage.width) / 2
-            if (infoImage) txtX = (this.img.width - textImage.width - infoImage.width) / 2
+            if (infoImage) txtX = (this.width - textImage.width - infoImage.width) / 2
             context.drawImage(textImage, this.x + 6 + txtX, this.y + 26)
         }
         if (infoImage) {
-            const infoX = this.x + this.img.width - infoImage.width
+            const infoX = this.x + this.width - infoImage.width
             context.drawImage(infoImage, infoX, this.y + 16)
         }
     }

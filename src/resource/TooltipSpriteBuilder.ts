@@ -12,7 +12,7 @@ export class TooltipSpriteBuilder {
         if (tooltipText.toLowerCase().startsWith('tooltip')) {
             console.error(`Found key instead of tooltip text ${tooltipText}`)
         }
-        const requests: Promise<SpriteImage>[] = [BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, tooltipText)]
+        const requests: Promise<SpriteImage | undefined>[] = [BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, tooltipText)]
         if (energy) {
             requests.add(BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.toolTipInfo['energytext']}: ${Math.round(energy)}`))
         }
@@ -52,7 +52,7 @@ export class TooltipSpriteBuilder {
         return this.wrapTooltipSprite([tooltipTextImage], oresTextImage)
     }
 
-    static wrapTooltipSprite(...rowsThenCols: SpriteImage[][]): SpriteImage {
+    static wrapTooltipSprite(...rowsThenCols: (SpriteImage | undefined)[][]): SpriteImage {
         const margin = 2
         const padding = 2
         const [contentWidth, contentHeight] = this.getTooltipContentSize(rowsThenCols)
@@ -68,6 +68,7 @@ export class TooltipSpriteBuilder {
             let posX = 0
             let maxHeight = 0
             for (const img of cols) {
+                if (!img) continue
                 context.drawImage(img, margin + padding + posX, posY)
                 posX += img.width
                 maxHeight = Math.max(maxHeight, img.height)
@@ -77,13 +78,14 @@ export class TooltipSpriteBuilder {
         return context.canvas
     }
 
-    private static getTooltipContentSize(rowsThenCols: SpriteImage[][]): number[] {
+    private static getTooltipContentSize(rowsThenCols: (SpriteImage | undefined)[][]): number[] {
         let contentWidth = 0
         let contentHeight = 0
         for (const cols of rowsThenCols) {
             let rowWidth = 0
             let maxHeight = 0
             for (const img of cols) {
+                if (!img) continue
                 rowWidth += img.width
                 maxHeight = Math.max(maxHeight, img.height)
             }

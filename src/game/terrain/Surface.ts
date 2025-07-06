@@ -111,7 +111,7 @@ export class Surface {
     discover(): boolean {
         const walls: Map<string, Surface> = new Map()
         let caveFound = false
-        for (let surface: Surface = this, stack: Surface[] = []; surface; surface = stack.pop()) {
+        for (let surface: Surface | undefined = this, stack: Surface[] = []; surface; surface = stack.pop()) {
             surface.markDiscovered()
             for (const neighbor of surface.neighbors8) {
                 if (neighbor.surfaceType.floor || neighbor.surfaceType === SurfaceType.HIDDEN_CAVERN || neighbor.surfaceType === SurfaceType.HIDDEN_SLUG_HOLE) {

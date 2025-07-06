@@ -2,7 +2,7 @@ import { ByteStreamReader } from '../../core/ByteStreamReader'
 import { VERBOSE } from '../../params'
 
 export interface CueFile {
-    isoFile: ArrayBuffer | undefined
+    isoFile: ArrayBuffer
     audioTracks: ArrayBuffer[]
 }
 

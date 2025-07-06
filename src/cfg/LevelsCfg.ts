@@ -54,7 +54,7 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
     nerpFile: string = ''
     nerpMessageFile: string = ''
     objectiveText: string = ''
-    objectiveImage640x480?: ObjectiveImageCfg
+    objectiveImage640x480: ObjectiveImageCfg = new ObjectiveImageCfg()
     erodeTriggerTime: number = 0 // 1, 20, 40, 60, 120 time in seconds to trigger a new erosion
     erodeErodeTime: number = 0 // 1, 5, 7, 20, 30, 40, 60 time in seconds until next erosion level is reached
     erodeLockTime: number = 0 // 1, 300, 500, 600 grace time no erosion happens on surface with power path
@@ -123,8 +123,7 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
         }
         this.nerpMessageFile = cfgValue.getValue('NerpMessageFile').toFileName()
         this.objectiveText = cfgValue.getValue('ObjectiveText').toFileName()
-        const valObjectiveImage = cfgValue.getValue('ObjectiveImage640x480')
-        if (valObjectiveImage) this.objectiveImage640x480 = new ObjectiveImageCfg().setFromValue(valObjectiveImage)
+        this.objectiveImage640x480.setFromValue(cfgValue.getValue('ObjectiveImage640x480'))
         this.erodeTriggerTime = cfgValue.getValue('ErodeTriggerTime').toNumber()
         this.erodeErodeTime = cfgValue.getValue('ErodeErodeTime').toNumber()
         this.erodeLockTime = cfgValue.getValue('ErodeLockTime').toNumber()

@@ -3,14 +3,14 @@ import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
 import { HTML_GAME_CONTAINER } from '../core'
 
 export class DebugHelper {
-    static readonly element: HTMLElement = HTML_GAME_CONTAINER.querySelector('div.game-debug-layer')
-    static readonly messageContainer: HTMLElement = this.element.querySelector('div.game-debug-message-container')
+    static readonly element: HTMLElement = HTML_GAME_CONTAINER.querySelector('div.game-debug-layer')!
+    static readonly messageContainer: HTMLElement = this.element.querySelector('div.game-debug-message-container')!
     static readonly maxNumFpsValues = 150
     static readonly nativeLog = console.log
     static readonly nativeWarn = console.warn
     static readonly nativeError = console.error
 
-    readonly context: SpriteContext
+    readonly fpsContext: SpriteContext
     readonly fpsValues: number[] = []
     readonly useValues: number[] = []
     renderStartTimestampMs: number = 0
@@ -22,13 +22,14 @@ export class DebugHelper {
     animationFrame?: number
 
     constructor() {
-        const fpsCanvas = DebugHelper.element.querySelector<HTMLCanvasElement>('canvas.game-debug-fps-canvas')
-        const context = fpsCanvas.getContext('2d')
+        const context = DebugHelper.element.querySelector<HTMLCanvasElement>('canvas.game-debug-fps-canvas')?.getContext('2d')
         if (!context) throw new Error('Could not get context for fps rendering')
-        this.context = context
+        this.fpsContext = context
         const closeButton = DebugHelper.element.querySelector<HTMLButtonElement>('button.game-debug-close-button')
+        if (!closeButton) throw new Error('Debug layer close button not found')
         closeButton.onclick = () => DebugHelper.toggleDisplay()
         const copyToClipboard = DebugHelper.element.querySelector<HTMLButtonElement>('button.game-debug-copy-button')
+        if (!copyToClipboard) throw new Error('Debug layer copy to clipboard button not found')
         copyToClipboard.onclick = () => {
             navigator.clipboard.writeText(Array.from(DebugHelper.messageContainer.children).map((e) => (e as HTMLElement).innerText).join('\n')).then()
         }
@@ -73,7 +74,7 @@ export class DebugHelper {
         this.renderInterval = setInterval(() => {
             this.animationFrame = cancelAnimationFrameSafe(this.animationFrame)
             this.animationFrame = requestAnimationFrame(() => {
-                this.context.clearRect(0, 0, 300, 150)
+                this.fpsContext.clearRect(0, 0, 300, 150)
                 this.drawFpsDiagram(0, 0, 300, 150)
             })
         }, 1000 / 60)
@@ -81,22 +82,22 @@ export class DebugHelper {
 
     hide() {
         this.renderInterval = clearIntervalSafe(this.renderInterval)
-        this.context.clearRect(0, 0, 300, 150)
+        this.fpsContext.clearRect(0, 0, 300, 150)
     }
 
     drawFpsDiagram(x: number, y: number, w: number, h: number) {
-        this.context.fillStyle = '#069'
-        this.context.fillRect(x, y, w, h)
-        this.context.fillStyle = '#0ff'
-        this.context.font = `bold 32px Helvetica,Arial,sans-serif`
-        this.context.textBaseline = 'top'
-        this.context.fillText(`FPS: ${this.fps} (${this.usage}%)`, x + 1, y + 1)
+        this.fpsContext.fillStyle = '#069'
+        this.fpsContext.fillRect(x, y, w, h)
+        this.fpsContext.fillStyle = '#0ff'
+        this.fpsContext.font = `bold 32px Helvetica,Arial,sans-serif`
+        this.fpsContext.textBaseline = 'top'
+        this.fpsContext.fillText(`FPS: ${this.fps} (${this.usage}%)`, x + 1, y + 1)
         const right = x + w - 1
         const bottom = y + h
         for (let c = 0; c < this.fpsValues.length; c++) {
             const index = (DebugHelper.maxNumFpsValues + this.fpsIndex - c) % DebugHelper.maxNumFpsValues
             const barHeight = Math.round(Math.min(150, this.fpsValues[index] ?? 0) / 150 * 120)
-            this.context.fillRect(right - c * 2, bottom - barHeight, 2, barHeight)
+            this.fpsContext.fillRect(right - c * 2, bottom - barHeight, 2, barHeight)
         }
     }
 

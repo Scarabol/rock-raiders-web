@@ -54,7 +54,7 @@ export class GameLayer extends ScreenLayer {
             if (event.button !== MOUSE_BUTTON.MAIN) return false
             const gameEvent = new GamePointerEvent(POINTER_EVENT.DOWN, event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
-            if (!this.worldMgr.sceneMgr.buildMarker.buildingType && !this.worldMgr.entityMgr.selection.doubleSelect && GameState.isBirdView) {
+            if (!this.worldMgr.sceneMgr.buildMarker?.buildingType && !this.worldMgr.entityMgr.selection.doubleSelect && GameState.isBirdView) {
                 this.pointerDown = {x: gameEvent.canvasX, y: gameEvent.canvasY}
             }
             return false
@@ -109,7 +109,7 @@ export class GameLayer extends ScreenLayer {
         CursorManager.changeCursor(this.determineCursor(cursorTarget))
         if (event.pointerType === 'mouse' && cursorTarget.intersectionPoint) this.worldMgr.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
         this.publishTooltipEvent(cursorTarget)
-        this.worldMgr.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
+        this.worldMgr.sceneMgr.buildMarker?.updatePosition(cursorTarget.intersectionPoint)
         const doubleSelection = this.worldMgr.entityMgr.selection.doubleSelect
         if (cursorTarget.intersectionPoint && doubleSelection) {
             doubleSelection.sceneEntity.pointLaserAt(cursorTarget.intersectionPoint)
@@ -146,7 +146,7 @@ export class GameLayer extends ScreenLayer {
                 }
             })
         }
-        if (this.worldMgr.sceneMgr.buildMarker.buildingType && this.worldMgr.sceneMgr.buildMarker.lastCheck) {
+        if (this.worldMgr.sceneMgr.buildMarker?.buildingType && this.worldMgr.sceneMgr.buildMarker.lastCheck) {
             this.worldMgr.sceneMgr.buildMarker.createBuildingSite()
             return
         }
@@ -347,7 +347,7 @@ export class GameLayer extends ScreenLayer {
 
     determineCursor(cursorTarget: CursorTarget): Cursor {
         if (this.worldMgr.sceneMgr.hasBuildModeSelection()) {
-            return this.worldMgr.sceneMgr.buildMarker.lastCheck ? 'canBuild' : 'cannotBuild'
+            return this.worldMgr.sceneMgr.buildMarker?.lastCheck ? 'canBuild' : 'cannotBuild'
         }
         if (cursorTarget.raider) return 'selected'
         if (cursorTarget.vehicle) {

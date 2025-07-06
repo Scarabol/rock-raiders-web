@@ -10,7 +10,6 @@ export class ButtonsCfg implements ConfigSetFromRecord {
     panelPriorityList: ButtonPriorityListCfg = new ButtonPriorityListCfg()
     panelCameraControl: ButtonCameraControlCfg = new ButtonCameraControlCfg()
     panelInfoDock: ButtonInfoDockCfg = new ButtonInfoDockCfg()
-    panelEncyclopedia: Record<string, unknown> = {} // not used in the game
 
     setFromRecord(cfgValue: CfgEntry): this {
         this.panelRadar.setFromRecord(cfgValue)

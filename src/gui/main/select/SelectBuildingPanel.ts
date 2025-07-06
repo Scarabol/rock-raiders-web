@@ -22,7 +22,7 @@ export class SelectBuildingPanel extends IconSubPanel {
         repairBuildingItem.onClick = () => this.publishEvent(new RepairBuilding())
         const menuItemOffCfg = GameConfig.instance.interfaceImages.powerOff
         const menuItemOnCfg = GameConfig.instance.interfaceImages.powerOn
-        const powerSwitchItem = this.addChild(new IconPanelToggleButton(menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
+        const powerSwitchItem = this.addChild(new IconPanelToggleButton(menuItemOffCfg, menuItemOnCfg, this.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(powerSwitchItem)
         powerSwitchItem.isDisabled = () => !this.buildingCanSwitchPower
         powerSwitchItem.isToggled = () => !this.buildingPowerSwitchState

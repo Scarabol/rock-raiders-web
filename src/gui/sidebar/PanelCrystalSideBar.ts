@@ -54,8 +54,8 @@ export class PanelCrystalSideBar extends Panel {
     onRedraw(context: SpriteContext) {
         super.onRedraw(context)
         // draw crystals
-        let curX = this.x + this.img.width - 8
-        let curY = this.y + this.img.height - 34
+        let curX = this.x + this.width - 8
+        let curY = this.y + this.height - 34
         for (let c = 0; (this.neededCrystals < 1 || c < Math.max(this.neededCrystals, this.numCrystal)) && curY >= Math.max(this.imgNoCrystal.height, this.imgSmallCrystal.height, this.imgUsedCrystal.height); c++) {
             let imgCrystal = this.imgNoCrystal
             if (this.usedCrystals > c) {
@@ -67,8 +67,8 @@ export class PanelCrystalSideBar extends Panel {
             context.drawImage(imgCrystal, curX - imgCrystal.width / 2, curY)
         }
         // draw ores
-        curX = this.x + this.img.width - 21
-        curY = this.y + this.img.height - 42
+        curX = this.x + this.width - 21
+        curY = this.y + this.height - 42
         for (let i = 0; i < this.totalOre && curY >= this.imgOre.height; ++i) {
             curY -= this.imgOre.height
             context.drawImage(this.imgOre, curX - this.imgOre.width / 2, curY)

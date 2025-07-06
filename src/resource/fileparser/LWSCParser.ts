@@ -29,6 +29,7 @@ export class LWSCObject {
     receiveShadow: boolean = false
 }
 
+// noinspection PointlessArithmeticExpressionJS
 export class LWSCParser {
     readonly lwscData: LWSCData = new LWSCData()
     lines: string[] = []
@@ -130,33 +131,39 @@ export class LWSCParser {
                     console.error(`track lengths don't match: positionTrack=${positionTrack?.times.length}, rotationTrack=${rotationTrack?.times.length}, scaleTrack=${scaleTrack?.times.length}`)
                 }
                 for (let i = 0; i < minTimesLength; i += 1) {
-                    positionMat.makeTranslation(
+                    if (positionTrack) positionMat.makeTranslation(
                         positionTrack.values[i * positionTrack.getValueSize() + 0],
                         positionTrack.values[i * positionTrack.getValueSize() + 1],
                         positionTrack.values[i * positionTrack.getValueSize() + 2],
                     )
-                    rotationMat.makeRotationFromQuaternion(rotation.set(
+                    if (rotationTrack) rotationMat.makeRotationFromQuaternion(rotation.set(
                         rotationTrack.values[i * rotationTrack.getValueSize() + 0],
                         rotationTrack.values[i * rotationTrack.getValueSize() + 1],
                         rotationTrack.values[i * rotationTrack.getValueSize() + 2],
                         rotationTrack.values[i * rotationTrack.getValueSize() + 3],
                     ))
-                    scaleMat.makeScale(
+                    if (scaleTrack) scaleMat.makeScale(
                         scaleTrack.values[i * scaleTrack.getValueSize() + 0],
                         scaleTrack.values[i * scaleTrack.getValueSize() + 1],
                         scaleTrack.values[i * scaleTrack.getValueSize() + 2],
                     )
                     calcMat.identity().multiply(positionMat).multiply(rotationMat).multiply(scaleMat).multiply(invPivotMat).decompose(newPosition, newRotation, newScale)
-                    positionTrack.values[i * positionTrack.getValueSize() + 0] = newPosition.x
-                    positionTrack.values[i * positionTrack.getValueSize() + 1] = newPosition.y
-                    positionTrack.values[i * positionTrack.getValueSize() + 2] = newPosition.z
-                    rotationTrack.values[i * rotationTrack.getValueSize() + 0] = newRotation.x
-                    rotationTrack.values[i * rotationTrack.getValueSize() + 1] = newRotation.y
-                    rotationTrack.values[i * rotationTrack.getValueSize() + 2] = newRotation.z
-                    rotationTrack.values[i * rotationTrack.getValueSize() + 3] = newRotation.w
-                    scaleTrack.values[i * scaleTrack.getValueSize() + 0] = newScale.x
-                    scaleTrack.values[i * scaleTrack.getValueSize() + 1] = newScale.y
-                    scaleTrack.values[i * scaleTrack.getValueSize() + 2] = newScale.z
+                    if (positionTrack) {
+                        positionTrack.values[i * positionTrack.getValueSize() + 0] = newPosition.x
+                        positionTrack.values[i * positionTrack.getValueSize() + 1] = newPosition.y
+                        positionTrack.values[i * positionTrack.getValueSize() + 2] = newPosition.z
+                    }
+                    if (rotationTrack) {
+                        rotationTrack.values[i * rotationTrack.getValueSize() + 0] = newRotation.x
+                        rotationTrack.values[i * rotationTrack.getValueSize() + 1] = newRotation.y
+                        rotationTrack.values[i * rotationTrack.getValueSize() + 2] = newRotation.z
+                        rotationTrack.values[i * rotationTrack.getValueSize() + 3] = newRotation.w
+                    }
+                    if (scaleTrack) {
+                        scaleTrack.values[i * scaleTrack.getValueSize() + 0] = newScale.x
+                        scaleTrack.values[i * scaleTrack.getValueSize() + 1] = newScale.y
+                        scaleTrack.values[i * scaleTrack.getValueSize() + 2] = newScale.z
+                    }
                 }
                 return currentObject
             }
@@ -176,13 +183,13 @@ export class LWSCParser {
                     if (currentObject.lowerName === 'snd') currentObject.sfxName = currentObject.sfxName.toLowerCase().replace('sfx_', 'snd_')
                     const sfxFrameStart = nameParts[2] ? parseInt(nameParts[2], 10) : 0
                     const sfxFrameEnd = nameParts[3] ? parseInt(nameParts[3], 10) : Math.min(sfxFrameStart + 3, this.numOfKeyframes)
-                    const times = []
-                    const sfxNames = []
+                    const times: number[] = []
+                    const sfxNames: string[] = []
                     for (let c = 0; c < this.numOfKeyframes; c++) {
                         times[c] = c / this.numOfKeyframes * this.lwscData.durationSeconds
                         sfxNames[c] = (sfxFrameStart <= c && c < sfxFrameEnd) ? currentObject.sfxName : ''
                     }
-                    currentObject.keyframeTracks.push(new StringKeyframeTrack('.userData[sfxNameAnimation]', times, sfxNames))
+                    currentObject.keyframeTracks.push(new StringKeyframeTrack('.userData[sfxNameAnimation]', times, sfxNames as unknown as number[])) // XXX Workaround for https://github.com/mrdoob/three.js/issues/31374
                 } else if (currentObject.lowerName.startsWith('*') || currentObject.lowerName.startsWith(';')) {
                     if (VERBOSE) console.warn(`Unexpected sfx object name ${currentObject.lowerName}`)
                 }

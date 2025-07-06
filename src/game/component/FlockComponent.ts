@@ -20,13 +20,13 @@ export class FlockComponent extends AbstractGameComponent {
         super()
         this.entities = entities.map((e) => ({
             sceneEntity: e.sceneEntity,
-            separationDist: e.separationDist ?? defaults.separationDist ?? 0,
-            separationMult: e.separationMult ?? defaults.separationMult ?? 1,
-            cohesionDist: e.cohesionDist ?? defaults.cohesionDist ?? 0,
-            cohesionMult: e.cohesionMult ?? defaults.cohesionMult ?? 1,
-            alignmentMult: e.alignmentMult ?? defaults.alignmentMult ?? 0,
-            inertiaMult: e.inertiaMult ?? defaults.inertiaMult ?? 0,
-            speed: e.speed ?? defaults.speed ?? 1,
+            separationDist: e.separationDist ?? defaults?.separationDist ?? 0,
+            separationMult: e.separationMult ?? defaults?.separationMult ?? 1,
+            cohesionDist: e.cohesionDist ?? defaults?.cohesionDist ?? 0,
+            cohesionMult: e.cohesionMult ?? defaults?.cohesionMult ?? 1,
+            alignmentMult: e.alignmentMult ?? defaults?.alignmentMult ?? 0,
+            inertiaMult: e.inertiaMult ?? defaults?.inertiaMult ?? 0,
+            speed: e.speed ?? defaults?.speed ?? 1,
         }))
     }
 }

@@ -26,11 +26,12 @@ export class IconSubPanel extends Panel {
         const frameImgCfg = GameConfig.instance.interfaceSurroundImages[numOfItems]
         this.img = onBackPanel ? ResourceManager.getImage(frameImgCfg.imgName) : ResourceManager.getImage(frameImgCfg.imgNameWoBackName)
         this.xOut = -this.img.width
+        this.width = this.img.width
     }
 
     addMenuItem(interfaceImageCfg: InterfaceImageEntryCfg | undefined) {
         if (!interfaceImageCfg) throw new Error(`No menu item config given`)
-        const menuItem = this.addChild(new IconPanelButton(interfaceImageCfg, this.img.width, this.iconPanelButtons.length))
+        const menuItem = this.addChild(new IconPanelButton(interfaceImageCfg, this.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(menuItem)
         return menuItem
     }

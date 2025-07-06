@@ -40,14 +40,14 @@ export class SceneManager implements Updatable {
     readonly sprites: (Sprite & Updatable)[] = []
     readonly raycaster: Raycaster = new Raycaster()
     readonly objectPointer: ObjectPointer = new ObjectPointer()
-    ambientLight: LeveledAmbientLight
-    terrain: Terrain
-    floorGroup: Group
-    roofGroup: Group
-    torchLightCursor: TorchLightCursor
-    buildMarker: BuildPlacementMarker
-    followerRenderer: FollowerRenderer
-    cameraActive: PerspectiveCamera
+    ambientLight: LeveledAmbientLight = new LeveledAmbientLight()
+    terrain!: Terrain // TODO Refactor terrain handling, split into data and mesh
+    floorGroup: Group = new Group()
+    roofGroup: Group = new Group()
+    torchLightCursor: TorchLightCursor = new TorchLightCursor()
+    buildMarker?: BuildPlacementMarker
+    followerRenderer!: FollowerRenderer
+    cameraActive!: PerspectiveCamera
     entityTurnSpeed: number = 0
     entityMoveMultiplier: number = 0
 
@@ -182,7 +182,6 @@ export class SceneManager implements Updatable {
         this.followerRenderer?.dispose()
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
-        this.terrain = undefined
         this.sceneObjects.forEach((e) => e.dispose())
         this.sceneObjects.length = 0
     }
@@ -212,7 +211,7 @@ export class SceneManager implements Updatable {
     }
 
     setBuildModeSelection(entityType: EntityType | undefined) {
-        this.buildMarker.setBuildMode(entityType)
+        this.buildMarker?.setBuildMode(entityType)
     }
 
     addSceneEntity(sceneEntity: SceneEntity): void {

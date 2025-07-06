@@ -66,12 +66,13 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
                 let totalWidth = 0
                 let totalHeight = 0
                 const deps = request.dependencies.map((dep) => {
-                    let depImages: [SpriteImage, SpriteImage]
+                    let depImages: [SpriteImage, SpriteImage] | undefined
                     if (dep.entityType === EntityType.PILOT) {
                         depImages = this.interfaceImages.get('Interface_MenuItem_TeleportMan'.toLowerCase()) // TODO Improve config parsing and use specific key here
                     } else {
                         depImages = this.interfaceBuildImages.get(dep.itemKey.toLowerCase()) // TODO Improve config parsing and use specific key here
                     }
+                    if (!Array.isArray(depImages) || depImages.length !== 2) throw new Error(`Unexpected dependency images array (${depImages})`)
                     const depImg = dep.isOk ? depImages[0] : depImages[1]
                     totalWidth += depImg.width
                     totalHeight = Math.max(totalHeight, depImg.height)

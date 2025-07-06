@@ -862,12 +862,12 @@ export class NerpRunner {
             }
         }
         const lMethodName = methodName.toLowerCase()
-        const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.toLowerCase() === lMethodName)
-        if (memberName) return this[memberName].apply(this, methodArgs)
+        const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.toLowerCase() === lMethodName) as keyof NerpRunner
+        if (memberName) return (this[memberName] as Function)?.apply(this, methodArgs)
         throw new Error(`Undefined method: ${methodName}`)
     }
 
-    conditional(left, right) {
+    conditional(left: any, right: any) {
         const conditionResult = this.executeStatement(left)
         if (NerpRunner.debug) {
             console.log(`Condition evaluated to ${conditionResult}`)
@@ -877,17 +877,17 @@ export class NerpRunner {
         }
     }
 
-    executeStatement(expression) {
+    executeStatement(expression: any) {
         if (expression.invoke) {
-            const argValues = expression.invoke !== 'conditional' ? expression.args.map((e) => this.executeStatement(e)) : expression.args
+            const argValues = expression.invoke !== 'conditional' ? expression.args.map((e: any) => this.executeStatement(e)) : expression.args
             const result = this.callMethod(expression.invoke, argValues)
             if (result !== undefined && NerpRunner.debug) {
                 console.log(`Method ${expression.invoke}(${JSON.stringify(expression.args).slice(1, -1)}) returned: ${result}`)
             }
             return result
         } else if (expression.comparator) {
-            const left = this.executeStatement(expression.left)
-            const right = this.executeStatement(expression.right)
+            const left: any = this.executeStatement(expression.left)
+            const right: any = this.executeStatement(expression.right)
             if (expression.comparator === '=') {
                 return left === right
             } else if (expression.comparator === '!=') {
@@ -903,13 +903,10 @@ export class NerpRunner {
         } else if (!isNaN(expression)) { // just a number
             return expression
         } else if (expression.jump) {
-            this.programCounter = this.script.labelsByName.get(expression.jump)
-            if (this.programCounter === undefined) {
-                throw new Error(`Label '${expression.jump}' is unknown!`)
-            }
-            if (NerpRunner.debug) {
-                console.log(`Jumping to label '${expression.jump}' in line ${this.programCounter}`)
-            }
+            const jumpCounter = this.script.labelsByName.get(expression.jump)
+            if (jumpCounter === undefined) throw new Error(`Label '${expression.jump}' is unknown!`)
+            this.programCounter = jumpCounter
+            if (NerpRunner.debug) console.log(`Jumping to label '${expression.jump}' in line ${this.programCounter}`)
         } else {
             console.log(expression)
             throw new Error(`Unknown expression in line ${this.programCounter}: ${expression}`)
@@ -959,7 +956,7 @@ export class NerpRunner {
             !(flashIconMatch && NerpRunner.iconClickedConfig.some((c) => c.iconName.toLowerCase() === flashIconMatch[1]?.toLowerCase())) &&
             !(setIconClickedMatch && NerpRunner.iconClickedConfig.some((c) => c.iconName.toLowerCase() === setIconClickedMatch[1]?.toLowerCase())) &&
             !(getIconClickedMatch && NerpRunner.iconClickedConfig.some((c) => c.iconName.toLowerCase() === getIconClickedMatch[1]?.toLowerCase())) &&
-            !this[memberName]
+            !this[memberName as keyof NerpRunner]
         ) {
             console.warn(`Unexpected invocation "${statement.invoke}" found, NERP execution may fail!`, statement)
         }

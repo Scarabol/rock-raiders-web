@@ -5,8 +5,6 @@
     "useDefineForClassFields": true,
     "module": "ESNext",
     "strict": true,
-    "strictNullChecks": false, // XXX Improve null/undefined handling
-    "noImplicitAny": false, // XXX Improve config parsing to remove this exception from strict mode
     "lib": [
       "ESNext",
       "DOM"

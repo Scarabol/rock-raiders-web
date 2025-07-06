@@ -29,16 +29,17 @@ export class ResourceManager {
 
     static getImageOptional(imageName: string): SpriteImage | undefined {
         if (!imageName) return undefined
-        return this.imageCache.getOrUpdate(imageName, () => {
-            const imgData = this.resourceByName.get(imageName.toLowerCase())
-            if (!imgData) {
-                console.warn(`Image "${imageName}" not found!`)
-                return undefined
-            }
-            const context = createContext(imgData.width, imgData.height)
-            context.putImageData(imgData, 0, 0)
-            return context.canvas
-        })
+        const cached = this.imageCache.get(imageName)
+        if (cached) return cached
+        const imgData = this.resourceByName.get(imageName.toLowerCase()) // TODO data should be handled only in type-safe cache
+        if (!imgData) {
+            console.warn(`Image "${imageName}" not found!`)
+            return undefined
+        }
+        const context = createContext(imgData.width, imgData.height)
+        context.putImageData(imgData, 0, 0)
+        this.imageCache.set(imageName, context.canvas)
+        return context.canvas
     }
 
     static getImage(imageName: string): SpriteImage {

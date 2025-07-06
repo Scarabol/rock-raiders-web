@@ -15,7 +15,7 @@ export abstract class AbstractGameComponent {
 export abstract class AbstractGameSystem {
     abstract readonly componentsRequired: Set<Function>
     readonly dirtyComponents: Set<Function> = new Set()
-    ecs: ECS
+    ecs!: ECS
 
     abstract update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void
 }
@@ -81,7 +81,7 @@ export class ECS {
     }
 
     public addComponent<T extends AbstractGameComponent>(entity: GameEntity, component: T): T {
-        this.entities.get(entity).add(component)
+        this.entities.get(entity)?.add(component)
         component.markDirty = () => {
             this.componentDirty(entity, component)
         }
@@ -123,7 +123,7 @@ export class ECS {
             if (!this.dirtySystemsCare.has(c)) {
                 this.dirtySystemsCare.set(c, new Set())
             }
-            this.dirtySystemsCare.get(c).add(system)
+            this.dirtySystemsCare.get(c)?.add(system)
         }
         this.dirtyEntities.set(system, new Set())
         return system
@@ -131,21 +131,22 @@ export class ECS {
 
     public update(elapsedMs: number): void {
         for (const [system, entities] of this.systems.entries()) {
-            const dirtySystemEntities = this.dirtyEntities.get(system)
+            const dirtySystemEntities = this.dirtyEntities.get(system) ?? new Set()
             system.update(elapsedMs, entities, dirtySystemEntities)
-            dirtySystemEntities.clear()
+            dirtySystemEntities?.clear()
         }
         while (this.entitiesToDestroy.length > 0) {
             this.destroyEntity(this.entitiesToDestroy.pop())
         }
     }
 
-    private destroyEntity(entity: GameEntity): void {
+    private destroyEntity(entity: GameEntity | undefined): void {
+        if (entity === undefined) return
         this.entities.delete(entity)
         for (const [system, entities] of this.systems.entries()) {
             entities.delete(entity)
             if (this.dirtyEntities.has(system)) {
-                this.dirtyEntities.get(system).delete(entity)
+                this.dirtyEntities.get(system)?.delete(entity)
             }
         }
     }
@@ -158,11 +159,11 @@ export class ECS {
 
     private checkEntityWithSystem(entity: GameEntity, system: AbstractGameSystem): void {
         if (this.entities.get(entity)?.hasAll(system.componentsRequired)) {
-            this.systems.get(system).add(entity)
+            this.systems.get(system)?.add(entity)
         } else {
-            this.systems.get(system).delete(entity)
+            this.systems.get(system)?.delete(entity)
             if (this.dirtyEntities.has(system)) {
-                this.dirtyEntities.get(system).delete(entity)
+                this.dirtyEntities.get(system)?.delete(entity)
             }
         }
     }
@@ -171,9 +172,9 @@ export class ECS {
         if (!this.dirtySystemsCare.has(component.constructor)) {
             return
         }
-        for (const system of this.dirtySystemsCare.get(component.constructor)) {
-            if (this.systems.get(system).has(entity)) {
-                this.dirtyEntities.get(system).add(entity)
+        for (const system of this.dirtySystemsCare.get(component.constructor) ?? []) {
+            if (this.systems.get(system)?.has(entity)) {
+                this.dirtyEntities.get(system)?.add(entity)
             }
         }
     }

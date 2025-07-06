@@ -17,7 +17,7 @@ export class SelectFilesForm {
             try {
                 e.preventDefault()
                 btnStart.disabled = true
-                const files = fileSelectInputs.flatMap((f) => Array.from(f.files)).filter((f) => !!f)
+                const files = fileSelectInputs.flatMap((f) => Array.from(f.files ?? [])).filter((f) => !!f)
                 await onSubmit(files)
             } finally {
                 btnStart.disabled = false

@@ -2,10 +2,10 @@ import { ConfigSetFromEntryValue } from './Configurable'
 import { CfgEntryValue } from './CfgEntry'
 
 export class RockFallStyle implements ConfigSetFromEntryValue {
-    itemNull: string // XXX Usage unclear
-    threeSides: string
-    outsideCorner: string
-    tunnel: string
+    itemNull: string = '' // XXX Usage unclear
+    threeSides: string = ''
+    outsideCorner: string = ''
+    tunnel: string = ''
 
     setFromValue(cfgValue: CfgEntryValue): this {
         const array = cfgValue.toArray(',', 4)

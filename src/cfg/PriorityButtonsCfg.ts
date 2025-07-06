@@ -51,8 +51,8 @@ export class PrioritiesImagePositionsCfg implements ConfigSetFromRecord {
 }
 
 export class PriorityPositionsEntry implements ConfigSetFromEntryValue {
-    x: number
-    y: number
+    x: number = 0
+    y: number = 0
 
     setFromValue(cfgValue: CfgEntryValue): this {
         const value = cfgValue.toPos(',')

@@ -33,7 +33,7 @@ export class FlockBehaviorSystem extends AbstractGameSystem {
                 avgDir.normalize()
 
                 for (const flockEntity of flockEntities) {
-                    let minDist: Vector3
+                    let minDist: Vector3 | undefined
                     flockEntities.forEach((e) => {
                         if (Object.is(e.sceneEntity, flockEntity.sceneEntity)) return
                         const dist = e.pos.clone().sub(flockEntity.pos)

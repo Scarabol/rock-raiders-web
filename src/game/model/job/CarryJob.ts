@@ -77,10 +77,13 @@ export class CarryJob extends Job {
             case EntityType.BARRIER:
                 if (!carryItem.targetSite || carryItem.targetSite.complete || carryItem.targetSite.canceled) {
                     return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
-                } else {
+                } else if (carryItem.location) {
                     const targetCenter = carryItem.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(carryItem.location).getCenterWorld2D()
                     const focusPoint = carryItem.location.clone().add(new Vector2().copy(carryItem.location).sub(targetCenter))
                     return [PathTarget.fromSite(carryItem.targetSite, carryItem.location, focusPoint)].filter((p) => !!entity.findShortestPath(p))
+                } else {
+                    console.warn(`Could not find workplace for barrier; neither target site (${carryItem.targetSite}}) nor location (${carryItem.location}) given`)
+                    return []
                 }
             case EntityType.DYNAMITE:
                 if (carryItem.targetSurface?.isDigable() && carryItem.targetSurface?.dynamiteJob === this) {
@@ -132,7 +135,7 @@ export class CarryJob extends Job {
         super.onJobComplete(fulfiller)
         const dropped = this.fulfiller?.dropCarried(false) || []
         dropped.forEach((droppedItem) => {
-            droppedItem.carryJob.jobState = JobState.COMPLETE
+            if (droppedItem.carryJob) droppedItem.carryJob.jobState = JobState.COMPLETE
             if (this.target) droppedItem.setPosition(droppedItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
             const targetBuilding = this.target?.building
             if (targetBuilding) {
@@ -152,22 +155,28 @@ export class CarryJob extends Job {
             } else if (droppedItem.entityType === EntityType.DEPLETED_CRYSTAL) {
                 droppedItem.disposeFromWorld()
                 const material = MaterialSpawner.spawnMaterial(droppedItem.worldMgr, EntityType.CRYSTAL, droppedItem.getPosition2D())
-                const raider = fulfiller as Raider // XXX refactor type safety for jobs
-                raider.setJob(material.carryJob)
-                raider.carries = material
-                raider.sceneEntity.pickupEntity(material.sceneEntity)
+                if (material.carryJob) {
+                    const raider = fulfiller as Raider // XXX refactor type safety for jobs
+                    raider.setJob(material.carryJob)
+                    raider.carries = material
+                    raider.sceneEntity.pickupEntity(material.sceneEntity)
+                }
             } else if (droppedItem.entityType === EntityType.ELECTRIC_FENCE) {
                 droppedItem.worldMgr.entityMgr.removeEntity(droppedItem.entity)
-                droppedItem.worldMgr.sceneMgr.addSceneEntity(droppedItem.sceneEntity)
-                droppedItem.sceneEntity.rotation.set(0, 0, 0)
-                const stats = GameConfig.instance.stats.electricFence
-                const pickSphere = droppedItem.worldMgr.ecs.getComponents(droppedItem.entity).get(SceneSelectionComponent).pickSphere
-                droppedItem.worldMgr.ecs.addComponent(droppedItem.entity, new SelectionFrameComponent(pickSphere, stats))
-                droppedItem.targetSurface.fence = droppedItem.entity
-                droppedItem.targetSurface.fenceRequested = false
-                droppedItem.worldMgr.entityMgr.placedFences.add(droppedItem)
-                const neighborsFence = droppedItem.targetSurface.neighborsFence
-                if (neighborsFence.some((s) => s.selected)) EventBroker.publish(new SelectionChanged(droppedItem.worldMgr.entityMgr))
+                if (droppedItem.targetSurface) {
+                    droppedItem.worldMgr.sceneMgr.addSceneEntity(droppedItem.sceneEntity)
+                    droppedItem.sceneEntity.rotation.set(0, 0, 0)
+                    const pickSphere = droppedItem.worldMgr.ecs.getComponents(droppedItem.entity).get(SceneSelectionComponent).pickSphere
+                    const stats = GameConfig.instance.stats.electricFence
+                    droppedItem.worldMgr.ecs.addComponent(droppedItem.entity, new SelectionFrameComponent(pickSphere, stats))
+                    droppedItem.targetSurface.fence = droppedItem.entity
+                    droppedItem.targetSurface.fenceRequested = false
+                    droppedItem.worldMgr.entityMgr.placedFences.add(droppedItem)
+                    const neighborsFence = droppedItem.targetSurface.neighborsFence
+                    if (neighborsFence.some((s) => s.selected)) EventBroker.publish(new SelectionChanged(droppedItem.worldMgr.entityMgr))
+                } else {
+                    console.warn('Cannot place electric fence without given target surface')
+                }
             } else if (droppedItem.entityType === EntityType.DYNAMITE) {
                 if (droppedItem.targetSurface?.dynamiteJob === this) this.igniteDynamite()
             } else {
@@ -183,10 +192,11 @@ export class CarryJob extends Job {
 
     private igniteDynamite() {
         this.carryItem.worldMgr.ecs.addComponent(this.carryItem.entity, new RaiderScareComponent(RaiderScareRange.DYNAMITE))
-        this.carryItem.sceneEntity.headTowards(this.carryItem.targetSurface.getCenterWorld2D())
+        const targetSurface = this.carryItem.targetSurface
+        if (targetSurface) this.carryItem.sceneEntity.headTowards(targetSurface.getCenterWorld2D())
         this.carryItem.sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
             this.carryItem.worldMgr.ecs.removeComponent(this.carryItem.entity, RaiderScareComponent)
-            this.carryItem.targetSurface.collapse()
+            targetSurface?.collapse()
             this.carryItem.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.explosion, this.carryItem.getPosition(), this.carryItem.sceneEntity.heading, false)
             EventBroker.publish(new DynamiteExplosionEvent(this.carryItem.getPosition2D()))
             this.carryItem.disposeFromWorld()
