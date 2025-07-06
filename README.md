@@ -1,6 +1,7 @@
 # Rock Raiders Web
 
-Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999) using browser based technologies.
+Rock Raiders Web (RRW) is a non-profit initiative dedicated to recreating the classic Rock Raiders PC game from 1999
+using modern web technologies.
 
 **Enjoy!**
 
@@ -68,7 +69,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add tiny rockies running around after crumbling
 - Two buttons in priority list can be hovered/pressed/released at the same time
 - Use pro-meshes to render high-detail walls in first person and shoulder view
-- Bats don't appear in flocks
 - Middle wheel meshes of small digger do not rotate after engine upgrade
 
 ### Authentic
@@ -107,6 +107,7 @@ npm run dev
 * [three.js](https://github.com/mrdoob/three.js) - Web based 3D Engine
 * [IDB-Keyval](https://github.com/jakearchibald/idb-keyval) - Indexed cache handling helper
 * [zip.js](https://github.com/gildas-lormeau/zip.js) - JavaScript library to zip and unzip files
+* [pako](https://github.com/nodeca/pako) - zlib JavaScript port to unpack files from CAB
 
 ### Media
 
