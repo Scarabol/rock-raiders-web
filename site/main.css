@@ -15,6 +15,10 @@ html, body {
     gap: 10px;
 }
 
+.right-col {
+    flex: 1 1 0;
+}
+
 #game-canvas-container {
     background: #000000;
     display: grid;
@@ -36,6 +40,8 @@ html, body {
     justify-content: space-around;
     height: 80%;
     margin-left: 10px;
+    flex: 1 1 0;
+    align-items: end;
 }
 
 @media screen and (aspect-ratio < 1.333333) {
