@@ -43,7 +43,7 @@ export class MaterialSpawner {
                 if (!oreMesh) throw new Error(`Cannot spawn ore missing mesh "${GameConfig.instance.miscObjects.ore}"`)
                 material.sceneEntity.add(oreMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.ore))
-                material.priorityIdentifier = PriorityIdentifier.ORE
+                // Do not set priority identifier before workplace
                 this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
             case EntityType.BRICK:
@@ -51,7 +51,7 @@ export class MaterialSpawner {
                 if (!brickMesh) throw new Error(`Cannot spawn brick missing mesh "${GameConfig.instance.miscObjects.processedOre}"`)
                 material.sceneEntity.add(brickMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.processedOre))
-                material.priorityIdentifier = PriorityIdentifier.ORE
+                // Do not set priority identifier before workplace
                 this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
             case EntityType.CRYSTAL:
@@ -63,7 +63,7 @@ export class MaterialSpawner {
                 })
                 material.sceneEntity.add(energyCrystalMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.powerCrystal))
-                material.priorityIdentifier = PriorityIdentifier.CRYSTAL
+                // Do not set priority identifier before workplace
                 this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
             case EntityType.DEPLETED_CRYSTAL:

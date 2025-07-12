@@ -16,6 +16,8 @@ import { JobState } from './JobState'
 import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
 import { Vector2 } from 'three'
+import { PriorityIdentifier } from './PriorityIdentifier'
+import { GameState } from '../GameState'
 
 export class CarryJob extends Job {
     fulfiller?: JobFulfiller
@@ -46,6 +48,7 @@ export class CarryJob extends Job {
             this.target = entity.findShortestPath(this.findWorkplaces(entity))?.target
             if (this.target?.site) this.target.site.assign(this.carryItem)
         }
+        this.priorityIdentifier = this.target?.site ? PriorityIdentifier.CONSTRUCTION : this.carryItem.priorityIdentifier
         return this.target
     }
 
@@ -54,17 +57,27 @@ export class CarryJob extends Job {
         const entityMgr = carryItem.worldMgr.entityMgr
         switch (carryItem.entityType) {
             case EntityType.ORE:
-                const oreSites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
-                if (oreSites.length > 0) return oreSites
-                const oreRefineries = this.findReachableBuilding(entityMgr, EntityType.ORE_REFINERY, entity)
-                if (oreRefineries.length > 0) return oreRefineries
-                return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
+                if (GameState.priorityList.isEnabled(PriorityIdentifier.CONSTRUCTION)) {
+                    const oreSites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
+                    if (oreSites.length > 0) return oreSites
+                }
+                if (GameState.priorityList.isEnabled(PriorityIdentifier.ORE)) {
+                    const oreRefineries = this.findReachableBuilding(entityMgr, EntityType.ORE_REFINERY, entity)
+                    if (oreRefineries.length > 0) return oreRefineries
+                    return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
+                }
+                return []
             case EntityType.CRYSTAL:
-                const crystalSites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
-                if (crystalSites.length > 0) return crystalSites
-                const powerStations = this.findReachableBuilding(entityMgr, EntityType.POWER_STATION, entity)
-                if (powerStations.length > 0) return powerStations
-                return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
+                if (GameState.priorityList.isEnabled(PriorityIdentifier.CONSTRUCTION)) {
+                    const crystalSites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
+                    if (crystalSites.length > 0) return crystalSites
+                }
+                if (GameState.priorityList.isEnabled(PriorityIdentifier.CRYSTAL)) {
+                    const powerStations = this.findReachableBuilding(entityMgr, EntityType.POWER_STATION, entity)
+                    if (powerStations.length > 0) return powerStations
+                    return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
+                }
+                return []
             case EntityType.DEPLETED_CRYSTAL:
                 return this.carryItem.worldMgr.sceneMgr.terrain.rechargeSeams
                     .flatMap((s) => s.getDigPositions()

@@ -49,7 +49,6 @@ using modern web technologies.
 
 ### v0.9.x - Polishing
 
-- Forbidding collection of ores or crystals stops building projects too
 - Implement clickOnly... methods for tutorials and disable all non-flashing UI elements in tutorial mode
 - Auto switch from portrait to landscape mode in fullscreen
 - Add option to read/write savegames from URL
