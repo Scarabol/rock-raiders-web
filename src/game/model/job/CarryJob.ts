@@ -35,17 +35,17 @@ export class CarryJob extends Job {
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
-        if (this.target && !(
+        if (!this.target ||
             (this.target.building && !this.target.building.isPowered()) ||
             (this.target.site && (this.target.site.complete || this.target.site.canceled)) ||
             (this.carryItem.targetSurface && this.carryItem.targetSurface.dynamiteJob !== this) ||
+            (!this.target.site && !this.carryItem.targetSurface && this.findReachableBuildingSiteWithNeed(this.carryItem.worldMgr.entityMgr, this.carryItem, entity).length > 0) ||
             !entity.findShortestPath(this.target)
-        )) {
-            return this.target
+        ) { // find new target workplace
+            if (this.target?.site) this.target.site.unAssign(this.carryItem)
+            this.target = entity.findShortestPath(this.findWorkplaces(entity))?.target
+            if (this.target?.site) this.target.site.assign(this.carryItem)
         }
-        if (this.target?.site) this.target.site.unAssign(this.carryItem)
-        this.target = entity.findShortestPath(this.findWorkplaces(entity))?.target
-        if (this.target?.site) this.target.site.assign(this.carryItem)
         return this.target
     }
 
