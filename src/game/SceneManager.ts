@@ -50,6 +50,7 @@ export class SceneManager implements Updatable {
     cameraActive!: PerspectiveCamera
     entityTurnSpeed: number = 0
     entityMoveMultiplier: number = 0
+    frustumUpdater: CameraFrustumUpdater
 
     constructor(readonly worldMgr: WorldManager, canvas: HTMLCanvasElement) {
         this.worldMgr.sceneMgr = this
@@ -61,9 +62,8 @@ export class SceneManager implements Updatable {
         this.renderer = new SceneRenderer(canvas)
         this.birdViewControls = new BirdViewControls(this.cameraBird, canvas)
         if (!SaveGameManager.preferences.cameraUnlimited) this.birdViewControls.addEventListener('change', () => this.forceCameraBirdAboveFloor())
-        const frustumUpdater = new CameraFrustumUpdater(this.cameraBird)
-        frustumUpdater.onCameraMoved()
-        this.birdViewControls.addEventListener('change', () => frustumUpdater.onCameraMoved())
+        this.frustumUpdater = new CameraFrustumUpdater(this.cameraBird)
+        this.birdViewControls.addEventListener('change', () => this.frustumUpdater.onCameraMoved())
         this.setActiveCamera(this.cameraBird)
         EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
             this.setActiveCamera(this.cameraBird) // TODO Only reset camera, when camera parent is affected
@@ -136,7 +136,8 @@ export class SceneManager implements Updatable {
     }
 
     async startScene(): Promise<void> {
-        return this.renderer.startRendering(this.scene)
+        await this.renderer.startRendering(this.scene)
+        this.frustumUpdater.onCameraMoved()
     }
 
     update(elapsedMs: number) {

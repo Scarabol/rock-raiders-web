@@ -31,19 +31,19 @@ export class CameraFrustumUpdater {
             bottomLeft: {x: 0, z: 0},
         }
         this.raycaster.setFromCamera(this.topLeft, this.camera)
-        this.raycaster.ray.intersectPlane(this.groundPlane, this.tmpVec)
+        if (!this.raycaster.ray.intersectPlane(this.groundPlane, this.tmpVec)) return
         rect.topLeft.x = this.tmpVec.x
         rect.topLeft.z = this.tmpVec.z
         this.raycaster.setFromCamera(this.topRight, this.camera)
-        this.raycaster.ray.intersectPlane(this.groundPlane, this.tmpVec)
+        if (!this.raycaster.ray.intersectPlane(this.groundPlane, this.tmpVec)) return
         rect.topRight.x = this.tmpVec.x
         rect.topRight.z = this.tmpVec.z
         this.raycaster.setFromCamera(this.bottomRight, this.camera)
-        this.raycaster.ray.intersectPlane(this.groundPlane, this.tmpVec)
+        if (!this.raycaster.ray.intersectPlane(this.groundPlane, this.tmpVec)) return
         rect.bottomRight.x = this.tmpVec.x
         rect.bottomRight.z = this.tmpVec.z
         this.raycaster.setFromCamera(this.bottomLeft, this.camera)
-        this.raycaster.ray.intersectPlane(this.groundPlane, this.tmpVec)
+        if (!this.raycaster.ray.intersectPlane(this.groundPlane, this.tmpVec)) return
         rect.bottomLeft.x = this.tmpVec.x
         rect.bottomLeft.z = this.tmpVec.z
         EventBroker.publish(new UpdateRadarCamera(rect))
