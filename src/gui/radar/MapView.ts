@@ -9,7 +9,7 @@ import { MapRenderer } from './MapRenderer'
 import { GameEntity } from '../../game/ECS'
 import { CameraControl, ChangeTooltip } from '../../event/GuiCommand'
 import { CursorManager } from '../../screen/CursorManager'
-import { TILESIZE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
+import { DEV_MODE, TILESIZE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
 import { EventBroker } from '../../event/EventBroker'
 import { Vector2 } from 'three'
 import { MapRendererCameraRect } from '../../worker/MapRendererWorker'
@@ -26,7 +26,7 @@ export class MapView extends BaseElement {
     readonly offset: { x: number, y: number } = {x: 0, y: 0}
     readonly surfaceMap: MapSurfaceRect[][] = []
     readonly entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number, r: number }>> = new Map()
-    surfaceRectSizeMin: number = 10
+    surfaceRectSizeMin: number = DEV_MODE ? 3 : 10
     surfaceRectSizeMax: number = 15
     surfaceRectSize: number = 10
     terrainWidth: number = 0

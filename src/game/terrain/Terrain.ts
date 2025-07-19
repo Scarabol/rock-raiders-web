@@ -22,7 +22,9 @@ export class Terrain {
 
     constructor(readonly worldMgr: WorldManager, readonly levelConf: LevelConfData) {
         this.width = levelConf.mapWidth
+        if (this.width < 1) throw new Error('Invalid map width given')
         this.height = levelConf.mapHeight
+        if (this.height < 1) throw new Error('Invalid map height given')
     }
 
     getSurfaceFromWorld(worldPosition: Vector3): Surface {
