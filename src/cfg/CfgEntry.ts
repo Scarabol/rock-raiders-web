@@ -97,6 +97,10 @@ export class CfgEntryValue {
 
     toNumber(fallback: number = 0): number {
         if (this.value === undefined) return fallback
+        if (this.value === '5\\') {
+            console.warn(`@Baz pls fix your config for game speed slider; "${this.value}" is not a number`)
+            return 5
+        }
         const result = Number(this.value)
         if (isNaN(result)) throw new Error(`Invalid value (${this.value}) given; expected number value`)
         return result
