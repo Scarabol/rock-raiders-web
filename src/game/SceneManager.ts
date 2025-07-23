@@ -28,6 +28,7 @@ import { Raider } from './model/raider/Raider'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { CameraFrustumUpdater } from '../scene/CameraFrustumUpdater'
 import { SelectionNameComponent } from './component/SelectionNameComponent'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class SceneManager implements Updatable {
     readonly scene: Scene
@@ -51,6 +52,8 @@ export class SceneManager implements Updatable {
     entityTurnSpeed: number = 0
     entityMoveMultiplier: number = 0
     frustumUpdater: CameraFrustumUpdater
+    backgroundColor: Color = new Color()
+    fogColor: Color = new Color()
 
     constructor(readonly worldMgr: WorldManager, canvas: HTMLCanvasElement) {
         this.worldMgr.sceneMgr = this
@@ -81,7 +84,13 @@ export class SceneManager implements Updatable {
         if (this.torchLightCursor) this.torchLightCursor.visible = GameState.isBirdView
         this.birdViewControls.disabled = !GameState.isBirdView
         if (this.roofGroup) this.roofGroup.visible = !GameState.isBirdView
-        this.scene.fog = GameState.isBirdView ? null : new FogExp2(this.scene.background as Color, 0.007)
+        if (GameState.isBirdView) {
+            this.scene.background = this.backgroundColor
+            this.scene.fog = null
+        } else {
+            this.scene.background = this.fogColor // fog color must be equal to scene background to avoid "holes" in fog at max rendering distance
+            this.scene.fog = new FogExp2(this.fogColor, 0.007)
+        }
         this.worldMgr.entityMgr?.selection.raiders.forEach((r) => this.worldMgr.ecs.getComponents(r.entity).get(SelectionNameComponent)?.setVisible(GameState.isBirdView))
         this.cameraActive = camera
         this.cameraActive.add(SoundManager.sceneAudioListener)
@@ -90,7 +99,8 @@ export class SceneManager implements Updatable {
 
     setupScene(levelConf: LevelConfData) {
         this.scene.clear()
-        this.scene.background = new Color().fromArray(levelConf.fogColor) // fog color must be equal to scene background to avoid "holes" in fog at max rendering distance
+        this.backgroundColor = this.scene.background = new Color().fromArray(GameConfig.instance.main.ambientRGB)
+        this.fogColor = new Color().fromArray(levelConf.fogColor)
         this.ambientLight = new LeveledAmbientLight()
         this.ambientLight.setLightLevel(SaveGameManager.preferences.gameBrightness)
         this.scene.add(this.ambientLight)
