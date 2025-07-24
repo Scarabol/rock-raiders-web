@@ -31,7 +31,7 @@ export class DrillJob extends Job {
             const fulfillerWorkRange = entity.stats.pickSphere / 2
             digPositions = surfaceDigPositions.map((digPos) => {
                 const workPos = digPos.clone().sub(surfaceCenter).setLength(fulfillerWorkRange).add(digPos)
-                return PathTarget.fromLocation(workPos)
+                return PathTarget.fromLocation(workPos, undefined, surfaceCenter)
             })
             this.digPositionsByFulfiller.set(entity.entity, digPositions)
         }

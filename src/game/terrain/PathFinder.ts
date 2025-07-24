@@ -44,11 +44,12 @@ export class PathFinder {
         })
     }
 
-    findShortestPath(start: Vector2, targets: PathTarget[] | PathTarget | undefined, stats: MovableEntityStats, precision: number): TerrainPath | undefined {
+    findShortestPath(start: Vector2, targets: PathTarget[] | PathTarget | undefined, stats: MovableEntityStats, precision: number, preferredTargetLocation?: Vector2): TerrainPath | undefined {
         if (!targets) return undefined
-        return Array.ensure(targets).map((pathTarget) => this.findTerrainPath(start, pathTarget, stats, precision))
-            .filter((terrainPath) => !!terrainPath)
-            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+        return PathFinder.getShortest(
+            Array.ensure(targets).map((pathTarget) => this.findTerrainPath(start, pathTarget, stats, precision)),
+            precision, preferredTargetLocation && ((p) => preferredTargetLocation.equals(p.target.targetLocation)),
+        )
     }
 
     private findTerrainPath(start: Vector2, target: PathTarget, stats: MovableEntityStats, precision: number): TerrainPath | undefined {
@@ -63,11 +64,11 @@ export class PathFinder {
         obj: T,
         locations: Vector2[],
         lengthSq: number
-    } {
-        return objects.map((obj) => {
-            if (!obj) return null
+    } | undefined {
+        return PathFinder.getShortest(objects.map((obj) => {
+            if (!obj) return undefined
             const path = this.findPath(start, obj.sceneEntity.position2D, stats, precision)
-            if (!path) return null
+            if (!path) return undefined
             let lengthSq = 0
             for (let c = 0; c < path.length - 1; c++) {
                 const start = path[c]
@@ -75,18 +76,17 @@ export class PathFinder {
                 lengthSq += start.distanceToSquared(end)
             }
             return {obj: obj, locations: path, lengthSq: lengthSq}
-        }).filter((terrainPath) => !!terrainPath)
-            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+        }), precision)
     }
 
     findClosestBuilding(start: Vector2, buildings: BuildingEntity[], stats: MovableEntityStats, precision: number): {
         obj: BuildingEntity,
         locations: Vector2[],
         lengthSq: number
-    } {
-        return buildings.flatMap((b) => b.getTrainingTargets().flatMap((t) => {
+    } | undefined {
+        return PathFinder.getShortest(buildings.flatMap((b) => b.getTrainingTargets().flatMap((t) => {
             const path = this.findPath(start, t.targetLocation, stats, precision)
-            if (!path) return null
+            if (!path) return undefined
             let lengthSq = 0
             for (let c = 0; c < path.length - 1; c++) {
                 const start = path[c]
@@ -94,8 +94,14 @@ export class PathFinder {
                 lengthSq += start.distanceToSquared(end)
             }
             return {obj: b, locations: path, lengthSq: lengthSq}
-        })).filter((terrainPath) => !!terrainPath)
-            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+        })), precision)
+    }
+
+    private static getShortest<T extends { lengthSq: number }>(objs: (T | undefined)[], precision: number, isPreferred?: (obj: T) => boolean): T | undefined {
+        const shortest = objs.reduce((acc, o) => o && (!acc || o.lengthSq < acc.lengthSq) ? o : acc, undefined)
+        if (!shortest) return undefined
+        const preferred = isPreferred && objs.find((o) => o && isPreferred(o))
+        return preferred && preferred.lengthSq - shortest.lengthSq < Math.pow(TILESIZE / precision, 2) ? preferred : shortest
     }
 
     private findPath(start: Vector2, targetLocation: Vector2, stats: MovableEntityStats, precision: number): Vector2[] | undefined {

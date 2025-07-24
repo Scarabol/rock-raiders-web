@@ -221,8 +221,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             if (target.building) this.sceneEntity.headTowards(target.building.primarySurface.getCenterWorld2D())
             return MoveState.TARGET_REACHED
         } else {
-            this.sceneEntity.headTowards(this.currentPath.firstLocation)
-            this.setPosition(this.getPosition().add(step.vec))
+            this.setPosition(step.position)
+            this.sceneEntity.headTowards(step.focusPoint)
             this.sceneEntity.setAnimation(this.getRouteActivity())
             const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
             this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
@@ -231,23 +231,14 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     private determineStep(elapsedMs: number, currentPath: TerrainPath): EntityStep {
-        const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(currentPath.firstLocation)
+        const stepLength = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // XXX use average speed between current and target position
+        const pos = this.getPosition2D()
+        const dir3d = new Vector3(0, 0, 1).applyQuaternion(this.sceneEntity.quaternion)
+        const dir = new Vector2(dir3d.x, dir3d.z)
+        const step = currentPath.step(pos, dir, stepLength)
+        const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(step.position)
         targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
-        const step = new EntityStep(targetWorld.sub(this.getPosition()))
-        const stepLengthSq = step.vec.lengthSq()
-        const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // XXX use average speed between current and target position
-        const entitySpeedSq = entitySpeed * entitySpeed
-        if (currentPath.locations.length > 1) {
-            if (stepLengthSq <= entitySpeedSq) {
-                currentPath.locations.shift()
-                return this.determineStep(elapsedMs, currentPath)
-            }
-        }
-        if (currentPath.target.targetLocation.distanceToSquared(this.getPosition2D()) <= currentPath.target.radiusSq) {
-            step.targetReached = true
-        }
-        step.vec.clampLength(0, entitySpeed)
-        return step
+        return new EntityStep(targetWorld, step.position.clone().add(step.direction), stepLength - step.remainingStepLength, step.targetReached)
     }
 
     getSpeed(): number {
