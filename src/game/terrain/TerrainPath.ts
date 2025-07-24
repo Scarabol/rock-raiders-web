@@ -14,7 +14,7 @@ export class TerrainPath {
         }
     }
 
-    step(pos: Vector2, dir: Vector2, stepLength: number): TerrainPathStep {
+    step(pos: Vector2, dir: Vector2, stepLength: number, maxTurn: number = Infinity): TerrainPathStep {
         if (!this.segment) {
             if (this.locations.length === 0) {
                 return new TerrainPathStep(pos, dir, stepLength, true)
@@ -26,11 +26,11 @@ export class TerrainPath {
                 this.segment = new TerrainPathSegment(pos, dir, this.locations[0].clone().addScaledVector(d, 0.5), d)
             }
         }
-        let step = this.segment.step(pos, stepLength)
+        let step = this.segment.step(pos, dir, stepLength, maxTurn)
         if (step.remainingStepLength > 0) {
             this.segment = undefined
             this.locations.shift()
-            step = this.step(step.position, step.direction, step.remainingStepLength)
+            step = this.step(step.position, step.direction, step.remainingStepLength, maxTurn)
         }
         step.targetReached = this.target.targetLocation.clone().sub(step.position).lengthSq() <= this.target.radiusSq
         return step

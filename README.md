@@ -61,7 +61,7 @@ using modern web technologies.
 
 ### Cosmetics
 
-- Add rotation speed to entities and play turnLeft, turnRight animations
+- Adjust entities rotation speed and play turnLeft, turnRight animations
 - Advisor not shown in tutorials near icon panel
 - Orange smoke column above lava tiles missing
 - Add tiny rockies running around after crumbling
