@@ -6,11 +6,14 @@ import { MainMenuLoadSaveButton } from './MainMenuLoadSaveButton'
 import { MainMenuWindow } from './MainMenuWindow'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameConfig } from '../cfg/GameConfig'
+import { MainMenuBaseItem } from './MainMenuBaseItem'
+import { FlicAnimOverlay } from './FlicAnimOverlay'
 
 export class LoadSaveLayer extends MainMenuLayer {
     menuCfg: GameMenuCfg
     buttons: MainMenuLoadSaveButton[] = []
     loadSaveTextWindow: MainMenuWindow
+    activeOverlay?: FlicAnimOverlay
 
     constructor(menuCfg: MenuEntryCfg, loading: boolean) {
         super(menuCfg)
@@ -44,6 +47,22 @@ export class LoadSaveLayer extends MainMenuLayer {
         }
         this.buttons.add(btn)
         this.items.add(btn)
+    }
+
+    set onItemAction(callback: (item: MainMenuBaseItem) => void) {
+        super.onItemAction = async (item) => {
+            if (this.activeOverlay) return // Overlay in progress
+            if (LoadSaveLayer.hasOverlay(item)) {
+                this.activeOverlay = item.overlay
+                await this.activeOverlay.play()
+                this.activeOverlay = undefined
+            }
+            callback(item)
+        }
+    }
+
+    private static hasOverlay(item: MainMenuBaseItem): item is (MainMenuBaseItem & { overlay: FlicAnimOverlay }) {
+        return !!((item as { overlay?: FlicAnimOverlay }).overlay)
     }
 
     show() {
