@@ -150,7 +150,7 @@ export class Raider implements Updatable, JobFulfiller {
      */
 
     findShortestPath(targets: PathTarget[] | PathTarget | undefined): TerrainPath | undefined {
-        return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), targets, this.stats, RAIDER_PATH_PRECISION)
+        return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), targets, this.stats, RAIDER_PATH_PRECISION, this.currentPath?.target.targetLocation)
     }
 
     private moveToClosestTarget(target: PathTarget | undefined, elapsedMs: number): MoveState {
@@ -212,10 +212,10 @@ export class Raider implements Updatable, JobFulfiller {
         if (step.targetReached) {
             return MoveState.TARGET_REACHED
         } else {
-            this.sceneEntity.headTowards(this.currentPath.firstLocation)
-            this.setPosition(this.getPosition().add(step.vec))
+            this.setPosition(step.position)
+            this.sceneEntity.headTowards(step.focusPoint)
             this.sceneEntity.setAnimation(this.getRouteActivity())
-            if (this.foodLevel > 0) this.foodLevel -= step.vec.lengthSq() / TILESIZE / TILESIZE / 5
+            if (this.foodLevel > 0) this.foodLevel -= step.stepLength * step.stepLength / TILESIZE / TILESIZE / 5
             if (!!this.carries) {
                 // XXX Adjust balancing for resting
                 const chanceToRestPerSecond = this.stats.restPercent / 20 * Math.max(0, 1 - this.foodLevel / this.stats.restPercent)
@@ -232,23 +232,14 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private determineStep(elapsedMs: number, currentPath: TerrainPath): EntityStep {
-        const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(currentPath.firstLocation)
+        const stepLength = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // XXX use average speed between current and target position
+        const pos = this.getPosition2D()
+        const dir3d = new Vector3(0, 0, 1).applyQuaternion(this.sceneEntity.quaternion)
+        const dir = new Vector2(dir3d.x, dir3d.z)
+        const step = currentPath.step(pos, dir, stepLength)
+        const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(step.position)
         targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
-        const step = new EntityStep(targetWorld.sub(this.getPosition()))
-        const stepLengthSq = step.vec.lengthSq()
-        const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // XXX use average speed between current and target position
-        const entitySpeedSq = entitySpeed * entitySpeed
-        if (currentPath.locations.length > 1) {
-            if (stepLengthSq <= entitySpeedSq) {
-                currentPath.locations.shift()
-                return this.determineStep(elapsedMs, currentPath)
-            }
-        }
-        if (currentPath.target.targetLocation.distanceToSquared(this.getPosition2D()) <= currentPath.target.radiusSq) {
-            step.targetReached = true
-        }
-        step.vec.clampLength(0, entitySpeed)
-        return step
+        return new EntityStep(targetWorld, step.position.clone().add(step.direction), stepLength - step.remainingStepLength, step.targetReached)
     }
 
     getSpeed(): number {
@@ -489,6 +480,7 @@ export class Raider implements Updatable, JobFulfiller {
         if (!carryItem) return true
         const positionAsPathTarget = PathTarget.fromLocation(carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)
         if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
+            this.sceneEntity.headTowards(carryItem.getPosition2D())
             this.sceneEntity.setAnimation(RaiderActivity.Collect, () => {
                 this.carries = carryItem
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)

@@ -1,10 +1,12 @@
-import { Vector3 } from 'three'
+import { Vector2, Vector3 } from 'three'
 
 export class EntityStep {
-    targetReached: boolean = false
 
     constructor(
-        readonly vec: Vector3,
+        readonly position: Vector3,
+        readonly focusPoint: Vector2,
+        readonly stepLength: number,
+        readonly targetReached: boolean = false
     ) {
     }
 }
