@@ -29,6 +29,7 @@ import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { CameraFrustumUpdater } from '../scene/CameraFrustumUpdater'
 import { SelectionNameComponent } from './component/SelectionNameComponent'
 import { GameConfig } from '../cfg/GameConfig'
+import { PositionComponent } from './component/PositionComponent'
 
 export class SceneManager implements Updatable {
     readonly scene: Scene
@@ -169,8 +170,11 @@ export class SceneManager implements Updatable {
         if (this.entityTurnSpeed) selectedEntity.sceneEntity.rotation.y += this.entityTurnSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL
         let animationName = selectedEntity.getDefaultAnimationName()
         if (this.entityMoveMultiplier) {
-            const step = selectedEntity.sceneEntity.getWorldDirection(new Vector3()).setLength(selectedEntity.getSpeed()).multiplyScalar(this.entityMoveMultiplier)
-            const targetPosition = selectedEntity.getPosition().add(step)
+            // TODO Reuse determineStep code here
+            const step = selectedEntity.sceneEntity.getWorldDirection(new Vector3()).setLength(selectedEntity.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL).multiplyScalar(this.entityMoveMultiplier)
+            const world = selectedEntity.getPosition().add(step)
+            const targetPosition = this.worldMgr.sceneMgr.getFloorPosition(new Vector2(world.x, world.z))
+            targetPosition.y += this.worldMgr.ecs.getComponents(selectedEntity.entity).get(PositionComponent)?.floorOffset ?? 0
             const targetSurface = this.terrain.getSurfaceFromWorld(targetPosition)
             if (selectedEntity.getSurface() === targetSurface || PathFinder.getWeight(targetSurface, selectedEntity.stats) > 0) {
                 selectedEntity.setPosition(targetPosition)
