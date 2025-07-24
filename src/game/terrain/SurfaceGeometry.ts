@@ -124,4 +124,10 @@ export class SurfaceVertex {
         this.highNum = Number(this.high) * seamProgress
         this.height = this.highNum + this.offset
     }
+
+    flipY(): SurfaceVertex {
+        const result = new SurfaceVertex(this.high, 1, 1 - this.offset)
+        result.height *= -1
+        return result
+    }
 }

@@ -1,4 +1,4 @@
-import { Raycaster, Vector2, Vector3 } from 'three'
+import { BackSide, Raycaster, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../audio/SoundManager'
 import { DeselectAll, SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, OreFoundEvent, WorldLocationEvent } from '../../event/WorldEvents'
@@ -86,8 +86,8 @@ export class Surface {
         // this.terrain.floorGroup.add(proMesh)
         this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
         this.roofMesh = new SurfaceMesh(x, y, {})
+        this.roofMesh.material.side = BackSide
         this.roofMesh.position.y = 3
-        this.roofMesh.scale.y *= -1 // flip mesh upside down
     }
 
     private updateObjectName() {
@@ -360,7 +360,7 @@ export class Surface {
         if (wallType === WALL_TYPE.WALL && topLeft.high === bottomRight.high) wallType = WALL_TYPE.WEIRD_CREVICE
         this.wallType = wallType
         this.mesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
-        this.roofMesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
+        this.roofMesh.setHeights(wallType, topLeft.flipY(), topRight.flipY(), bottomRight.flipY(), bottomLeft.flipY())
         if (this.wallType !== WALL_TYPE.WALL) {
             this.cancelReinforceJobs()
             const emergeComponent = this.worldMgr.ecs.getComponents(this.entity).get(EmergeComponent)
