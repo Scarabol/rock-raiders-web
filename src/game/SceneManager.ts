@@ -167,7 +167,7 @@ export class SceneManager implements Updatable {
     }
 
     private updateEgoMovement(selectedEntity: Raider | VehicleEntity, elapsedMs: number) {
-        if (this.entityTurnSpeed) selectedEntity.sceneEntity.rotation.y += this.entityTurnSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL
+        if (this.entityTurnSpeed) selectedEntity.sceneEntity.rotateY(this.entityTurnSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL)
         let animationName = selectedEntity.getDefaultAnimationName()
         if (this.entityMoveMultiplier) {
             // TODO Reuse determineStep code here
