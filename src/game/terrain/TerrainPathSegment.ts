@@ -13,6 +13,7 @@ export class TerrainPathStep {
 export class TerrainPathSegment {
 
     private currentLocation: Vector2
+    private currentDirection: Vector2
     private currentProgress: number = 0
     readonly startControl: Vector2
     readonly targetControl: Vector2
@@ -27,14 +28,11 @@ export class TerrainPathSegment {
         const length = targetLocation.clone().sub(startLocation).length()
         startDir = startDir.clone().normalize()
         targetDir = targetDir.clone().normalize()
-        // Turn around immediately if moving in the opposite direction
-        if (startDir.angleTo(targetDir) > Math.PI * 0.75) {
-            startDir.copy(targetDir)
-        }
         this.startControl = startLocation.clone().addScaledVector(startDir, length / 2)
         this.targetControl = targetLocation.clone().addScaledVector(targetDir, -length / 2)
         // Set start condition
         this.currentLocation = startLocation.clone()
+        this.currentDirection = startDir.clone()
         // Estimate length
         let approxLength = 0
         this.approxLengths[0] = approxLength
@@ -61,37 +59,46 @@ export class TerrainPathSegment {
         return p0.add(p1).add(p2)
     }
 
-    step(pos: Vector2, stepLength: number): TerrainPathStep {
-        const vec = this.currentLocation.clone().sub(pos)
-        const vecLength = vec.length()
-        if (vecLength >= stepLength) {
-            vec.clampLength(0, stepLength)
-            return new TerrainPathStep(pos.clone().add(vec), vec, 0)
-        }
-        stepLength -= vecLength
-        const totalApproxLength = this.approxLengths[this.approxLengths.length - 1]
-        let p = this.currentProgress * (this.approxLengths.length - 1)
-        let i = Math.trunc(p)
-        let lengthOffset = this.approxLengths[i] ?? totalApproxLength
-        lengthOffset += ((this.approxLengths[i + 1] ?? totalApproxLength) - (this.approxLengths[i] ?? totalApproxLength)) * (p - i)
-        for (; i < this.approxLengths.length - 1; i += 1) {
-            if (this.approxLengths[i + 1] - lengthOffset <= stepLength) {
-                continue
+    step(pos: Vector2, dir: Vector2, stepLength: number, maxTurn: number = Infinity): TerrainPathStep {
+        let remainingStepLength = stepLength
+        let fraction = 1
+        let vec = this.currentLocation.clone().sub(pos)
+        let vecLength = vec.length()
+        update: {
+            if (vecLength >= remainingStepLength) {
+                fraction = vecLength ? remainingStepLength / vecLength : 0
+                remainingStepLength = 0
+                break update
             }
-            this.currentProgress = (i +
-                (stepLength - (this.approxLengths[i] - lengthOffset)) /
-                (this.approxLengths[i + 1] - this.approxLengths[i])
-            ) / (this.approxLengths.length - 1)
-            const newPos = this.bezierCurveD0(this.currentProgress)
-            const newDir = this.bezierCurveD1(this.currentProgress)
-            this.currentLocation.copy(newPos)
-            return new TerrainPathStep(newPos, newDir, 0)
+            remainingStepLength -= vecLength
+            const totalApproxLength = this.approxLengths[this.approxLengths.length - 1]
+            let p = this.currentProgress * (this.approxLengths.length - 1)
+            let i = Math.trunc(p)
+            let lengthOffset = this.approxLengths[i] ?? totalApproxLength
+            lengthOffset += ((this.approxLengths[i + 1] ?? totalApproxLength) - (this.approxLengths[i] ?? totalApproxLength)) * (p - i)
+            for (; i < this.approxLengths.length - 1; i += 1) {
+                if (this.approxLengths[i + 1] - lengthOffset <= remainingStepLength) {
+                    continue
+                }
+                this.currentProgress = (i +
+                    (remainingStepLength - (this.approxLengths[i] - lengthOffset)) /
+                    (this.approxLengths[i + 1] - this.approxLengths[i])
+                ) / (this.approxLengths.length - 1)
+                remainingStepLength = 0
+                this.currentLocation = this.bezierCurveD0(this.currentProgress)
+                this.currentDirection = this.bezierCurveD1(this.currentProgress)
+                break update
+            }
+            remainingStepLength -= totalApproxLength - lengthOffset
+            this.currentProgress = 1
+            this.currentLocation.copy(this.targetLocation)
+            this.currentDirection = this.bezierCurveD1(this.currentProgress)
         }
-        stepLength -= totalApproxLength - lengthOffset
-        this.currentProgress = 1
-        const newPos = this.targetLocation.clone()
-        const newDir = this.bezierCurveD1(this.currentProgress)
-        this.currentLocation.copy(newPos)
-        return new TerrainPathStep(newPos, newDir, stepLength)
+        const turn = Math.sign(dir.clone().cross(this.currentDirection)) * dir.angleTo(this.currentDirection)
+        fraction = Math.min(fraction, maxTurn/ Math.abs(turn))
+        remainingStepLength = Math.min(remainingStepLength, stepLength * (1 - Math.min(1, Math.abs(turn) / maxTurn)))
+        const newPos = pos.clone().multiplyScalar(1 - fraction).addScaledVector(this.currentLocation, fraction)
+        const newDir = dir.clone().rotateAround(new Vector2(), turn * fraction)
+        return new TerrainPathStep(newPos, newDir, remainingStepLength)
     }
 }

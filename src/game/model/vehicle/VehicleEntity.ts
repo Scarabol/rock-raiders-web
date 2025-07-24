@@ -232,10 +232,11 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     private determineStep(elapsedMs: number, currentPath: TerrainPath): EntityStep {
         const stepLength = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // XXX use average speed between current and target position
+        const maxTurn = 2 * Math.PI * stepLength / TILESIZE
         const pos = this.getPosition2D()
         const dir3d = new Vector3(0, 0, 1).applyQuaternion(this.sceneEntity.quaternion)
         const dir = new Vector2(dir3d.x, dir3d.z)
-        const step = currentPath.step(pos, dir, stepLength)
+        const step = currentPath.step(pos, dir, stepLength, maxTurn)
         const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(step.position)
         targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
         return new EntityStep(targetWorld, step.position.clone().add(step.direction), stepLength - step.remainingStepLength, step.targetReached)
