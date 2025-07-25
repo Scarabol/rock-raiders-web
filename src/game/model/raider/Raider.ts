@@ -66,6 +66,7 @@ export class Raider implements Updatable, JobFulfiller {
     weaponCooldown: number = 0
     resting: boolean = false
     idleCounter: number = PRNG.animation.randInt(3000)
+    taskingWhileSelected: boolean = false
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
@@ -96,7 +97,7 @@ export class Raider implements Updatable, JobFulfiller {
             this.sceneEntity.setAnimation(this.vehicle.getDriverActivity())
             return
         }
-        if (this.slipped || this.isInBeam() || this.thrown || this.selected || this.resting) return
+        if (this.slipped || this.isInBeam() || this.thrown || (this.selected && !this.taskingWhileSelected) || this.resting) return
         if (GameState.alarmMode && this.hasWeapon() && !this.job?.doOnAlarm) {
             this.fight(elapsedMs)
             return
@@ -299,6 +300,7 @@ export class Raider implements Updatable, JobFulfiller {
         components.get(SelectionNameComponent)?.setVisible(true)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         this.workAudioId = SoundManager.stopAudio(this.workAudioId)
+        this.taskingWhileSelected = false
         return true
     }
 
@@ -308,6 +310,7 @@ export class Raider implements Updatable, JobFulfiller {
 
     deselect() {
         const components = this.worldMgr.ecs.getComponents(this.entity)
+        this.taskingWhileSelected = false
         components.get(SelectionFrameComponent)?.deselect()
         components.get(SelectionNameComponent)?.setVisible(false)
     }

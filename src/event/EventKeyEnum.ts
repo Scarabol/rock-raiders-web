@@ -2,6 +2,7 @@ export enum EventKey {
     // Local events
     SELECTION_CHANGED = 'selection-changed',
     DESELECT_ALL = 'deselect-all',
+    TASK_WITHOUT_DESELECTING = 'task-without-deselecting',
     BUILDINGS_CHANGED = 'buildings-changed',
     RAIDER_AMOUNT_CHANGED = 'raider-amount-changed',
     RAIDER_TRAINING_COMPLETE = 'raider-training-complete',
