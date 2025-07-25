@@ -67,10 +67,6 @@ export class EntityManager {
             this.selection.deselectAll()
             EventBroker.publish(new SelectionChanged(this))
         })
-        EventBroker.subscribe(EventKey.TASK_WITHOUT_DESELECTING, () => {
-            this.selection.assignAllToTaskWithoutDeselect()
-            EventBroker.publish(new SelectionChanged(this))
-        })
         EventBroker.subscribe(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
             this.buildings.forEach((b) => b.updateEnergyState())
         })

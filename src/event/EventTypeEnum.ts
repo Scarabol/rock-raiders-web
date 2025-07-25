@@ -15,5 +15,4 @@ export enum POINTER_EVENT {
 export enum KEY_EVENT {
     DOWN,
     UP,
-    SHIFT,
 }

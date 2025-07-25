@@ -42,20 +42,6 @@ export class GameSelection {
         this.primarySelect = undefined
     }
 
-    assignAllToTaskWithoutDeselect() {
-        this.raiders.forEach((r) => r.taskingWhileSelected = true)
-        this.vehicles.forEach((v) => v.taskingWhileSelected = true)
-
-        this.building?.deselect()
-        this.building = undefined
-        this.surface?.deselect()
-        this.surface = undefined
-        this.doubleSelect = undefined
-        this.fence?.worldMgr.ecs.getComponents(this.fence.entity).get(SelectionFrameComponent)?.deselect()
-        this.fence = undefined
-        this.primarySelect = undefined
-    }
-
     canMove(): boolean {
         return this.raiders.length > 0 || this.vehicles.some((v) => !!v.driver)
     }
