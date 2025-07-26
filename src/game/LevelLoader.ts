@@ -19,6 +19,7 @@ export interface LevelConfData {
     textureBasename: string
     roofTexture: string
     rockFallStyle: RockFallStyle
+    roughLevel: number
     fallinMultiplier: number
     mapWidth: number
     mapHeight: number
@@ -73,6 +74,7 @@ export class LevelLoader {
             textureBasename: GameConfig.instance.textures.textureSetByName[levelConf.textureSet.toLowerCase()].textureBasename,
             roofTexture: GameConfig.instance.textures.textureSetByName[levelConf.textureSet.toLowerCase()].roofTexture,
             rockFallStyle: rockFallStyle,
+            roughLevel: levelConf.roughLevel,
             fallinMultiplier: levelConf.fallinMultiplier,
             terrainMap: terrainMap.level,
             pathMap: this.checkMap(levelConf.pathMap, terrainMap.width, terrainMap.height),

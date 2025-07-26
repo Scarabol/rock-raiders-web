@@ -10,7 +10,6 @@ export const MAX_RAIDER_BASE = 12
 export const MAX_RAIDER_REQUEST = 9
 export const ADDITIONAL_RAIDER_PER_SUPPORT = 10
 export const PANEL_ANIMATION_MULTIPLIER = 5
-export const HEIGHT_MULTIPLIER = 0.1
 export const SEQUENCE_TEXTURE_INTERVAL_MS = 1000 / 5
 export const KEY_PAN_SPEED = 20
 export const SPIDER_SLIP_RANGE_SQ = 49

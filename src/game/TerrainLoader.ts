@@ -1,5 +1,5 @@
 import { LevelConfData } from './LevelLoader'
-import { HEIGHT_MULTIPLIER, TILESIZE } from '../params'
+import { TILESIZE } from '../params'
 import { Surface } from './terrain/Surface'
 import { SurfaceType } from './terrain/SurfaceType'
 import { Terrain } from './terrain/Terrain'
@@ -66,7 +66,7 @@ export class TerrainLoader {
             terrain.heightOffset[x] = []
             for (let y = 0; y < terrain.height + 1; y++) {
                 const offsets = [levelConf.surfaceMap?.[y - 1]?.[x - 1], levelConf.surfaceMap?.[y - 1]?.[x], levelConf.surfaceMap?.[y]?.[x - 1], levelConf.surfaceMap?.[y]?.[x]].filter((n) => isNum(n))
-                terrain.heightOffset[x][y] = offsets.reduce((l, r) => l + r, 0) / (offsets.length || 1) * HEIGHT_MULTIPLIER
+                terrain.heightOffset[x][y] = offsets.reduce((l, r) => l + r, 0) / (offsets.length || 1) * 0.1 / 6 * levelConf.roughLevel
             }
         }
 
