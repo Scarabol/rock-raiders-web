@@ -46,7 +46,7 @@ export class LavaErosionSystem extends AbstractGameSystem {
     }
 
     update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
-        this.triggerNewErosionTimer += elapsedMs
+        let canStartNewErosion = false
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)
@@ -64,11 +64,16 @@ export class LavaErosionSystem extends AbstractGameSystem {
                     } else if (this.triggerNewErosionTimer > (this.erodeTriggerTimeMs + (erosionComponent.surface.isPath() ? this.powerPathLockTimeMs : 0)) && erosionComponent.canStartNewErosion()) {
                         this.triggerNewErosionTimer -= this.erodeTriggerTimeMs
                         erosionComponent.increaseErosionLevel(true)
+                    } else if (canStartNewErosion || erosionComponent.canStartNewErosion()) {
+                        canStartNewErosion = true
                     }
                 }
             } catch (e) {
                 console.error(e)
             }
+        }
+        if (canStartNewErosion) {
+            this.triggerNewErosionTimer += elapsedMs
         }
     }
 }
