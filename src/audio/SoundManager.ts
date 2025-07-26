@@ -37,9 +37,10 @@ export class SoundManager {
 
     static playVoice(soundName: string): AudioBufferSourceNode | undefined {
         if (this.skipVoiceLines) return undefined
-        this.skipVoiceLines = true
         const sound = this.playSfxSound(soundName)
-        sound?.addEventListener('ended', () => {
+        if (!sound) return undefined
+        this.skipVoiceLines = true
+        sound.addEventListener('ended', () => {
             setTimeout(() => {
                 this.skipVoiceLines = false
             }, NerpRunner.timeAddedAfterSample)
