@@ -135,6 +135,7 @@ export class BuildingSite {
     }
 
     update(elapsedMs: number) {
+        if (this.canceled) return
         this.placeDownTimer += elapsedMs
         if (this.placeDownTimer < 100) return
         if (this.primarySurface.isBlocked() || this.secondarySurface?.isBlocked()) {
@@ -146,7 +147,7 @@ export class BuildingSite {
         this.teleportIn()
     }
 
-    teleportIn() {
+    private teleportIn() {
         this.worldMgr.entityMgr.completedBuildingSites.remove(this)
         this.surfaces.forEach((s) => s.site = undefined)
         this.onSiteByType.forEach((byType: MaterialEntity[]) => byType.forEach((item: MaterialEntity) => {
@@ -163,6 +164,7 @@ export class BuildingSite {
 
     cancelSite() {
         this.worldMgr.entityMgr.buildingSites.remove(this)
+        this.worldMgr.entityMgr.completedBuildingSites.remove(this)
         this.canceled = true
         this.surfaces.forEach((s) => {
             s.site = undefined
