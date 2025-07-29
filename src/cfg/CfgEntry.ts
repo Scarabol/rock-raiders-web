@@ -5,7 +5,13 @@ export class CfgEntry {
     }
 
     forEachEntry(callback: (key: string, entry: CfgEntry) => void): void {
+        const visitedKeys = new Set<string>()
         Object.entries(this.root).forEach(([key, value]) => {
+            const unifiedKey = CfgEntry.unifyKey(key)
+            if (visitedKeys.has(unifiedKey)) {
+                return // When multiple values given for the same key, we only consider the FIRST one
+            }
+            visitedKeys.add(unifiedKey)
             if (Array.isArray(value)) {
                 // No warning here, because some like "PausedMenu" has mixture of MenuCount value and records
                 return
@@ -15,7 +21,13 @@ export class CfgEntry {
     }
 
     forEachCfgEntryValue(callback: (value: CfgEntryValue, key: string) => void): void {
+        const visitedKeys = new Set<string>()
         Object.entries(this.root).forEach(([key, value]) => {
+            const unifiedKey = CfgEntry.unifyKey(key)
+            if (visitedKeys.has(unifiedKey)) {
+                return // When multiple values given for the same key, we only consider the FIRST one
+            }
+            visitedKeys.add(unifiedKey)
             if (!Array.isArray(value)) {
                 console.warn(`Unexpected object (${value}) given; expected config values`)
                 return
@@ -59,7 +71,6 @@ export class CfgEntry {
     }
 
     private static unifyKey(keyValue: string) {
-        // TODO Keys actually case-sensitive (see UpgradeTypes -> SPEED_up for hoverboard VS Speed_Up for small cat
         return keyValue.toString().toLowerCase().replaceAll(/[_-]/g, '')
     }
 
