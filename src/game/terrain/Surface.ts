@@ -234,6 +234,7 @@ export class Surface {
         // drop contained ores and crystals
         this.dropContainedMaterials(droppedOre, droppedCrystals)
         // add crumble animation
+        const crumblePosition = new Vector3(this.x + 0.5, this.terrain.getHeightOffset(this.x, this.y), this.y + 0.5).multiplyScalar(TILESIZE)
         const wallNeighbors = this.neighbors.filter((n) => !!n.wallType)
         const randomWallNeighbor = PRNG.terrain.sample(wallNeighbors)
         if (this.wallType === WALL_TYPE.CORNER && randomWallNeighbor) { // by default the corner animation goes from this.x+1,this.y+1 to this.x,this.y
@@ -241,16 +242,16 @@ export class Surface {
             let crumbleAngle = Math.atan2(neighborToRight.x - this.x, neighborToRight.y - this.y)
             if (!neighborToRight.wallType) crumbleAngle += Math.PI / 2
             const rockFallAnimName = this.terrain.levelConf.rockFallStyle.outsideCorner
-            this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
+            this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, crumblePosition, crumbleAngle, false)
         } else if (wallNeighbors.length === 3) {
             const nonWallNeighbor = this.neighbors.filter((n) => !n.wallType)[0]
             const crumbleAngle = Math.atan2(this.x - nonWallNeighbor.x, this.y - nonWallNeighbor.y)
             const rockFallAnimName = this.terrain.levelConf.rockFallStyle.threeSides
-            this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
+            this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, crumblePosition, crumbleAngle, false)
         } else {
             const crumbleAngle = !!randomWallNeighbor ? Math.atan2(randomWallNeighbor.x - this.x, randomWallNeighbor.y - this.y) : 0
             const rockFallAnimName = this.terrain.levelConf.rockFallStyle.tunnel
-            this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
+            this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, crumblePosition, crumbleAngle, false)
         }
         // update meshes and wallType
         this.terrain.updateSurfaceMeshes()
