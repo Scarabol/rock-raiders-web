@@ -2,7 +2,7 @@ import { Frustum, Mesh, Vector2, Vector3 } from 'three'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { DeselectAll, SelectionChanged, SelectionFrameChangeEvent } from '../../event/LocalEvents'
+import { DeselectAll, SelectionChanged, SelectionFrameChangeEvent, TaskWithoutDeselecting } from '../../event/LocalEvents'
 import { JobCreateEvent, MaterialAmountChanged, MonsterEmergeEvent, ShootLaserEvent } from '../../event/WorldEvents'
 import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
@@ -211,7 +211,18 @@ export class GameLayer extends ScreenLayer {
                         }
                         this.worldMgr.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(cursorTargetSurface.getCenterWorld2D())))
                     }
-                    if (!this.worldMgr.entityMgr.selection.isEmpty()) EventBroker.publish(new DeselectAll())
+
+                    // Shift click to assign job without deselecting
+
+                    if (!this.worldMgr.entityMgr.selection.isEmpty()) {
+                        
+                        if (event.shiftKey) {
+                            EventBroker.publish(new TaskWithoutDeselecting())
+                        } else {
+                            EventBroker.publish(new DeselectAll())
+                        }
+                    }
+                    
                 } else if (cursorTarget.raider || cursorTarget.building) {
                     const selection = new GameSelection()
                     if (cursorTarget.raider) selection.raiders.push(cursorTarget.raider)

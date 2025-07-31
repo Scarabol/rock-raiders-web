@@ -12,9 +12,10 @@ import { ScaledLayer } from './layer/ScaledLayer'
 import { RockWipeLayer } from '../menu/RockWipeLayer'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
-import { LevelLoader } from '../game/LevelLoader'
+import { LevelConfData, LevelLoader } from '../game/LevelLoader'
 import { SoundManager } from '../audio/SoundManager'
 import { PRNG } from '../game/factory/PRNG'
+import { LevelGen } from '../game/LevelGen'
 
 export class MainMenuScreen {
     readonly menuLayers: ScaledLayer[] = []
@@ -131,7 +132,12 @@ export class MainMenuScreen {
             if (!levelName) return
             this.sfxAmbientLoop?.stop()
             this.sfxAmbientLoop = undefined
-            const levelConf = LevelLoader.fromName(levelName) // Get config first in case of error
+            let levelConf: LevelConfData
+            if (levelName === 'levelseed') {
+                levelConf = LevelGen.fromSeed('random') // FIXME Replace hardcoded seed
+            } else {
+                levelConf = LevelLoader.fromName(levelName) // Get config first in case of error
+            }
             this.menuLayers.forEach((m) => m.hide())
             this.rockWipeLayer.hide()
             if (SaveGameManager.preferences.playVideos) await this.screenMaster.videoLayer.playVideo(levelConf.video)

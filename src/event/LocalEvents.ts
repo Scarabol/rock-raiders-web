@@ -97,6 +97,12 @@ export class DeselectAll extends BaseEvent {
     }
 }
 
+export class TaskWithoutDeselecting extends BaseEvent {
+    constructor() {
+        super(EventKey.TASK_WITHOUT_DESELECTING)
+    }
+}
+
 export class BuildingsChangedEvent extends BaseEvent {
     readonly placedVisibleBuildings: Set<GameEntity> = new Set()
     readonly poweredBuildings: Set<GameEntity> = new Set()
