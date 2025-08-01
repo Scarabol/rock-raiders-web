@@ -12,6 +12,7 @@ import { FallInComponent } from './component/FallInComponent'
 import { FluidSurfaceComponent } from './component/FluidSurfaceComponent'
 import { isNum } from '../core/Util'
 import { PRNG } from './factory/PRNG'
+import { WALL_TYPE } from './terrain/WallType'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelConfData, worldMgr: WorldManager): Terrain {
@@ -158,6 +159,7 @@ export class TerrainLoader {
                     if (emergeValue % 2 === 1) {
                         worldMgr.ecs.addComponent(surface.entity, new EmergeComponent(emergeValue + 1, surface, undefined))
                     } else {
+                        if (surface.surfaceType === SurfaceType.SOLID_ROCK || surface.reinforced || surface.wallType < WALL_TYPE.WALL) continue // Not a valid emerge surface
                         worldMgr.ecs.addComponent(surface.entity, new EmergeComponent(emergeValue, undefined, surface))
                     }
                 }

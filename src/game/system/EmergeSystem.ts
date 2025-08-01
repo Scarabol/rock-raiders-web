@@ -12,6 +12,8 @@ import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/Animation
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { WorldManager } from '../WorldManager'
+import { WALL_TYPE } from '../terrain/WallType'
+import { SurfaceType } from '../terrain/SurfaceType'
 
 export class EmergeSystem extends AbstractGameSystem {
     readonly componentsRequired: Set<Function> = new Set([EmergeComponent])
@@ -58,13 +60,14 @@ export class EmergeSystem extends AbstractGameSystem {
         triggeredEmerges.forEach((emergeComponent) => {
             emergeSpawns.getOrUpdate(emergeComponent.emergeSpawnId, () => []).forEach((surface) => {
                 emergeComponent.emergeDelayMs = this.emergeTimeoutMs
+                if (surface.wallType !== WALL_TYPE.WALL) return // walls might change from undiscovered or inverted corner to actual wall
                 EventBroker.publish(new MonsterEmergeEvent(surface))
             })
         })
     }
 
     emergeFromSurface(spawn: Surface) {
-        const target = spawn.neighbors.find((n) => n.surfaceType.floor && n.discovered)
+        const target = spawn.neighbors.find((n) => n.surfaceType.floor && n.discovered && n.surfaceType !== SurfaceType.LAVA5 && n.surfaceType !== SurfaceType.WATER)
         if (!target) return
         const spawnCenter = spawn.getCenterWorld2D()
         const targetCenter = target.getCenterWorld2D()

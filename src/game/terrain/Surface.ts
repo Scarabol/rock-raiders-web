@@ -222,6 +222,7 @@ export class Surface {
         }
         this.cancelJobs()
         this.worldMgr.ecs.removeComponent(this.entity, FallInComponent)
+        this.worldMgr.ecs.removeComponent(this.entity, EmergeComponent)
         this.reinforced = false
         const droppedOre = this.containedOres + (this.surfaceType === SurfaceType.ORE_SEAM ? this.seamLevel : 0)
         const droppedCrystals = this.containedCrystals + (this.surfaceType === SurfaceType.CRYSTAL_SEAM ? this.seamLevel : 0)
@@ -362,11 +363,8 @@ export class Surface {
         this.wallType = wallType
         this.mesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
         this.roofMesh.setHeights(wallType, topLeft.flipY(), topRight.flipY(), bottomRight.flipY(), bottomLeft.flipY())
-        if (this.wallType !== WALL_TYPE.WALL) {
-            this.cancelReinforceJobs()
-            const emergeComponent = this.worldMgr.ecs.getComponents(this.entity).get(EmergeComponent)
-            if (emergeComponent) emergeComponent.emergeSurface = undefined
-        }
+        if (this.wallType !== WALL_TYPE.WALL) this.cancelReinforceJobs()
+        if (this.wallType < WALL_TYPE.WALL) this.worldMgr.ecs.removeComponent(this.entity, EmergeComponent)
     }
 
     cancelReinforceJobs() {
@@ -513,6 +511,7 @@ export class Surface {
     reinforce() {
         this.reinforced = true
         this.cancelReinforceJobs()
+        this.worldMgr.ecs.removeComponent(this.entity, EmergeComponent)
         this.updateTexture()
         EventBroker.publish(new UpdateRadarSurface(this))
     }
