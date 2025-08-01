@@ -612,7 +612,7 @@ export class NerpRunner {
 
     setGameSpeed(speed: number, unknown: number): void {
         if (unknown) console.warn(`Unexpected value (${unknown}) for second parameter given`)
-        this.worldMgr.gameSpeedMultiplier = speed / 100
+        GameState.gameSpeedMultiplier = speed / 100
     }
 
     setRecordObjectPointer(recordedEntity: number): void {

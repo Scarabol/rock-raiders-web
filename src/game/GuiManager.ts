@@ -27,6 +27,7 @@ import { DynamiteActivity } from './model/anim/AnimationActivity'
 import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityComponent'
 import { Vector3 } from 'three'
 import { PRNG } from './factory/PRNG'
+import { GameState } from './model/GameState'
 
 export class GuiManager {
     constructor(worldMgr: WorldManager) {
@@ -205,10 +206,13 @@ export class GuiManager {
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             SaveGameManager.savePreferences()
             SoundManager.setupSfxAudioTarget()
-            const sfxVolume = SaveGameManager.getSfxVolume()
-            SoundManager.playingAudio.forEach((a) => a.setVolume(sfxVolume))
             const gameSpeedIndex = Math.round(SaveGameManager.preferences.gameSpeed * 5)
-            worldMgr.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
+            GameState.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
+            const sfxVolume = SaveGameManager.getSfxVolume()
+            SoundManager.playingAudio.forEach((a) => {
+                a.setVolume(sfxVolume)
+                a.setPlaybackRate(GameState.gameSpeedMultiplier)
+            })
         })
         EventBroker.subscribe(EventKey.COMMAND_UPGRADE_VEHICLE, (event: UpgradeVehicle) => {
             entityMgr.selection.assignUpgradeJob(event.upgrade)

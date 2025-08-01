@@ -53,7 +53,6 @@ export class WorldManager {
     gameLoopInterval?: NodeJS.Timeout
     gameTimeMs: number = 0
     firstUnpause: boolean = true
-    gameSpeedMultiplier: number = 1
     crystalsQuota: number = 0
 
     constructor() {
@@ -105,7 +104,7 @@ export class WorldManager {
         this.nerpRunner = new NerpRunner(this, levelConf.nerpScript, levelConf.nerpMessages)
         this.firstUnpause = true
         const gameSpeedIndex = Math.round(SaveGameManager.preferences.gameSpeed * 5)
-        this.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
+        GameState.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
         this.crystalsQuota = levelConf.reward?.quota?.crystals || 0
     }
 
@@ -128,7 +127,7 @@ export class WorldManager {
     }
 
     private mainLoop() {
-        const elapsedGameTimeMs = UPDATE_INTERVAL_MS * this.gameSpeedMultiplier
+        const elapsedGameTimeMs = UPDATE_INTERVAL_MS * GameState.gameSpeedMultiplier
         this.gameTimeMs += elapsedGameTimeMs
         this.ecs.update(elapsedGameTimeMs)
         updateSafe(this.entityMgr, elapsedGameTimeMs)

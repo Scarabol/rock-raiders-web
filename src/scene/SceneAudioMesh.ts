@@ -3,6 +3,7 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { SceneMesh } from './SceneMesh'
 import { TILESIZE } from '../params'
+import { GameState } from '../game/model/GameState'
 
 export interface SceneAudioMeshUserData {
     sfxNameAnimation?: string
@@ -33,6 +34,7 @@ export class SceneAudioMesh extends SceneMesh {
         }
         this.audioNode.setVolume(sfxVolume)
         this.audioNode.setBuffer(audioBuffer)
+        this.audioNode.playbackRate = GameState.gameSpeedMultiplier
         this.audioNode.play()
         SoundManager.playingAudio.set(this.audioId, this.audioNode)
     }

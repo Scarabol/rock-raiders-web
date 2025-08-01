@@ -5,6 +5,7 @@ import { GameEntity } from '../ECS'
 import { SaveGameRaider } from '../../resource/SaveGameManager'
 
 export class GameState {
+    static gameSpeedMultiplier: number = 1
     static numCrystal: number = 0
     static numOre: number = 0
     static numBrick: number = 0
@@ -29,6 +30,7 @@ export class GameState {
     static raiderSaveGameMap: Map<GameEntity, SaveGameRaider> = new Map()
 
     static reset() {
+        this.gameSpeedMultiplier = 1
         this.numCrystal = this.getDevParam('numCrystal', 0)
         this.numOre = this.getDevParam('numOre', 0)
         this.numBrick = this.getDevParam('numBrick', 0)
