@@ -6,17 +6,15 @@ import { PRNG } from '../factory/PRNG'
 
 export class LavaErosionComponent extends AbstractGameComponent {
     readonly erosionTimeMultiplier: number
-    readonly isSelfEroding: boolean
     erosionTimer: number = 0
 
     constructor(readonly surface: Surface, readonly erosionLevel: number) {
         super()
         this.erosionTimeMultiplier = 6 - Math.floor((erosionLevel + 1) / 2)
-        this.isSelfEroding = this.erosionLevel % 2 === 0
     }
 
     canStartNewErosion(): boolean {
-        return this.isSelfEroding || this.surface.neighbors.some((s) => s.surfaceType === SurfaceType.LAVA5)
+        return this.surface.neighbors.some((s) => s.surfaceType === SurfaceType.LAVA5)
     }
 
     increaseErosionLevel(addSmokeEffect: boolean) {
