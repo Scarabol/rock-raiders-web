@@ -1,6 +1,7 @@
 import { ScreenLayer } from '../screen/layer/ScreenLayer'
 import { SoundManager } from '../audio/SoundManager'
-import { AmbientLight, OrthographicCamera, Scene } from 'three'
+import { AmbientLight, DirectionalLight, OrthographicCamera, Scene } from 'three'
+import { degToRad } from 'three/src/math/MathUtils'
 import { clearIntervalSafe } from '../core/Util'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
 import { AnimationGroup } from '../scene/AnimationGroup'
@@ -10,16 +11,25 @@ export class RockWipeLayer extends ScreenLayer {
     readonly renderer: BaseRenderer
     readonly scene: Scene
     readonly group: AnimationGroup
+    readonly camera: OrthographicCamera
     groupUpdateInterval?: NodeJS.Timeout
 
     constructor() {
         super()
         this.renderer = new BaseRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, {alpha: true})
-        this.renderer.camera = new OrthographicCamera(-1, 1, 1, -1, 0.1, 10)
-        this.renderer.camera.position.set(0, 0, 10)
-        this.renderer.camera.lookAt(0, 0, 0)
+        // Camera
+        const aspect = this.canvas.width / this.canvas.height
+        this.camera = new OrthographicCamera(-aspect, aspect, 1, -1, 0, 10)
+        this.camera.rotateY(Math.PI)
+        this.renderer.camera = this.camera
         this.scene = new Scene()
-        this.scene.add(new AmbientLight(0xffffff, 0.25)) // XXX read from LWS file
+        // Lights
+        // XXX read from LWS file (the original game does not)
+        this.scene.add(new AmbientLight(0xffffff, 0.25))
+        const light = new DirectionalLight(0xffffff, 1)
+        light.position.set(2, 2, -2)
+        light.rotation.set(degToRad(35), -degToRad(45), -degToRad(0), 'YXZ')
+        this.scene.add(light)
         this.scene.scale.setScalar(1 / 4)
         this.group = new AnimationGroup('Interface/FrontEnd/Rock_Wipe/RockWipe.lws', () => {
             this.hide()
@@ -42,6 +52,10 @@ export class RockWipeLayer extends ScreenLayer {
     resize(width: number, height: number) {
         super.resize(width, height)
         this.renderer.setSize(width, height)
+        const aspect = this.canvas.width / this.canvas.height
+        this.camera.left = -aspect
+        this.camera.right = aspect
+        this.camera.updateProjectionMatrix()
     }
 
     hide() {
