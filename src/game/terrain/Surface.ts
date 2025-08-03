@@ -581,6 +581,9 @@ export class Surface {
         this.terrain.pathFinder.updateSurface(this)
         if (this.selected && !this.surfaceType.selectable) EventBroker.publish(new DeselectAll())
         if (this.surfaceType === SurfaceType.LAVA5) {
+            this.rubblePositions.length = 0
+            this.containedOres = 0
+            this.containedCrystals = 0
             this.site?.cancelSite()
             const materials = [...this.worldMgr.entityMgr.materials] // list will be changed by dispose below
             materials.forEach((m) => { // XXX Optimize performance

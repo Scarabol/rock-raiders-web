@@ -24,11 +24,6 @@ export class LavaErosionComponent extends AbstractGameComponent {
         else if (this.surface.surfaceType === SurfaceType.LAVA2) erosionSurfaceType = SurfaceType.LAVA3
         else if (this.surface.surfaceType === SurfaceType.LAVA3) erosionSurfaceType = SurfaceType.LAVA4
         else if (this.surface.surfaceType === SurfaceType.LAVA4) erosionSurfaceType = SurfaceType.LAVA5
-        else {
-            this.surface.rubblePositions.length = 0
-            this.surface.containedOres = 0
-            this.surface.containedCrystals = 0
-        }
         this.surface.setSurfaceType(erosionSurfaceType)
         if (addSmokeEffect) {
             const lwsFilename = PRNG.animation.sample([

@@ -13,7 +13,7 @@ export class GameState {
     static dischargedCrystals: number = 0
     static airLevel: number = 1 // air level in percent from 0 to 1.0
     static totalCrystals: number = 0
-    static numTotalOres: number = 0
+    static totalOres: number = 0
     static totalDiggables: number = 0
     static remainingDiggables: number = 0
     static discoveredCaverns: number = 0
@@ -38,7 +38,7 @@ export class GameState {
         this.dischargedCrystals = 0
         this.airLevel = 1
         this.totalCrystals = 0
-        this.numTotalOres = 0
+        this.totalOres = 0
         this.totalDiggables = 0
         this.remainingDiggables = 0
         this.discoveredCaverns = 0

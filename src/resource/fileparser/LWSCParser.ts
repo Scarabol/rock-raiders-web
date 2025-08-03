@@ -189,7 +189,7 @@ export class LWSCParser {
                         times[c] = c / this.numOfKeyframes * this.lwscData.durationSeconds
                         sfxNames[c] = (sfxFrameStart <= c && c < sfxFrameEnd) ? currentObject.sfxName : ''
                     }
-                    currentObject.keyframeTracks.push(new StringKeyframeTrack('.userData[sfxNameAnimation]', times, sfxNames as unknown as number[])) // XXX Workaround for https://github.com/mrdoob/three.js/issues/31374
+                    currentObject.keyframeTracks.push(new StringKeyframeTrack('.userData[sfxNameAnimation]', times, sfxNames))
                 } else if (currentObject.lowerName.startsWith('*') || currentObject.lowerName.startsWith(';')) {
                     if (VERBOSE) console.warn(`Unexpected sfx object name ${currentObject.lowerName}`)
                 }

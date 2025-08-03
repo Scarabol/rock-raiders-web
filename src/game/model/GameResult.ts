@@ -44,7 +44,7 @@ export class GameResult {
         this.airLevelPercent = GameState.airLevel * 100
         this.numCrystal = GameState.numCrystal
         this.numOre = GameState.numOre
-        this.numTotalOres = GameState.numTotalOres
+        this.numTotalOres = GameState.totalOres
         this.remainingDiggables = GameState.remainingDiggables
         this.totalDiggables = GameState.totalDiggables
         this.discoveredCaverns = GameState.discoveredCaverns
