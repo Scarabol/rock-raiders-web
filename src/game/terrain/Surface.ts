@@ -3,7 +3,7 @@ import { SoundManager } from '../../audio/SoundManager'
 import { DeselectAll, SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, OreFoundEvent, WorldLocationEvent } from '../../event/WorldEvents'
 import { EventKey } from '../../event/EventKeyEnum'
-import { DEV_MODE, SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../params'
+import { BRICK_ORE_VALUE, DEV_MODE, SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../params'
 import { WorldManager } from '../WorldManager'
 import { BuildingEntity } from '../model/building/BuildingEntity'
 import { BuildingSite } from '../model/building/BuildingSite'
@@ -31,6 +31,7 @@ import { FallInComponent } from '../component/FallInComponent'
 import { FluidSurfaceComponent } from '../component/FluidSurfaceComponent'
 import { MonsterSpawner } from '../factory/MonsterSpawner'
 import { PRNG } from '../factory/PRNG'
+import { GameState } from '../model/GameState'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -588,9 +589,15 @@ export class Surface {
             const materials = [...this.worldMgr.entityMgr.materials] // list will be changed by dispose below
             materials.forEach((m) => { // XXX Optimize performance
                 const materialSurface = m.getSurface()
-                if (materialSurface === this) {
-                    m.carryJob?.target?.site?.unAssign(m)
-                    m.disposeFromWorld()
+                if (materialSurface !== this) return
+                m.carryJob?.target?.site?.unAssign(m)
+                m.disposeFromWorld()
+                if (m.entityType === EntityType.DEPLETED_CRYSTAL || m.entityType === EntityType.CRYSTAL) {
+                    GameState.totalCrystals--
+                } else if (m.entityType === EntityType.ORE) {
+                    GameState.totalOres--
+                } else if (m.entityType === EntityType.BRICK) {
+                    GameState.totalOres -= BRICK_ORE_VALUE
                 }
             })
         } else if ([SurfaceType.RUBBLE4, SurfaceType.RUBBLE3, SurfaceType.RUBBLE2, SurfaceType.RUBBLE1].includes(this.surfaceType)) {
