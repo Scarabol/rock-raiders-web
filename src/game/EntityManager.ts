@@ -164,7 +164,16 @@ export class EntityManager {
     }
 
     getVehicleUpgradePathTargets(): PathTarget[] {
-        return this.getPoweredBuildingByStatsProperty('upgradeBuilding').map((b) => PathTarget.fromBuilding(b, b.getDropPosition2D(), 1, b.primarySurface.getCenterWorld2D()))
+        return this.getPoweredBuildingByStatsProperty('upgradeBuilding').map((b) => {
+            const primary = b.primarySurface
+            const primaryPath = b.primaryPathSurface
+            if (!primaryPath) {
+                console.warn('Cannot start upgrade process without given primary path surface')
+                return null
+            }
+            const opposite = b.worldMgr.sceneMgr.terrain.getSurface(2 * primaryPath.x - primary.x, 2 * primaryPath.y - primary.y)
+            return PathTarget.fromBuilding(b, b.getDropPosition2D(), 0, opposite.getCenterWorld2D())
+        }).filter((v) => !!v)
     }
 
     hasBuilding(buildingType: EntityType): boolean {

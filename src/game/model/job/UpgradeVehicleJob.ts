@@ -39,14 +39,7 @@ export class UpgradeVehicleJob extends Job {
             super.onJobComplete(fulfiller)
             return
         }
-        const primary = building.primarySurface
-        const primaryPath = building.primaryPathSurface
-        if (!primaryPath) {
-            console.warn('Cannot start upgrade process without given primary path surface')
-            return
-        }
-        const opposite = building.worldMgr.sceneMgr.terrain.getSurface(2 * primaryPath.x - primary.x, 2 * primaryPath.y - primary.y)
-        fulfiller.sceneEntity.headTowards(opposite.getCenterWorld2D())
+        fulfiller.sceneEntity.headTowards(this.workplace.focusPoint!)
         this.vehicle.upgrading = true
         const upgradeAnimationSpeed = building.stats.functionCoef[building.level] || 1
         building.sceneEntity.setAnimationSpeed(upgradeAnimationSpeed)
