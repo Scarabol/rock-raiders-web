@@ -70,6 +70,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     upgrading: boolean = false
     portering: boolean = false
     carriedBy?: GameEntity
+    taskingWhileSelected: boolean = false
 
     constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand, readonly driverActivityRoute: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand) {
         this.entityType = entityType
@@ -100,7 +101,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     update(elapsedMs: number) {
-        if (!this.job || this.selected || this.isInBeam()) return
+        if (!this.job || (this.selected && ! this.taskingWhileSelected) || this.isInBeam()) return
         if (this.job.jobState !== JobState.INCOMPLETE) {
             this.stopJob()
             return
@@ -273,11 +274,13 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         primary ? selectionFrameComponent?.select() : selectionFrameComponent?.selectSecondary()
         this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         this.workAudioId = SoundManager.stopAudio(this.workAudioId)
+        this.taskingWhileSelected = false
         return true
     }
 
     deselect() {
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+        this.taskingWhileSelected = false
     }
 
     isSelectable(): boolean {
