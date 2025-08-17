@@ -52,35 +52,41 @@ export class VideoLayer extends AbstractLayer {
         this.show()
 
         const videoFileName = getFilename(videoFilePath)
-        await this.ffmpeg.writeFile(videoFileName, videoData)
 
-        const duration = await this.ffmpeg.getDuration(videoFileName)
-
-        let currentSegment = 0
         const mediaSource = new MediaSource()
         mediaSource.addEventListener('sourceopen', async () => {
             try {
-                const sourceBuf = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42001e, mp4a.40.2"')
-                sourceBuf.mode = 'sequence'
-                sourceBuf.addEventListener('updateend', async () => {
-                    try {
-                        if (!this.active || sourceBuf.timestampOffset >= duration) {
-                            mediaSource.endOfStream()
-                            return
-                        }
-                        const nextData = await this.ffmpeg.transcodeSegment(videoFileName, currentSegment)
-                        if (!this.active) return
-                        currentSegment++
-                        sourceBuf.appendBuffer(nextData)
-                    } catch (e) {
-                        console.error('error adding segment', e)
-                        this.hide()
-                    }
-                })
-                const firstData = await this.ffmpeg.transcodeSegment(videoFileName, currentSegment)
-                mediaSource.duration = duration
-                currentSegment++
-                sourceBuf.appendBuffer(firstData)
+                await Promise.all([
+                    // Audio
+                    new Promise<void>((resolve, reject) => {
+                        const sourceBuf = mediaSource.addSourceBuffer('audio/webm; codecs="opus"')
+                        sourceBuf.addEventListener("error", reject)
+                        sourceBuf.addEventListener("updateend", () => resolve())
+                        this.ffmpeg.transcodeAudio(videoFileName, videoData)
+                            .then((data) => sourceBuf.appendBuffer(data))
+                            .catch(reject)
+                    }),
+                    // Video
+                    new Promise<void>((resolve, reject) => {
+                        const sourceBuf = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42001e"')
+                        sourceBuf.mode = 'sequence'
+                        let currentSegment = 0
+                        const nextSegment = () => this.ffmpeg.transcodeVideoSegment(videoFileName, videoData, currentSegment)
+                            .then((data) => {
+                                if (!data) {
+                                    resolve()
+                                    return;
+                                }
+                                currentSegment++
+                                sourceBuf.appendBuffer(data)
+                            })
+                            .catch(reject)
+                        sourceBuf.addEventListener("error", reject)
+                        sourceBuf.addEventListener('updateend', nextSegment)
+                        nextSegment()
+                    }),
+                ])
+                mediaSource.endOfStream()
             } catch (e) {
                 console.error('error appending buffer', e)
                 this.hide()
@@ -113,7 +119,6 @@ export class VideoLayer extends AbstractLayer {
             this.currentVideo()
             this.currentVideo = undefined
         }
-        this.ffmpeg.deleteAll('.avi', '.mp4')
     }
 
     takeScreenshotFromLayer(): Promise<SpriteImage> {
