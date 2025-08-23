@@ -1,6 +1,6 @@
 import { ScreenLayer } from '../screen/layer/ScreenLayer'
 import { SoundManager } from '../audio/SoundManager'
-import { AmbientLight, BufferGeometry, DepthTexture, DirectionalLight, Float32BufferAttribute, Mesh, OrthographicCamera, Scene, ShaderMaterial, ShaderMaterialParameters, Texture, UniformsUtils, Vector2, WebGLRenderer, WebGLRenderTarget } from 'three'
+import { AmbientLight, BufferGeometry, DepthTexture, DirectionalLight, Float32BufferAttribute, Mesh, OrthographicCamera, PerspectiveCamera, Scene, ShaderMaterial, ShaderMaterialParameters, Texture, UniformsUtils, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget } from 'three'
 import { degToRad } from 'three/src/math/MathUtils'
 import { clearIntervalSafe } from '../core/Util'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
@@ -92,7 +92,7 @@ export class RockWipeLayer extends ScreenLayer {
     readonly renderer: TransparentBackgroundRenderer
     readonly scene: Scene
     readonly group: AnimationGroup
-    readonly camera: OrthographicCamera
+    readonly camera: PerspectiveCamera
     groupUpdateInterval?: NodeJS.Timeout
 
     constructor() {
@@ -100,8 +100,11 @@ export class RockWipeLayer extends ScreenLayer {
         this.renderer = new TransparentBackgroundRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, {alpha: true})
         // Camera
         const aspect = this.canvas.width / this.canvas.height
-        this.camera = new OrthographicCamera(-aspect, aspect, 1, -1, 0, 10)
+        this.camera = new PerspectiveCamera(45, aspect, 1 , 100)
         this.camera.rotateY(Math.PI)
+        this.camera.zoom = 2
+        this.camera.position.add(new Vector3(0, 0, -5))
+        this.camera.updateProjectionMatrix()
         this.renderer.camera = this.camera
         this.scene = new Scene()
         // Lights
@@ -111,7 +114,6 @@ export class RockWipeLayer extends ScreenLayer {
         light.position.set(2, 2, -2)
         light.rotation.set(degToRad(35), -degToRad(45), -degToRad(0), 'YXZ')
         this.scene.add(light)
-        this.scene.scale.setScalar(1 / 4)
         this.group = new AnimationGroup('Interface/FrontEnd/Rock_Wipe/RockWipe.lws', () => {
             this.hide()
         }).setup()
@@ -133,9 +135,7 @@ export class RockWipeLayer extends ScreenLayer {
     resize(width: number, height: number) {
         super.resize(width, height)
         this.renderer.setSize(width, height)
-        const aspect = this.canvas.width / this.canvas.height
-        this.camera.left = -aspect
-        this.camera.right = aspect
+        this.camera.aspect = width / height
         this.camera.updateProjectionMatrix()
     }
 
