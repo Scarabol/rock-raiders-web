@@ -102,15 +102,23 @@ export class CueHdrFileParser {
         if (binFileParts.length !== 3) throw new Error(`Unexpected FILE line given! Expected "FILE "ROCKRAIDERS.bin" BINARY" but got "${binFileLine}" instead`)
         if (binFileParts[2].toUpperCase() !== 'BINARY') throw new Error(`Unexpected BIN file mode given! Expected BINARY got ${binFileParts[2]} instead`)
         const result: CueEntry[] = []
-        lines.forEach((line, index) => {
-            if (!line.toUpperCase().startsWith('TRACK ')) return
-            const indexLine = lines[index + 1]
+        for (let index = 0; index < lines.length; index++) {
+            const line = lines[index]
+            if (!line.toUpperCase().startsWith('TRACK ')) continue
+            let indexLine = ''
+            for (let c = index; c < lines.length; c++) {
+                const line2 = lines[c]
+                if (line2.startsWith('INDEX')) {
+                    indexLine = line2
+                    break
+                }
+            }
             if (!indexLine) throw new Error(`Missing INDEX line for given TRACK ${index}`)
             result.push({
                 track: this.parseTrackLine(line),
                 index: this.parseIndexLine(indexLine)
             })
-        })
+        }
         result.sort((l, r) => l.track.number - r.track.number)
         return result
     }
