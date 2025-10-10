@@ -4,20 +4,20 @@ import { RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../../even
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, RAIDER_PATH_PRECISION, SPIDER_SLIP_RANGE_SQ, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { WorldManager } from '../../WorldManager'
-import { AnimationActivity, AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY, AnimationActivity, RAIDER_ACTIVITY, ROCK_MONSTER_ACTIVITY } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
 import { GameState } from '../GameState'
 import { Job, JobFulfiller } from '../job/Job'
-import { JobState } from '../job/JobState'
+import { JOB_STATE } from '../job/JobState'
 import { Surface } from '../../terrain/Surface'
 import { TerrainPath } from '../../terrain/TerrainPath'
 import { MaterialEntity } from '../material/MaterialEntity'
-import { MoveState } from '../MoveState'
+import { MOVE_STATE, MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
 import { Updatable } from '../Updateable'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
-import { RaiderTool } from './RaiderTool'
-import { RaiderTraining } from './RaiderTraining'
+import { RAIDER_TOOL, RaiderTool } from './RaiderTool'
+import { RAIDER_TRAINING, RaiderTraining } from './RaiderTraining'
 import { EntityType } from '../EntityType'
 import { GameEntity } from '../../ECS'
 import { PositionComponent } from '../../component/PositionComponent'
@@ -30,10 +30,10 @@ import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
 import { MonsterStatsComponent } from '../../component/MonsterStatsComponent'
-import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
+import { RAIDER_SCARE_RANGE, RaiderScareComponent } from '../../component/RaiderScareComponent'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { ScannerComponent } from '../../component/ScannerComponent'
-import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
+import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE, MapMarkerComponent } from '../../component/MapMarkerComponent'
 import { BulletComponent } from '../../component/BulletComponent'
 import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
@@ -69,7 +69,7 @@ export class Raider implements Updatable, JobFulfiller {
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
-        this.addTool(RaiderTool.DRILL)
+        this.addTool(RAIDER_TOOL.drill)
         this.entity = this.worldMgr.ecs.addEntity()
         this.sceneEntity = new AnimatedSceneEntity()
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData('mini-figures/pilot'))
@@ -108,7 +108,7 @@ export class Raider implements Updatable, JobFulfiller {
                 const idleAnim = PRNG.animation.sample(['Activity_Waiting1', 'Activity_Waiting2', 'Activity_Waiting3', 'Activity_Waiting4'])
                 this.idleCounter = 0
                 this.sceneEntity.setAnimation(idleAnim, () => {
-                    this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                 })
             } else {
                 this.idleCounter += PRNG.animation.randInt(elapsedMs)
@@ -131,9 +131,9 @@ export class Raider implements Updatable, JobFulfiller {
         components.get(SelectionNameComponent)?.setVisible(false)
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
-        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, this.entity, MAP_MARKER_CHANGE.remove))
         this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
-        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.scanner, this.entity, MAP_MARKER_CHANGE.remove))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         EventBroker.publish(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
     }
@@ -155,9 +155,9 @@ export class Raider implements Updatable, JobFulfiller {
 
     private moveToClosestTarget(target: PathTarget | undefined, elapsedMs: number): MoveState {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
-        if (result === MoveState.MOVED) {
+        if (result === MOVE_STATE.moved) {
             this.onEntityMoved()
-        } else if (result === MoveState.TARGET_UNREACHABLE) {
+        } else if (result === MOVE_STATE.targetUnreachable) {
             console.warn('Raider could not move to job target, stopping job', this.job, target)
             this.stopJob()
         }
@@ -182,13 +182,13 @@ export class Raider implements Updatable, JobFulfiller {
         this.worldMgr.entityMgr.rockMonsters.forEach((rocky) => {
             const components = this.worldMgr.ecs.getComponents(rocky)
             const rockySceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
-            if (rockySceneEntity.currentAnimation === RockMonsterActivity.Unpowered) {
+            if (rockySceneEntity.currentAnimation === ROCK_MONSTER_ACTIVITY.unpowered) {
                 const positionComponent = components.get(PositionComponent)
                 const rockyPosition2D = positionComponent.getPosition2D()
                 const wakeRadius = components.get(MonsterStatsComponent).stats.wakeRadius
                 if (raiderPosition2D.distanceToSquared(rockyPosition2D) < Math.pow(wakeRadius + this.stats.collRadius, 2)) {
-                    rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
-                        this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
+                    rockySceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.wakeUp, () => {
+                        this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
                         this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
                         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                     })
@@ -198,11 +198,11 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private moveToClosestTargetInternal(target: PathTarget | undefined, elapsedMs: number): MoveState {
-        if (!target) return MoveState.TARGET_UNREACHABLE
+        if (!target) return MOVE_STATE.targetUnreachable
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
             const path = this.findShortestPath(target)
             this.currentPath = path && path.locations.length > 0 ? path : undefined
-            if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
+            if (!this.currentPath) return MOVE_STATE.targetUnreachable
             const currentPath = this.currentPath
             currentPath.locations.forEach((l, index) => {
                 if (index < currentPath.locations.length - 1) l.add(new Vector2().random().subScalar(0.5).multiplyScalar(TILESIZE / RAIDER_PATH_PRECISION))
@@ -210,7 +210,7 @@ export class Raider implements Updatable, JobFulfiller {
         }
         const step = this.determineStep(elapsedMs, this.currentPath)
         if (step.targetReached) {
-            return MoveState.TARGET_REACHED
+            return MOVE_STATE.targetReached
         } else {
             this.setPosition(step.position)
             this.sceneEntity.headTowards(step.focusPoint)
@@ -227,7 +227,7 @@ export class Raider implements Updatable, JobFulfiller {
                 }
             }
             this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setHungerIndicator(this.foodLevel)
-            return MoveState.MOVED
+            return MOVE_STATE.moved
         }
     }
 
@@ -253,11 +253,11 @@ export class Raider implements Updatable, JobFulfiller {
 
     getRouteActivity(): AnimationActivity {
         if (this.scared) {
-            return RaiderActivity.RunPanic
+            return RAIDER_ACTIVITY.runPanic
         } else if (this.getSurface().hasRubble()) {
-            return !!this.carries ? RaiderActivity.CarryRubble : RaiderActivity.routeRubble
+            return !!this.carries ? RAIDER_ACTIVITY.carryRubble : RAIDER_ACTIVITY.routeRubble
         } else {
-            return !!this.carries ? AnimEntityActivity.Carry : AnimEntityActivity.Route
+            return !!this.carries ? ANIM_ENTITY_ACTIVITY.carry : ANIM_ENTITY_ACTIVITY.route
         }
     }
 
@@ -265,7 +265,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.dropCarried(true)
         if (PRNG.movement.randInt(100) < 10) this.stopJob()
         this.slipped = true
-        this.sceneEntity.setAnimation(RaiderActivity.Slip, () => {
+        this.sceneEntity.setAnimation(RAIDER_ACTIVITY.slip, () => {
             this.slipped = false
         })
     }
@@ -295,7 +295,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     getDefaultAnimationName(): AnimationActivity {
-        return this.carries ? AnimEntityActivity.StandCarry : AnimEntityActivity.Stand
+        return this.carries ? ANIM_ENTITY_ACTIVITY.standCarry : ANIM_ENTITY_ACTIVITY.stand
     }
 
     deselect() {
@@ -326,7 +326,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     getDrillTimeSeconds(surface: Surface): number {
-        if (!surface || !this.hasTool(RaiderTool.DRILL)) return 0
+        if (!surface || !this.hasTool(RAIDER_TOOL.drill)) return 0
         const statsDrillName = surface.surfaceType.statsDrillName
         if (!statsDrillName) return 0
         return this.stats[statsDrillName]?.[this.level] || 0
@@ -357,13 +357,13 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private work(elapsedMs: number) {
-        if (this.job?.jobState !== JobState.INCOMPLETE) {
+        if (this.job?.jobState !== JOB_STATE.incomplete) {
             this.stopJob()
             return
         }
         const grabbedJobItem = this.grabJobItem(elapsedMs, this.job.carryItem)
         if (!grabbedJobItem) return
-        const workplaceReached = this.moveToClosestTarget(this.job.getWorkplace(this), elapsedMs) === MoveState.TARGET_REACHED
+        const workplaceReached = this.moveToClosestTarget(this.job.getWorkplace(this), elapsedMs) === MOVE_STATE.targetReached
         if (!workplaceReached) return
         if (!this.job.isReadyToComplete()) {
             this.sceneEntity.setAnimation(this.getDefaultAnimationName())
@@ -373,7 +373,7 @@ export class Raider implements Updatable, JobFulfiller {
         if (!this.workAudioId && this.job.workSoundRaider) {
             this.workAudioId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundRaider, this.job.getExpectedTimeLeft() !== null)
         }
-        if (workActivity === RaiderActivity.Drill) {
+        if (workActivity === RAIDER_ACTIVITY.drill) {
             const workplace = this.job.getWorkplace(this)
             if (!this.job.surface || !workplace) {
                 this.stopJob()
@@ -382,7 +382,7 @@ export class Raider implements Updatable, JobFulfiller {
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
             this.sceneEntity.setAnimation(workActivity)
             this.job.surface.addDrillTimeProgress(this.getDrillTimeSeconds(this.job.surface), elapsedMs, workplace.targetLocation)
-        } else if (workActivity === AnimEntityActivity.Stand) {
+        } else if (workActivity === ANIM_ENTITY_ACTIVITY.stand) {
             this.sceneEntity.setAnimation(workActivity)
             this.completeJob()
         } else {
@@ -401,13 +401,13 @@ export class Raider implements Updatable, JobFulfiller {
         const targets = this.worldMgr.entityMgr.getRaiderFightTargets()
         const alarmTarget = this.findShortestPath(targets) // TODO Find closest position where shooting is possible, don't shoot through walls
         if (!alarmTarget?.target.entity) {
-            this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
             return
         }
         const moveState = this.moveToClosestTargetInternal(alarmTarget.target, elapsedMs)
-        if (moveState !== MoveState.TARGET_REACHED) {
-            if (moveState === MoveState.TARGET_UNREACHABLE) {
-                this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        if (moveState !== MOVE_STATE.targetReached) {
+            if (moveState === MOVE_STATE.targetUnreachable) {
+                this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
             }
             return
         }
@@ -415,21 +415,21 @@ export class Raider implements Updatable, JobFulfiller {
         const stats = targetComponents.get(MonsterStatsComponent).stats
         const attacks = [
             {
-                tool: RaiderTool.LASER,
+                tool: RAIDER_TOOL.laser,
                 damage: stats.laserDamage,
                 weaponStats: GameConfig.instance.weaponTypes.laserShot,
                 bulletType: EntityType.LASER_SHOT,
                 misc: GameConfig.instance.miscObjects.laserShot
             },
             {
-                tool: RaiderTool.FREEZER_GUN,
+                tool: RAIDER_TOOL.freezerGun,
                 damage: stats.freezerDamage,
                 weaponStats: GameConfig.instance.weaponTypes.freezer,
                 bulletType: EntityType.FREEZER_SHOT,
                 misc: GameConfig.instance.miscObjects.freezer
             },
             {
-                tool: RaiderTool.PUSHER_GUN,
+                tool: RAIDER_TOOL.pusherGun,
                 damage: stats.pusherDamage,
                 weaponStats: GameConfig.instance.weaponTypes.pusher,
                 bulletType: EntityType.PUSHER_SHOT,
@@ -438,7 +438,7 @@ export class Raider implements Updatable, JobFulfiller {
         ].filter((a) => this.hasTool(a.tool)).sort((l, r) => r.damage - l.damage)
         if (attacks.length < 1) {
             console.warn('Could not shoot at monster')
-            this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
             return
         }
         const attack = attacks[0]
@@ -454,8 +454,8 @@ export class Raider implements Updatable, JobFulfiller {
             this.worldMgr.entityMgr.addEntity(bulletEntity, attack.bulletType)
             this.weaponCooldown = attack.weaponStats.rechargeTimeMs
             this.sceneEntity.headTowards(targetLocation)
-            this.sceneEntity.setAnimation(RaiderActivity.Shoot, () => {
-                this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            this.sceneEntity.setAnimation(RAIDER_ACTIVITY.shoot, () => {
+                this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
             })
         }
     }
@@ -464,7 +464,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.workAudioId = SoundManager.stopAudio(this.workAudioId)
         this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
-        if (this.job?.jobState === JobState.INCOMPLETE) return
+        if (this.job?.jobState === JOB_STATE.incomplete) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
         this.followUpJob = undefined
@@ -480,9 +480,9 @@ export class Raider implements Updatable, JobFulfiller {
         this.dropCarried(true)
         if (!carryItem) return true
         const positionAsPathTarget = PathTarget.fromLocation(carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)
-        if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
+        if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MOVE_STATE.targetReached) {
             this.sceneEntity.headTowards(carryItem.getPosition2D())
-            this.sceneEntity.setAnimation(RaiderActivity.Collect, () => {
+            this.sceneEntity.setAnimation(RAIDER_ACTIVITY.collect, () => {
                 this.carries = carryItem
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)
             })
@@ -495,7 +495,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private hasWeapon(): boolean {
-        return [RaiderTool.FREEZER_GUN, RaiderTool.LASER, RaiderTool.PUSHER_GUN].some((w) => this.hasTool(w))
+        return [RAIDER_TOOL.freezerGun, RAIDER_TOOL.laser, RAIDER_TOOL.pusherGun].some((w) => this.hasTool(w))
     }
 
     hasTraining(training: RaiderTraining) {
@@ -519,14 +519,14 @@ export class Raider implements Updatable, JobFulfiller {
 
     addTraining(training: RaiderTraining) {
         this.trainings.add(training)
-        if (training === RaiderTraining.GEOLOGIST) {
+        if (training === RAIDER_TRAINING.geologist) {
             const scannerRange = this.stats.surveyRadius?.[this.level] ?? 0
             if (scannerRange) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(scannerRange))
         }
     }
 
     isPrepared(job: Job): boolean {
-        if (job.requiredTool === RaiderTool.DRILL) return this.canDrill(job.surface)
+        if (job.requiredTool === RAIDER_TOOL.drill) return this.canDrill(job.surface)
         return this.hasTool(job.requiredTool) && this.hasTraining(job.requiredTraining) && this.hasCapacity()
     }
 

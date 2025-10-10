@@ -49,11 +49,15 @@ const ANTIALIASING_BIT = 64
 //*************************//
 
 // noinspection JSUnusedGlobalSymbols
-enum ReflectionMode {
-    BACKDROP = 0,
-    BACKDROP_WITH_RAYTRACING = 1,
-    SPHERICAL = 2,
-    SPHERICAL_WITH_RAYTRACING = 3,
+const ReflectionMode = {
+    BACKDROP: 0,
+    BACKDROP_WITH_RAYTRACING: 1,
+    SPHERICAL: 2,
+    SPHERICAL_WITH_RAYTRACING: 3,
+} as const
+type ReflectionMode = typeof ReflectionMode[keyof typeof ReflectionMode]
+const isReflectionMode = (val: unknown): val is ReflectionMode => {
+    return Object.values(ReflectionMode).includes(val as ReflectionMode)
 }
 
 export class LWOBParser {
@@ -247,7 +251,7 @@ export class LWOBParser {
         let sequenceOffset = 0
         let sequenceFlags = 0
         let sequenceLoopLength = 0
-        let reflectionMode = ReflectionMode.SPHERICAL_WITH_RAYTRACING
+        let reflectionMode: ReflectionMode = ReflectionMode.SPHERICAL_WITH_RAYTRACING
         let textureColorArray: number[] | undefined
 
         while (this.lwoReader.cursor < chunkEnd) {
@@ -435,8 +439,12 @@ export class LWOBParser {
                     sequenceLoopLength = this.lwoReader.readUint16()
                     break
                 case 'RFLT':
-                    reflectionMode = this.lwoReader.readUint16()
-                    if (!(reflectionMode in ReflectionMode)) console.warn('Unexpected reflection mode given', reflectionMode)
+                    const reflectionModeValue = this.lwoReader.readUint16()
+                    if (!isReflectionMode(reflectionModeValue)) {
+                        console.warn('Unexpected reflection mode given', reflectionModeValue)
+                    } else {
+                        reflectionMode = reflectionModeValue
+                    }
                     if (this.verbose) console.log(`Reflection Mode (RFLT): ${reflectionMode}`)
                     break
                 case 'RIMG':

@@ -38,6 +38,6 @@ export class OverwriteLayer extends MainMenuLayer {
 
     handlePointerEvent(event: GamePointerEvent): boolean {
         super.handlePointerEvent(event)
-        return event.eventEnum !== POINTER_EVENT.LEAVE
+        return event.eventEnum !== POINTER_EVENT.leave
     }
 }

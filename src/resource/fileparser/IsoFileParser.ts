@@ -18,15 +18,15 @@ export class IsoFileParser {
         for (let offset = 32 * 1024; offset < this.buffer.byteLength; offset += 2048) { // skip first 32 kB for system area
             this.reader.seek(offset)
             const volumeDescriptorTypeCode = this.reader.read8()
-            if (volumeDescriptorTypeCode === VolumeDescriptorTypeCode.PRIMARY_VOLUME_DESCRIPTOR) {
+            if (volumeDescriptorTypeCode === VOLUME_DESCRIPTOR_TYPE_CODE.PRIMARY_VOLUME_DESCRIPTOR) {
                 this.reader.seek(offset + 128)
                 this.logicalBlockSize = this.reader.read16()
                 if (this.logicalBlockSize !== 2048) console.warn(`Unexpected logical block size (${this.logicalBlockSize})`)
                 this.reader.seek(offset + 132)
                 this.readDirectoryEntry(offset + 156, '') // start reading root directory entry
-            } else if (volumeDescriptorTypeCode === VolumeDescriptorTypeCode.SUPPLEMENTARY_VOLUME_DESCRIPTOR) {
+            } else if (volumeDescriptorTypeCode === VOLUME_DESCRIPTOR_TYPE_CODE.SUPPLEMENTARY_VOLUME_DESCRIPTOR) {
                 if (VERBOSE) console.warn('Parsing supplementary volume descriptor not yet implemented')
-            } else if (volumeDescriptorTypeCode === VolumeDescriptorTypeCode.VOLUME_DESCRIPTOR_SET_TERMINATOR) {
+            } else if (volumeDescriptorTypeCode === VOLUME_DESCRIPTOR_TYPE_CODE.VOLUME_DESCRIPTOR_SET_TERMINATOR) {
                 break
             } else {
                 console.warn(`Unexpected ISO volume descriptor type code ${volumeDescriptorTypeCode}`)
@@ -80,8 +80,8 @@ export class IsoFileParser {
     }
 }
 
-enum VolumeDescriptorTypeCode {
-    PRIMARY_VOLUME_DESCRIPTOR = 1,
-    SUPPLEMENTARY_VOLUME_DESCRIPTOR = 2,
-    VOLUME_DESCRIPTOR_SET_TERMINATOR = 255,
-}
+const VOLUME_DESCRIPTOR_TYPE_CODE = {
+    PRIMARY_VOLUME_DESCRIPTOR: 1,
+    SUPPLEMENTARY_VOLUME_DESCRIPTOR: 2,
+    VOLUME_DESCRIPTOR_SET_TERMINATOR: 255,
+} as const

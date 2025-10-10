@@ -4,7 +4,7 @@ import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
-import { AnimEntityActivity } from '../model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY } from '../model/anim/AnimationActivity'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { HeadingComponent } from '../component/HeadingComponent'
 import { WorldManager } from '../WorldManager'
@@ -39,7 +39,7 @@ export class MovementSystem extends AbstractGameSystem {
                         this.ecs.removeEntity(entity)
                         if (sceneEntityComponent) this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntityComponent.sceneEntity)
                     } else if (sceneEntityComponent) {
-                        sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? AnimEntityActivity.StandCarry : AnimEntityActivity.Stand)
+                        sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? ANIM_ENTITY_ACTIVITY.standCarry : ANIM_ENTITY_ACTIVITY.stand)
                     }
                 } else if (entitySpeed > 0) {
                     step.clampLength(0, entitySpeed)
@@ -50,7 +50,7 @@ export class MovementSystem extends AbstractGameSystem {
                         positionComponent.surface = targetSurface
                         positionComponent.markDirty()
                         if (sceneEntityComponent) {
-                            sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? AnimEntityActivity.Carry : AnimEntityActivity.Route)
+                            sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? ANIM_ENTITY_ACTIVITY.carry : ANIM_ENTITY_ACTIVITY.route)
                         }
                     } else {
                         // TODO Move entity along the wall until there is no other option

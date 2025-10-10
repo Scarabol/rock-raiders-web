@@ -1,4 +1,4 @@
-import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
+import { MouseButtonType } from '../../event/EventTypeEnum'
 
 export class GuiEvent {
     constructor(public sx: number, public sy: number) {
@@ -10,13 +10,13 @@ export class GuiHoverEvent extends GuiEvent {
 }
 
 export class GuiPointerDownEvent extends GuiEvent {
-    constructor(sx: number, sy: number, public button: MOUSE_BUTTON) {
+    constructor(sx: number, sy: number, public button: MouseButtonType) {
         super(sx, sy)
     }
 }
 
 export class GuiPointerUpEvent extends GuiEvent {
-    constructor(sx: number, sy: number, public button: MOUSE_BUTTON) {
+    constructor(sx: number, sy: number, public button: MouseButtonType) {
         super(sx, sy)
     }
 }

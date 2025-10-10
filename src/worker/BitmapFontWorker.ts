@@ -2,10 +2,11 @@ import { AbstractWorkerSystem } from './AbstractWorkerSystem'
 import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
 import { TypedWorkerThreaded } from './TypedWorker'
 
-export enum BitmapFontWorkerRequestType {
-    ADD_FONT = 1, // start with 1 for truthiness safety
-    CREATE_TEXT_IMAGE,
-}
+export const BITMAP_FONT_WORKER_REQUEST_TYPE = {
+    addFont: 1, // start with 1 for truthiness safety
+    createTextImage: 2,
+} as const
+type BitmapFontWorkerRequestType = typeof BITMAP_FONT_WORKER_REQUEST_TYPE[keyof typeof BITMAP_FONT_WORKER_REQUEST_TYPE]
 
 export interface BitmapFontWorkerRequest {
     type: BitmapFontWorkerRequestType
@@ -30,7 +31,7 @@ export class BitmapFontSystem extends AbstractWorkerSystem<BitmapFontWorkerReque
             return
         }
         switch (request.type) {
-            case BitmapFontWorkerRequestType.ADD_FONT:
+            case BITMAP_FONT_WORKER_REQUEST_TYPE.addFont:
                 if (!request.fontData) {
                     console.error(`No font data given for '${request.fontName}'`)
                     this.sendResponse(workerRequestHash, {textImageData: undefined})
@@ -39,7 +40,7 @@ export class BitmapFontSystem extends AbstractWorkerSystem<BitmapFontWorkerReque
                 this.fontCache.set(request.fontName.toLowerCase(), new BitmapFont(request.fontData))
                 this.sendResponse(workerRequestHash, {textImageData: undefined})
                 break
-            case BitmapFontWorkerRequestType.CREATE_TEXT_IMAGE:
+            case BITMAP_FONT_WORKER_REQUEST_TYPE.createTextImage:
                 if (!request.text) {
                     console.error(`No text given for '${request.fontName}'`)
                     this.sendResponse(workerRequestHash, {textImageData: undefined})

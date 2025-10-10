@@ -5,8 +5,8 @@ import { EntityType } from '../game/model/EntityType'
 import { Surface } from '../game/terrain/Surface'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { Terrain } from '../game/terrain/Terrain'
-import { RaiderTool, RaiderTools } from '../game/model/raider/RaiderTool'
-import { RaiderTraining, RaiderTrainings } from '../game/model/raider/RaiderTraining'
+import { RAIDER_TOOL, RaiderTool, RaiderTools } from '../game/model/raider/RaiderTool'
+import { RAIDER_TRAINING, RaiderTraining, RaiderTrainings } from '../game/model/raider/RaiderTraining'
 import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { DEV_MODE, TILESIZE } from '../params'
 import { EventKey } from './EventKeyEnum'
@@ -19,17 +19,18 @@ import { BaseEvent } from './EventTypeMap'
 import { SpriteImage } from '../core/Sprite'
 import { MapRendererCameraRect } from '../worker/MapRendererWorker'
 
-export enum SelectPanelType {
-    NONE,
-    RAIDER,
-    VEHICLE,
-    BUILDING,
-    SURFACE,
-    FENCE,
-}
+export const SELECT_PANEL_TYPE = {
+    none: 0,
+    raider: 1,
+    vehicle: 2,
+    building: 3,
+    surface: 4,
+    fence: 5,
+} as const
+export type SelectPanelType = typeof SELECT_PANEL_TYPE[keyof typeof SELECT_PANEL_TYPE]
 
 export class SelectionChanged extends BaseEvent {
-    readonly selectPanelType: SelectPanelType = SelectPanelType.NONE
+    readonly selectPanelType: SelectPanelType = SELECT_PANEL_TYPE.none
     readonly isGround: boolean
     readonly isPowerPath: boolean
     readonly canPlaceFence: boolean
@@ -86,7 +87,7 @@ export class SelectionChanged extends BaseEvent {
         this.vehicleHasCallManJob = entityMgr.selection.vehicles.every((v) => !!v.callManJob)
         this.noVehicleWithDriver = entityMgr.selection.vehicles.every((v) => !v.driver)
         this.vehicleWithCarried = entityMgr.selection.vehicles.some((v) => v.carriedItems.size > 0 || (!v.portering && !!v.carriedVehicle))
-        this.someHasBirdScarer = entityMgr.selection.raiders.some((r) => r.hasTool(RaiderTool.BIRD_SCARER))
+        this.someHasBirdScarer = entityMgr.selection.raiders.some((r) => r.hasTool(RAIDER_TOOL.birdScarer))
         this.someVehicleCanLoad = entityMgr.selection.vehicles.some((v) => v.canLoad())
     }
 }
@@ -133,7 +134,7 @@ export class RaidersAmountChangedEvent extends BaseEvent {
         super(EventKey.RAIDER_AMOUNT_CHANGED)
         this.hasRaider = entityMgr.raiders.length > 0
         this.hasMaxRaiders = entityMgr.hasMaxRaiders()
-        this.hasDemolition = entityMgr.hasProfessional(RaiderTraining.DEMOLITION)
+        this.hasDemolition = entityMgr.hasProfessional(RAIDER_TRAINING.demolition)
     }
 }
 

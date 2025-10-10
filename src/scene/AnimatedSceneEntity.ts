@@ -2,7 +2,7 @@ import { Group, Object3D, Vector2, Vector3 } from 'three'
 import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
 import { ResourceManager } from '../resource/ResourceManager'
-import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY } from '../game/model/anim/AnimationActivity'
 import { VERBOSE } from '../params'
 import { AnimationQualityGroup } from './AnimationQualityGroup'
 import { SceneManager } from '../game/SceneManager'
@@ -69,7 +69,7 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.camShoulderChildren = this.camShoulderJoint?.children || this.camShoulderChildren
         this.animationData.forEach((animEntityData) => {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
-                ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
+                ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(ANIM_ENTITY_ACTIVITY.stand))
             if (!animData) {
                 console.error(`Animation data neither have "${animationName}" nor stand animation`)
                 return
@@ -90,7 +90,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             if (animEntityData.wheelMesh && animEntityData.wheelNullName) {
                 const wheelParentMesh = this.meshesByLName.getOrUpdate(animEntityData.wheelNullName, () => [])
                 if (wheelParentMesh.length < 1) {
-                    if (this.currentAnimation !== AnimEntityActivity.TeleportIn) {
+                    if (this.currentAnimation !== ANIM_ENTITY_ACTIVITY.teleportIn) {
                         console.warn(`Could not find wheel parent ${animEntityData.wheelNullName} in ${Array.from(this.meshesByLName.keys())}`)
                     }
                     return
@@ -171,7 +171,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             upgrades.forEach((upgrade) => {
                 const parent = this.meshesByLName.get(upgrade.parentNullName.toLowerCase())?.[upgrade.parentNullIndex]
                 if (!parent) {
-                    if (this.currentAnimation !== AnimEntityActivity.TeleportIn) {
+                    if (this.currentAnimation !== ANIM_ENTITY_ACTIVITY.teleportIn) {
                         console.warn(`Could not find upgrade parent for '${upgrade.lNameType}' with name '${upgrade.parentNullName}' in animation '${this.currentAnimation}'`)
                     }
                     return

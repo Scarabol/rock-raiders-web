@@ -1,14 +1,15 @@
 import { AbstractGameComponent } from '../ECS'
 import { TILESIZE } from '../../params'
 
-export enum RaiderScareRange {
-    BAT = TILESIZE / 2,
-    ROCKY = TILESIZE,
-    DYNAMITE = 1.5 * TILESIZE,
-}
+export const RAIDER_SCARE_RANGE = {
+    bat: TILESIZE / 2,
+    rocky: TILESIZE,
+    dynamite: 1.5 * TILESIZE,
+} as const
+type RaiderScareRange = typeof RAIDER_SCARE_RANGE[keyof typeof RAIDER_SCARE_RANGE]
 
 export class RaiderScareComponent extends AbstractGameComponent {
-    readonly scareRadiusSq
+    readonly scareRadiusSq: number
 
     constructor(scareRadius: RaiderScareRange) {
         super()

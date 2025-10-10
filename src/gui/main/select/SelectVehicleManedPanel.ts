@@ -1,5 +1,5 @@
 import { EventKey } from '../../../event/EventKeyEnum'
-import { CameraViewMode, ChangeCameraEvent, VehicleBeamUp, VehicleDriverGetOut, VehicleLoad, VehicleUnload } from '../../../event/GuiCommand'
+import { CAMERA_VIEW_MODE, ChangeCameraEvent, VehicleBeamUp, VehicleDriverGetOut, VehicleLoad, VehicleUnload } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { Panel } from '../../base/Panel'
 import { IconSubPanel } from '../IconSubPanel'
@@ -28,10 +28,10 @@ export class SelectVehicleManedPanel extends IconSubPanel {
         leaveVehicleItem.onClick = () => this.publishEvent(new VehicleDriverGetOut())
         const firstPersonView = this.addMenuItem(GameConfig.instance.interfaceImages.gotoFirstPerson)
         firstPersonView.isDisabled = () => false
-        firstPersonView.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.FPV))
+        firstPersonView.onClick = () => this.publishEvent(new ChangeCameraEvent(CAMERA_VIEW_MODE.fpv))
         const shoulderView = this.addMenuItem(GameConfig.instance.interfaceImages.gotoSecondPerson)
         shoulderView.isDisabled = () => false
-        shoulderView.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.SHOULDER))
+        shoulderView.onClick = () => this.publishEvent(new ChangeCameraEvent(CAMERA_VIEW_MODE.shoulder))
         const deleteVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages.deleteVehicle)
         deleteVehicleItem.isDisabled = () => false
         deleteVehicleItem.onClick = () => this.publishEvent(new VehicleBeamUp())

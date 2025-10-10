@@ -1,7 +1,7 @@
 import { EntityManager } from '../../../EntityManager'
 import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
-import { RaiderTool } from '../../raider/RaiderTool'
+import { RAIDER_TOOL, RaiderTool } from '../../raider/RaiderTool'
 import { RaiderJob } from './RaiderJob'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
@@ -47,21 +47,21 @@ export class GetToolJob extends RaiderJob {
 
     getJobBubble(): keyof BubblesCfg {
         switch (this.tool) {
-            case RaiderTool.DRILL:
+            case RAIDER_TOOL.drill:
                 return 'bubbleCollectDrill'
-            case RaiderTool.HAMMER:
+            case RAIDER_TOOL.hammer:
                 return 'bubbleCollectHammer'
-            case RaiderTool.SHOVEL:
+            case RAIDER_TOOL.shovel:
                 return 'bubbleCollectSpade'
-            case RaiderTool.SPANNER:
+            case RAIDER_TOOL.spanner:
                 return 'bubbleCollectSpanner'
-            case RaiderTool.FREEZER_GUN:
+            case RAIDER_TOOL.freezerGun:
                 return 'bubbleCollectFreezer'
-            case RaiderTool.LASER:
+            case RAIDER_TOOL.laser:
                 return 'bubbleCollectLaser'
-            case RaiderTool.PUSHER_GUN:
+            case RAIDER_TOOL.pusherGun:
                 return 'bubbleCollectPusher'
-            case RaiderTool.BIRD_SCARER:
+            case RAIDER_TOOL.birdScarer:
                 return 'bubbleCollectBirdScarer'
         }
         return 'bubbleIdle'

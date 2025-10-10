@@ -2,7 +2,7 @@ import { ScaledLayer } from '../screen/layer/ScaledLayer'
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { SpriteImage } from '../core/Sprite'
 import { clearIntervalSafe, clearTimeoutSafe } from '../core/Util'
-import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
+import { MOUSE_BUTTON, POINTER_EVENT, PointerEventType } from '../event/EventTypeEnum'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -57,10 +57,10 @@ export class MainMenuLayer extends ScaledLayer {
             if (titleImage) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position.y)
             this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context))
         }
-        new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
-            ['pointermove', POINTER_EVENT.MOVE],
-            ['pointerdown', POINTER_EVENT.DOWN],
-            ['pointerup', POINTER_EVENT.UP],
+        new Map<keyof HTMLElementEventMap, PointerEventType>([
+            ['pointermove', POINTER_EVENT.move],
+            ['pointerdown', POINTER_EVENT.down],
+            ['pointerup', POINTER_EVENT.up],
         ]).forEach((eventEnum, eventType) => {
             this.addEventListener(eventType, (event): boolean => {
                 const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent)
@@ -114,7 +114,7 @@ export class MainMenuLayer extends ScaledLayer {
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
-        if (event.eventEnum === POINTER_EVENT.MOVE) {
+        if (event.eventEnum === POINTER_EVENT.move) {
             this.updateItemsHoveredState(event.canvasX, event.canvasY, false)
             if (this.cfg.canScroll) {
                 if (event.pointerType === 'mouse') {
@@ -134,9 +134,9 @@ export class MainMenuLayer extends ScaledLayer {
                     this.lastScrollY = sy
                 }
             }
-        } else if (event.eventEnum === POINTER_EVENT.DOWN) {
+        } else if (event.eventEnum === POINTER_EVENT.down) {
             this.updateItemsHoveredState(event.canvasX, event.canvasY, false)
-            if (event.button === MOUSE_BUTTON.MAIN) {
+            if (event.button === MOUSE_BUTTON.main) {
                 let needsRedraw = false
                 this.items.forEach((item) => needsRedraw = item.onMouseDown() || needsRedraw)
                 if (needsRedraw) {
@@ -145,9 +145,9 @@ export class MainMenuLayer extends ScaledLayer {
                 }
             }
             this.lastScrollY = event.canvasY
-        } else if (event.eventEnum === POINTER_EVENT.UP) {
+        } else if (event.eventEnum === POINTER_EVENT.up) {
             this.updateItemsHoveredState(event.canvasX, event.canvasY, this.hasScrolled)
-            if (event.button === MOUSE_BUTTON.MAIN && !this.hasScrolled) {
+            if (event.button === MOUSE_BUTTON.main && !this.hasScrolled) {
                 let needsRedraw = false
                 this.items.forEach((item) => needsRedraw = item.onMouseUp() || needsRedraw)
                 if (needsRedraw) {

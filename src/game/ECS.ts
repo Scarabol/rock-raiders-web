@@ -32,7 +32,7 @@ export class ComponentContainer {
     public get<T extends AbstractGameComponent>(
         componentClass: ComponentClass<T>,
     ): T {
-        return this.map.get(componentClass) as T
+        return this.map.get(componentClass) as T // TODO Fix possible NPE
     }
 
     public has(componentClass: Function): boolean {

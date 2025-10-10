@@ -4,21 +4,21 @@ import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
-import { AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY, AnimEntityActivity, RAIDER_ACTIVITY, RaiderActivity, ROCK_MONSTER_ACTIVITY } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
 import { EntityType } from '../EntityType'
 import { Job, JobFulfiller } from '../job/Job'
-import { JobState } from '../job/JobState'
+import { JOB_STATE } from '../job/JobState'
 import { ManVehicleJob } from '../job/ManVehicleJob'
 import { MoveJob } from '../job/MoveJob'
 import { Surface } from '../../terrain/Surface'
 import { TerrainPath } from '../../terrain/TerrainPath'
 import { MaterialEntity } from '../material/MaterialEntity'
-import { MoveState } from '../MoveState'
+import { MOVE_STATE, MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
 import { Raider } from '../raider/Raider'
-import { RaiderTool } from '../raider/RaiderTool'
-import { RaiderTraining } from '../raider/RaiderTraining'
+import { RAIDER_TOOL } from '../raider/RaiderTool'
+import { RAIDER_TRAINING, RaiderTraining } from '../raider/RaiderTraining'
 import { Updatable } from '../Updateable'
 import { HealthComponent } from '../../component/HealthComponent'
 import { GameEntity } from '../../ECS'
@@ -30,14 +30,14 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { VehicleUpgrade, VehicleUpgrades } from './VehicleUpgrade'
 import { WorldLocationEvent } from '../../../event/WorldEvents'
-import { PriorityIdentifier } from '../job/PriorityIdentifier'
+import { PRIORITY_IDENTIFIER } from '../job/PriorityIdentifier'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
-import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
+import { RAIDER_SCARE_RANGE, RaiderScareComponent } from '../../component/RaiderScareComponent'
 import { MonsterStatsComponent } from '../../component/MonsterStatsComponent'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { ScannerComponent } from '../../component/ScannerComponent'
-import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
+import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE, MapMarkerComponent } from '../../component/MapMarkerComponent'
 import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
 import { GameState } from '../GameState'
@@ -71,7 +71,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     portering: boolean = false
     carriedBy?: GameEntity
 
-    constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand, readonly driverActivityRoute: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand) {
+    constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity | AnimEntityActivity = ANIM_ENTITY_ACTIVITY.stand, readonly driverActivityRoute: RaiderActivity | AnimEntityActivity = ANIM_ENTITY_ACTIVITY.stand) {
         this.entityType = entityType
         this.worldMgr = worldMgr
         this.stats = stats
@@ -101,23 +101,23 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     update(elapsedMs: number) {
         if (!this.job || this.selected || this.isInBeam()) return
-        if (this.job.jobState !== JobState.INCOMPLETE) {
+        if (this.job.jobState !== JOB_STATE.incomplete) {
             this.stopJob()
             return
         }
         const grabbedJobItem = this.grabJobItem(elapsedMs, this.job.carryItem)
         if (!grabbedJobItem) return
-        const workplaceReached = this.moveToClosestTarget(this.job.getWorkplace(this), elapsedMs) === MoveState.TARGET_REACHED
+        const workplaceReached = this.moveToClosestTarget(this.job.getWorkplace(this), elapsedMs) === MOVE_STATE.targetReached
         if (!workplaceReached) return
         if (!this.job.isReadyToComplete()) {
-            this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
             return
         }
-        const workActivity = this.job.getWorkActivity() || AnimEntityActivity.Stand
+        const workActivity = this.job.getWorkActivity() || ANIM_ENTITY_ACTIVITY.stand
         if (!this.workAudioId && this.job.workSoundVehicle) {
             this.workAudioId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundVehicle, true)
         }
-        if (workActivity === RaiderActivity.Drill) {
+        if (workActivity === RAIDER_ACTIVITY.drill) {
             const workplace = this.job.getWorkplace(this)
             if (!this.job.surface || !workplace) {
                 this.stopJob()
@@ -126,7 +126,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
             this.sceneEntity.setAnimation(workActivity)
             this.job.surface.addDrillTimeProgress(this.getDrillTimeSeconds(this.job.surface), elapsedMs, workplace.targetLocation)
-        } else if (workActivity === AnimEntityActivity.Stand) {
+        } else if (workActivity === ANIM_ENTITY_ACTIVITY.stand) {
             this.sceneEntity.setAnimation(workActivity)
             this.completeJob()
         } else {
@@ -154,9 +154,9 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         components.get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
-        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, this.entity, MAP_MARKER_CHANGE.remove))
         this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
-        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.scanner, this.entity, MAP_MARKER_CHANGE.remove))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         if (this.driver) this.worldMgr.entityMgr.removeEntity(this.driver.entity)
         this.worldMgr.entityMgr.removeEntity(this.entity)
@@ -180,9 +180,9 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     private moveToClosestTarget(target: PathTarget | undefined, elapsedMs: number): MoveState {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
-        if (result === MoveState.MOVED) {
+        if (result === MOVE_STATE.moved) {
             this.onEntityMoved()
-        } else if (result === MoveState.TARGET_UNREACHABLE) {
+        } else if (result === MOVE_STATE.targetUnreachable) {
             console.warn('Vehicle could not move to job target, stopping job', this.job, target)
             this.stopJob()
         }
@@ -194,13 +194,13 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.worldMgr.entityMgr.rockMonsters.forEach((rocky) => {
             const components = this.worldMgr.ecs.getComponents(rocky)
             const rockySceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
-            if (rockySceneEntity.currentAnimation === RockMonsterActivity.Unpowered) {
+            if (rockySceneEntity.currentAnimation === ROCK_MONSTER_ACTIVITY.unpowered) {
                 const positionComponent = components.get(PositionComponent)
                 const rockyPosition2D = positionComponent.getPosition2D()
                 const wakeRadius = components.get(MonsterStatsComponent).stats.wakeRadius
                 if (vehiclePosition2D.distanceToSquared(rockyPosition2D) < Math.pow(wakeRadius + this.stats.collRadius, 2)) {
-                    rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
-                        this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
+                    rockySceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.wakeUp, () => {
+                        this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
                         this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
                         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                     })
@@ -210,23 +210,23 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     private moveToClosestTargetInternal(target: PathTarget | undefined, elapsedMs: number): MoveState {
-        if (!target) return MoveState.TARGET_UNREACHABLE
+        if (!target) return MOVE_STATE.targetUnreachable
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
             const path = this.findShortestPath(target)
             this.currentPath = path && path.locations.length > 0 ? path : undefined
-            if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
+            if (!this.currentPath) return MOVE_STATE.targetUnreachable
         }
         const step = this.determineStep(elapsedMs, this.currentPath)
         if (step.targetReached) {
             if (target.building) this.sceneEntity.headTowards(target.building.primarySurface.getCenterWorld2D())
-            return MoveState.TARGET_REACHED
+            return MOVE_STATE.targetReached
         } else {
             this.setPosition(step.position)
             this.sceneEntity.headTowards(step.focusPoint)
             this.sceneEntity.setAnimation(this.getRouteActivity())
             const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
             this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
-            return MoveState.MOVED
+            return MOVE_STATE.moved
         }
     }
 
@@ -247,11 +247,11 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     getRouteActivity(): AnimEntityActivity {
-        return AnimEntityActivity.Route
+        return ANIM_ENTITY_ACTIVITY.route
     }
 
     getDefaultAnimationName(): AnimEntityActivity {
-        return AnimEntityActivity.Stand
+        return ANIM_ENTITY_ACTIVITY.stand
     }
 
     /*
@@ -271,7 +271,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (!this.isSelectable()) return false
         const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)
         primary ? selectionFrameComponent?.select() : selectionFrameComponent?.selectSecondary()
-        this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
         this.workAudioId = SoundManager.stopAudio(this.workAudioId)
         return true
     }
@@ -300,14 +300,14 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (this.followUpJob) this.followUpJob.unAssign(this)
         this.job = undefined
         this.followUpJob = undefined
-        this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
     }
 
     private completeJob() {
         this.workAudioId = SoundManager.stopAudio(this.workAudioId)
         this.job?.onJobComplete(this)
-        this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-        if (this.job?.jobState === JobState.INCOMPLETE) return
+        this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
+        if (this.job?.jobState === JOB_STATE.incomplete) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
         this.followUpJob = undefined
@@ -338,8 +338,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             return true // nothing to do here
         } else if (!this.carriedItems.has(carryItem)) {
             const positionAsPathTarget = PathTarget.fromLocation(carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)
-            if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
-                this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MOVE_STATE.targetReached) {
+                this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                 if (this.loadItemDelayMs > 0) {
                     this.loadItemDelayMs -= elapsedMs
                 } else {
@@ -354,7 +354,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         } else if (this.hasCapacity()) {
             const fulfillerPos = this.getPosition2D()
             const matNearby = this.worldMgr.entityMgr.materials.find((m) => { // XXX Move to entity manager and optimize with quad tree
-                if (m.entityType !== this.job?.carryItem?.entityType || m.carryJob?.hasFulfiller() || m.carryJob?.jobState !== JobState.INCOMPLETE) return false
+                if (m.entityType !== this.job?.carryItem?.entityType || m.carryJob?.hasFulfiller() || m.carryJob?.jobState !== JOB_STATE.incomplete) return false
                 const pos = this.worldMgr.ecs.getComponents(m.entity).get(PositionComponent)
                 if (!pos) return false
                 return pos.getPosition2D().distanceToSquared(fulfillerPos) < Math.pow(3 * TILESIZE, 2) // XXX Improve range, since this is executed on each frame
@@ -406,7 +406,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             this.sceneEntity.restartAnimation()
         }
         this.worldMgr.ecs.removeComponent(this.driver.entity, MapMarkerComponent)
-        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, this.driver.entity, MAP_MARKER_CHANGE.remove))
         const driverScannerComponent = this.worldMgr.ecs.getComponents(this.driver.entity).get(ScannerComponent)
         if (driverScannerComponent) this.worldMgr.ecs.addComponent(this.entity, driverScannerComponent)
         if (this.stats.engineSound && !this.engineSoundId && !SaveGameManager.preferences.muteDevSounds) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.engineSound, true)
@@ -426,16 +426,16 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.driver.setPosition(floorPosition)
         this.driver.sceneEntity.rotation.y = this.sceneEntity.heading
         this.driver.worldMgr.sceneMgr.addSceneEntity(this.driver.sceneEntity)
-        this.driver.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-        this.worldMgr.ecs.addComponent(this.driver.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.UPDATE, floorPosition))
+        this.driver.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
+        this.worldMgr.ecs.addComponent(this.driver.entity, new MapMarkerComponent(MAP_MARKER_TYPE.default))
+        EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, this.driver.entity, MAP_MARKER_CHANGE.update, floorPosition))
         this.driver.sceneEntity.visible = true
         const scannerComponent = this.worldMgr.ecs.getComponents(this.entity).get(ScannerComponent)
         if (scannerComponent) this.worldMgr.ecs.getComponents(this.driver.entity).add(scannerComponent)
         const scannerRange = this.stats.surveyRadius?.[this.level] ?? 0
         if (!scannerRange) {
             this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
-            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.UPDATE, this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position))
+            EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.scanner, this.entity, MAP_MARKER_CHANGE.update, this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position))
         }
         this.driver = undefined
         this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
@@ -444,17 +444,17 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     getRequiredTraining(): RaiderTraining {
         if (this.stats.crossLand && !this.stats.crossLava && !this.stats.crossWater) {
-            return RaiderTraining.DRIVER
+            return RAIDER_TRAINING.driver
         } else if (!this.stats.crossLand && !this.stats.crossLava && this.stats.crossWater) {
-            return RaiderTraining.SAILOR
+            return RAIDER_TRAINING.sailor
         }
-        return RaiderTraining.PILOT
+        return RAIDER_TRAINING.pilot
     }
 
     isPrepared(job: Job): boolean {
         const carryType = job.carryItem?.entityType
-        return (job.requiredTool === RaiderTool.DRILL && this.canDrill(job.surface))
-            || (job.priorityIdentifier === PriorityIdentifier.CLEARING && this.canClear())
+        return (job.requiredTool === RAIDER_TOOL.drill && this.canDrill(job.surface))
+            || (job.priorityIdentifier === PRIORITY_IDENTIFIER.clearing && this.canClear())
             || ((carryType === EntityType.ORE || carryType === EntityType.CRYSTAL || carryType === EntityType.ELECTRIC_FENCE) && this.hasCapacity())
     }
 
@@ -493,7 +493,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     getDriverActivity() {
-        return this.sceneEntity.currentAnimation === AnimEntityActivity.Stand ? this.driverActivityStand : this.driverActivityRoute
+        return this.sceneEntity.currentAnimation === ANIM_ENTITY_ACTIVITY.stand ? this.driverActivityStand : this.driverActivityRoute
     }
 
     canUpgrade(upgrade: VehicleUpgrade): boolean {
@@ -507,7 +507,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.upgrades.add(upgrade)
         const upgradeLevel = VehicleUpgrades.toUpgradeString(this.upgrades)
         this.sceneEntity.setUpgradeLevel(upgradeLevel)
-        this.level = parseInt(upgradeLevel, 2)
+        this.level = parseInt(upgradeLevel, 2) // Number() does not support radix
         const components = this.worldMgr.ecs.getComponents(this.entity)
         components.get(HealthComponent).rockFallDamage = GameConfig.instance.getRockFallDamage(this.entityType, this.level)
         const scannerRange = this.stats.surveyRadius?.[this.level] ?? 0
@@ -590,9 +590,9 @@ export class VehicleEntity implements Updatable, JobFulfiller {
                 if (!this.carriedVehicle) return // happens for beamup during load/unload
                 this.carriedVehicle.sceneEntity.rotation.set(0, 0, 0)
                 this.carriedVehicle.sceneEntity.position.setScalar(0)
-                this.carriedVehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                this.carriedVehicle.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                 this.sceneEntity.setAnimation('Activity_Closing', () => {
-                    this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                     this.portering = false
                     if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
                 })
@@ -621,10 +621,10 @@ export class VehicleEntity implements Updatable, JobFulfiller {
                 const unloadPosition = unloadSurface.getCenterWorld()
                 dropOffVehicle.sceneEntity.position.copy(unloadPosition)
                 dropOffVehicle.setPosition(unloadPosition)
-                dropOffVehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                dropOffVehicle.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                 dropOffVehicle.carriedBy = undefined
                 this.sceneEntity.setAnimation('Activity_Closing', () => {
-                    this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                     this.portering = false
                     if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
                 })

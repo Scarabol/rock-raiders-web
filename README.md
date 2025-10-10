@@ -50,8 +50,7 @@ using modern web technologies.
 ### v0.9.x - Polishing
 
 - Implement clickOnly... methods for tutorials and disable all non-flashing UI elements in tutorial mode
-- Auto switch from portrait to landscape mode in fullscreen
-- Add option to read/write savegames from URL
+- Improve compatibility with Baz's mod and others
 
 ### v1.0.0 - Final Release
 
@@ -68,6 +67,7 @@ using modern web technologies.
 - Two buttons in priority list can be hovered/pressed/released at the same time
 - Use pro-meshes to render high-detail walls in first person and shoulder view
 - Middle wheel meshes of small digger do not rotate after engine upgrade
+- When switching fast from one level to another in level selection no level name is shown, but the level is highlighted
 
 ### Authentic
 

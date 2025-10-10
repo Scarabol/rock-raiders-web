@@ -2,7 +2,7 @@ import { LevelConfData } from '../game/LevelLoader'
 import { DeselectAll, InitRadarMap, ShowGameResultEvent } from '../event/LocalEvents'
 import { EntityManager } from '../game/EntityManager'
 import { GuiManager } from '../game/GuiManager'
-import { GameResult, GameResultState } from '../game/model/GameResult'
+import { GAME_RESULT_STATE, GameResult, GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { ObjectListLoader } from '../game/ObjectListLoader'
 import { SceneManager } from '../game/SceneManager'
@@ -170,9 +170,9 @@ export class GameScreen {
         // TODO Disable scene to avoid further selections
         EventBroker.publish(new DeselectAll())
         const numMaxAirRaiders = this.levelConf.oxygenRate ? this.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT : MAX_RAIDER_BASE
-        const canvas = resultState === GameResultState.COMPLETE ? await this.screenMaster.createScreenshot() : undefined
+        const canvas = resultState === GAME_RESULT_STATE.complete ? await this.screenMaster.createScreenshot() : undefined
         const result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, numMaxAirRaiders, this.worldMgr.gameTimeMs, canvas)
-        if (resultState === GameResultState.COMPLETE) SaveGameManager.setLevelScore(this.levelConf.levelName, result.score)
+        if (resultState === GAME_RESULT_STATE.complete) SaveGameManager.setLevelScore(this.levelConf.levelName, result.score)
         if (!this.levelConf.disableEndTeleport) await this.worldMgr.teleportEnd()
         this.worldMgr.stop()
         this.overlayLayer.showResultBriefing(resultState, this.levelConf, () => {

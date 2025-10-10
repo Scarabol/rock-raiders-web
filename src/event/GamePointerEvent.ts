@@ -1,21 +1,21 @@
-import { MOUSE_BUTTON, POINTER_EVENT } from './EventTypeEnum'
+import { MOUSE_BUTTON, MouseButtonType, PointerEventType } from './EventTypeEnum'
 
 export class GamePointerEvent implements PointerEventInit {
     pointerId: number | undefined
     type: string
-    eventEnum: POINTER_EVENT
+    eventEnum: PointerEventType
     bubbles: boolean
     clientX: number
     clientY: number
     pointerType: '' | 'mouse' | 'pen' | 'touch'
-    button: MOUSE_BUTTON
+    button: MouseButtonType
     ctrlKey: boolean
     metaKey: boolean
     shiftKey: boolean
     canvasX: number = 0
     canvasY: number = 0
 
-    constructor(eventEnum: POINTER_EVENT, event: PointerEvent) {
+    constructor(eventEnum: PointerEventType, event: PointerEvent) {
         this.pointerId = event.pointerId
         this.type = event.type
         this.eventEnum = eventEnum
@@ -24,7 +24,7 @@ export class GamePointerEvent implements PointerEventInit {
         this.clientX = event.clientX
         this.clientY = event.clientY
         this.pointerType = GamePointerEvent.toPointerType(event.pointerType)
-        this.button = event.button
+        this.button = GamePointerEvent.toMouseButton(event.button)
         this.ctrlKey = event.ctrlKey
         this.metaKey = event.metaKey
         this.shiftKey = event.shiftKey
@@ -39,6 +39,22 @@ export class GamePointerEvent implements PointerEventInit {
             return 'pen'
         } else {
             return 'mouse'
+        }
+    }
+
+    private static toMouseButton(button: number): MouseButtonType {
+        switch (button) {
+            case -1:
+                return MOUSE_BUTTON.none
+            case 0:
+                return MOUSE_BUTTON.main
+            case 1:
+                return MOUSE_BUTTON.middle
+            case 2:
+                return MOUSE_BUTTON.secondary
+            default:
+                console.warn(`Unexpected mouse button (${button}) given. Using fallback to ${MOUSE_BUTTON.main}`)
+                return MOUSE_BUTTON.main
         }
     }
 }

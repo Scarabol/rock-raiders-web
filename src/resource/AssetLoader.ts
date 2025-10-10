@@ -61,7 +61,7 @@ export class AssetLoader {
         const data = this.vfs.getFile(name).toBuffer()
         const alphaIndexMatch = name.match(/(.*a)(\d+)(_.+)/i)
         if (alphaIndexMatch) {
-            const alphaIndex = parseInt(alphaIndexMatch[2])
+            const alphaIndex = Number(alphaIndexMatch[2])
             return this.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex)
         } else if (name.match(/\/a.*\d.*/i)) {
             return this.bitmapWorkerPool.decodeBitmapWithAlpha(data)

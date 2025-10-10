@@ -1,5 +1,5 @@
 import { SoundManager } from '../../audio/SoundManager'
-import { SelectPanelType } from '../../event/LocalEvents'
+import { SELECT_PANEL_TYPE, SelectPanelType } from '../../event/LocalEvents'
 import { BuildingEntity } from './building/BuildingEntity'
 import { DrillJob } from './job/surface/DrillJob'
 import { ClearRubbleJob } from './job/surface/ClearRubbleJob'
@@ -7,7 +7,7 @@ import { GetToolJob } from './job/raider/GetToolJob'
 import { Surface } from '../terrain/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
 import { Raider } from './raider/Raider'
-import { RaiderTool } from './raider/RaiderTool'
+import { RAIDER_TOOL } from './raider/RaiderTool'
 import { VehicleEntity } from './vehicle/VehicleEntity'
 import { SelectionFrameComponent } from '../component/SelectionFrameComponent'
 import { VehicleUpgrade } from './vehicle/VehicleUpgrade'
@@ -133,17 +133,17 @@ export class GameSelection {
 
     getSelectPanelType(): SelectPanelType {
         if (this.raiders.length > 0) {
-            return SelectPanelType.RAIDER
+            return SELECT_PANEL_TYPE.raider
         } else if (this.vehicles.length > 0) {
-            return SelectPanelType.VEHICLE
+            return SELECT_PANEL_TYPE.vehicle
         } else if (this.building) {
-            return SelectPanelType.BUILDING
+            return SELECT_PANEL_TYPE.building
         } else if (this.surface) {
-            return SelectPanelType.SURFACE
+            return SELECT_PANEL_TYPE.surface
         } else if (this.fence) {
-            return SelectPanelType.FENCE
+            return SELECT_PANEL_TYPE.fence
         }
-        return SelectPanelType.NONE
+        return SELECT_PANEL_TYPE.none
     }
 
     assignDrillJob(job: DrillJob) {
@@ -194,7 +194,7 @@ export class GameSelection {
     }
 
     canClear(): boolean {
-        return this.raiders.some((r) => r.hasTool(RaiderTool.SHOVEL)) || this.vehicles.some((v) => v.canClear())
+        return this.raiders.some((r) => r.hasTool(RAIDER_TOOL.shovel)) || this.vehicles.some((v) => v.canClear())
     }
 
     canPickup(): boolean {

@@ -1,12 +1,13 @@
 import { VERBOSE } from '../../params'
 import { CfgEntry } from '../../cfg/CfgEntry'
 
-const enum PARSING_STATE {
-    LOOKING_FOR_KEY,
-    INSIDE_KEY,
-    LOOKING_FOR_VALUE,
-    INSIDE_VALUE,
-}
+const PARSING_STATE = {
+    LOOKING_FOR_KEY: 1,
+    INSIDE_KEY: 2,
+    LOOKING_FOR_VALUE: 3,
+    INSIDE_VALUE: 4,
+} as const
+type PARSING_STATE = typeof PARSING_STATE[keyof typeof PARSING_STATE]
 
 export type CfgValue = number[]
 

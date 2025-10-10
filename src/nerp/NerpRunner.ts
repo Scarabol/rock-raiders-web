@@ -7,7 +7,7 @@
  */
 import { WorldManager } from '../game/WorldManager'
 import { EntityType } from '../game/model/EntityType'
-import { GameResultState } from '../game/model/GameResult'
+import { GAME_RESULT_STATE } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpReturnType, NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL } from '../params'
@@ -16,8 +16,8 @@ import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { MonsterSpawner } from '../game/factory/MonsterSpawner'
 import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEntityComponent'
-import { AnimEntityActivity, SlugActivity } from '../game/model/anim/AnimationActivity'
-import { SlugBehaviorComponent, SlugBehaviorState } from '../game/component/SlugBehaviorComponent'
+import { ANIM_ENTITY_ACTIVITY, SLUG_ACTIVITY } from '../game/model/anim/AnimationActivity'
+import { SLUG_BEHAVIOR_STATE, SlugBehaviorComponent } from '../game/component/SlugBehaviorComponent'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { SoundManager } from '../audio/SoundManager'
@@ -26,12 +26,12 @@ import { GuiButtonBlinkEvent, ShowMissionBriefingEvent } from '../event/LocalEve
 import { NerpMessage } from '../resource/fileparser/NerpMsgParser'
 import { Surface } from '../game/terrain/Surface'
 import { MaterialSpawner } from '../game/factory/MaterialSpawner'
-import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
+import { PRIORITY_IDENTIFIER } from '../game/model/job/PriorityIdentifier'
 import { BaseEvent } from '../event/EventTypeMap'
 import { RaiderTrainings } from '../game/model/raider/RaiderTraining'
 import { clearIntervalSafe, isNum } from '../core/Util'
 import { RaiderTools } from '../game/model/raider/RaiderTool'
-import { JobState } from '../game/model/job/JobState'
+import { JOB_STATE } from '../game/model/job/JobState'
 import { PRNG } from '../game/factory/PRNG'
 import { SaveGameManager } from '../resource/SaveGameManager'
 
@@ -155,7 +155,7 @@ export class NerpRunner {
      * @return {number}
      */
     checkRegister(register: string): number {
-        const num = parseInt(register)
+        const num = Number(register)
         if (!isNum(num) || num < 0 || num > this.registers.length) throw new Error(`Invalid register (${register}) provided`)
         return num
     }
@@ -234,7 +234,7 @@ export class NerpRunner {
      */
     setLevelCompleted(): void {
         console.log('Nerp runner marks level as complete')
-        EventBroker.publish(new GameResultEvent(GameResultState.COMPLETE))
+        EventBroker.publish(new GameResultEvent(GAME_RESULT_STATE.complete))
     }
 
     /**
@@ -242,7 +242,7 @@ export class NerpRunner {
      */
     setLevelFail(): void {
         console.log(`NerpRunner marks level as failed; at line: ${this.script.lines[this.programCounter]}`)
-        EventBroker.publish(new GameResultEvent(GameResultState.FAILED))
+        EventBroker.publish(new GameResultEvent(GAME_RESULT_STATE.failed))
     }
 
     /**
@@ -340,9 +340,9 @@ export class NerpRunner {
         const behaviorComponent = this.worldMgr.ecs.addComponent(slug, new SlugBehaviorComponent())
         const components = this.worldMgr.ecs.getComponents(slug)
         const sceneEntity = components.get(AnimatedSceneEntityComponent)
-        sceneEntity.sceneEntity.setAnimation(SlugActivity.Emerge, () => {
-            sceneEntity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-            behaviorComponent.state = SlugBehaviorState.IDLE
+        sceneEntity.sceneEntity.setAnimation(SLUG_ACTIVITY.emerge, () => {
+            sceneEntity.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
+            behaviorComponent.state = SLUG_BEHAVIOR_STATE.idle
         })
         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_SLUG_EMERGE, components.get(PositionComponent)))
     }
@@ -669,13 +669,13 @@ export class NerpRunner {
         tutoBlocks.forEach((t) => {
             for (let c = 0; c < numOfCrystals; c++) {
                 const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, t.getRandomPosition(), PRNG.animation.random() * 2 * Math.PI)
-                if (crystal.carryJob) crystal.carryJob.jobState = JobState.CANCELED
+                if (crystal.carryJob) crystal.carryJob.jobState = JOB_STATE.canceled
             }
         })
     }
 
     setCrystalPriority(targetIndex: number): void {
-        GameState.priorityList.setPriorityIndex(PriorityIdentifier.CRYSTAL, 0)
+        GameState.priorityList.setPriorityIndex(PRIORITY_IDENTIFIER.crystal, 0)
     }
 
     cameraZoomOut(zoomLevel: number): void {
@@ -818,12 +818,12 @@ export class NerpRunner {
         }
         const setTimerMatch = methodName.match(/^SetTimer([0-3])$/)
         if (setTimerMatch) {
-            const timer = parseInt(setTimerMatch[1])
+            const timer = Number(setTimerMatch[1])
             return this.setTimer(timer, methodArgs[0])
         }
         const getTimerMatch = methodName.match(/^GetTimer([0-3])$/)
         if (getTimerMatch) {
-            const timer = parseInt(getTimerMatch[1])
+            const timer = Number(getTimerMatch[1])
             return this.getTimer(timer)
         }
         const flashIconMatch = methodName.match(/^Flash(.+)Icon$/)

@@ -23,7 +23,7 @@ import { LeveledAmbientLight } from '../scene/LeveledAmbientLight'
 import { EventBroker } from '../event/EventBroker'
 import { ObjectPointer } from '../scene/ObjectPointer'
 import { PathFinder } from './terrain/PathFinder'
-import { AnimEntityActivity, RaiderActivity } from './model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY, RAIDER_ACTIVITY } from './model/anim/AnimationActivity'
 import { Raider } from './model/raider/Raider'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { CameraFrustumUpdater } from '../scene/CameraFrustumUpdater'
@@ -178,12 +178,12 @@ export class SceneManager implements Updatable {
             const targetSurface = this.terrain.getSurfaceFromWorld(targetPosition)
             if (selectedEntity.getSurface() === targetSurface || PathFinder.getWeight(targetSurface, selectedEntity.stats) > 0) {
                 selectedEntity.setPosition(targetPosition)
-                animationName = !!((selectedEntity as Raider).carries) ? AnimEntityActivity.Carry : AnimEntityActivity.Route
+                animationName = !!((selectedEntity as Raider).carries) ? ANIM_ENTITY_ACTIVITY.carry : ANIM_ENTITY_ACTIVITY.route
                 selectedEntity.onEntityMoved()
             } else {
                 const drillTimeSeconds = selectedEntity.getDrillTimeSeconds(targetSurface)
                 if (drillTimeSeconds > 0) {
-                    animationName = RaiderActivity.Drill
+                    animationName = RAIDER_ACTIVITY.drill
                     targetSurface.addDrillTimeProgress(drillTimeSeconds, elapsedMs, selectedEntity.getPosition2D())
                 }
             }

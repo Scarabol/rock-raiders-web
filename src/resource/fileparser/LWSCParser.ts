@@ -51,7 +51,7 @@ export class LWSCParser {
     }
 
     parse(): LWSCData {
-        const sceneFileVersion = parseInt(this.lines[1], 10)
+        const sceneFileVersion = Number(this.lines[1])
         if (sceneFileVersion !== 1) {
             console.warn(`Unexpected scene file version: ${sceneFileVersion}`)
         }
@@ -87,18 +87,18 @@ export class LWSCParser {
             if (!line) return
             const [key, value] = LWSCParser.parseLine(line)
             if (key === 'FirstFrame') {
-                this.firstFrame = parseInt(value, 10)
+                this.firstFrame = Number(value)
                 this.numOfKeyframes = this.lastFrame + 1 - this.firstFrame
                 this.lwscData.durationSeconds = this.numOfKeyframes / this.lwscData.framesPerSecond / this.frameStep
             } else if (key === 'LastFrame') {
-                this.lastFrame = parseInt(value, 10)
+                this.lastFrame = Number(value)
                 this.numOfKeyframes = this.lastFrame + 1 - this.firstFrame
                 this.lwscData.durationSeconds = this.numOfKeyframes / this.lwscData.framesPerSecond / this.frameStep
             } else if (key === 'FrameStep') {
-                this.frameStep = parseInt(value, 10)
+                this.frameStep = Number(value)
                 this.lwscData.durationSeconds = this.numOfKeyframes / this.lwscData.framesPerSecond / this.frameStep
             } else if (key === 'FramesPerSecond') {
-                this.lwscData.framesPerSecond = parseInt(value, 10)
+                this.lwscData.framesPerSecond = Number(value)
             } else if (key === 'PreviewFirstFrame' || key === 'PreviewLastFrame' || key === 'PreviewFrameStep') {
                 // only used in editor
             } else {
@@ -181,8 +181,8 @@ export class LWSCParser {
                 if (currentObject.lowerName === 'sfx' || currentObject.lowerName === 'snd') {
                     currentObject.sfxName = nameParts[1]
                     if (currentObject.lowerName === 'snd') currentObject.sfxName = currentObject.sfxName.toLowerCase().replace('sfx_', 'snd_')
-                    const sfxFrameStart = nameParts[2] ? parseInt(nameParts[2], 10) : 0
-                    const sfxFrameEnd = nameParts[3] ? parseInt(nameParts[3], 10) : Math.min(sfxFrameStart + 3, this.numOfKeyframes)
+                    const sfxFrameStart = nameParts[2] ? Number(nameParts[2]) : 0
+                    const sfxFrameEnd = nameParts[3] ? Number(nameParts[3]) : Math.min(sfxFrameStart + 3, this.numOfKeyframes)
                     const times: number[] = []
                     const sfxNames: string[] = []
                     for (let c = 0; c < this.numOfKeyframes; c++) {
@@ -196,9 +196,9 @@ export class LWSCParser {
                 currentObject.isNull = true
             } else if (key === 'ObjectMotion') {
                 let line = this.lines[++this.lineIndex]
-                const lenInfos = parseInt(line, 10)
+                const lenInfos = Number(line)
                 line = this.lines[++this.lineIndex]
-                const lenFrames = parseInt(line, 10)
+                const lenFrames = Number(line)
                 this.lineIndex++
                 const times: number[] = []
                 const relPos: number[] = []
@@ -207,10 +207,10 @@ export class LWSCParser {
                 for (let c = 0; c < lenFrames; c++) {
                     let line = this.lines[this.lineIndex + c * 2]
                     if (line.startsWith('EndBehavior')) break
-                    const infos = line.split(' ').map((n) => parseFloat(n))
+                    const infos = line.split(' ').map((n) => Number(n))
                     if (infos.length !== lenInfos) console.warn(`Number of infos (${infos.length}) does not match with specified count (${lenInfos})`)
                     line = this.lines[this.lineIndex + c * 2 + 1]
-                    const keyframeIndex = parseInt(line.split(' ')[0], 10) // other entries in line should be zeros
+                    const keyframeIndex = Number(line.split(' ')[0]) // other entries in line should be zeros
                     let timeFromIndex = 0
                     if (this.numOfKeyframes > 1) {
                         timeFromIndex = (keyframeIndex - this.firstFrame) / (this.numOfKeyframes - 1) * this.lwscData.durationSeconds
@@ -229,11 +229,11 @@ export class LWSCParser {
                 currentObject.keyframeTracks.push(new VectorKeyframeTrack(`.scale`, times, relScale))
                 this.lineIndex += lenFrames * 2
             } else if (key === 'ParentObject') {
-                currentObject.parentObjInd = parseInt(value, 10) // index is 1 based
+                currentObject.parentObjInd = Number(value) // index is 1 based
             } else if (key === 'ShowObject' || key === 'LockedChannels') {
                 // only used in editor
             } else if (key === 'ShadowOptions') {
-                const shadowBits = parseInt(value)
+                const shadowBits = Number(value)
                 if (isNaN(shadowBits)) {
                     console.warn('Could not parse shadow options', value)
                 } else {
@@ -248,30 +248,30 @@ export class LWSCParser {
                 const opacities = []
                 if (value == '(envelope)') {
                     let line = this.lines[++this.lineIndex]
-                    const numOfInformationChannels = parseInt(line, 10)
+                    const numOfInformationChannels = Number(line)
                     if (numOfInformationChannels !== 1) console.error(`Number of information channels for opacity is not 1, but: ${numOfInformationChannels}`)
                     line = this.lines[++this.lineIndex]
-                    const numOfKeyframes = parseInt(line, 10)
+                    const numOfKeyframes = Number(line)
                     this.lineIndex++
                     for (let c = 0; c < numOfKeyframes; c++) {
                         let line = this.lines[this.lineIndex + c * 2]
                         if (line.startsWith('EndBehavior')) break
-                        const opacity = 1 - parseInt(line, 10)
+                        const opacity = 1 - Number(line)
                         opacities.push(opacity)
                         line = this.lines[this.lineIndex + c * 2 + 1]
-                        const keyframeIndex = parseInt(line.split(' ')[0], 10) // other entries in line should be zeros
+                        const keyframeIndex = Number(line.split(' ')[0]) // other entries in line should be zeros
                         const timeFromIndex = (keyframeIndex - this.firstFrame) / this.numOfKeyframes * this.lwscData.durationSeconds
                         times.push(timeFromIndex)
                     }
                     this.lineIndex += numOfKeyframes * 2
                 } else {
                     times.push(0)
-                    const opacity = 1 - parseInt(value, 10)
+                    const opacity = 1 - Number(value)
                     opacities.push(opacity)
                 }
                 currentObject.opacityTracks.push(new NumberKeyframeTrack(`.opacity`, times, opacities))
             } else if (key === 'PivotPoint') {
-                const pivotElements = value.split(' ').map((n) => parseFloat(n))
+                const pivotElements = value.split(' ').map((n) => Number(n))
                 if (pivotElements.length === 3) {
                     currentObject.pivot.set(-pivotElements[0] /* flip x-axis */, pivotElements[1], pivotElements[2])
                 } else {

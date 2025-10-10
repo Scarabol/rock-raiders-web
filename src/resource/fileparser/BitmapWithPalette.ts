@@ -2,12 +2,16 @@
  * Source: https://github.com/wokwi/bmp-ts
  */
 
-enum HeaderTypes {
-    BITMAP_INFO_HEADER = 40,
-    BITMAP_V2_INFO_HEADER = 52,
-    BITMAP_V3_INFO_HEADER = 56,
-    BITMAP_V4_HEADER = 108,
-    BITMAP_V5_HEADER = 124
+const HEADER_TYPE = {
+    BitmapInfoHeader: 40,
+    BitmapV2InfoHeader: 52,
+    BitmapV3InfoHeader: 56,
+    BitmapV4Header: 108,
+    BitmapV5Header: 124
+} as const
+type HeaderType = typeof HEADER_TYPE[keyof typeof HEADER_TYPE]
+const isHeaderType = (val: unknown): val is HeaderType => {
+    return Object.values(HEADER_TYPE).includes(val as HeaderType)
 }
 
 // We have these:
@@ -80,12 +84,16 @@ function maskColor(
     }
 }
 
-enum Compression {
-    NONE = 0,
-    BI_RLE8 = 1,
-    BI_RLE4 = 2,
-    BI_BIT_FIELDS = 3,
-    BI_ALPHA_BIT_FIELDS = 6
+const Compression = {
+    NONE: 0,
+    BI_RLE8: 1,
+    BI_RLE4: 2,
+    BI_BIT_FIELDS: 3,
+    BI_ALPHA_BIT_FIELDS: 6
+} as const
+type Compression = typeof Compression[keyof typeof Compression]
+const isCompression = (val: unknown): val is Compression => {
+    return Object.values(Compression).includes(val as Compression)
 }
 
 type BitsPerPixel = 1 | 4 | 8 | 16 | 24 | 32;
@@ -134,7 +142,7 @@ class BmpDecoder implements IBitmapImage {
     public reserved1!: number
     public reserved2!: number
     public offset!: number
-    public headerSize!: number
+    public headerSize!: HeaderType
     public width!: number
     public height!: number
     public planes!: number
@@ -201,8 +209,9 @@ class BmpDecoder implements IBitmapImage {
         this.offset = this.readUInt32LE()
 
         // End of BITMAP_FILE_HEADER
-        this.headerSize = this.readUInt32LE()
-        if (!(this.headerSize in HeaderTypes)) throw new Error(`Unsupported BMP header size ${this.headerSize}`)
+        const headerSize = this.readUInt32LE()
+        if (!isHeaderType(headerSize)) throw new Error(`Unsupported BMP header size ${headerSize}`)
+        this.headerSize = headerSize
 
         this.width = this.readUInt32LE()
         this.height = this.readUInt32LE()
@@ -212,8 +221,10 @@ class BmpDecoder implements IBitmapImage {
         this.bitPP = this.bufferView.getUint16(this.pos, true) as BitsPerPixel
         this.pos += 2
 
-        this.compression = this.readUInt32LE()
-        if (!(this.compression in Compression)) throw new Error(`Unsupported BMP header size ${this.headerSize}`)
+        const compression = this.readUInt32LE()
+        if (!isCompression(compression)) throw new Error(`Unsupported BMP compression ${compression}`)
+        this.compression = compression
+
         this.rawSize = this.readUInt32LE()
         this.hr = this.readUInt32LE()
         this.vr = this.readUInt32LE()
@@ -237,7 +248,7 @@ class BmpDecoder implements IBitmapImage {
         // End of BITMAP_INFO_HEADER
 
         if (
-            this.headerSize > HeaderTypes.BITMAP_INFO_HEADER ||
+            this.headerSize > HEADER_TYPE.BitmapInfoHeader ||
             this.compression === Compression.BI_BIT_FIELDS ||
             this.compression === Compression.BI_ALPHA_BIT_FIELDS
         ) {
@@ -249,7 +260,7 @@ class BmpDecoder implements IBitmapImage {
         // End of BITMAP_V2_INFO_HEADER
 
         if (
-            this.headerSize > HeaderTypes.BITMAP_V2_INFO_HEADER ||
+            this.headerSize > HEADER_TYPE.BitmapV2InfoHeader ||
             this.compression === Compression.BI_ALPHA_BIT_FIELDS
         ) {
             this.maskAlpha = this.readUInt32LE()
@@ -257,15 +268,15 @@ class BmpDecoder implements IBitmapImage {
 
         // End of BITMAP_V3_INFO_HEADER
 
-        if (this.headerSize > HeaderTypes.BITMAP_V3_INFO_HEADER) {
+        if (this.headerSize > HEADER_TYPE.BitmapV3InfoHeader) {
             this.pos +=
-                HeaderTypes.BITMAP_V4_HEADER - HeaderTypes.BITMAP_V3_INFO_HEADER
+                HEADER_TYPE.BitmapV4Header - HEADER_TYPE.BitmapV3InfoHeader
         }
 
         // End of BITMAP_V4_HEADER
 
-        if (this.headerSize > HeaderTypes.BITMAP_V4_HEADER) {
-            this.pos += HeaderTypes.BITMAP_V5_HEADER - HeaderTypes.BITMAP_V4_HEADER
+        if (this.headerSize > HEADER_TYPE.BitmapV4Header) {
+            this.pos += HEADER_TYPE.BitmapV5Header - HEADER_TYPE.BitmapV4Header
         }
 
         // End of BITMAP_V5_HEADER

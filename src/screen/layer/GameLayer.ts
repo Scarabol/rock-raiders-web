@@ -6,7 +6,7 @@ import { DeselectAll, SelectionChanged, SelectionFrameChangeEvent } from '../../
 import { JobCreateEvent, MaterialAmountChanged, MonsterEmergeEvent, ShootLaserEvent } from '../../event/WorldEvents'
 import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
-import { DEV_MODE, FPV_ENTITY_TURN_SPEED } from '../../params'
+import { DEV_MODE, FPV_ENTITY_TURN_SPEED, POINTER_THRESHOLD_DOWN_UP_CLICK } from '../../params'
 import { ScreenLayer } from './ScreenLayer'
 import { Cursor } from '../../cfg/PointersCfg'
 import { EntityType } from '../../game/model/EntityType'
@@ -46,13 +46,13 @@ export class GameLayer extends ScreenLayer {
             CursorManager.changeCursor(this.determineCursor(cursorTarget))
         })
         this.addEventListener('pointermove', (event): boolean => {
-            const gameEvent = new GamePointerEvent(POINTER_EVENT.MOVE, event)
+            const gameEvent = new GamePointerEvent(POINTER_EVENT.move, event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             return this.handlePointerMoveEvent(gameEvent)
         })
         this.addEventListener('pointerdown', (event): boolean => {
-            if (event.button !== MOUSE_BUTTON.MAIN) return false
-            const gameEvent = new GamePointerEvent(POINTER_EVENT.DOWN, event)
+            if (event.button !== MOUSE_BUTTON.main) return false
+            const gameEvent = new GamePointerEvent(POINTER_EVENT.down, event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             if (!this.worldMgr.sceneMgr.buildMarker?.buildingType && !this.worldMgr.entityMgr.selection.doubleSelect && GameState.isBirdView) {
                 this.pointerDown = {x: gameEvent.canvasX, y: gameEvent.canvasY}
@@ -60,8 +60,8 @@ export class GameLayer extends ScreenLayer {
             return false
         })
         this.addEventListener('pointerup', (event): boolean => {
-            if (event.button !== MOUSE_BUTTON.MAIN) return false
-            const gameEvent = new GamePointerEvent(POINTER_EVENT.DOWN, event)
+            if (event.button !== MOUSE_BUTTON.main) return false
+            const gameEvent = new GamePointerEvent(POINTER_EVENT.down, event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             this.handlePointerUpEvent(gameEvent)
             return false
@@ -71,11 +71,11 @@ export class GameLayer extends ScreenLayer {
             this.addEventListener(eventType, (): boolean => false)
         })
         this.addEventListener('keydown', (event): boolean => {
-            const gameEvent = new GameKeyboardEvent(KEY_EVENT.DOWN, event)
+            const gameEvent = new GameKeyboardEvent(KEY_EVENT.down, event)
             return this.handleKeyDownEvent(gameEvent)
         })
         this.addEventListener('keyup', (event): boolean => {
-            const gameEvent = new GameKeyboardEvent(KEY_EVENT.UP, event)
+            const gameEvent = new GameKeyboardEvent(KEY_EVENT.up, event)
             return this.handleKeyUpEvent(gameEvent)
         })
         this.addEventListener('wheel', (): boolean => true) // signal to screen master for camera controls listening on canvas for events
@@ -157,7 +157,7 @@ export class GameLayer extends ScreenLayer {
         }
         if (!this.pointerDown) return
         const downUpDistance = Math.abs(event.canvasX - this.pointerDown.x) + Math.abs(event.canvasY - this.pointerDown.y)
-        if (downUpDistance < 20) {
+        if (downUpDistance < POINTER_THRESHOLD_DOWN_UP_CLICK) {
             this.cursorRelativePos.x = (event.canvasX / this.canvas.width) * 2 - 1
             this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
             if (this.worldMgr.sceneMgr.hasBuildModeSelection()) {
@@ -321,7 +321,7 @@ export class GameLayer extends ScreenLayer {
                     return true
                 } else if (event.key === 'm') {
                     const surface = this.worldMgr.entityMgr.selection.surface
-                    if (surface.wallType === WALL_TYPE.WALL) {
+                    if (surface.wallType === WALL_TYPE.wall) {
                         EventBroker.publish(new MonsterEmergeEvent(surface))
                     }
                 }
@@ -392,13 +392,13 @@ export class GameLayer extends ScreenLayer {
     }
 
     onGlobalMouseMoveEvent(e: PointerEvent) {
-        const event = new GamePointerEvent(POINTER_EVENT.MOVE, e)
+        const event = new GamePointerEvent(POINTER_EVENT.move, e)
         ;[event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
         this.onGlobalMouseEvent(event)
     }
 
     onGlobalMouseLeaveEvent(e: PointerEvent) {
-        const event = new GamePointerEvent(POINTER_EVENT.MOVE, e)
+        const event = new GamePointerEvent(POINTER_EVENT.move, e)
         ;[event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
         this.onGlobalMouseEvent(event)
     }

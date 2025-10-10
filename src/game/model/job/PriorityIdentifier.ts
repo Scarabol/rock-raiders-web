@@ -1,15 +1,16 @@
-export enum PriorityIdentifier { // This needs to be an actual enum, because it is serialized between workers
-    NONE = 0, // useful for truthiness checks
-    TRAIN, // not shown in original game
-    GET_IN,
-    CRYSTAL,
-    ORE,
-    REPAIR,
-    CLEARING,
-    DESTRUCTION,
-    CONSTRUCTION,
-    REINFORCE,
-    RECHARGE,
-    GET_TOOL, // not shown in original game
-    BUILD_PATH, // not shown in original game
-}
+export const PRIORITY_IDENTIFIER = {
+    none: 0, // useful for truthiness checks
+    train: 1, // not shown in original game
+    getIn: 2,
+    crystal: 3,
+    ore: 4,
+    repair: 5,
+    clearing: 6,
+    destruction: 7,
+    construction: 8,
+    reinforce: 9,
+    recharge: 10,
+    getTool: 11, // not shown in original game
+    buildPath: 12, // not shown in original game
+} as const
+export type PriorityIdentifier = typeof PRIORITY_IDENTIFIER[keyof typeof PRIORITY_IDENTIFIER]

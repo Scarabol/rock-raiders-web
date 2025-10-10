@@ -1,17 +1,18 @@
-import { LevelRewardConfig } from '../../cfg/LevelsCfg'
+import { LevelEntryCfg, LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { ADDITIONAL_RAIDER_PER_SUPPORT } from '../../params'
 import { GameState } from './GameState'
 import { GameConfig } from '../../cfg/GameConfig'
 import { PRNG } from '../factory/PRNG'
 
-export enum GameResultState {
+export const GAME_RESULT_STATE = {
     // noinspection JSUnusedGlobalSymbols
-    UNDECIDED = 0, // useful for truthiness checks
-    QUIT,
-    COMPLETE,
-    FAILED,
-    CRYSTAL_FAILURE,
-}
+    undecided: 0, // useful for truthiness checks
+    quit: 1,
+    complete: 2,
+    failed: 3,
+    crystalFailure: 4,
+} as const
+export type GameResultState = typeof GAME_RESULT_STATE[keyof typeof GAME_RESULT_STATE]
 
 export class GameResult {
     defencePercent: number = 100 // TODO defence report is either 0% or 100%
@@ -58,14 +59,14 @@ export class GameResult {
             this.scoreOxygen = GameState.airLevel * importance.oxygen
             this.scoreFigures = this.numRaiders / ADDITIONAL_RAIDER_PER_SUPPORT * importance.figures
             this.score = Math.max(0, Math.min(100, Math.round(this.scoreCrystals + this.scoreTimer + this.scoreCaverns + this.scoreConstructions + this.scoreOxygen + this.scoreFigures)))
-        } else if (this.state === GameResultState.COMPLETE) {
+        } else if (this.state === GAME_RESULT_STATE.complete) {
             this.score = 100 // Tutorial levels get score 100 by default
         }
     }
 
     static random(): GameResult {
-        const randomLevelConf = PRNG.unsafe.sample(GameConfig.instance.levels.filter((c) => c.levelName.toLowerCase().startsWith('level')))
+        const randomLevelConf = PRNG.unsafe.sample(GameConfig.instance.levels.filter((l) => LevelEntryCfg.isLevel(l.levelName)))
         if (!randomLevelConf) throw new Error('Could not find random level configuration')
-        return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GameResultState.COMPLETE, PRNG.unsafe.randInt(6), PRNG.unsafe.randInt(10), 10, 49062000, undefined)
+        return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GAME_RESULT_STATE.complete, PRNG.unsafe.randInt(6), PRNG.unsafe.randInt(10), 10, 49062000, undefined)
     }
 }

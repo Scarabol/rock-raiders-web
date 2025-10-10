@@ -15,6 +15,7 @@ import { EventBroker } from '../event/EventBroker'
 import { LevelLoader } from '../game/LevelLoader'
 import { SoundManager } from '../audio/SoundManager'
 import { PRNG } from '../game/factory/PRNG'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
 
 export class MainMenuScreen {
     readonly menuLayers: ScaledLayer[] = []
@@ -50,7 +51,7 @@ export class MainMenuScreen {
         this.menuLayers.push(this.creditsLayer)
         this.rockWipeLayer = screenMaster.addLayer(new RockWipeLayer(), 200 + this.menuLayers.length * 10)
         EventBroker.subscribe(EventKey.ADVANCE_AFTER_REWARDS, () => {
-            if (GameConfig.instance.getAllLevels().every((l) => SaveGameManager.getLevelCompleted(l.levelName))) {
+            if (GameConfig.instance.levels.filter((l) => LevelEntryCfg.isLevel(l.levelName)).every((l) => SaveGameManager.getLevelCompleted(l.levelName))) {
                 // TODO Show EndGameAVI1 from config, requires Indeo5 video decoder
                 this.showCredits()
             } else {
@@ -119,7 +120,7 @@ export class MainMenuScreen {
     }
 
     selectLevelRandom() {
-        const allLevels = GameConfig.instance.getAllLevels()
+        const allLevels = GameConfig.instance.levels.filter((l) => LevelEntryCfg.isLevel(l.levelName))
         const unlockedLevels = allLevels.filter((levelConf) => !levelConf.isLocked())
         const incompleteLevels = unlockedLevels.filter((levelConf) => !SaveGameManager.getLevelCompleted(levelConf.levelName))
         const levelName = PRNG.unsafe.sample(incompleteLevels)?.levelName || PRNG.unsafe.sample(unlockedLevels)?.levelName || PRNG.unsafe.sample(allLevels)?.levelName

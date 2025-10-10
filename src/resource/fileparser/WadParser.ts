@@ -81,7 +81,7 @@ export class WadParser {
                     if (!currentObject) {
                         console.error(`Unexpected "${key}" specification outside of object`)
                     } else {
-                        currentObject[key] = parseFloat(val)
+                        currentObject[key] = Number(val)
                     }
                 } else if (key === 'type') {
                     if (!currentObject) {

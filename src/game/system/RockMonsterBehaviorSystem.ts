@@ -1,5 +1,5 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
-import { RockMonsterBehaviorComponent, RockMonsterBehaviorState } from '../component/RockMonsterBehaviorComponent'
+import { ROCK_MONSTER_BEHAVIOR_STATE, RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { WorldManager } from '../WorldManager'
 import { EntityType } from '../model/EntityType'
 import { PositionComponent } from '../component/PositionComponent'
@@ -7,7 +7,7 @@ import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityCo
 import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { PathTarget } from '../model/PathTarget'
-import { AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY, RAIDER_ACTIVITY, ROCK_MONSTER_ACTIVITY } from '../model/anim/AnimationActivity'
 import { SurfaceType } from '../terrain/SurfaceType'
 import { WALL_TYPE } from '../terrain/WallType'
 import { ResourceManager } from '../../resource/ResourceManager'
@@ -20,7 +20,7 @@ import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
 import { MaterialEntity } from '../model/material/MaterialEntity'
 import { TILESIZE } from '../../params'
 import { DynamiteExplosionEvent, MonsterLaserHitEvent, WorldLocationEvent } from '../../event/WorldEvents'
-import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
+import { RAIDER_SCARE_RANGE, RaiderScareComponent } from '../component/RaiderScareComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Raider } from '../model/raider/Raider'
 import { EntityFrozenComponent } from '../component/EntityFrozenComponent'
@@ -33,7 +33,7 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { PRNG } from '../factory/PRNG'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
-import { MapMarkerChange, MapMarkerType } from '../component/MapMarkerComponent'
+import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE } from '../component/MapMarkerComponent'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -50,8 +50,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 const components = this.ecs.getComponents(m)
                 const positionComponent = components.get(PositionComponent)
                 if (positionComponent.getPosition2D().distanceToSquared(event.position) < Math.pow(GameConfig.instance.main.DynamiteDamageRadius, 2)) {
-                    components.get(AnimatedSceneEntityComponent).sceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
-                        this.ecs.addComponent(m, new RaiderScareComponent(RaiderScareRange.ROCKY))
+                    components.get(AnimatedSceneEntityComponent).sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.wakeUp, () => {
+                        this.ecs.addComponent(m, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
                         this.ecs.addComponent(m, new RockMonsterBehaviorComponent())
                         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                     })
@@ -66,20 +66,20 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             if (behaviorComponent) {
                 behaviorComponent.boulder = undefined
                 behaviorComponent.changeToIdle()
-                behaviorComponent.state = RockMonsterBehaviorState.HIT_BY_LASER
+                behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.hitByLaser
             }
             const healthComponent = components.get(HealthComponent)
             // TODO How does laser beam shot damage work in original?
             const laserDamage = (4 + PRNG.damage.randInt(2)) * event.weaponCfg.defaultDamage
             healthComponent.changeHealth(-laserDamage)
-            sceneEntity.setAnimation(RockMonsterActivity.HitHard, () => {
+            sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.hitHard, () => {
                 if (!behaviorComponent) {
-                    this.ecs.addComponent(event.entity, new RaiderScareComponent(RaiderScareRange.ROCKY))
+                    this.ecs.addComponent(event.entity, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
                     behaviorComponent = this.ecs.addComponent(event.entity, new RockMonsterBehaviorComponent())
                     const positionComponent = components.get(PositionComponent)
                     EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                 }
-                behaviorComponent.state = RockMonsterBehaviorState.IDLE
+                behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.idle
             })
         })
     }
@@ -88,7 +88,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         const pathFinder = this.worldMgr.sceneMgr.terrain?.pathFinder
         const crystals = this.worldMgr.entityMgr.materials.filter((m) => m.entityType === EntityType.CRYSTAL)
         const drivingVehiclePositions = this.worldMgr.entityMgr.vehicles
-            .filter((v) => v.sceneEntity.currentAnimation === AnimEntityActivity.Route)
+            .filter((v) => v.sceneEntity.currentAnimation === ANIM_ENTITY_ACTIVITY.route)
             .map((v) => this.ecs.getComponents(v.entity).get(PositionComponent).getPosition2D())
         const monsterTargetBuildings = GameState.monsterAttackPowerStation ? this.worldMgr.entityMgr.buildings.filter((b) => b.entityType === EntityType.POWER_STATION) : this.worldMgr.entityMgr.buildings
         for (const entity of entities) {
@@ -100,7 +100,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 if (components.has(EntityFrozenComponent) || components.has(EntityPushedComponent)) {
                     sceneEntity.removeAllCarried()
                     behaviorComponent.boulder = undefined
-                    sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                     behaviorComponent.changeToIdle()
                     continue
                 }
@@ -109,20 +109,20 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 const targetBuilding = behaviorComponent.targetBuilding
                 const targetWall = behaviorComponent.targetWall
                 switch (behaviorComponent.state) {
-                    case RockMonsterBehaviorState.IDLE:
+                    case ROCK_MONSTER_BEHAVIOR_STATE.idle:
                         this.doIdle(behaviorComponent, pathFinder, rockyPos, stats, entity, crystals)
                         break
-                    case RockMonsterBehaviorState.GOTO_CRYSTAL:
+                    case ROCK_MONSTER_BEHAVIOR_STATE.gotoCrystal:
                         if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH) {
                             const prevTargetComponent = components.get(WorldTargetComponent)
                             this.ecs.removeComponent(entity, WorldTargetComponent)
                             this.ecs.removeComponent(entity, HeadingComponent)
-                            sceneEntity.setAnimation(RockMonsterActivity.Stamp, () => {
+                            sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.stamp, () => {
                                 if (prevTargetComponent) {
                                     this.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
                                     this.ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
                                 }
-                                sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                             }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.smashPath, positionComponent.surface.getCenterWorld(), 0, false)
@@ -143,11 +143,11 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     const crystalPosition = targetCrystal.getPosition2D()
                                     if (rockyPos.distanceToSquared(crystalPosition) <= ROCKY_GRAB_DISTANCE_SQ) {
                                         sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetCrystal.getPosition2D()))
-                                        behaviorComponent.state = RockMonsterBehaviorState.EAT_CRYSTAL
+                                        behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.eatCrystal
                                         sceneEntity.pickupEntity(targetCrystal.sceneEntity)
                                         targetCrystal.targetSite?.removeItem(targetCrystal)
-                                        sceneEntity.setAnimation(RockMonsterActivity.Eat, () => {
-                                            sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                        sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.eat, () => {
+                                            sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                                             behaviorComponent.numCrystalsEaten++
                                             sceneEntity.removeAllCarried()
                                             targetCrystal.disposeFromWorld()
@@ -168,20 +168,20 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             }
                         }
                         break
-                    case RockMonsterBehaviorState.BOULDER_ATTACK:
+                    case ROCK_MONSTER_BEHAVIOR_STATE.boulderAttack:
                         if (behaviorComponent.boulder) {
                             const drivingVehicleCloseBy = drivingVehiclePositions.find((pos) => pos.distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (drivingVehicleCloseBy) {
                                 this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.boulderExplode, behaviorComponent.boulder.getWorldPosition(new Vector3()), behaviorComponent.boulder.rotation.y, false)
                                 sceneEntity.removeAllCarried()
                                 behaviorComponent.boulder = undefined
-                                sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                             } else if (!targetBuilding) {
                                 const closestBuilding = pathFinder.findClosestBuilding(rockyPos, monsterTargetBuildings, stats, 1)
                                 if (closestBuilding) {
                                     behaviorComponent.targetBuilding = closestBuilding.obj
                                 } else {
-                                    behaviorComponent.state = RockMonsterBehaviorState.GO_HOME
+                                    behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.goHome
                                 }
                             } else if (this.ecs.getComponents(targetBuilding.entity).has(BeamUpComponent) || !monsterTargetBuildings.includes(targetBuilding)) {
                                 behaviorComponent.changeToIdle()
@@ -192,8 +192,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     this.ecs.removeComponent(entity, HeadingComponent)
                                     const targetLocation = targetBuildingSurface.getCenterWorld2D()
                                     sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetLocation))
-                                    behaviorComponent.state = RockMonsterBehaviorState.THROW
-                                    sceneEntity.setAnimation(RockMonsterActivity.Throw, () => {
+                                    behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.throw
+                                    sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.throw, () => {
                                         sceneEntity.removeAllCarried()
                                         if (behaviorComponent.boulder) {
                                             behaviorComponent.boulder.lookAt(targetBuildingSurface.getCenterWorld())
@@ -203,7 +203,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                             this.worldMgr.entityMgr.addEntity(bulletEntity, EntityType.BOULDER)
                                         }
                                         behaviorComponent.boulder = undefined
-                                        sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                        sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                                         behaviorComponent.changeToIdle()
                                     })
                                 } else if (!components.has(WorldTargetComponent)) {
@@ -222,10 +222,10 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     const chanceToRestPerSecond = stats.restPercent / 20
                                     if (PRNG.movement.random() < chanceToRestPerSecond * elapsedMs / 1000) {
                                         const prevState = behaviorComponent.state
-                                        behaviorComponent.state = RockMonsterBehaviorState.RESTING
+                                        behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.resting
                                         this.ecs.removeComponent(entity, WorldTargetComponent)
                                         this.ecs.removeComponent(entity, HeadingComponent)
-                                        sceneEntity.setAnimation(RockMonsterActivity.Rest, () => {
+                                        sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.rest, () => {
                                             behaviorComponent.state = prevState
                                         })
                                     }
@@ -233,20 +233,20 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             }
                         } else {
                             behaviorComponent.targetWall = this.worldMgr.sceneMgr.terrain.findClosestWall(rockyPos)
-                            behaviorComponent.state = RockMonsterBehaviorState.GOTO_WALL
+                            behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.gotoWall
                         }
                         break
-                    case RockMonsterBehaviorState.MELEE_ATTACK:
+                    case ROCK_MONSTER_BEHAVIOR_STATE.meleeAttack:
                         if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH) {
                             const prevTargetComponent = components.get(WorldTargetComponent)
                             this.ecs.removeComponent(entity, WorldTargetComponent)
                             this.ecs.removeComponent(entity, HeadingComponent)
-                            sceneEntity.setAnimation(RockMonsterActivity.Stamp, () => {
+                            sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.stamp, () => {
                                 if (prevTargetComponent) {
                                     this.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
                                     this.ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
                                 }
-                                sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                             }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.smashPath, positionComponent.surface.getCenterWorld(), 0, false)
@@ -265,7 +265,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     if (closestBuilding) {
                                         behaviorComponent.targetBuilding = closestBuilding.obj
                                     } else {
-                                        behaviorComponent.state = RockMonsterBehaviorState.GO_HOME
+                                        behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.goHome
                                     }
                                 } else if (this.ecs.getComponents(targetBuilding.entity).has(BeamUpComponent) || !monsterTargetBuildings.includes(targetBuilding)) {
                                     behaviorComponent.changeToIdle()
@@ -275,9 +275,9 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         this.ecs.removeComponent(entity, WorldTargetComponent)
                                         this.ecs.removeComponent(entity, HeadingComponent)
                                         sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetBuildingSurface.getCenterWorld2D()))
-                                        behaviorComponent.state = RockMonsterBehaviorState.PUNCH
-                                        sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
-                                            sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                        behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.punch
+                                        sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.punch, () => {
+                                            sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                                             behaviorComponent.changeToIdle()
                                         }, 0, () => {
                                             const buildingComponents = this.ecs.getComponents(targetBuilding.entity)
@@ -301,17 +301,17 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             }
                         }
                         break
-                    case RockMonsterBehaviorState.GOTO_WALL:
+                    case ROCK_MONSTER_BEHAVIOR_STATE.gotoWall:
                         if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH) {
                             const prevTargetComponent = components.get(WorldTargetComponent)
                             this.ecs.removeComponent(entity, WorldTargetComponent)
                             this.ecs.removeComponent(entity, HeadingComponent)
-                            sceneEntity.setAnimation(RockMonsterActivity.Stamp, () => {
+                            sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.stamp, () => {
                                 if (prevTargetComponent) {
                                     this.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
                                     this.ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
                                 }
-                                sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                             }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.smashPath, positionComponent.surface.getCenterWorld(), 0, false)
@@ -325,14 +325,14 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     .find((r) => !r.thrown && r.getPosition2D().distanceToSquared(rockyPos) < ROCKY_GRAB_DISTANCE_SQ)
                                 if (raiderInGrabRange) {
                                     this.throwRaider(behaviorComponent, entity, sceneEntity, raiderInGrabRange, positionComponent)
-                                } else if (targetWall?.wallType !== WALL_TYPE.WALL) {
+                                } else if (targetWall?.wallType !== WALL_TYPE.wall) {
                                     behaviorComponent.changeToIdle()
                                 } else if (!components.has(WorldTargetComponent)) {
                                     if (targetWall.getDigPositions().some((p) => rockyPos.distanceToSquared(p) <= ROCKY_GATHER_DISTANCE_SQ)) {
                                         sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetWall.getCenterWorld2D()))
-                                        behaviorComponent.state = RockMonsterBehaviorState.GATHER
-                                        sceneEntity.setAnimation(RockMonsterActivity.Gather, () => {
-                                            sceneEntity.setAnimation(AnimEntityActivity.StandCarry)
+                                        behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.gather
+                                        sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.gather, () => {
+                                            sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.standCarry)
                                             behaviorComponent.boulder = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.boulder)
                                             if (!behaviorComponent.boulder) throw new Error(`Cannot spawn boulder missing mesh "${GameConfig.instance.miscObjects.boulder}"`)
                                             const boulderTexture = ResourceManager.getTexture('Creatures/RMonster/greyrock.bmp') // XXX Read boulder texture from config?
@@ -355,17 +355,17 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             }
                         }
                         break
-                    case RockMonsterBehaviorState.GO_HOME:
-                        if (!targetWall || targetWall.wallType !== WALL_TYPE.WALL) {
+                    case ROCK_MONSTER_BEHAVIOR_STATE.goHome:
+                        if (!targetWall || targetWall.wallType !== WALL_TYPE.wall) {
                             behaviorComponent.targetWall = this.worldMgr.sceneMgr.terrain.findClosestWall(rockyPos)
                         } else if (!components.has(WorldTargetComponent)) {
                             if (targetWall.getDigPositions().some((p) => rockyPos.distanceToSquared(p) <= ROCKY_GATHER_DISTANCE_SQ)) {
                                 sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetWall.getCenterWorld2D()))
                                 this.worldMgr.entityMgr.removeEntity(entity)
-                                sceneEntity.setAnimation(RockMonsterActivity.Enter, () => {
+                                sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.enter, () => {
                                     GameState.totalCrystals -= behaviorComponent.numCrystalsEaten
                                     EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
-                                    EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
+                                    EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.monster, entity, MAP_MARKER_CHANGE.remove))
                                     this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntity)
                                     this.ecs.removeEntity(entity)
                                 })
@@ -391,14 +391,14 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
 
     private doIdle(behaviorComponent: RockMonsterBehaviorComponent, pathFinder: PathFinder, rockyPos: Vector2, stats: MonsterEntityStats, entity: number, crystals: MaterialEntity[]) {
         if (behaviorComponent.boulder) {
-            behaviorComponent.state = RockMonsterBehaviorState.BOULDER_ATTACK
+            behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.boulderAttack
         } else if (behaviorComponent.numCrystalsEaten < stats.capacity && crystals.length > 0) {
             const closestCrystal = pathFinder.findClosestObj(rockyPos, crystals, stats, 1)
             if (closestCrystal) {
-                behaviorComponent.state = RockMonsterBehaviorState.GOTO_CRYSTAL
+                behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.gotoCrystal
                 behaviorComponent.targetCrystal = closestCrystal.obj
             } else {
-                behaviorComponent.state = PRNG.movement.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
+                behaviorComponent.state = PRNG.movement.random() < 0.2 ? ROCK_MONSTER_BEHAVIOR_STATE.boulderAttack : ROCK_MONSTER_BEHAVIOR_STATE.meleeAttack
             }
         } else if (GameState.monsterCongregation && GameState.monsterCongregation.distanceToSquared(rockyPos) > TILESIZE) {
             const path = pathFinder.findShortestPath(rockyPos, [PathTarget.fromLocation(GameState.monsterCongregation)], stats, 1)
@@ -409,7 +409,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 return
             }
         } else {
-            behaviorComponent.state = PRNG.movement.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
+            behaviorComponent.state = PRNG.movement.random() < 0.2 ? ROCK_MONSTER_BEHAVIOR_STATE.boulderAttack : ROCK_MONSTER_BEHAVIOR_STATE.meleeAttack
         }
     }
 
@@ -418,9 +418,9 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         this.ecs.removeComponent(entity, WorldTargetComponent)
         this.ecs.removeComponent(entity, HeadingComponent)
         sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(vehicleInMeleeRange.position.getPosition2D()))
-        behaviorComponent.state = RockMonsterBehaviorState.PUNCH
-        sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
-            sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.punch
+        sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.punch, () => {
+            sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
             behaviorComponent.state = prevState
         }, 0, () => {
             if (vehicleInMeleeRange.position.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
@@ -436,9 +436,9 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         const prevState = behaviorComponent.state
         this.ecs.removeComponent(entity, WorldTargetComponent)
         this.ecs.removeComponent(entity, HeadingComponent)
-        behaviorComponent.state = RockMonsterBehaviorState.THROW_MAN
+        behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.throwMan
         const prevScale = raider.sceneEntity.getWorldScale(new Vector3())
-        sceneEntity.setAnimation(RockMonsterActivity.ThrowMan, () => {
+        sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.throwMan, () => {
             raider.sceneEntity.getWorldPosition(raider.sceneEntity.position)
             raider.sceneEntity.rotation.copy(sceneEntity.rotation)
             const raiderPositionComponent = this.ecs.getComponents(raider.entity).get(PositionComponent)
@@ -448,7 +448,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             sceneEntity.depositParent?.remove(raider.sceneEntity)
             this.worldMgr.sceneMgr.addSceneEntity(raider.sceneEntity)
             raider.sceneEntity.scale.copy(prevScale)
-            sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
             behaviorComponent.state = prevState
             sceneEntity.position.add(new Vector3(0, 0, TILESIZE / 2).applyEuler(sceneEntity.rotation))
             positionComponent.position.copy(sceneEntity.position)
@@ -458,10 +458,10 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         raider.thrown = true
         raider.dropCarried(true)
         raider.stopJob()
-        raider.sceneEntity.setAnimation(RaiderActivity.Thrown, () => {
-            raider.sceneEntity.setAnimation(RaiderActivity.GetUp, () => {
+        raider.sceneEntity.setAnimation(RAIDER_ACTIVITY.thrown, () => {
+            raider.sceneEntity.setAnimation(RAIDER_ACTIVITY.getUp, () => {
                 raider.thrown = false
-                raider.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                raider.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
             })
         })
         raider.sceneEntity.position.copy(new Vector3(0, 0, 4)) // XXX Why is this offset needed?

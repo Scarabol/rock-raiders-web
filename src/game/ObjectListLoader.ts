@@ -12,10 +12,10 @@ import { MonsterSpawner } from './factory/MonsterSpawner'
 import { SceneSelectionComponent } from './component/SceneSelectionComponent'
 import { SelectionFrameComponent } from './component/SelectionFrameComponent'
 import { MaterialSpawner } from './factory/MaterialSpawner'
-import { AnimEntityActivity } from './model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY } from './model/anim/AnimationActivity'
 import { PositionComponent } from './component/PositionComponent'
 import { RaiderTrainings } from './model/raider/RaiderTraining'
-import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/MapMarkerComponent'
+import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE, MapMarkerComponent } from './component/MapMarkerComponent'
 import { HealthComponent } from './component/HealthComponent'
 import { OxygenComponent } from './component/OxygenComponent'
 import { RaiderInfoComponent } from './component/RaiderInfoComponent'
@@ -150,7 +150,7 @@ export class ObjectListLoader {
 
     private spawnRaider(worldPos: Vector2, headingRad: number) {
         const raider = new Raider(this.worldMgr)
-        raider.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        raider.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
         const healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
@@ -171,8 +171,8 @@ export class ObjectListLoader {
         this.worldMgr.sceneMgr.addSceneEntity(raider.sceneEntity)
         if (raider.sceneEntity.visible) {
             this.worldMgr.entityMgr.raiders.push(raider)
-            this.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, raider.entity, MapMarkerChange.UPDATE, floorPosition))
+            this.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MAP_MARKER_TYPE.default))
+            EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, raider.entity, MAP_MARKER_CHANGE.update, floorPosition))
             if (!this.trackEntity) this.trackEntity = raider.entity
         } else {
             this.worldMgr.entityMgr.raidersUndiscovered.push(raider)
@@ -182,7 +182,7 @@ export class ObjectListLoader {
 
     private spawnVehicle(entityType: VehicleEntityType, worldPos: Vector2, headingRad: number) {
         const vehicle = VehicleFactory.createVehicleFromType(entityType, this.worldMgr)
-        vehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        vehicle.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
         const healthComponent = this.worldMgr.ecs.addComponent(vehicle.entity, new HealthComponent(false, 24, 14, vehicle.sceneEntity, false, GameConfig.instance.getRockFallDamage(vehicle.entityType, vehicle.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
@@ -199,8 +199,8 @@ export class ObjectListLoader {
         this.worldMgr.sceneMgr.addSceneEntity(vehicle.sceneEntity)
         if (vehicle.sceneEntity.visible) {
             this.worldMgr.entityMgr.vehicles.push(vehicle)
-            this.worldMgr.ecs.addComponent(vehicle.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, vehicle.entity, MapMarkerChange.UPDATE, floorPosition))
+            this.worldMgr.ecs.addComponent(vehicle.entity, new MapMarkerComponent(MAP_MARKER_TYPE.default))
+            EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, vehicle.entity, MAP_MARKER_CHANGE.update, floorPosition))
         } else {
             this.worldMgr.entityMgr.vehiclesUndiscovered.push(vehicle)
         }

@@ -1,4 +1,4 @@
-import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
+import { AnimationActivity, RAIDER_ACTIVITY } from '../../anim/AnimationActivity'
 import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
@@ -45,7 +45,7 @@ export class UpgradeRaiderJob extends RaiderJob {
     }
 
     getWorkActivity(): AnimationActivity {
-        return RaiderActivity.Train
+        return RAIDER_ACTIVITY.train
     }
 
     getExpectedTimeLeft(): number {

@@ -2,7 +2,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { PickTool } from '../../event/GuiCommand'
 import { BuildingsChangedEvent, SelectionChanged } from '../../event/LocalEvents'
 import { EntityType } from '../../game/model/EntityType'
-import { RaiderTool } from '../../game/model/raider/RaiderTool'
+import { RAIDER_TOOL, RaiderTool } from '../../game/model/raider/RaiderTool'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 import { IconSubPanel } from './IconSubPanel'
@@ -15,14 +15,14 @@ export class GetToolPanel extends IconSubPanel {
 
     constructor(onBackPanel: Panel) {
         super(8, onBackPanel, false)
-        this.addGetToolItem('getDrill', RaiderTool.DRILL)
-        this.addGetToolItem('getSpade', RaiderTool.SHOVEL)
-        this.addGetToolItem('getHammer', RaiderTool.HAMMER)
-        this.addGetToolItem('getSpanner', RaiderTool.SPANNER)
-        this.addGetToolItem('getFreezerGun', RaiderTool.FREEZER_GUN)
-        this.addGetToolItem('getLaser', RaiderTool.LASER)
-        this.addGetToolItem('getPusherGun', RaiderTool.PUSHER_GUN)
-        this.addGetToolItem('getBirdScarer', RaiderTool.BIRD_SCARER)
+        this.addGetToolItem('getDrill', RAIDER_TOOL.drill)
+        this.addGetToolItem('getSpade', RAIDER_TOOL.shovel)
+        this.addGetToolItem('getHammer', RAIDER_TOOL.hammer)
+        this.addGetToolItem('getSpanner', RAIDER_TOOL.spanner)
+        this.addGetToolItem('getFreezerGun', RAIDER_TOOL.freezerGun)
+        this.addGetToolItem('getLaser', RAIDER_TOOL.laser)
+        this.addGetToolItem('getPusherGun', RAIDER_TOOL.pusherGun)
+        this.addGetToolItem('getBirdScarer', RAIDER_TOOL.birdScarer)
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
             this.hasToolstation = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION)
             this.updateAllButtonStates()

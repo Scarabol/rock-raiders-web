@@ -1,5 +1,5 @@
 import { IconSubPanel } from './IconSubPanel'
-import { VehicleUpgrade } from '../../game/model/vehicle/VehicleUpgrade'
+import { VEHICLE_UPGRADE, VehicleUpgrade } from '../../game/model/vehicle/VehicleUpgrade'
 import { Panel } from '../base/Panel'
 import { EventKey } from '../../event/EventKeyEnum'
 import { SelectionChanged } from '../../event/LocalEvents'
@@ -12,10 +12,10 @@ export class UpgradeVehiclePanel extends IconSubPanel {
 
     constructor(onBackPanel: Panel) {
         super(4, onBackPanel, false)
-        this.addUpgradeItem('upgradeCarry', VehicleUpgrade.CARRY)
-        this.addUpgradeItem('upgradeScan', VehicleUpgrade.SCAN)
-        this.addUpgradeItem('upgradeEngine', VehicleUpgrade.SPEED)
-        this.addUpgradeItem('upgradeDrill', VehicleUpgrade.DRILL)
+        this.addUpgradeItem('upgradeCarry', VEHICLE_UPGRADE.carry)
+        this.addUpgradeItem('upgradeScan', VEHICLE_UPGRADE.scan)
+        this.addUpgradeItem('upgradeEngine', VEHICLE_UPGRADE.speed)
+        this.addUpgradeItem('upgradeDrill', VEHICLE_UPGRADE.drill)
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             this.canInstallUpgrade = event.canInstallUpgrade
             this.updateAllButtonStates()

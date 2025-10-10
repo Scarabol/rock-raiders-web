@@ -55,6 +55,7 @@ export const USE_KEYBOARD_SHORTCUTS = false
 export const RAIDER_PATH_PRECISION = 3
 export const DEFAULT_SCREEN_RATIO_FIXED = 4 / 3
 export const FPV_ENTITY_TURN_SPEED = 0.05
+export const POINTER_THRESHOLD_DOWN_UP_CLICK = 20
 
 // native constants (do not change)
 

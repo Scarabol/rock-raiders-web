@@ -4,24 +4,25 @@ import { Surface } from '../terrain/Surface'
 import { BuildingEntity } from '../model/building/BuildingEntity'
 import { SceneMesh } from '../../scene/SceneMesh'
 
-export enum RockMonsterBehaviorState {
-    IDLE,
-    GOTO_CRYSTAL,
-    EAT_CRYSTAL,
-    BOULDER_ATTACK,
-    MELEE_ATTACK,
-    GO_HOME,
-    GOTO_WALL,
-    GATHER,
-    THROW,
-    PUNCH,
-    THROW_MAN,
-    RESTING,
-    HIT_BY_LASER,
-}
+export const ROCK_MONSTER_BEHAVIOR_STATE = {
+    idle: 0,
+    gotoCrystal: 1,
+    eatCrystal: 2,
+    boulderAttack: 3,
+    meleeAttack: 4,
+    goHome: 5,
+    gotoWall: 6,
+    gather: 7,
+    throw: 8,
+    punch: 9,
+    throwMan: 10,
+    resting: 11,
+    hitByLaser: 12,
+} as const
+type RockMonsterBehaviorState = typeof ROCK_MONSTER_BEHAVIOR_STATE[keyof typeof ROCK_MONSTER_BEHAVIOR_STATE]
 
 export class RockMonsterBehaviorComponent extends AbstractGameComponent {
-    state: RockMonsterBehaviorState = RockMonsterBehaviorState.IDLE
+    state: RockMonsterBehaviorState = ROCK_MONSTER_BEHAVIOR_STATE.idle
     numCrystalsEaten: number = 0
     targetCrystal?: MaterialEntity
     targetWall?: Surface
@@ -29,7 +30,7 @@ export class RockMonsterBehaviorComponent extends AbstractGameComponent {
     targetBuilding?: BuildingEntity
 
     changeToIdle() {
-        this.state = RockMonsterBehaviorState.IDLE
+        this.state = ROCK_MONSTER_BEHAVIOR_STATE.idle
         this.targetCrystal = undefined
         this.targetWall = undefined
         this.targetBuilding = undefined

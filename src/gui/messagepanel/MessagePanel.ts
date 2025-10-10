@@ -10,7 +10,7 @@ import { TextInfoMessageCfg, TextInfoMessageEntryCfg } from '../../cfg/TextInfoM
 import { AIR_LEVEL_LEVEL_LOW, AIR_LEVEL_WARNING_STEP } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AirLevelChanged, GameResultEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../../event/WorldEvents'
-import { GameResultState } from '../../game/model/GameResult'
+import { GAME_RESULT_STATE } from '../../game/model/GameResult'
 import { GameConfig } from '../../cfg/GameConfig'
 import { Button } from '../base/Button'
 import { EventBroker } from '../../event/EventBroker'
@@ -68,7 +68,7 @@ export class MessagePanel extends Panel {
             this.onAirLevelChanged(event.airLevel, textInfoMessageConfig)
         })
         this.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
-            if (event.result === GameResultState.COMPLETE) this.setMessage(textInfoMessageConfig.textGameCompleted)
+            if (event.result === GAME_RESULT_STATE.complete) this.setMessage(textInfoMessageConfig.textGameCompleted)
         })
         this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(textInfoMessageConfig.textManTrained))
         this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(textInfoMessageConfig.textUnitUpgraded))

@@ -1,6 +1,6 @@
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { WorldManager } from '../../WorldManager'
-import { RaiderActivity } from '../anim/AnimationActivity'
+import { RAIDER_ACTIVITY } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
 import { VehicleEntity } from './VehicleEntity'
 import { GameConfig } from '../../../cfg/GameConfig'
@@ -9,17 +9,17 @@ export class VehicleFactory {
     static createVehicleFromType(entityType: EntityType, worldMgr: WorldManager): VehicleEntity {
         switch (entityType) {
             case EntityType.HOVERBOARD:
-                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.hoverboard, ['Vehicles/Hoverboard'], RaiderActivity.Standhoverboard, RaiderActivity.Hoverboard)
+                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.hoverboard, ['Vehicles/Hoverboard'], RAIDER_ACTIVITY.standHoverboard, RAIDER_ACTIVITY.hoverboard)
             case EntityType.SMALL_DIGGER:
-                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.smallDigger, ['Vehicles/SmallDigger'], RaiderActivity.StandSMALLDIGGER, RaiderActivity.SMALLDIGGER)
+                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.smallDigger, ['Vehicles/SmallDigger'], RAIDER_ACTIVITY.standSmallDigger, RAIDER_ACTIVITY.smallDigger)
             case EntityType.SMALL_TRUCK:
-                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.smallTruck, ['Vehicles/SmallTruck'], RaiderActivity.StandSMALLTRUCK, RaiderActivity.SMALLTRUCK)
+                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.smallTruck, ['Vehicles/SmallTruck'], RAIDER_ACTIVITY.standSmallTruck, RAIDER_ACTIVITY.smallTruck)
             case EntityType.SMALL_CAT:
-                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.smallCat, ['Vehicles/SmallCat'], RaiderActivity.StandSMALLCAT, RaiderActivity.SMALLCAT)
+                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.smallCat, ['Vehicles/SmallCat'], RAIDER_ACTIVITY.standSmallCat, RAIDER_ACTIVITY.smallCat)
             case EntityType.SMALL_MLP:
-                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.smallMlp, ['Vehicles/SMLP'], RaiderActivity.StandSMALLMLP, RaiderActivity.SMALLMLP)
+                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.smallMlp, ['Vehicles/SMLP'], RAIDER_ACTIVITY.standSmallMLP, RAIDER_ACTIVITY.smallMlp)
             case EntityType.SMALL_HELI:
-                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.smallHeli, ['Vehicles/SmallHeli'], RaiderActivity.StandSMALLheli, RaiderActivity.SMALLheli)
+                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.smallHeli, ['Vehicles/SmallHeli'], RAIDER_ACTIVITY.standSmallHeli, RAIDER_ACTIVITY.smallHeli)
             case EntityType.BULLDOZER:
                 return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.bulldozer, ['Vehicles/Bulldozer'])
             case EntityType.WALKER_DIGGER:
@@ -29,7 +29,7 @@ export class VehicleFactory {
             case EntityType.LARGE_DIGGER:
                 return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.largeDigger, ['Vehicles/LargeDigger'])
             case EntityType.LARGE_CAT:
-                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.largeCat, ['Vehicles/LargeCat'], RaiderActivity.StandLARGECAT, RaiderActivity.LARGECAT)
+                return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.largeCat, ['Vehicles/LargeCat'], RAIDER_ACTIVITY.standLargeCat, RAIDER_ACTIVITY.largeCat)
             case EntityType.LARGE_HELI:
                 return new VehicleEntity(entityType, worldMgr, GameConfig.instance.stats.largeHeli, ['Vehicles/LargeHeli'])
             default:

@@ -1,4 +1,4 @@
-import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
+import { PRIORITY_IDENTIFIER, PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { GameConfig } from './GameConfig'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { VERBOSE } from '../params'
@@ -134,17 +134,19 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
         this.frontEndOpen = cfgValue.getValue('FrontEndOpen').toBoolean()
         cfgValue.getRecord('Priorities').forEachCfgEntryValue((value, name) => {
             const prio = new LevelPrioritiesEntryConfig(name, value.toBoolean())
-            if ([ // XXX Prio list should be open for mods, BUT original specifies AI_Priority_Train, but does not show it in-game
-                PriorityIdentifier.GET_IN,
-                PriorityIdentifier.CRYSTAL,
-                PriorityIdentifier.ORE,
-                PriorityIdentifier.REPAIR,
-                PriorityIdentifier.CLEARING,
-                PriorityIdentifier.DESTRUCTION,
-                PriorityIdentifier.CONSTRUCTION,
-                PriorityIdentifier.REINFORCE,
-                PriorityIdentifier.RECHARGE,
-            ].includes(prio.key)) this.priorities.push(prio)
+            // XXX Priority list should be open for mods, BUT original specifies AI_Priority_Train and does not show it in-game
+            const priorityWhitelist: PriorityIdentifier[] = [
+                PRIORITY_IDENTIFIER.getIn,
+                PRIORITY_IDENTIFIER.crystal,
+                PRIORITY_IDENTIFIER.ore,
+                PRIORITY_IDENTIFIER.repair,
+                PRIORITY_IDENTIFIER.clearing,
+                PRIORITY_IDENTIFIER.destruction,
+                PRIORITY_IDENTIFIER.construction,
+                PRIORITY_IDENTIFIER.reinforce,
+                PRIORITY_IDENTIFIER.recharge,
+            ]
+            if (priorityWhitelist.includes(prio.key)) this.priorities.push(prio)
         })
         const valReward = cfgValue.getRecordOptional('Reward')
         if (valReward) this.reward = new LevelRewardConfig().setFromRecord(valReward)
@@ -166,6 +168,14 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
             SaveGameManager.getLevelCompleted(levelEntryCfg.levelName) && levelEntryCfg.levelLinks.some((levelLink) => this.levelName.equalsIgnoreCase(levelLink))
         )
     }
+
+    public static isLevel(levelName: string | undefined): boolean {
+        return !!levelName?.toLowerCase().startsWith('level')
+    }
+
+    public static isTutorial(levelName: string | undefined): boolean {
+        return !!levelName?.toLowerCase().startsWith('tutorial')
+    }
 }
 
 export class LevelPrioritiesEntryConfig {
@@ -179,32 +189,32 @@ export class LevelPrioritiesEntryConfig {
 
     private static priorityIdentifierFromString(name: string) {
         if (name.equalsIgnoreCase('AI_Priority_Train')) {
-            return PriorityIdentifier.TRAIN
+            return PRIORITY_IDENTIFIER.train
         } else if (name.equalsIgnoreCase('AI_Priority_GetIn')) {
-            return PriorityIdentifier.GET_IN
+            return PRIORITY_IDENTIFIER.getIn
         } else if (name.equalsIgnoreCase('AI_Priority_Crystal')) {
-            return PriorityIdentifier.CRYSTAL
+            return PRIORITY_IDENTIFIER.crystal
         } else if (name.equalsIgnoreCase('AI_Priority_Ore')) {
-            return PriorityIdentifier.ORE
+            return PRIORITY_IDENTIFIER.ore
         } else if (name.equalsIgnoreCase('AI_Priority_Repair')) {
-            return PriorityIdentifier.REPAIR
+            return PRIORITY_IDENTIFIER.repair
         } else if (name.equalsIgnoreCase('AI_Priority_Clearing')) {
-            return PriorityIdentifier.CLEARING
+            return PRIORITY_IDENTIFIER.clearing
         } else if (name.equalsIgnoreCase('AI_Priority_Destruction')) {
-            return PriorityIdentifier.DESTRUCTION
+            return PRIORITY_IDENTIFIER.destruction
         } else if (name.equalsIgnoreCase('AI_Priority_Construction')) {
-            return PriorityIdentifier.CONSTRUCTION
+            return PRIORITY_IDENTIFIER.construction
         } else if (name.equalsIgnoreCase('AI_Priority_Reinforce')) {
-            return PriorityIdentifier.REINFORCE
+            return PRIORITY_IDENTIFIER.reinforce
         } else if (name.equalsIgnoreCase('AI_Priority_Recharge')) {
-            return PriorityIdentifier.RECHARGE
+            return PRIORITY_IDENTIFIER.recharge
         } else if (name.equalsIgnoreCase('AI_Priority_GetTool')) {
-            return PriorityIdentifier.GET_TOOL
+            return PRIORITY_IDENTIFIER.getTool
         } else if (name.equalsIgnoreCase('AI_Priority_BuildPath')) {
-            return PriorityIdentifier.BUILD_PATH
+            return PRIORITY_IDENTIFIER.buildPath
         } else {
             console.warn(`Unexpected priority identifier ${name}`)
-            return PriorityIdentifier.NONE
+            return PRIORITY_IDENTIFIER.none
         }
     }
 }

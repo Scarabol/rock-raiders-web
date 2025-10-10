@@ -1,5 +1,5 @@
 import { EventKey } from '../event/EventKeyEnum'
-import { CameraControl, CameraViewMode, ChangeBuildingPowerState, ChangeCameraEvent, PickTool, PlaySoundEvent, SelectBuildMode, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
+import { CAMERA_VIEW_MODE, CameraControl, ChangeBuildingPowerState, ChangeCameraEvent, PickTool, PlaySoundEvent, SelectBuildMode, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
 import { DeselectAll, FollowerSetLookAtEvent, SelectionChanged } from '../event/LocalEvents'
 import { JobCreateEvent, WorldLocationEvent } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
@@ -18,12 +18,12 @@ import { BeamUpComponent } from './component/BeamUpComponent'
 import { RepairBuildingJob } from './model/job/raider/RepairBuildingJob'
 import { MaterialSpawner } from './factory/MaterialSpawner'
 import { PositionComponent } from './component/PositionComponent'
-import { RaiderTool } from './model/raider/RaiderTool'
+import { RAIDER_TOOL } from './model/raider/RaiderTool'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { AnimatedSceneEntity } from '../scene/AnimatedSceneEntity'
 import { ResourceManager } from '../resource/ResourceManager'
-import { DynamiteActivity } from './model/anim/AnimationActivity'
+import { DYNAMITE_ACTIVITY } from './model/anim/AnimationActivity'
 import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityComponent'
 import { Vector3 } from 'three'
 import { PRNG } from './factory/PRNG'
@@ -220,8 +220,8 @@ export class GuiManager {
         })
         EventBroker.subscribe(EventKey.COMMAND_DROP_BIRD_SCARER, () => {
             entityMgr.selection.raiders.forEach((r) => {
-                if (!r.hasTool(RaiderTool.BIRD_SCARER)) return
-                r.removeTool(RaiderTool.BIRD_SCARER)
+                if (!r.hasTool(RAIDER_TOOL.birdScarer)) return
+                r.removeTool(RAIDER_TOOL.birdScarer)
                 if (r.selected) EventBroker.publish(new SelectionChanged(entityMgr))
                 const position = r.getPosition()
                 const sceneEntity = new AnimatedSceneEntity()
@@ -229,8 +229,8 @@ export class GuiManager {
                 sceneEntity.rotation.y = PRNG.animation.random() * 2 * Math.PI
                 sceneMgr.addSceneEntity(sceneEntity)
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.oohScary))
-                sceneEntity.setAnimation(DynamiteActivity.Normal, () => {
-                    sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
+                sceneEntity.setAnimation(DYNAMITE_ACTIVITY.normal, () => {
+                    sceneEntity.setAnimation(DYNAMITE_ACTIVITY.tickDown, () => {
                         const birdScarer = worldMgr.ecs.addEntity()
                         worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
                         entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
@@ -249,16 +249,16 @@ export class GuiManager {
                 console.warn('No entity seems selected')
                 return
             }
-            if (event.viewMode === CameraViewMode.BIRD) {
+            if (event.viewMode === CAMERA_VIEW_MODE.bird) {
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraBird)
-            } else if (event.viewMode === CameraViewMode.FPV) {
+            } else if (event.viewMode === CAMERA_VIEW_MODE.fpv) {
                 if (!entity.sceneEntity.camFPVJoint) {
                     console.warn('Entity does not have FPV joint')
                     return
                 }
                 entity.sceneEntity.camFPVJoint.add(worldMgr.sceneMgr.cameraFPV)
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraFPV)
-            } else if (event.viewMode === CameraViewMode.SHOULDER) {
+            } else if (event.viewMode === CAMERA_VIEW_MODE.shoulder) {
                 if (!entity.sceneEntity.camShoulderJoint) {
                     console.warn('Entity does not have shoulder joint')
                     return

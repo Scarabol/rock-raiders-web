@@ -1,9 +1,9 @@
-import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
+import { AnimationActivity, RAIDER_ACTIVITY } from '../../anim/AnimationActivity'
 import { Surface } from '../../../terrain/Surface'
 import { PathTarget } from '../../PathTarget'
-import { RaiderTool } from '../../raider/RaiderTool'
+import { RAIDER_TOOL } from '../../raider/RaiderTool'
 import { Job, JobFulfiller } from '../Job'
-import { PriorityIdentifier } from '../PriorityIdentifier'
+import { PRIORITY_IDENTIFIER } from '../PriorityIdentifier'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { GameEntity } from '../../../ECS'
 
@@ -13,8 +13,8 @@ export class DrillJob extends Job {
 
     constructor(readonly surface: Surface) {
         super()
-        this.requiredTool = RaiderTool.DRILL
-        this.priorityIdentifier = PriorityIdentifier.DESTRUCTION
+        this.requiredTool = RAIDER_TOOL.drill
+        this.priorityIdentifier = PRIORITY_IDENTIFIER.destruction
         this.workSoundRaider = 'SFX_Drill'
         this.workSoundVehicle = 'SND_BIGDIGDRILL'
     }
@@ -39,7 +39,7 @@ export class DrillJob extends Job {
     }
 
     getWorkActivity(): AnimationActivity {
-        return RaiderActivity.Drill
+        return RAIDER_ACTIVITY.drill
     }
 
     getExpectedTimeLeft(): number {

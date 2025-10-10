@@ -8,14 +8,16 @@ import { EventBroker } from '../event/EventBroker'
 import { EventKey } from '../event/EventKeyEnum'
 import { DynamiteExplosionEvent } from '../event/WorldEvents'
 import { SaveGameManager } from '../resource/SaveGameManager'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
 
-export enum CameraRotation {
-    NONE = 0,
-    LEFT = 1,
-    UP = 2,
-    RIGHT = 3,
-    DOWN = 4,
-}
+export const CAMERA_ROTATION = {
+    none: 0,
+    left: 1,
+    up: 2,
+    right: 3,
+    down: 4,
+} as const
+export type CameraRotation = typeof CAMERA_ROTATION[keyof typeof CAMERA_ROTATION]
 
 export class BirdViewControls extends MapControls {
     private readonly dummyPointerId: number
@@ -60,14 +62,14 @@ export class BirdViewControls extends MapControls {
             this.bumpTimeout = 0
         })
         EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event) => {
-            this.isTutorial = event.levelConf.levelName.toLowerCase().startsWith('tutorial')
+            this.isTutorial = LevelEntryCfg.isTutorial(event.levelConf.levelName)
             this.updateEnabled()
         })
     }
 
     private useWASDToPanAndArrowKeysToRotate() {
         this.keys = {LEFT: 'KeyA', UP: 'KeyW', RIGHT: 'KeyD', BOTTOM: 'KeyS'}
-        ;[{code: 'ArrowUp', rot: CameraRotation.UP}, {code: 'ArrowLeft', rot: CameraRotation.LEFT}, {code: 'ArrowDown', rot: CameraRotation.DOWN}, {code: 'ArrowRight', rot: CameraRotation.RIGHT}].forEach((pair) => {
+        ;[{code: 'ArrowUp', rot: CAMERA_ROTATION.up}, {code: 'ArrowLeft', rot: CAMERA_ROTATION.left}, {code: 'ArrowDown', rot: CAMERA_ROTATION.down}, {code: 'ArrowRight', rot: CAMERA_ROTATION.right}].forEach((pair) => {
             this.domElement.addEventListener('keydown', (event: KeyboardEvent) => {
                 if (event.code === pair.code) this.rotate(pair.rot)
             })
@@ -99,15 +101,15 @@ export class BirdViewControls extends MapControls {
     }
 
     rotate(rotationIndex: CameraRotation) {
-        if (rotationIndex === CameraRotation.NONE || !this.enabled) return
-        const dx = rotationIndex === CameraRotation.LEFT ? 1 : (rotationIndex === CameraRotation.RIGHT ? -1 : 0)
-        const dy = rotationIndex === CameraRotation.UP ? 1 : (rotationIndex === CameraRotation.DOWN ? -1 : 0)
+        if (rotationIndex === CAMERA_ROTATION.none || !this.enabled) return
+        const dx = rotationIndex === CAMERA_ROTATION.left ? 1 : (rotationIndex === CAMERA_ROTATION.right ? -1 : 0)
+        const dy = rotationIndex === CAMERA_ROTATION.up ? 1 : (rotationIndex === CAMERA_ROTATION.down ? -1 : 0)
         const px = (this.domElement as HTMLElement).clientWidth / 2
         const py = (this.domElement as HTMLElement).clientHeight / 2
         const step = py / 8 // => 16 clicks for a 360 no-scope
-        this.domElement.dispatchEvent(new PointerEvent('pointerdown', {pointerId: this.dummyPointerId, button: MOUSE_BUTTON.MIDDLE, clientX: px, clientY: py}))
+        this.domElement.dispatchEvent(new PointerEvent('pointerdown', {pointerId: this.dummyPointerId, button: MOUSE_BUTTON.middle, clientX: px, clientY: py}))
         this.domElement.dispatchEvent(new PointerEvent('pointermove', {pointerId: this.dummyPointerId, clientX: px + dx * step, clientY: py + dy * step}))
-        this.domElement.dispatchEvent(new PointerEvent('pointerup', {pointerId: this.dummyPointerId, button: MOUSE_BUTTON.MIDDLE, clientX: px + dx * step, clientY: py + dy * step}))
+        this.domElement.dispatchEvent(new PointerEvent('pointerup', {pointerId: this.dummyPointerId, button: MOUSE_BUTTON.middle, clientX: px + dx * step, clientY: py + dy * step}))
     }
 
     private verifyPointerId(): number {

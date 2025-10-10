@@ -159,7 +159,7 @@ export class TerrainLoader {
                     if (emergeValue % 2 === 1) {
                         worldMgr.ecs.addComponent(surface.entity, new EmergeComponent(emergeValue + 1, surface, undefined))
                     } else {
-                        if (surface.surfaceType === SurfaceType.SOLID_ROCK || surface.reinforced || surface.wallType < WALL_TYPE.WALL) continue // Not a valid emerge surface
+                        if (surface.surfaceType === SurfaceType.SOLID_ROCK || surface.reinforced || surface.wallType < WALL_TYPE.wall) continue // Not a valid emerge surface
                         worldMgr.ecs.addComponent(surface.entity, new EmergeComponent(emergeValue, undefined, surface))
                     }
                 }
@@ -169,16 +169,16 @@ export class TerrainLoader {
     }
 }
 
-enum PathMap {
-    NONE = 0,
-    RUBBLE = 1,
-    POWER_PATH = 2,
-}
+const PathMap = {
+    NONE: 0,
+    RUBBLE: 1,
+    POWER_PATH: 2,
+} as const
 
-enum PredugMap {
-    WALL = 0,
-    CAVERN_EXPOSED = 1,
-    CAVERN_HIDDEN = 2,
-    SLUG_HOLE_EXPOSED = 3,
-    SLUG_HOLE_HIDDEN = 4,
-}
+const PredugMap = {
+    WALL: 0,
+    CAVERN_EXPOSED: 1,
+    CAVERN_HIDDEN: 2,
+    SLUG_HOLE_EXPOSED: 3,
+    SLUG_HOLE_HIDDEN: 4,
+} as const

@@ -2,10 +2,10 @@ import { Surface } from '../../../terrain/Surface'
 import { SurfaceType } from '../../../terrain/SurfaceType'
 import { MaterialEntity } from '../../material/MaterialEntity'
 import { PathTarget } from '../../PathTarget'
-import { RaiderTool } from '../../raider/RaiderTool'
-import { PriorityIdentifier } from '../PriorityIdentifier'
+import { RAIDER_TOOL } from '../../raider/RaiderTool'
+import { PRIORITY_IDENTIFIER } from '../PriorityIdentifier'
 import { Job, JobFulfiller } from '../Job'
-import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
+import { AnimationActivity, RAIDER_ACTIVITY } from '../../anim/AnimationActivity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class CompleteSurfaceJob extends Job {
@@ -14,8 +14,8 @@ export class CompleteSurfaceJob extends Job {
 
     constructor(readonly surface: Surface, readonly placedItems: MaterialEntity[]) {
         super()
-        this.requiredTool = RaiderTool.SHOVEL
-        this.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
+        this.requiredTool = RAIDER_TOOL.shovel
+        this.priorityIdentifier = PRIORITY_IDENTIFIER.construction
         this.workplace = PathTarget.fromLocation(surface.getRandomPosition())
     }
 
@@ -33,7 +33,7 @@ export class CompleteSurfaceJob extends Job {
     }
 
     getWorkActivity(): AnimationActivity {
-        return RaiderActivity.Clear
+        return RAIDER_ACTIVITY.clear
     }
 
     getJobBubble(): keyof BubblesCfg {

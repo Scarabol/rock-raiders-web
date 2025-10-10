@@ -1,6 +1,6 @@
 import { AbstractWorkerPool } from './AbstractWorkerPool'
 import { TypedWorkerFallback, WorkerRequestMessage, WorkerResponseMessage } from './TypedWorker'
-import { BitmapFontSystem, BitmapFontWorkerRequest, BitmapFontWorkerRequestType, BitmapFontWorkerResponse } from './BitmapFontWorker'
+import { BITMAP_FONT_WORKER_REQUEST_TYPE, BitmapFontSystem, BitmapFontWorkerRequest, BitmapFontWorkerResponse } from './BitmapFontWorker'
 import { SpriteImage } from '../core/Sprite'
 import { imgDataToCanvas } from '../core/ImageHelper'
 import { BitmapFontData } from '../core/BitmapFont'
@@ -12,7 +12,7 @@ export class BitmapFontWorkerPool extends AbstractWorkerPool<BitmapFontWorkerReq
 
     setupPool(fontName: string, fontData: BitmapFontData) {
         this.startPool(4, {
-            type: BitmapFontWorkerRequestType.ADD_FONT,
+            type: BITMAP_FONT_WORKER_REQUEST_TYPE.addFont,
             fontName: fontName,
             fontData: fontData,
         })
@@ -24,13 +24,13 @@ export class BitmapFontWorkerPool extends AbstractWorkerPool<BitmapFontWorkerReq
             return
         }
         this.knownFonts.set(fontName.toLowerCase(), fontData)
-        const message = {type: BitmapFontWorkerRequestType.ADD_FONT, fontName: fontName, fontData: fontData}
+        const message = {type: BITMAP_FONT_WORKER_REQUEST_TYPE.addFont, fontName: fontName, fontData: fontData}
         await Promise.all(this.broadcast(message))
     }
 
     async createTextImage(fontName: string | undefined, text: string | undefined, maxWidth?: number, autoCenter: boolean = true): Promise<SpriteImage | undefined> {
         if (!fontName || !text) return undefined
-        const message = {type: BitmapFontWorkerRequestType.CREATE_TEXT_IMAGE, fontName: fontName, text: text, maxWidth: maxWidth, autoCenter: autoCenter}
+        const message = {type: BITMAP_FONT_WORKER_REQUEST_TYPE.createTextImage, fontName: fontName, text: text, maxWidth: maxWidth, autoCenter: autoCenter}
         const response = await this.processMessage(message)
         if (!response.textImageData) return undefined
         return imgDataToCanvas(response.textImageData)

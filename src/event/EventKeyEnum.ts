@@ -1,4 +1,4 @@
-export enum EventKey {
+export const enum EventKey {
     // Local events
     SELECTION_CHANGED = 'selection-changed',
     DESELECT_ALL = 'deselect-all',

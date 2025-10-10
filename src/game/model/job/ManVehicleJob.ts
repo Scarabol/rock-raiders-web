@@ -1,7 +1,7 @@
 import { PathTarget } from '../PathTarget'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
-import { JobState } from './JobState'
-import { PriorityIdentifier } from './PriorityIdentifier'
+import { JOB_STATE } from './JobState'
+import { PRIORITY_IDENTIFIER } from './PriorityIdentifier'
 import { RaiderJob } from './raider/RaiderJob'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { JobFulfiller } from './Job'
@@ -14,7 +14,7 @@ export class ManVehicleJob extends RaiderJob {
     constructor(vehicle: VehicleEntity) {
         super()
         this.requiredTraining = vehicle.getRequiredTraining()
-        this.priorityIdentifier = PriorityIdentifier.GET_IN
+        this.priorityIdentifier = PRIORITY_IDENTIFIER.getIn
         this.vehicle = vehicle
         this.vehicle.callManJob = this
         const surface = this.vehicle.getSurface()
@@ -30,10 +30,10 @@ export class ManVehicleJob extends RaiderJob {
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
         if (this.vehicle.isInBeam()) {
-            this.jobState = JobState.CANCELED
+            this.jobState = JOB_STATE.canceled
             return undefined
         } else if (this.vehicle.driver) {
-            this.jobState = JobState.COMPLETE
+            this.jobState = JOB_STATE.complete
             return undefined
         }
         return entity.findShortestPath(this.workplaces)?.target

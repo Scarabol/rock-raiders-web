@@ -1,4 +1,4 @@
-export enum EntityType {
+export const enum EntityType {
     NONE = '',
     // RAIDER
     PILOT = 'Pilot', // start with 1 otherwise entity type may fail truthiness test

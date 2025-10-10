@@ -11,18 +11,18 @@ import { Surface } from './terrain/Surface'
 import { MaterialEntity } from './model/material/MaterialEntity'
 import { PathTarget } from './model/PathTarget'
 import { Raider } from './model/raider/Raider'
-import { RaiderTraining } from './model/raider/RaiderTraining'
+import { RAIDER_TRAINING, RaiderTraining } from './model/raider/RaiderTraining'
 import { updateSafe } from './model/Updateable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { GameEntity } from './ECS'
 import { PositionComponent } from './component/PositionComponent'
 import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityComponent'
-import { RockMonsterActivity } from './model/anim/AnimationActivity'
+import { ROCK_MONSTER_ACTIVITY } from './model/anim/AnimationActivity'
 import { MonsterStatsComponent } from './component/MonsterStatsComponent'
 import { WorldManager } from './WorldManager'
 import { HealthComponent } from './component/HealthComponent'
-import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/MapMarkerComponent'
-import { SlugBehaviorComponent, SlugBehaviorState } from './component/SlugBehaviorComponent'
+import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE, MapMarkerComponent } from './component/MapMarkerComponent'
+import { SLUG_BEHAVIOR_STATE, SlugBehaviorComponent } from './component/SlugBehaviorComponent'
 import { EventBroker } from '../event/EventBroker'
 import { BuildingEntityStats } from '../cfg/GameStatsCfg'
 import { GameState } from './model/GameState'
@@ -200,8 +200,8 @@ export class EntityManager {
             .filter((e) => {
                 return e.components.get(HealthComponent).health > 0 &&
                     e.components.get(MonsterStatsComponent).stats.canBeShotAt &&
-                    e.components.get(AnimatedSceneEntityComponent).sceneEntity.currentAnimation !== RockMonsterActivity.Unpowered &&
-                    e.components.get(SlugBehaviorComponent)?.state !== SlugBehaviorState.EMERGE
+                    e.components.get(AnimatedSceneEntityComponent).sceneEntity.currentAnimation !== ROCK_MONSTER_ACTIVITY.unpowered &&
+                    e.components.get(SlugBehaviorComponent)?.state !== SLUG_BEHAVIOR_STATE.emerge
             })
             .map((e) => {
                 const pos = e.components.get(PositionComponent).surface.getCenterWorld2D()
@@ -217,8 +217,8 @@ export class EntityManager {
             r.worldMgr.entityMgr.raiders.push(r)
             const positionComponent = r.worldMgr.ecs.getComponents(r.entity).get(PositionComponent)
             EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_RAIDER_DISCOVERED, positionComponent))
-            this.worldMgr.ecs.addComponent(r.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, r.entity, MapMarkerChange.UPDATE, positionComponent.position))
+            this.worldMgr.ecs.addComponent(r.entity, new MapMarkerComponent(MAP_MARKER_TYPE.default))
+            EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, r.entity, MAP_MARKER_CHANGE.update, positionComponent.position))
         })
         if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBroker.publish(new RaidersAmountChangedEvent(this))
         this.buildingsUndiscovered = EntityManager.removeInRect(this.buildingsUndiscovered, minX, maxX, minZ, maxZ, (b) => {
@@ -230,8 +230,8 @@ export class EntityManager {
             m.worldMgr.entityMgr.materials.push(m)
             m.setupCarryJob()
             const positionComponent = m.worldMgr.ecs.getComponents(m.entity).get(PositionComponent)
-            m.worldMgr.ecs.addComponent(m.entity, new MapMarkerComponent(MapMarkerType.MATERIAL))
-            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, m.entity, MapMarkerChange.UPDATE, positionComponent.position))
+            m.worldMgr.ecs.addComponent(m.entity, new MapMarkerComponent(MAP_MARKER_TYPE.material))
+            EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.material, m.entity, MAP_MARKER_CHANGE.update, positionComponent.position))
         })
         this.vehiclesUndiscovered = EntityManager.removeInRect(this.vehiclesUndiscovered, minX, maxX, minZ, maxZ, (v) => {
             v.worldMgr.entityMgr.vehicles.push(v)
@@ -242,12 +242,12 @@ export class EntityManager {
                 driver.worldMgr.entityMgr.raiders.push(driver)
                 const positionComponent = driver.worldMgr.ecs.getComponents(driver.entity).get(PositionComponent)
                 EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_RAIDER_DISCOVERED, positionComponent))
-                this.worldMgr.ecs.addComponent(driver.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-                EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, driver.entity, MapMarkerChange.UPDATE, positionComponent.position))
+                this.worldMgr.ecs.addComponent(driver.entity, new MapMarkerComponent(MAP_MARKER_TYPE.default))
+                EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, driver.entity, MAP_MARKER_CHANGE.update, positionComponent.position))
             }
             const positionComponent = v.worldMgr.ecs.getComponents(v.entity).get(PositionComponent)
-            this.worldMgr.ecs.addComponent(v.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, v.entity, MapMarkerChange.UPDATE, positionComponent.position))
+            this.worldMgr.ecs.addComponent(v.entity, new MapMarkerComponent(MAP_MARKER_TYPE.default))
+            EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, v.entity, MAP_MARKER_CHANGE.update, positionComponent.position))
         })
         this.undiscoveredSpiders = this.removeInRectNew(this.undiscoveredSpiders, minX, maxX, minZ, maxZ, (m) => {
             this.spiders.push(m)
@@ -352,8 +352,8 @@ export class EntityManager {
 
     private addMapMarker(entity: number) {
         const positionComponent = this.worldMgr.ecs.getComponents(entity).get(PositionComponent)
-        this.worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
-        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.UPDATE, positionComponent.position))
+        this.worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MAP_MARKER_TYPE.monster))
+        EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.monster, entity, MAP_MARKER_CHANGE.update, positionComponent.position))
     }
 
     removeEntity(entity: GameEntity) {
@@ -414,22 +414,22 @@ export class EntityManager {
         ;(unassigned.trainings ?? []).map((t) => {
             switch (t.toLowerCase()) {
                 case 'TrainDriver'.toLowerCase():
-                    raider.addTraining(RaiderTraining.DRIVER)
+                    raider.addTraining(RAIDER_TRAINING.driver)
                     break
                 case 'TrainRepair'.toLowerCase():
-                    raider.addTraining(RaiderTraining.ENGINEER)
+                    raider.addTraining(RAIDER_TRAINING.engineer)
                     break
                 case 'TrainScanner'.toLowerCase():
-                    raider.addTraining(RaiderTraining.GEOLOGIST)
+                    raider.addTraining(RAIDER_TRAINING.geologist)
                     break
                 case 'TrainPilot'.toLowerCase():
-                    raider.addTraining(RaiderTraining.PILOT)
+                    raider.addTraining(RAIDER_TRAINING.pilot)
                     break
                 case 'TrainSailor'.toLowerCase():
-                    raider.addTraining(RaiderTraining.SAILOR)
+                    raider.addTraining(RAIDER_TRAINING.sailor)
                     break
                 case 'TrainDynamite'.toLowerCase():
-                    raider.addTraining(RaiderTraining.DEMOLITION)
+                    raider.addTraining(RAIDER_TRAINING.demolition)
                     break
                 default:
                     console.warn(`Unexpected raider training "${t}" given`)

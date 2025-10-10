@@ -16,9 +16,9 @@ import { SurfaceVertex } from './SurfaceGeometry'
 import { SurfaceMesh } from './SurfaceMesh'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
-import { WALL_TYPE } from './WallType'
+import { WALL_TYPE, WallType } from './WallType'
 import { Job } from '../model/job/Job'
-import { JobState } from '../model/job/JobState'
+import { JOB_STATE } from '../model/job/JobState'
 import { MaterialSpawner } from '../factory/MaterialSpawner'
 import { degToRad } from 'three/src/math/MathUtils'
 import { PositionComponent } from '../component/PositionComponent'
@@ -51,7 +51,7 @@ export class Surface {
 
     readonly mesh: SurfaceMesh
     readonly roofMesh: SurfaceMesh
-    wallType: WALL_TYPE = WALL_TYPE.FLOOR
+    wallType: WallType = WALL_TYPE.floor
     needsMeshUpdate: boolean = false
 
     rubblePositions: Vector2[] = []
@@ -239,7 +239,7 @@ export class Surface {
         const crumblePosition = new Vector3(this.x + 0.5, this.terrain.getHeightOffset(this.x, this.y), this.y + 0.5).multiplyScalar(TILESIZE)
         const wallNeighbors = this.neighbors.filter((n) => !!n.wallType)
         const randomWallNeighbor = PRNG.terrain.sample(wallNeighbors)
-        if (this.wallType === WALL_TYPE.CORNER && randomWallNeighbor) { // by default the corner animation goes from this.x+1,this.y+1 to this.x,this.y
+        if (this.wallType === WALL_TYPE.corner && randomWallNeighbor) { // by default the corner animation goes from this.x+1,this.y+1 to this.x,this.y
             const neighborToRight = this.terrain.getSurface(this.x - randomWallNeighbor.y + this.y, this.y + randomWallNeighbor.x - this.x)
             let crumbleAngle = Math.atan2(neighborToRight.x - this.x, neighborToRight.y - this.y)
             if (!neighborToRight.wallType) crumbleAngle += Math.PI / 2
@@ -295,7 +295,7 @@ export class Surface {
     }
 
     private static safeRemoveJob(job?: Job): undefined {
-        if (job) job.jobState = JobState.CANCELED
+        if (job) job.jobState = JOB_STATE.canceled
         return undefined
     }
 
@@ -359,13 +359,32 @@ export class Surface {
     }
 
     private updateWallType(topLeft: SurfaceVertex, topRight: SurfaceVertex, bottomRight: SurfaceVertex, bottomLeft: SurfaceVertex) {
-        let wallType = Number(topLeft.high) + Number(topRight.high) + Number(bottomRight.high) + Number(bottomLeft.high)
-        if (wallType === WALL_TYPE.WALL && topLeft.high === bottomRight.high) wallType = WALL_TYPE.WEIRD_CREVICE
+        let wallType: WallType = Surface.getWallType(topLeft.high, topRight.high, bottomRight.high, bottomLeft.high)
+        if (wallType === WALL_TYPE.wall && topLeft.high === bottomRight.high) wallType = WALL_TYPE.weirdCrevice
         this.wallType = wallType
         this.mesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
         this.roofMesh.setHeights(wallType, topLeft.flipY(), topRight.flipY(), bottomRight.flipY(), bottomLeft.flipY())
-        if (this.wallType !== WALL_TYPE.WALL) this.cancelReinforceJobs()
-        if (this.wallType < WALL_TYPE.WALL) this.worldMgr.ecs.removeComponent(this.entity, EmergeComponent)
+        if (this.wallType !== WALL_TYPE.wall) this.cancelReinforceJobs()
+        if (this.wallType < WALL_TYPE.wall) this.worldMgr.ecs.removeComponent(this.entity, EmergeComponent)
+    }
+
+    private static getWallType(topLeft: boolean, topRight: boolean, bottomRight: boolean, bottomLeft: boolean): WallType {
+        const asNum = Number(topLeft) + Number(topRight) + Number(bottomRight) + Number(bottomLeft)
+        switch (asNum) {
+            case 0:
+                return WALL_TYPE.floor
+            case 1:
+                return WALL_TYPE.corner
+            case 2:
+                return WALL_TYPE.wall
+            case 3:
+                return WALL_TYPE.invertedCorner
+            case 4:
+                return WALL_TYPE.roof
+            default:
+                console.warn(`Unexpected wall type (${[topLeft, topRight, bottomRight, bottomLeft]}) given. Using fallback type ${WALL_TYPE.floor}`)
+                return WALL_TYPE.floor
+        }
     }
 
     cancelReinforceJobs() {
@@ -377,16 +396,16 @@ export class Surface {
         let suffix = '', rotation = 0
         if (!this.discovered) {
             suffix = '70'
-        } else if (this.wallType === WALL_TYPE.WEIRD_CREVICE) {
+        } else if (this.wallType === WALL_TYPE.weirdCrevice) {
             suffix = '77'
         } else if (this.wallType) {
-            if (this.wallType === WALL_TYPE.CORNER) {
+            if (this.wallType === WALL_TYPE.corner) {
                 suffix = this.surfaceType.shaping ? '5' + this.surfaceType.matIndex : this.surfaceType.matIndex
-            } else if (this.wallType === WALL_TYPE.INVERTED_CORNER) {
+            } else if (this.wallType === WALL_TYPE.invertedCorner) {
                 suffix = '3' + (this.surfaceType.shaping ? this.surfaceType.matIndex : SurfaceType.SOLID_ROCK.matIndex)
             } else if (this.reinforced) {
                 suffix = '2' + (this.surfaceType.shaping ? this.surfaceType.matIndex : '1')
-            } else if (this.wallType === WALL_TYPE.WALL) {
+            } else if (this.wallType === WALL_TYPE.wall) {
                 suffix = this.surfaceType.shaping ? '0' + this.surfaceType.matIndex : this.surfaceType.matIndex
             } else {
                 suffix = '00'
@@ -445,7 +464,7 @@ export class Surface {
     }
 
     isSelectable(): boolean {
-        return (this.surfaceType.selectable || !!this.site) && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered
+        return (this.surfaceType.selectable || !!this.site) && (this.wallType !== WALL_TYPE.invertedCorner && this.wallType !== WALL_TYPE.weirdCrevice) && !this.selected && this.discovered
     }
 
     isInSelection(): boolean {
@@ -493,11 +512,11 @@ export class Surface {
     }
 
     isDigable(): boolean {
-        return this.surfaceType.digable && this.discovered && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER)
+        return this.surfaceType.digable && this.discovered && (this.wallType === WALL_TYPE.wall || this.wallType === WALL_TYPE.corner)
     }
 
     isReinforcable(): boolean {
-        return this.surfaceType.reinforcable && this.discovered && this.wallType === WALL_TYPE.WALL && !this.reinforced
+        return this.surfaceType.reinforcable && this.discovered && this.wallType === WALL_TYPE.wall && !this.reinforced
     }
 
     getDigPositions(): Vector2[] {

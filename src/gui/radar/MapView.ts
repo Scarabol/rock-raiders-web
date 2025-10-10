@@ -2,7 +2,7 @@ import { createCanvas } from '../../core/ImageHelper'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
 import { FollowerSetLookAtEvent, InitRadarMap, UpdateRadarCamera, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
-import { MapMarkerChange, MapMarkerType } from '../../game/component/MapMarkerComponent'
+import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE, MapMarkerType } from '../../game/component/MapMarkerComponent'
 import { BaseElement } from '../base/BaseElement'
 import { MapSurfaceRect } from './MapSurfaceRect'
 import { MapRenderer } from './MapRenderer'
@@ -89,10 +89,10 @@ export class MapView extends BaseElement {
         this.registerEventListener(EventKey.UPDATE_RADAR_ENTITY, (event: UpdateRadarEntityEvent) => {
             const entities = this.entitiesByOrder.getOrUpdate(event.mapMarkerType, () => new Map())
             switch (event.change) {
-                case MapMarkerChange.UPDATE:
+                case MAP_MARKER_CHANGE.update:
                     if (event.position) entities.set(event.entity, {x: event.position.x, z: event.position.z, r: event.radius ?? 0})
                     break
-                case MapMarkerChange.REMOVE:
+                case MAP_MARKER_CHANGE.remove:
                     entities.delete(event.entity)
                     break
             }
@@ -134,10 +134,10 @@ export class MapView extends BaseElement {
     private redrawAll() {
         Promise.all([
             this.mapRenderer.redrawTerrain(this.offset, this.surfaceRectSize, this.surfaceMap),
-            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.DEFAULT, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.DEFAULT, () => new Map()).values())),
-            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MONSTER, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MONSTER, () => new Map()).values())),
-            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MATERIAL, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MATERIAL, () => new Map()).values())),
-            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.SCANNER, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.SCANNER, () => new Map()).values())),
+            this.mapRenderer.redrawEntities(this.offset, MAP_MARKER_TYPE.default, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MAP_MARKER_TYPE.default, () => new Map()).values())),
+            this.mapRenderer.redrawEntities(this.offset, MAP_MARKER_TYPE.monster, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MAP_MARKER_TYPE.monster, () => new Map()).values())),
+            this.mapRenderer.redrawEntities(this.offset, MAP_MARKER_TYPE.material, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MAP_MARKER_TYPE.material, () => new Map()).values())),
+            this.mapRenderer.redrawEntities(this.offset, MAP_MARKER_TYPE.scanner, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MAP_MARKER_TYPE.scanner, () => new Map()).values())),
             this.mapRenderer.redrawCamera(this.offset, this.surfaceRectSize, this.cameraRect),
         ]).then(() => this.notifyRedraw())
     }

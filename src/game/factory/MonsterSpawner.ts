@@ -5,12 +5,12 @@ import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { FlockComponent, FlockEntity } from '../component/FlockComponent'
 import { HealthComponent } from '../component/HealthComponent'
-import { MapMarkerChange, MapMarkerType } from '../component/MapMarkerComponent'
+import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE } from '../component/MapMarkerComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Vector2 } from 'three'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
-import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY, ROCK_MONSTER_ACTIVITY } from '../model/anim/AnimationActivity'
 import { GameEntity } from '../ECS'
 import { RandomMoveComponent } from '../component/RandomMoveComponent'
 import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
@@ -20,8 +20,8 @@ import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { MaterialSpawner } from './MaterialSpawner'
 import { WorldLocationEvent } from '../../event/WorldEvents'
 import { EventKey } from '../../event/EventKeyEnum'
-import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
-import { SlugBehaviorComponent, SlugBehaviorState } from '../component/SlugBehaviorComponent'
+import { RAIDER_SCARE_RANGE, RaiderScareComponent } from '../component/RaiderScareComponent'
+import { SLUG_BEHAVIOR_STATE, SlugBehaviorComponent } from '../component/SlugBehaviorComponent'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { HeadingComponent } from '../component/HeadingComponent'
@@ -47,7 +47,7 @@ export class MonsterSpawner {
             case EntityType.SMALL_SPIDER:
                 positionComponent.floorOffset = 1
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/SpiderSB'))
-                sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                 const spiderStats = GameConfig.instance.stats.smallSpider
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(spiderStats))
                 if (spiderStats.randomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - spiderStats.randomMoveTime) * 1000))
@@ -62,7 +62,7 @@ export class MonsterSpawner {
                     flockSceneEntity.rotation.copy(sceneEntity.rotation)
                     flockSceneEntity.visible = sceneEntity.visible
                     flockSceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/bat'))
-                    flockSceneEntity.setAnimation(AnimEntityActivity.Route)
+                    flockSceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.route)
                     // Change the speed slightly to make the animation unsynchronized
                     const speedModifier = 0.9 + 0.2 * (c + 0.5) / batStats.flocksSize
                     flockSceneEntity.setAnimationSpeed(speedModifier)
@@ -74,10 +74,10 @@ export class MonsterSpawner {
                 }))
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(batStats))
                 if (batStats.randomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - batStats.randomMoveTime) * 1000))
-                worldMgr.ecs.addComponent(entity, new RaiderScareComponent(RaiderScareRange.BAT))
+                worldMgr.ecs.addComponent(entity, new RaiderScareComponent(RAIDER_SCARE_RANGE.bat))
                 worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
                     worldMgr.ecs.removeComponent(entity, RaiderScareComponent)
-                    EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
+                    EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.monster, entity, MAP_MARKER_CHANGE.remove))
                 }))
                 break
             case EntityType.SLUG:
@@ -91,9 +91,9 @@ export class MonsterSpawner {
                     worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
                     worldMgr.ecs.removeComponent(entity, HeadingComponent)
                     worldMgr.ecs.removeComponent(entity, EntityPushedComponent)
-                    worldMgr.ecs.getComponents(entity).get(SlugBehaviorComponent).state = SlugBehaviorState.GO_ENTER
-                    sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                    EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
+                    worldMgr.ecs.getComponents(entity).get(SlugBehaviorComponent).state = SLUG_BEHAVIOR_STATE.goEnter
+                    sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
+                    EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.monster, entity, MAP_MARKER_CHANGE.remove))
                 }))
                 const objectKey = entityType.toLowerCase()
                 const objectName = GameConfig.instance.objectNames[objectKey] || ''
@@ -121,7 +121,7 @@ export class MonsterSpawner {
 
     private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string, entityType: EntityType, stats: MonsterEntityStats) {
         sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
-        sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
+        sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.unpowered)
         const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, GameConfig.instance.getRockFallDamage(entityType, 0)))
         worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
@@ -133,14 +133,14 @@ export class MonsterSpawner {
             worldMgr.ecs.removeComponent(entity, EntityPushedComponent)
             worldMgr.ecs.removeComponent(entity, RockMonsterBehaviorComponent)
             sceneEntity.removeAllCarried()
-            sceneEntity.setAnimation(RockMonsterActivity.Crumble, () => {
+            sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.crumble, () => {
                 const positionComponent = components.get(PositionComponent)
                 for (let c = 0; c < numCrystalsEaten; c++) {
                     MaterialSpawner.spawnMaterial(worldMgr, EntityType.CRYSTAL, positionComponent.getPosition2D()) // XXX add random offset and random heading
                 }
                 EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
                 worldMgr.ecs.removeComponent(entity, RaiderScareComponent)
-                EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
+                EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.monster, entity, MAP_MARKER_CHANGE.remove))
                 worldMgr.sceneMgr.disposeSceneEntity(sceneEntity)
                 worldMgr.entityMgr.removeEntity(entity)
                 worldMgr.ecs.removeEntity(entity)

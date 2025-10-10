@@ -1,8 +1,8 @@
-import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
+import { AnimationActivity, RAIDER_ACTIVITY } from '../../anim/AnimationActivity'
 import { Surface } from '../../../terrain/Surface'
 import { PathTarget } from '../../PathTarget'
-import { RaiderTool } from '../../raider/RaiderTool'
-import { PriorityIdentifier } from '../PriorityIdentifier'
+import { RAIDER_TOOL } from '../../raider/RaiderTool'
+import { PRIORITY_IDENTIFIER } from '../PriorityIdentifier'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { Job, JobFulfiller } from '../Job'
 
@@ -13,8 +13,8 @@ export class ReinforceJob extends Job {
     constructor(readonly surface: Surface) {
         super()
         this.digPositions = this.surface.getDigPositions().map((p) => PathTarget.fromLocation(p))
-        this.requiredTool = RaiderTool.HAMMER
-        this.priorityIdentifier = PriorityIdentifier.REINFORCE
+        this.requiredTool = RAIDER_TOOL.hammer
+        this.priorityIdentifier = PRIORITY_IDENTIFIER.reinforce
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
@@ -33,7 +33,7 @@ export class ReinforceJob extends Job {
     }
 
     getWorkActivity(): AnimationActivity {
-        return RaiderActivity.Reinforce
+        return RAIDER_ACTIVITY.reinforce
     }
 
     getExpectedTimeLeft(): number {

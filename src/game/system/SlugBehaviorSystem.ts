@@ -1,12 +1,12 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
-import { SlugBehaviorComponent, SlugBehaviorState } from '../component/SlugBehaviorComponent'
+import { SLUG_BEHAVIOR_STATE, SlugBehaviorComponent } from '../component/SlugBehaviorComponent'
 import { WorldManager } from '../WorldManager'
 import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
 import { PositionComponent } from '../component/PositionComponent'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { PathTarget } from '../model/PathTarget'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
-import { AnimEntityActivity, SlugActivity } from '../model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY, SLUG_ACTIVITY } from '../model/anim/AnimationActivity'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameState } from '../model/GameState'
 import { MaterialAmountChanged, WorldLocationEvent } from '../../event/WorldEvents'
@@ -20,7 +20,7 @@ import { HeadingComponent } from '../component/HeadingComponent'
 import { EventBroker } from '../../event/EventBroker'
 import { PRNG } from '../factory/PRNG'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
-import { MapMarkerChange, MapMarkerType } from '../component/MapMarkerComponent'
+import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE } from '../component/MapMarkerComponent'
 
 const SLUG_SUCK_DISTANCE_SQ = 25 * 25
 const SLUG_ENTER_DISTANCE_SQ = 5 * 5
@@ -48,19 +48,19 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                 const stats = components.get(MonsterStatsComponent).stats
                 const slugPos = positionComponent.getPosition2D()
                 switch (behaviorComponent.state) {
-                    case SlugBehaviorState.IDLE:
+                    case SLUG_BEHAVIOR_STATE.idle:
                         if (behaviorComponent.targetBuilding) {
-                            behaviorComponent.state = SlugBehaviorState.LEECH
+                            behaviorComponent.state = SLUG_BEHAVIOR_STATE.leech
                         } else if (behaviorComponent.energyLeeched) {
-                            behaviorComponent.state = SlugBehaviorState.GO_ENTER
+                            behaviorComponent.state = SLUG_BEHAVIOR_STATE.goEnter
                         } else if (behaviorComponent.idleTimer > SLUG_MAX_IDLE_TIME) {
-                            behaviorComponent.state = SlugBehaviorState.GO_ENTER
+                            behaviorComponent.state = SLUG_BEHAVIOR_STATE.goEnter
                         } else if (!components.has(WorldTargetComponent)) {
                             behaviorComponent.idleTimer += elapsedMs
                             const energizedBuildings = this.worldMgr.entityMgr.buildings.filter((b) => b.energized && b.getPosition2D().distanceToSquared(slugPos) < Math.pow(stats.attackRadius, 2))
                             const closestBuilding = pathFinder.findClosestBuilding(slugPos, energizedBuildings, stats, 1)
                             if (closestBuilding) {
-                                behaviorComponent.state = SlugBehaviorState.LEECH
+                                behaviorComponent.state = SLUG_BEHAVIOR_STATE.leech
                                 behaviorComponent.targetBuilding = closestBuilding.obj
                             } else {
                                 const randomTarget = PRNG.movement.sample([positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) => n.isWalkable())]).getRandomPosition()
@@ -69,7 +69,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             }
                         }
                         break
-                    case SlugBehaviorState.LEECH:
+                    case SLUG_BEHAVIOR_STATE.leech:
                         if (!behaviorComponent.targetBuilding?.energized) {
                             this.ecs.removeComponent(entity, WorldTargetComponent)
                             this.worldMgr.ecs.removeComponent(entity, HeadingComponent)
@@ -93,11 +93,11 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                         this.worldMgr.ecs.removeComponent(entity, HeadingComponent)
                                         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_POWER_DRAIN, new PositionComponent(positionComponent.position, positionComponent.surface)))
                                     }
-                                    sceneEntity.setAnimation(SlugActivity.Suck, () => {
+                                    sceneEntity.setAnimation(SLUG_ACTIVITY.suck, () => {
                                         GameState.numCrystal--
                                         EventBroker.publish(new MaterialAmountChanged())
                                         MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.DEPLETED_CRYSTAL, positionComponent.getPosition2D())
-                                        behaviorComponent.state = SlugBehaviorState.GO_ENTER
+                                        behaviorComponent.state = SLUG_BEHAVIOR_STATE.goEnter
                                         behaviorComponent.energyLeeched = true
                                     }, SLUG_SUCK_TIME)
                                 } else if (!components.has(WorldTargetComponent)) {
@@ -117,7 +117,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             }
                         }
                         break
-                    case SlugBehaviorState.GO_ENTER:
+                    case SLUG_BEHAVIOR_STATE.goEnter:
                         if (!behaviorComponent.targetEnter) {
                             const enterTargets = this.worldMgr.sceneMgr.terrain.slugHoles.map((h) => PathTarget.fromLocation(h.getRandomPosition(), SLUG_ENTER_DISTANCE_SQ))
                             const path = pathFinder.findShortestPath(positionComponent.getPosition2D(), enterTargets, stats, 1)
@@ -130,9 +130,9 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             }
                         } else if (behaviorComponent.targetEnter.targetLocation.distanceToSquared(slugPos) <= SLUG_ENTER_DISTANCE_SQ) {
                             this.worldMgr.entityMgr.removeEntity(entity)
-                            sceneEntity.setAnimation(SlugActivity.Enter, () => {
+                            sceneEntity.setAnimation(SLUG_ACTIVITY.enter, () => {
                                 EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_SLUG_GONE, positionComponent))
-                                EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
+                                EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.monster, entity, MAP_MARKER_CHANGE.remove))
                                 this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntity)
                                 this.ecs.removeEntity(entity)
                             })
@@ -157,10 +157,10 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
     }
 
     private changeToIdle(sceneEntity: AnimatedSceneEntity, behaviorComponent: SlugBehaviorComponent) {
-        if (behaviorComponent.state === SlugBehaviorState.EMERGE) return
-        sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        if (behaviorComponent.state === SLUG_BEHAVIOR_STATE.emerge) return
+        sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
         behaviorComponent.targetBuilding = undefined
         behaviorComponent.targetEnter = undefined
-        behaviorComponent.state = SlugBehaviorState.IDLE
+        behaviorComponent.state = SLUG_BEHAVIOR_STATE.idle
     }
 }

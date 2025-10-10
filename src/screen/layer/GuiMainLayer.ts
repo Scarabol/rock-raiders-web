@@ -13,7 +13,7 @@ import { PlaySoundEvent } from '../../event/GuiCommand'
 import { CursorManager } from '../CursorManager'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { USE_KEYBOARD_SHORTCUTS } from '../../params'
-import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
+import { KEY_EVENT, KeyEventType, MOUSE_BUTTON, POINTER_EVENT, PointerEventType } from '../../event/EventTypeEnum'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../../gui/event/GuiEvent'
 import { CameraControlPanel } from '../../gui/cameracontrol/CameraControlPanel'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
@@ -41,11 +41,11 @@ export class GuiBaseLayer extends ScaledLayer {
         this.animationFrame.onRedraw = (context) => {
             this.rootElement.onRedraw(context)
         }
-        new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
-            ['pointermove', POINTER_EVENT.MOVE],
-            ['pointerdown', POINTER_EVENT.DOWN],
-            ['pointerup', POINTER_EVENT.UP],
-            ['pointerleave', POINTER_EVENT.LEAVE],
+        new Map<keyof HTMLElementEventMap, PointerEventType>([
+            ['pointermove', POINTER_EVENT.move],
+            ['pointerdown', POINTER_EVENT.down],
+            ['pointerup', POINTER_EVENT.up],
+            ['pointerleave', POINTER_EVENT.leave],
         ]).forEach((eventEnum, eventType) => {
             this.addEventListener(eventType, (event): boolean => {
                 const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent)
@@ -83,14 +83,14 @@ export class GuiBaseLayer extends ScaledLayer {
         const hit = this.animationFrame.isOpaque(event.canvasX, event.canvasY)
         if (hit) {
             CursorManager.changeCursor('standard') // TODO don't spam so many events?!
-            if (event.eventEnum === POINTER_EVENT.MOVE) {
+            if (event.eventEnum === POINTER_EVENT.move) {
                 this.rootElement.onPointerMove(new GuiHoverEvent(event.canvasX, event.canvasY))
-            } else if (event.eventEnum === POINTER_EVENT.DOWN) {
-                if (event.button === MOUSE_BUTTON.MAIN) {
+            } else if (event.eventEnum === POINTER_EVENT.down) {
+                if (event.button === MOUSE_BUTTON.main) {
                     this.rootElement.onPointerDown(new GuiPointerDownEvent(event.canvasX, event.canvasY, event.button))
                 }
-            } else if (event.eventEnum === POINTER_EVENT.UP) {
-                if (event.button === MOUSE_BUTTON.MAIN) {
+            } else if (event.eventEnum === POINTER_EVENT.up) {
+                if (event.button === MOUSE_BUTTON.main) {
                     const stateChanged = this.rootElement.onPointerUp(new GuiPointerUpEvent(event.canvasX, event.canvasY, event.button))
                     if (!stateChanged) {
                         CursorManager.changeCursor('notOkay', 1000)
@@ -98,7 +98,7 @@ export class GuiBaseLayer extends ScaledLayer {
                     }
                 }
             }
-        } else if (event.eventEnum === POINTER_EVENT.MOVE || event.eventEnum === POINTER_EVENT.LEAVE) {
+        } else if (event.eventEnum === POINTER_EVENT.move || event.eventEnum === POINTER_EVENT.leave) {
             this.rootElement.onPointerLeave()
         }
         return hit
@@ -138,9 +138,9 @@ export class GuiTopRightLayer extends GuiBaseLayer {
                 this.panelPriorityList.setMovedIn(true, () => this.panelMain.setMovedIn(false))
             }
         }
-        new Map<keyof HTMLElementEventMap, KEY_EVENT>([
-            ['keydown', KEY_EVENT.DOWN],
-            ['keyup', KEY_EVENT.UP],
+        new Map<keyof HTMLElementEventMap, KeyEventType>([
+            ['keydown', KEY_EVENT.down],
+            ['keyup', KEY_EVENT.up],
         ]).forEach((eventEnum, eventType) => {
             this.addEventListener(eventType, (event): boolean => {
                 const gameEvent = new GameKeyboardEvent(eventEnum, event as KeyboardEvent)
@@ -155,7 +155,7 @@ export class GuiTopRightLayer extends GuiBaseLayer {
         const activeIconPanelButtons = activeSubPanels.flatMap((p) => p.iconPanelButtons)
         const buttonWithKey = activeIconPanelButtons.find((b) => b.hotkey === event.key)
         if (buttonWithKey && !buttonWithKey.isInactive()) {
-            if (event.eventEnum === KEY_EVENT.UP) {
+            if (event.eventEnum === KEY_EVENT.up) {
                 const bx = buttonWithKey.x + buttonWithKey.width / 2
                 const by = buttonWithKey.y + buttonWithKey.height / 2
                 buttonWithKey.onClick?.(bx, by)

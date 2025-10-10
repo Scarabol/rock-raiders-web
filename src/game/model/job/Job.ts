@@ -2,11 +2,11 @@ import { AnimationActivity } from '../anim/AnimationActivity'
 import { Surface } from '../../terrain/Surface'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
-import { RaiderTool } from '../raider/RaiderTool'
-import { RaiderTraining } from '../raider/RaiderTraining'
-import { JobState } from './JobState'
+import { RAIDER_TOOL, RaiderTool } from '../raider/RaiderTool'
+import { RAIDER_TRAINING, RaiderTraining } from '../raider/RaiderTraining'
+import { JOB_STATE, JobState } from './JobState'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
-import { PriorityIdentifier } from './PriorityIdentifier'
+import { PRIORITY_IDENTIFIER, PriorityIdentifier } from './PriorityIdentifier'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { EntityType } from '../EntityType'
 import { TerrainPath } from '../../terrain/TerrainPath'
@@ -27,12 +27,12 @@ export interface JobFulfiller {
 }
 
 export abstract class Job {
-    jobState: JobState = JobState.INCOMPLETE
+    jobState: JobState = JOB_STATE.incomplete
     surface?: Surface
     carryItem?: MaterialEntity
-    requiredTool: RaiderTool = RaiderTool.NONE
-    requiredTraining: RaiderTraining = RaiderTraining.NONE
-    priorityIdentifier: PriorityIdentifier = PriorityIdentifier.NONE
+    requiredTool: RaiderTool = RAIDER_TOOL.none
+    requiredTraining: RaiderTraining = RAIDER_TRAINING.none
+    priorityIdentifier: PriorityIdentifier = PRIORITY_IDENTIFIER.none
     workSoundRaider?: string
     workSoundVehicle?: string
     doOnAlarm: boolean = false
@@ -48,7 +48,7 @@ export abstract class Job {
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {
-        this.jobState = JobState.COMPLETE
+        this.jobState = JOB_STATE.complete
     }
 
     abstract getWorkplace(entity: JobFulfiller): PathTarget | undefined

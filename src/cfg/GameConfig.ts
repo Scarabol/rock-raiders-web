@@ -147,7 +147,7 @@ export class GameConfig implements ConfigSetFromRecord {
             }
         })
         cfgValue.getRecord('Levels').forEachEntry((levelName, entry) => {
-            if (!levelName.toLowerCase().startsWith('tutorial') && !levelName.toLowerCase().startsWith('level')) return // ignore incomplete test levels and duplicates
+            if (!LevelEntryCfg.isTutorial(levelName) && !LevelEntryCfg.isLevel(levelName)) return // ignore incomplete test levels and duplicates
             const levelConf = new LevelEntryCfg(levelName).setFromRecord(entry)
             const tileSize = levelConf.blockSize
             if (tileSize !== TILESIZE) console.warn(`Unexpected tile size in level configuration: ${tileSize}`)
@@ -192,9 +192,5 @@ export class GameConfig implements ConfigSetFromRecord {
 
     getRockFallDamage(entityType: EntityType, level: number = 0): number {
         return this.weaponTypes.rockFallIn.damageByEntityType[entityType]?.[level] || 0
-    }
-
-    getAllLevels(): LevelEntryCfg[] {
-        return this.levels.filter((l) => l.levelName.toLowerCase().startsWith('level'))
     }
 }

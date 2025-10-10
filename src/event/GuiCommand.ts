@@ -235,11 +235,12 @@ export class DropBirdScarer extends BaseEvent {
     }
 }
 
-export enum CameraViewMode {
-    BIRD,
-    FPV,
-    SHOULDER,
-}
+export const CAMERA_VIEW_MODE = {
+    bird: 1,
+    fpv: 2,
+    shoulder: 3,
+} as const
+export type CameraViewMode = typeof CAMERA_VIEW_MODE[keyof typeof CAMERA_VIEW_MODE]
 
 export class ChangeCameraEvent extends BaseEvent {
     constructor(readonly viewMode: CameraViewMode) {

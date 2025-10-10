@@ -2,7 +2,7 @@ import { EventKey } from '../../../event/EventKeyEnum'
 import { CancelSurfaceJobs, CreateDrillJob, CreateDynamiteJob, CreateReinforceJob } from '../../../event/GuiCommand'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, RaiderTrainingCompleteEvent, SelectionChanged } from '../../../event/LocalEvents'
 import { EntityType } from '../../../game/model/EntityType'
-import { RaiderTraining } from '../../../game/model/raider/RaiderTraining'
+import { RAIDER_TRAINING } from '../../../game/model/raider/RaiderTraining'
 import { Panel } from '../../base/Panel'
 import { IconSubPanel } from '../IconSubPanel'
 import { GameConfig } from '../../../cfg/GameConfig'
@@ -38,7 +38,7 @@ export class SelectWallPanel extends IconSubPanel {
             this.hasToolstationLevel2 = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION, 2)
         })
         this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => {
-            this.hasDemolition = this.hasDemolition || event.training === RaiderTraining.DEMOLITION
+            this.hasDemolition = this.hasDemolition || event.training === RAIDER_TRAINING.demolition
         })
         this.registerEventListener(EventKey.RAIDER_AMOUNT_CHANGED, (event: RaidersAmountChangedEvent) => {
             this.hasDemolition = event.hasDemolition

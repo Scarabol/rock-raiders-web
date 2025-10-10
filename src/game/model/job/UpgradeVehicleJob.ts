@@ -3,7 +3,7 @@ import { VehicleUpgrade, VehicleUpgrades } from '../vehicle/VehicleUpgrade'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { PathTarget } from '../PathTarget'
 import { WorldManager } from '../../WorldManager'
-import { BuildingActivity } from '../anim/AnimationActivity'
+import { BUILDING_ACTIVITY } from '../anim/AnimationActivity'
 import { VehicleUpgradeCompleteEvent } from '../../../event/LocalEvents'
 import { EventBroker } from '../../../event/EventBroker'
 import { GameState } from '../GameState'
@@ -43,10 +43,10 @@ export class UpgradeVehicleJob extends Job {
         this.vehicle.upgrading = true
         const upgradeAnimationSpeed = building.stats.functionCoef[building.level] || 1
         building.sceneEntity.setAnimationSpeed(upgradeAnimationSpeed)
-        building.sceneEntity.setAnimation(BuildingActivity.Upgrade, () => {
+        building.sceneEntity.setAnimation(BUILDING_ACTIVITY.upgrade, () => {
             building.sceneEntity.setAnimationSpeed(1)
             super.onJobComplete(fulfiller)
-            building.sceneEntity.setAnimation(BuildingActivity.Stand)
+            building.sceneEntity.setAnimation(BUILDING_ACTIVITY.stand)
             this.vehicle.upgrading = false
             if (GameState.numBrick >= upgradeCostBrick) {
                 GameState.numBrick -= upgradeCostBrick

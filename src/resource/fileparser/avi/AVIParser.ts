@@ -192,7 +192,7 @@ export class AVIParser {
         const moviList = this.reader.readList(AVIParser.LIST_TYPE_STREAM_DATA)
         moviList.forEachItem((streamDataItem) => {
             const streamIndexStr = streamDataItem.chunkType.slice(0, 2)
-            const streamIndex = parseInt(streamIndexStr)
+            const streamIndex = Number(streamIndexStr)
             if (isNaN(streamIndex)) throw new Error(`Non-numeric stream index given "${streamIndexStr}" in "${streamDataItem.chunkType}"`)
             const chunks = this.chunksByStreamIndex.getOrUpdate(streamIndex, () => [])
             chunks.push(streamDataItem.reader)

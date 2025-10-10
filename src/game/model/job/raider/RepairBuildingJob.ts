@@ -2,12 +2,12 @@ import { RaiderJob } from './RaiderJob'
 import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
 import { JobFulfiller } from '../Job'
-import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
+import { AnimationActivity, RAIDER_ACTIVITY } from '../../anim/AnimationActivity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { HealthComponent } from '../../../component/HealthComponent'
-import { RaiderTool } from '../../raider/RaiderTool'
-import { RaiderTraining } from '../../raider/RaiderTraining'
-import { PriorityIdentifier } from '../PriorityIdentifier'
+import { RAIDER_TOOL } from '../../raider/RaiderTool'
+import { RAIDER_TRAINING } from '../../raider/RaiderTraining'
+import { PRIORITY_IDENTIFIER } from '../PriorityIdentifier'
 
 export class RepairBuildingJob extends RaiderJob {
     building: BuildingEntity
@@ -17,9 +17,9 @@ export class RepairBuildingJob extends RaiderJob {
         super()
         this.building = building
         this.workplaces = building.getTrainingTargets()
-        this.requiredTool = RaiderTool.SPANNER
-        this.requiredTraining = RaiderTraining.ENGINEER
-        this.priorityIdentifier = PriorityIdentifier.REPAIR
+        this.requiredTool = RAIDER_TOOL.spanner
+        this.requiredTraining = RAIDER_TRAINING.engineer
+        this.priorityIdentifier = PRIORITY_IDENTIFIER.repair
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
@@ -35,7 +35,7 @@ export class RepairBuildingJob extends RaiderJob {
     }
 
     getWorkActivity(): AnimationActivity {
-        return RaiderActivity.Repair
+        return RAIDER_ACTIVITY.repair
     }
 
     getJobBubble(): keyof BubblesCfg {

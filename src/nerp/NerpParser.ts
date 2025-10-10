@@ -113,7 +113,7 @@ export class NerpParser {
 
     private static readStatement(expression: string): NerpStatement {
         expression = expression.trim().replace(/^_/, '') // remove whitespace and leading underscore
-        const number = parseInt(expression)
+        const number = Number(expression)
         if (isNum(number)) return new NerpNumber(number)
         const opSplit = expression.split(/ (=) | (!=) | (>) | (<) /).filter(e => e !== undefined)
         const brackets = expression.match(/^(.+)\((.+)\)$/)

@@ -4,7 +4,7 @@ import { PanelRotationControlCfg, PanelRotationControlImageCfg } from '../../cfg
 import { CameraControl } from '../../event/GuiCommand'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
-import { CameraRotation } from '../../scene/BirdViewControls'
+import { CAMERA_ROTATION, CameraRotation } from '../../scene/BirdViewControls'
 
 export class CameraControlPanel extends Panel {
     constructor(panelCfg: PanelCfg, buttonsCfg: ButtonCameraControlCfg, panelRotationControlCfg: PanelRotationControlCfg) {
@@ -18,10 +18,10 @@ export class CameraControlPanel extends Panel {
         this.addChild(new Button(buttonsCfg.panelButtonCameraControlCycleBuildings)).onClick = () => {
             this.publishEvent(new CameraControl({cycleBuilding: true}))
         }
-        this.addControlImage(panelRotationControlCfg.leftImage, CameraRotation.LEFT)
-        this.addControlImage(panelRotationControlCfg.upImage, CameraRotation.UP)
-        this.addControlImage(panelRotationControlCfg.rightImage, CameraRotation.RIGHT)
-        this.addControlImage(panelRotationControlCfg.downImage, CameraRotation.DOWN)
+        this.addControlImage(panelRotationControlCfg.leftImage, CAMERA_ROTATION.left)
+        this.addControlImage(panelRotationControlCfg.upImage, CAMERA_ROTATION.up)
+        this.addControlImage(panelRotationControlCfg.rightImage, CAMERA_ROTATION.right)
+        this.addControlImage(panelRotationControlCfg.downImage, CAMERA_ROTATION.down)
     }
 
     private addControlImage(cfg: PanelRotationControlImageCfg, rotationIndex: CameraRotation) {

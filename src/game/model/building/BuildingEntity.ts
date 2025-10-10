@@ -7,7 +7,7 @@ import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BubbleSprite } from '../../../scene/BubbleSprite'
 import { WorldManager } from '../../WorldManager'
-import { BuildingActivity } from '../anim/AnimationActivity'
+import { BUILDING_ACTIVITY } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { Surface } from '../../terrain/Surface'
@@ -27,7 +27,7 @@ import { OxygenComponent } from '../../component/OxygenComponent'
 import { PositionComponent } from '../../component/PositionComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
 import { ScannerComponent } from '../../component/ScannerComponent'
-import { MapMarkerChange, MapMarkerType } from '../../component/MapMarkerComponent'
+import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE } from '../../component/MapMarkerComponent'
 import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
 import { TooltipComponent } from '../../component/TooltipComponent'
@@ -77,7 +77,7 @@ export class BuildingEntity {
             this.primarySurface.pathBlockedByBuilding = false
             if (this.secondarySurface) this.secondarySurface.pathBlockedByBuilding = false
             this.setEnergized(false)
-            this.sceneEntity.setAnimation(BuildingActivity.Explode, () => this.disposeFromWorld())
+            this.sceneEntity.setAnimation(BUILDING_ACTIVITY.explode, () => this.disposeFromWorld())
             this.powerOffSprite.setEnabled(false)
             this.surfaces.forEach((s) => s.setBuilding(undefined))
             this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
@@ -147,7 +147,7 @@ export class BuildingEntity {
         if (this.surfaces.some((s) => s.selected)) EventBroker.publish(new DeselectAll())
         if (this.sceneEntity.visible && !disableTeleportIn) {
             this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
-            this.sceneEntity.setAnimation(BuildingActivity.Teleport, () => {
+            this.sceneEntity.setAnimation(BUILDING_ACTIVITY.teleport, () => {
                 this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
                 this.powerOffSprite.setEnabled(!this.isPowered())
                 this.onPlaceDown()
@@ -245,13 +245,13 @@ export class BuildingEntity {
         this.primarySurface.pathBlockedByBuilding = false
         if (this.secondarySurface) this.secondarySurface.pathBlockedByBuilding = false
         this.setEnergized(false)
-        this.sceneEntity.setAnimation(BuildingActivity.Stand)
+        this.sceneEntity.setAnimation(BUILDING_ACTIVITY.stand)
         this.powerOffSprite.setEnabled(false)
         this.surfaces.forEach((s) => s.setBuilding(undefined))
         this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
         this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
         this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
-        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.scanner, this.entity, MAP_MARKER_CHANGE.remove))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
@@ -337,8 +337,8 @@ export class BuildingEntity {
                 this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
             }
         }
-        if (this.sceneEntity.currentAnimation === BuildingActivity.Stand || this.sceneEntity.currentAnimation === BuildingActivity.Unpowered) {
-            this.sceneEntity.setAnimation(this.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
+        if (this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.stand || this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.unpowered) {
+            this.sceneEntity.setAnimation(this.isPowered() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
         }
         this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
         this.surfaces.forEach((s) => s.updateTexture())
@@ -359,7 +359,7 @@ export class BuildingEntity {
     }
 
     private onPlaceDown() {
-        this.sceneEntity.setAnimation(BuildingActivity.Stand)
+        this.sceneEntity.setAnimation(BUILDING_ACTIVITY.stand)
         this.updateEnergyState()
         this.surfaces.forEach((surface) => {
             surface.updateTexture()

@@ -1,7 +1,7 @@
 import { Mesh, MeshPhongMaterial } from 'three'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SurfaceGeometry, SurfaceVertex } from './SurfaceGeometry'
-import { WALL_TYPE } from './WallType'
+import { WallType } from './WallType'
 import { ObjectPointer } from '../../scene/ObjectPointer'
 import { Surface } from './Surface'
 
@@ -30,7 +30,7 @@ export class SurfaceMesh extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
         this.material.needsUpdate = true
     }
 
-    setHeights(wallType: WALL_TYPE, topLeft: SurfaceVertex, topRight: SurfaceVertex, bottomRight: SurfaceVertex, bottomLeft: SurfaceVertex) {
+    setHeights(wallType: WallType, topLeft: SurfaceVertex, topRight: SurfaceVertex, bottomRight: SurfaceVertex, bottomLeft: SurfaceVertex) {
         this.geometry.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
     }
 

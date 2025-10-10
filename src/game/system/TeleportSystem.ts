@@ -10,7 +10,7 @@ import { Vector2 } from 'three'
 import { VehicleFactory } from '../model/vehicle/VehicleFactory'
 import { GameState } from '../model/GameState'
 import { PositionComponent } from '../component/PositionComponent'
-import { AnimEntityActivity } from '../model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY } from '../model/anim/AnimationActivity'
 import { HealthComponent } from '../component/HealthComponent'
 import { GameConfig } from '../../cfg/GameConfig'
 import { OxygenComponent } from '../component/OxygenComponent'
@@ -19,7 +19,7 @@ import { SceneSelectionComponent } from '../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../component/SelectionFrameComponent'
 import { MoveJob } from '../model/job/MoveJob'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../event/LocalEvents'
-import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../component/MapMarkerComponent'
+import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE, MapMarkerComponent } from '../component/MapMarkerComponent'
 import { WorldManager } from '../WorldManager'
 
 export class TeleportSystem extends AbstractGameSystem {
@@ -81,8 +81,8 @@ export class TeleportSystem extends AbstractGameSystem {
                     raider.sceneEntity.rotation.y = heading
                     raider.sceneEntity.visible = surface.discovered
                     this.worldMgr.sceneMgr.addSceneEntity(raider.sceneEntity)
-                    raider.sceneEntity.setAnimation(AnimEntityActivity.TeleportIn, () => {
-                        raider.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    raider.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.teleportIn, () => {
+                        raider.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                         let healthComponent: HealthComponent
                         if (raider.entityType === EntityType.PILOT) {
                             healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
@@ -101,8 +101,8 @@ export class TeleportSystem extends AbstractGameSystem {
                         this.worldMgr.entityMgr.raidersInBeam.remove(raider)
                         this.worldMgr.entityMgr.raiders.push(raider)
                         EventBroker.publish(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
-                        this.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-                        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, raider.entity, MapMarkerChange.UPDATE, floorPosition))
+                        this.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MAP_MARKER_TYPE.default))
+                        EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, raider.entity, MAP_MARKER_CHANGE.update, floorPosition))
                         teleport.operating = false
                     })
                     this.worldMgr.entityMgr.raidersInBeam.push(raider)
@@ -132,8 +132,8 @@ export class TeleportSystem extends AbstractGameSystem {
                         vehicle.sceneEntity.rotation.y = teleportBuilding.heading
                         vehicle.sceneEntity.visible = surface.discovered
                         vehicle.worldMgr.sceneMgr.addSceneEntity(vehicle.sceneEntity)
-                        vehicle.sceneEntity.setAnimation(AnimEntityActivity.TeleportIn, () => {
-                            vehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                        vehicle.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.teleportIn, () => {
+                            vehicle.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                             const healthComponent: HealthComponent = vehicle.worldMgr.ecs.addComponent(vehicle.entity, new HealthComponent(false, 24, 14, vehicle.sceneEntity, false, GameConfig.instance.getRockFallDamage(vehicle.entityType, vehicle.level)))
                             vehicle.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
                             vehicle.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
@@ -142,8 +142,8 @@ export class TeleportSystem extends AbstractGameSystem {
                             this.worldMgr.entityMgr.vehiclesInBeam.remove(vehicle)
                             this.worldMgr.entityMgr.vehicles.push(vehicle)
                             EventBroker.publish(new RaidersAmountChangedEvent(vehicle.worldMgr.entityMgr))
-                            vehicle.worldMgr.ecs.addComponent(vehicle.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-                            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, vehicle.entity, MapMarkerChange.UPDATE, floorPosition))
+                            vehicle.worldMgr.ecs.addComponent(vehicle.entity, new MapMarkerComponent(MAP_MARKER_TYPE.default))
+                            EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, vehicle.entity, MAP_MARKER_CHANGE.update, floorPosition))
                             teleportBuilding.operating = false
                         })
                         this.worldMgr.entityMgr.vehiclesInBeam.push(vehicle)

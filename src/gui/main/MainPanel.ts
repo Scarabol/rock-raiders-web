@@ -1,6 +1,6 @@
 import { EventKey } from '../../event/EventKeyEnum'
-import { CameraViewMode, ChangeCameraEvent } from '../../event/GuiCommand'
-import { BuildingsChangedEvent, GuiBuildButtonClicked, GuiGetToolButtonClicked, GuiTrainRaiderButtonClicked, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType, ShowMissionBriefingEvent } from '../../event/LocalEvents'
+import { CAMERA_VIEW_MODE, ChangeCameraEvent } from '../../event/GuiCommand'
+import { BuildingsChangedEvent, GuiBuildButtonClicked, GuiGetToolButtonClicked, GuiTrainRaiderButtonClicked, RaidersAmountChangedEvent, SELECT_PANEL_TYPE, SelectionChanged, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { RequestedRaidersChanged } from '../../event/WorldEvents'
 import { EntityType } from '../../game/model/EntityType'
 import { MAX_RAIDER_REQUEST } from '../../params'
@@ -119,11 +119,11 @@ export class MainPanel extends Panel {
 
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             this.lastSelectionEvent = event
-            if (event.selectPanelType === SelectPanelType.RAIDER) this.selectSubPanel(this.selectRaiderPanel)
-            else if (event.selectPanelType === SelectPanelType.VEHICLE) this.selectSubPanel(event.noVehicleWithDriver ? selectVehicleEmptyPanel : selectVehicleManedPanel)
-            else if (event.selectPanelType === SelectPanelType.BUILDING) this.selectSubPanel(selectBuildingPanel)
-            else if (event.selectPanelType === SelectPanelType.SURFACE) this.onSelectedSurfaceChange(event.isFloor, event.hasRubble, event.isSite, event.hasErosion)
-            else if (event.selectPanelType === SelectPanelType.FENCE) this.selectSubPanel(selectFencePanel)
+            if (event.selectPanelType === SELECT_PANEL_TYPE.raider) this.selectSubPanel(this.selectRaiderPanel)
+            else if (event.selectPanelType === SELECT_PANEL_TYPE.vehicle) this.selectSubPanel(event.noVehicleWithDriver ? selectVehicleEmptyPanel : selectVehicleManedPanel)
+            else if (event.selectPanelType === SELECT_PANEL_TYPE.building) this.selectSubPanel(selectBuildingPanel)
+            else if (event.selectPanelType === SELECT_PANEL_TYPE.surface) this.onSelectedSurfaceChange(event.isFloor, event.hasRubble, event.isSite, event.hasErosion)
+            else if (event.selectPanelType === SELECT_PANEL_TYPE.fence) this.selectSubPanel(selectFencePanel)
             else this.selectSubPanel(this.mainPanel)
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
@@ -141,9 +141,9 @@ export class MainPanel extends Panel {
         this.registerEventListener(EventKey.COMMAND_CAMERA_VIEW, (event: ChangeCameraEvent) => {
             cameraViewPanel.cameraViewMode = event.viewMode
             cameraViewPanel.updateAllButtonStates()
-            if (event.viewMode === CameraViewMode.BIRD) {
-                if (this.lastSelectionEvent?.selectPanelType === SelectPanelType.RAIDER) this.selectSubPanel(this.selectRaiderPanel)
-                else if (this.lastSelectionEvent?.selectPanelType === SelectPanelType.VEHICLE) this.selectSubPanel(this.lastSelectionEvent.noVehicleWithDriver ? selectVehicleEmptyPanel : selectVehicleManedPanel)
+            if (event.viewMode === CAMERA_VIEW_MODE.bird) {
+                if (this.lastSelectionEvent?.selectPanelType === SELECT_PANEL_TYPE.raider) this.selectSubPanel(this.selectRaiderPanel)
+                else if (this.lastSelectionEvent?.selectPanelType === SELECT_PANEL_TYPE.vehicle) this.selectSubPanel(this.lastSelectionEvent.noVehicleWithDriver ? selectVehicleEmptyPanel : selectVehicleManedPanel)
                 else {
                     console.warn('Unexpected state', this.lastSelectionEvent)
                 }

@@ -2,10 +2,10 @@ import { TypedWorkerBackend, TypedWorkerThreaded } from './TypedWorker'
 import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { MAP_MAX_UPDATE_INTERVAL, MAP_PANEL_SURFACE_RECT_MARGIN, TILESIZE } from '../params'
 import { getSpriteContext, SpriteContext, SpriteImage } from '../core/Sprite'
-import { MapMarkerType } from '../game/component/MapMarkerComponent'
+import { MAP_MARKER_TYPE, MapMarkerType } from '../game/component/MapMarkerComponent'
 import { Vector2 } from 'three'
 
-export enum MapRendererWorkerRequestType {
+export const enum MapRendererWorkerRequestType {
     RESPONSE_MAP_RENDERER = 1, // start with 1 for truthiness safety
     MAP_RENDERER_INIT,
     MAP_RENDER_TERRAIN,
@@ -103,16 +103,16 @@ export class MapRendererWorker {
                     break
                 case MapRendererWorkerRequestType.MAP_RENDER_ENTITIES:
                     switch (msg.mapMarkerType) {
-                        case MapMarkerType.DEFAULT:
+                        case MAP_MARKER_TYPE.default:
                             this.redrawEntitiesContext(msg, this.entityContext, '#e8d400', 4)
                             break
-                        case MapMarkerType.MONSTER:
+                        case MAP_MARKER_TYPE.monster:
                             this.redrawEntitiesContext(msg, this.monsterContext, '#f00', 3)
                             break
-                        case MapMarkerType.MATERIAL:
+                        case MAP_MARKER_TYPE.material:
                             this.redrawEntitiesContext(msg, this.materialContext, '#0f0', 2)
                             break
-                        case MapMarkerType.SCANNER:
+                        case MAP_MARKER_TYPE.scanner:
                             this.redrawGeoScanContext(msg)
                             break
                     }

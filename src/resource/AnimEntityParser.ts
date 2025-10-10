@@ -1,6 +1,6 @@
 import { iGet } from '../core/Util'
 import { VERBOSE } from '../params'
-import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY } from '../game/model/anim/AnimationActivity'
 
 export class AnimEntityData {
     scale: number = 1
@@ -102,7 +102,7 @@ export class AnimEntityParser {
                 if (!this.knownAnimations.includes(rootKey)) {
                     try {
                         if (rootKey.equalsIgnoreCase('stand')) { // XXX workaround for walkerlegs.ae
-                            this.parseActivityEntry(value, AnimEntityActivity.Stand)
+                            this.parseActivityEntry(value, ANIM_ENTITY_ACTIVITY.stand)
                         } else {
                             // XXX What does it mean to have activities given outside of listing?
                             this.parseActivityEntry(value, rootKey)

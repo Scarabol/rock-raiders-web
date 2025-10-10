@@ -8,8 +8,8 @@ import { PositionComponent } from '../component/PositionComponent'
 import { Surface } from '../terrain/Surface'
 import { MonsterSpawner } from '../factory/MonsterSpawner'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
-import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
-import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
+import { ANIM_ENTITY_ACTIVITY, ROCK_MONSTER_ACTIVITY } from '../model/anim/AnimationActivity'
+import { RAIDER_SCARE_RANGE, RaiderScareComponent } from '../component/RaiderScareComponent'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { WorldManager } from '../WorldManager'
 import { WALL_TYPE } from '../terrain/WallType'
@@ -60,7 +60,7 @@ export class EmergeSystem extends AbstractGameSystem {
         triggeredEmerges.forEach((emergeComponent) => {
             emergeSpawns.getOrUpdate(emergeComponent.emergeSpawnId, () => []).forEach((surface) => {
                 emergeComponent.emergeDelayMs = this.emergeTimeoutMs
-                if (surface.wallType !== WALL_TYPE.WALL) return // walls might change from undiscovered or inverted corner to actual wall
+                if (surface.wallType !== WALL_TYPE.wall) return // walls might change from undiscovered or inverted corner to actual wall
                 EventBroker.publish(new MonsterEmergeEvent(surface))
             })
         })
@@ -76,9 +76,9 @@ export class EmergeSystem extends AbstractGameSystem {
         const components = this.ecs.getComponents(monster)
         const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
         const positionComponent = components.get(PositionComponent)
-        sceneEntity.setAnimation(RockMonsterActivity.Emerge, () => {
-            sceneEntity.setAnimation(AnimEntityActivity.Stand)
-            this.ecs.addComponent(monster, new RaiderScareComponent(RaiderScareRange.ROCKY))
+        sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.emerge, () => {
+            sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
+            this.ecs.addComponent(monster, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
             this.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
         })
         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))

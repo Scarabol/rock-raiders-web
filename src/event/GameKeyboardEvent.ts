@@ -1,13 +1,13 @@
-import { KEY_EVENT } from './EventTypeEnum'
+import { KeyEventType } from './EventTypeEnum'
 
 export class GameKeyboardEvent {
-    eventEnum: KEY_EVENT
+    eventEnum: KeyEventType
     type: string
     bubbles: boolean
     key: string
     code: string
 
-    constructor(eventEnum: KEY_EVENT, event: KeyboardEvent) {
+    constructor(eventEnum: KeyEventType, event: KeyboardEvent) {
         this.eventEnum = eventEnum
         this.type = event.type
         this.bubbles = false // disable bubbling otherwise we'll trigger this same event handler again

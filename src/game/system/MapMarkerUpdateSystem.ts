@@ -1,6 +1,6 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { PositionComponent } from '../component/PositionComponent'
-import { MapMarkerChange, MapMarkerComponent } from '../component/MapMarkerComponent'
+import { MAP_MARKER_CHANGE, MapMarkerComponent } from '../component/MapMarkerComponent'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
 import { EventBroker } from '../../event/EventBroker'
 
@@ -14,7 +14,7 @@ export class MapMarkerUpdateSystem extends AbstractGameSystem {
                 const components = this.ecs.getComponents(entity)
                 const mapMarkerType = components.get(MapMarkerComponent).mapMarkerType
                 const position = components.get(PositionComponent).position
-                EventBroker.publish(new UpdateRadarEntityEvent(mapMarkerType, entity, MapMarkerChange.UPDATE, position))
+                EventBroker.publish(new UpdateRadarEntityEvent(mapMarkerType, entity, MAP_MARKER_CHANGE.update, position))
             } catch (e) {
                 console.error(e)
             }

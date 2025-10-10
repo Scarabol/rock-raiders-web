@@ -1,4 +1,4 @@
-import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
+import { AnimationActivity, RAIDER_ACTIVITY } from '../../anim/AnimationActivity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
@@ -21,7 +21,7 @@ export class EatJob extends RaiderJob {
     }
 
     getWorkActivity(): AnimationActivity {
-        return RaiderActivity.Eat
+        return RAIDER_ACTIVITY.eat
     }
 
     getJobBubble(): keyof BubblesCfg {

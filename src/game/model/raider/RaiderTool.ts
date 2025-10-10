@@ -1,25 +1,26 @@
-export enum RaiderTool {
-    NONE = '', // useful for truthiness checks
-    DRILL = 'ToolType_Drill',
-    HAMMER = 'ToolType_Hammer',
-    SHOVEL = 'ToolType_Spade',
-    SPANNER = 'ToolType_Spanner',
-    FREEZER_GUN = 'ToolType_FreezerGun',
-    LASER = 'ToolType_Laser',
-    PUSHER_GUN = 'ToolType_PusherGun',
-    BIRD_SCARER = 'ToolType_BirdScarer',
+export const RAIDER_TOOL = {
+    none: '', // useful for truthiness checks
+    drill: 'ToolType_Drill',
+    hammer: 'ToolType_Hammer',
+    shovel: 'ToolType_Spade',
+    spanner: 'ToolType_Spanner',
+    freezerGun: 'ToolType_FreezerGun',
+    laser: 'ToolType_Laser',
+    pusherGun: 'ToolType_PusherGun',
+    birdScarer: 'ToolType_BirdScarer',
 }
+export type RaiderTool = typeof RAIDER_TOOL[keyof typeof RAIDER_TOOL]
 
 export class RaiderTools {
     static values: RaiderTool[] = [
-        RaiderTool.DRILL,
-        RaiderTool.HAMMER,
-        RaiderTool.SHOVEL,
-        RaiderTool.SPANNER,
-        RaiderTool.FREEZER_GUN,
-        RaiderTool.LASER,
-        RaiderTool.PUSHER_GUN,
-        RaiderTool.BIRD_SCARER,
+        RAIDER_TOOL.drill,
+        RAIDER_TOOL.hammer,
+        RAIDER_TOOL.shovel,
+        RAIDER_TOOL.spanner,
+        RAIDER_TOOL.freezerGun,
+        RAIDER_TOOL.laser,
+        RAIDER_TOOL.pusherGun,
+        RAIDER_TOOL.birdScarer,
     ]
 
     static toToolTipIconName(tool: RaiderTool): string {
@@ -28,21 +29,21 @@ export class RaiderTools {
 
     static toInterfaceItemKey(tool: RaiderTool): string {
         switch (tool) {
-            case RaiderTool.DRILL:
+            case RAIDER_TOOL.drill:
                 return 'Interface_MenuItem_GetDrill'
-            case RaiderTool.SHOVEL:
+            case RAIDER_TOOL.shovel:
                 return 'Interface_MenuItem_GetSpade'
-            case RaiderTool.HAMMER:
+            case RAIDER_TOOL.hammer:
                 return 'Interface_MenuItem_GetHammer'
-            case RaiderTool.SPANNER:
+            case RAIDER_TOOL.spanner:
                 return 'Interface_MenuItem_GetSpanner'
-            case RaiderTool.FREEZER_GUN:
+            case RAIDER_TOOL.freezerGun:
                 return 'Interface_MenuItem_GetFreezerGun'
-            case RaiderTool.LASER:
+            case RAIDER_TOOL.laser:
                 return 'Interface_MenuItem_GetLaser'
-            case RaiderTool.PUSHER_GUN:
+            case RAIDER_TOOL.pusherGun:
                 return 'Interface_MenuItem_GetPusherGun'
-            case RaiderTool.BIRD_SCARER:
+            case RAIDER_TOOL.birdScarer:
                 return 'Interface_MenuItem_GetBirdScarer'
             default:
                 throw new Error(`Unexpected raider tool given: ${tool}`)

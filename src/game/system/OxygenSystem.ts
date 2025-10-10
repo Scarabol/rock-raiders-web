@@ -2,7 +2,7 @@ import { AbstractGameSystem, GameEntity } from '../ECS'
 import { OxygenComponent } from '../component/OxygenComponent'
 import { GameState } from '../model/GameState'
 import { AirLevelChanged, GameResultEvent, LevelSelectedEvent } from '../../event/WorldEvents'
-import { GameResultState } from '../model/GameResult'
+import { GAME_RESULT_STATE } from '../model/GameResult'
 import { EventKey } from '../../event/EventKeyEnum'
 import { EventBroker } from '../../event/EventBroker'
 
@@ -33,7 +33,7 @@ export class OxygenSystem extends AbstractGameSystem {
         if (GameState.airLevel !== nextAirLevel) {
             GameState.airLevel = nextAirLevel
             EventBroker.publish(new AirLevelChanged(GameState.airLevel))
-            if (GameState.airLevel <= 0) EventBroker.publish(new GameResultEvent(GameResultState.FAILED)) // Level 22 has oxygen, but no NERP check
+            if (GameState.airLevel <= 0) EventBroker.publish(new GameResultEvent(GAME_RESULT_STATE.failed)) // Level 22 has oxygen, but no NERP check
         }
     }
 }

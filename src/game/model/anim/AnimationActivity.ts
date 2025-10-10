@@ -1,93 +1,95 @@
 export type AnimationActivity = string
 
-export enum BarrierActivity {
-    Short = 'Short',
-    Expand = 'Expand',
-    Long = 'Long',
-    Teleport = 'Teleport',
+export const BARRIER_ACTIVITY = {
+    short: 'Short',
+    expand: 'Expand',
+    long: 'Long',
+    teleport: 'Teleport',
+} as const
+
+export const DYNAMITE_ACTIVITY = {
+    normal: 'Normal',
+    tickDown: 'TickDown',
 }
 
-export enum DynamiteActivity {
-    Normal = 'Normal',
-    TickDown = 'TickDown',
+export const BUILDING_ACTIVITY = {
+    stand: 'Activity_Stand',
+    teleport: 'Activity_Teleport',
+    deposit: 'Activity_Deposit',
+    explode: 'Activity_Explode',
+    unpowered: 'Activity_Unpowered',
+    upgrade: 'Activity_Upgrade',
 }
 
-export enum BuildingActivity {
-    Stand = 'Activity_Stand',
-    Teleport = 'Activity_Teleport',
-    Deposit = 'Activity_Deposit',
-    Explode = 'Activity_Explode',
-    Unpowered = 'Activity_Unpowered',
-    Upgrade = 'Activity_Upgrade',
+export const ANIM_ENTITY_ACTIVITY = {
+    stand: 'Activity_Stand',
+    route: 'Activity_Route',
+    teleportIn: 'Activity_TeleportIn',
+    carry: 'Activity_Carry',
+    standCarry: 'Activity_CarryStand',
+}
+export type AnimEntityActivity = typeof ANIM_ENTITY_ACTIVITY[keyof typeof ANIM_ENTITY_ACTIVITY]
+
+export const RAIDER_ACTIVITY = {
+    drill: 'Activity_Drill',
+    walk: 'Activity_Walk',
+    reinforce: 'Activity_Reinforce',
+    turnLeft: 'Activity_TurnLeft',
+    turnRight: 'Activity_TurnRight',
+    collect: 'Activity_Collect',
+    clear: 'Activity_Clear',
+    dynamite: 'Activity_Dynamite',
+    place: 'Activity_Place',
+    deposit: 'Activity_Deposit',
+    repair: 'Activity_Repair',
+    rest: 'Activity_rest',
+    routeRubble: 'Activity_routeRubble',
+    carryRubble: 'Activity_CarryRubble',
+    eat: 'Activity_Eat',
+    slip: 'Activity_Slip',
+    train: 'Activity_Train',
+    runPanic: 'Activity_RunPanic',
+    thrown: 'Activity_ThrownByRockMonster',
+    getUp: 'Activity_GetUp',
+
+    hoverboard: 'Activity_Hoverboard',
+    standHoverboard: 'Activity_Standhoverboard',
+    smallTruck: 'Activity_SMALLTRUCK',
+    standSmallTruck: 'Activity_StandSMALLTRUCK',
+    smallHeli: 'Activity_SMALLheli',
+    standSmallHeli: 'Activity_StandSMALLheli',
+    smallCat: 'Activity_SMALLCAT',
+    standSmallCat: 'Activity_StandSMALLCAT',
+    smallMlp: 'Activity_SMALLMLP',
+    standSmallMLP: 'Activity_StandSMALLMLP',
+    largeCat: 'Activity_LARGECAT',
+    standLargeCat: 'Activity_StandLARGECAT',
+    smallDigger: 'Activity_SMALLDIGGER',
+    standSmallDigger: 'Activity_StandSMALLDIGGER',
+
+    shoot: 'Activity_FireLaser',
+    recharge: 'Activity_Recharge',
+}
+export type RaiderActivity = typeof RAIDER_ACTIVITY[keyof typeof RAIDER_ACTIVITY]
+
+export const ROCK_MONSTER_ACTIVITY = {
+    unpowered: 'Activity_Unpowered',
+    emerge: 'Activity_Emerge',
+    wakeUp: 'Activity_WakeUp',
+    eat: 'Activity_Eat',
+    stamp: 'Activity_Stamp',
+    enter: 'Activity_Enter',
+    gather: 'Activity_Gather',
+    throw: 'Activity_Throw',
+    punch: 'Activity_Repair',
+    crumble: 'Activity_Crumble',
+    throwMan: 'Activity_ThrowMan',
+    rest: 'Activity_Rest',
+    hitHard: 'Activity_HitHard',
 }
 
-export enum AnimEntityActivity {
-    Stand = 'Activity_Stand',
-    Route = 'Activity_Route',
-    TeleportIn = 'Activity_TeleportIn',
-    Carry = 'Activity_Carry',
-    StandCarry = 'Activity_CarryStand',
-}
-
-export enum RaiderActivity {
-    Drill = 'Activity_Drill',
-    Walk = 'Activity_Walk',
-    Reinforce = 'Activity_Reinforce',
-    TurnLeft = 'Activity_TurnLeft',
-    TurnRight = 'Activity_TurnRight',
-    Collect = 'Activity_Collect',
-    Clear = 'Activity_Clear',
-    Dynamite = 'Activity_Dynamite',
-    Place = 'Activity_Place',
-    Deposit = 'Activity_Deposit',
-    Repair = 'Activity_Repair',
-    rest = 'Activity_rest',
-    routeRubble = 'Activity_routeRubble',
-    CarryRubble = 'Activity_CarryRubble',
-    Eat = 'Activity_Eat',
-    Slip = 'Activity_Slip',
-    Train = 'Activity_Train',
-    RunPanic = 'Activity_RunPanic',
-    Thrown = 'Activity_ThrownByRockMonster',
-    GetUp = 'Activity_GetUp',
-
-    Hoverboard = 'Activity_Hoverboard',
-    Standhoverboard = 'Activity_Standhoverboard',
-    SMALLTRUCK = 'Activity_SMALLTRUCK',
-    StandSMALLTRUCK = 'Activity_StandSMALLTRUCK',
-    SMALLheli = 'Activity_SMALLheli',
-    StandSMALLheli = 'Activity_StandSMALLheli',
-    SMALLCAT = 'Activity_SMALLCAT',
-    StandSMALLCAT = 'Activity_StandSMALLCAT',
-    SMALLMLP = 'Activity_SMALLMLP',
-    StandSMALLMLP = 'Activity_StandSMALLMLP',
-    LARGECAT = 'Activity_LARGECAT',
-    StandLARGECAT = 'Activity_StandLARGECAT',
-    SMALLDIGGER = 'Activity_SMALLDIGGER',
-    StandSMALLDIGGER = 'Activity_StandSMALLDIGGER',
-
-    Shoot = 'Activity_FireLaser',
-    Recharge = 'Activity_Recharge',
-}
-
-export enum RockMonsterActivity {
-    Unpowered = 'Activity_Unpowered',
-    Emerge = 'Activity_Emerge',
-    WakeUp = 'Activity_WakeUp',
-    Eat = 'Activity_Eat',
-    Stamp = 'Activity_Stamp',
-    Enter = 'Activity_Enter',
-    Gather = 'Activity_Gather',
-    Throw = 'Activity_Throw',
-    Punch = 'Activity_Repair',
-    Crumble = 'Activity_Crumble',
-    ThrowMan = 'Activity_ThrowMan',
-    Rest = 'Activity_Rest',
-    HitHard = 'Activity_HitHard',
-}
-
-export enum SlugActivity {
-    Emerge = 'Activity_Emerge',
-    Enter = 'Activity_Enter',
-    Suck = 'Activity_Repair',
+export const SLUG_ACTIVITY = {
+    emerge: 'Activity_Emerge',
+    enter: 'Activity_Enter',
+    suck: 'Activity_Repair',
 }

@@ -39,7 +39,7 @@ import { TeleportSystem } from './system/TeleportSystem'
 import { FallInSystem } from './system/FallInSystem'
 import { FluidSurfaceSystem } from './system/FluidSurfaceSystem'
 import { LaserShotSystem } from './system/LaserShotSystem'
-import { GameResultState } from './model/GameResult'
+import { GAME_RESULT_STATE } from './model/GameResult'
 import { NerpScript } from '../nerp/NerpScript'
 import { PRNG } from './factory/PRNG'
 
@@ -154,7 +154,7 @@ export class WorldManager {
     checkCrystalFailure() {
         try {
             if (this.crystalsQuota < 1 || GameState.totalCrystals >= this.crystalsQuota) return
-            EventBroker.publish(new GameResultEvent(GameResultState.CRYSTAL_FAILURE))
+            EventBroker.publish(new GameResultEvent(GAME_RESULT_STATE.crystalFailure))
         } catch (e) {
             console.error(e)
         }

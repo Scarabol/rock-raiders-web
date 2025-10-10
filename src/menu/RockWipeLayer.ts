@@ -9,7 +9,7 @@ import { BaseRenderer } from '../screen/BaseRenderer'
 
 class FullScreenShader extends ShaderMaterial {
     private static camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1)
-    private mesh: Mesh
+    private readonly mesh: Mesh
 
     constructor(parameters?: ShaderMaterialParameters) {
         super(parameters)

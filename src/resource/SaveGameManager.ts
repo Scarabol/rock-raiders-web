@@ -1,4 +1,5 @@
 import { DEFAULT_AUTO_GAME_SPEED, DEFAULT_GAME_BRIGHTNESS, DEFAULT_GAME_SPEED_MULTIPLIER, DEFAULT_MUSIC_TOGGLE, DEFAULT_MUSIC_VOLUME, DEFAULT_SCREEN_RATIO_FIXED, DEFAULT_SFX_TOGGLE, DEFAULT_SFX_VOLUME, DEFAULT_SHOW_HELP_WINDOW, DEFAULT_WALL_DETAILS, DEV_MODE, NUM_OF_LEVELS_TO_COMPLETE_GAME, SAVE_GAME_SCREENSHOT_HEIGHT, SAVE_GAME_SCREENSHOT_WIDTH, VERBOSE } from '../params'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
 
 export class SaveGamePreferences { // this gets serialized
     // Vanilla game preferences
@@ -93,7 +94,7 @@ export class SaveGameManager {
 
     static getOverallGameProgress(index: number): number {
         const levels = this.saveGames[index]?.levels ?? []
-        const levelNameList = levels.filter((l) => l.levelName?.toLowerCase().startsWith('level'))
+        const levelNameList = levels.map((l) => l.levelName).filter((levelName) => LevelEntryCfg.isLevel(levelName))
         return new Set(levelNameList).size * 100 / NUM_OF_LEVELS_TO_COMPLETE_GAME
     }
 
@@ -146,7 +147,7 @@ export class SaveGameManager {
     }
 
     static getLevelScoreString(levelName: string): string {
-        if (!levelName.toLowerCase().startsWith('level')) return ''
+        if (!LevelEntryCfg.isLevel(levelName)) return ''
         const levelScore = this.currentLevels.find((l) => l.levelName?.equalsIgnoreCase(levelName))?.levelScore
         if (!levelScore) return ''
         return ` (${levelScore})`

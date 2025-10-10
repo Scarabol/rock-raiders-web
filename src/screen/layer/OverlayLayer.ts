@@ -8,10 +8,10 @@ import { HideTooltip } from '../../event/GuiCommand'
 import { CursorManager } from '../CursorManager'
 import { Panel } from '../../gui/base/Panel'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { POINTER_EVENT } from '../../event/EventTypeEnum'
+import { POINTER_EVENT, PointerEventType } from '../../event/EventTypeEnum'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../../gui/event/GuiEvent'
 import { BaseElement } from '../../gui/base/BaseElement'
-import { GameResultState } from '../../game/model/GameResult'
+import { GAME_RESULT_STATE, GameResultState } from '../../game/model/GameResult'
 import { GameResultEvent, RestartGameEvent } from '../../event/WorldEvents'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
@@ -43,7 +43,7 @@ export class OverlayLayer extends ScaledLayer {
         this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
         this.panelPause.onAbortGame = () => {
             this.setActivePanel(undefined)
-            EventBroker.publish(new GameResultEvent(GameResultState.QUIT))
+            EventBroker.publish(new GameResultEvent(GAME_RESULT_STATE.quit))
         }
         this.panelPause.onRestartGame = () => EventBroker.publish(new RestartGameEvent())
         this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
@@ -54,11 +54,11 @@ export class OverlayLayer extends ScaledLayer {
         }
         this.animationFrame.notifyRedraw()
         EventBroker.subscribe(EventKey.SHOW_OPTIONS, () => this.setActivePanel(this.panelOptions))
-        new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
-            ['pointermove', POINTER_EVENT.MOVE],
-            ['pointerdown', POINTER_EVENT.DOWN],
-            ['pointerup', POINTER_EVENT.UP],
-            ['pointerleave', POINTER_EVENT.LEAVE],
+        new Map<keyof HTMLElementEventMap, PointerEventType>([
+            ['pointermove', POINTER_EVENT.move],
+            ['pointerdown', POINTER_EVENT.down],
+            ['pointerup', POINTER_EVENT.up],
+            ['pointerleave', POINTER_EVENT.leave],
         ]).forEach((eventEnum, eventType) => {
             this.addEventListener(eventType, (event): boolean => {
                 const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent)
@@ -90,15 +90,15 @@ export class OverlayLayer extends ScaledLayer {
         let title = ''
         let text = ''
         let sfx = ''
-        if (result === GameResultState.COMPLETE) {
+        if (result === GAME_RESULT_STATE.complete) {
             title = mainCfg.missionCompletedText
             text = levelConf.objectiveTextCfg.completion
             sfx = `Stream_ObjectiveAcheived_Levels::${levelConf.levelName}`.toLowerCase()
-        } else if (result === GameResultState.FAILED) {
+        } else if (result === GAME_RESULT_STATE.failed) {
             title = mainCfg.missionFailedText
             text = levelConf.objectiveTextCfg.failure
             sfx = `Stream_ObjectiveFailed_Levels::${levelConf.levelName}`.toLowerCase()
-        } else if (result === GameResultState.CRYSTAL_FAILURE) {
+        } else if (result === GAME_RESULT_STATE.crystalFailure) {
             title = mainCfg.missionFailedText
             text = levelConf.objectiveTextCfg.crystalFailure
             sfx = 'Stream_ObjectiveFailedCrystals'
@@ -137,13 +137,13 @@ export class OverlayLayer extends ScaledLayer {
 
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (this.panels.every(p => p.hidden)) return false
-        if (event.eventEnum === POINTER_EVENT.MOVE) {
+        if (event.eventEnum === POINTER_EVENT.move) {
             this.rootElement.onPointerMove(new GuiHoverEvent(event.canvasX, event.canvasY))
-        } else if (event.eventEnum === POINTER_EVENT.DOWN) {
+        } else if (event.eventEnum === POINTER_EVENT.down) {
             this.rootElement.onPointerDown(new GuiPointerDownEvent(event.canvasX, event.canvasY, event.button))
-        } else if (event.eventEnum === POINTER_EVENT.UP) {
+        } else if (event.eventEnum === POINTER_EVENT.up) {
             this.rootElement.onPointerUp(new GuiPointerUpEvent(event.canvasX, event.canvasY, event.button))
-        } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
+        } else if (event.eventEnum === POINTER_EVENT.leave) {
             this.rootElement.onPointerLeave()
         }
         return true

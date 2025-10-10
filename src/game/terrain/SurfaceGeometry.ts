@@ -1,6 +1,6 @@
 import { BufferGeometry, Vector2, Vector3 } from 'three'
 import { BufferAttribute } from 'three/src/core/BufferAttribute'
-import { WALL_TYPE } from './WallType'
+import { WALL_TYPE, WallType } from './WallType'
 
 export class SurfaceGeometry extends BufferGeometry {
     constructor() {
@@ -10,7 +10,7 @@ export class SurfaceGeometry extends BufferGeometry {
         this.setAttribute('uv', new BufferAttribute(new Float32Array(12), 2))
     }
 
-    setHeights(wallType: WALL_TYPE, topLeft: SurfaceVertex, topRight: SurfaceVertex, bottomRight: SurfaceVertex, bottomLeft: SurfaceVertex) {
+    setHeights(wallType: WallType, topLeft: SurfaceVertex, topRight: SurfaceVertex, bottomRight: SurfaceVertex, bottomLeft: SurfaceVertex) {
         const uvOffset = SurfaceGeometry.determineUvOffset(wallType, topLeft.high, bottomRight.high, topRight.high, bottomLeft.high)
 
         const topLeftVertex = new Vector3(0, topLeft.height, 0)
@@ -31,7 +31,7 @@ export class SurfaceGeometry extends BufferGeometry {
 
         const uvIndexes = []
         if (topRight.high !== bottomLeft.high ||
-            (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) && !(topRight.high && bottomLeft.high)) {
+            (wallType === WALL_TYPE.wall || wallType === WALL_TYPE.weirdCrevice) && !(topRight.high && bottomLeft.high)) {
             uvIndexes.push(1, 3, 2)
             uvIndexes.push(1, 0, 3)
             addFaceAndNormals(topRightVertex, bottomLeftVertex, bottomRightVertex)
@@ -53,37 +53,37 @@ export class SurfaceGeometry extends BufferGeometry {
         this.setAttributes(vertices, normals, vertexUvs)
     }
 
-    private static determineUvOffset(wallType: WALL_TYPE, topLeftHigh: boolean, bottomRightHigh: boolean, topRightHigh: boolean, bottomLeftHigh: boolean) {
+    private static determineUvOffset(wallType: WallType, topLeftHigh: boolean, bottomRightHigh: boolean, topRightHigh: boolean, bottomLeftHigh: boolean) {
         let uvOffset = 0
         // not-rotated
         // 1 ?
         // ? 0
         if (topLeftHigh && !bottomRightHigh &&
-            (wallType === WALL_TYPE.INVERTED_CORNER || (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === (topRightHigh))) {
+            (wallType === WALL_TYPE.invertedCorner || (wallType === WALL_TYPE.wall || wallType === WALL_TYPE.weirdCrevice) === (topRightHigh))) {
             uvOffset = 0
         }
         // 90 clock-wise
         // ? 1
         // 0 ?
         if (topRightHigh && !bottomLeftHigh &&
-            (wallType === WALL_TYPE.INVERTED_CORNER || (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === (bottomRightHigh))) {
+            (wallType === WALL_TYPE.invertedCorner || (wallType === WALL_TYPE.wall || wallType === WALL_TYPE.weirdCrevice) === (bottomRightHigh))) {
             uvOffset = 3
         }
         // 180 clock-wise
         // 0 ?
         // ? 1
         if (bottomRightHigh && !topLeftHigh &&
-            (wallType === WALL_TYPE.INVERTED_CORNER || (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === (bottomLeftHigh))) {
+            (wallType === WALL_TYPE.invertedCorner || (wallType === WALL_TYPE.wall || wallType === WALL_TYPE.weirdCrevice) === (bottomLeftHigh))) {
             uvOffset = 2
         }
         // 270 clock-wise
         // ? 0
         // 1 ?
         if (bottomLeftHigh && !topRightHigh &&
-            (wallType === WALL_TYPE.INVERTED_CORNER || (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === (topLeftHigh))) {
+            (wallType === WALL_TYPE.invertedCorner || (wallType === WALL_TYPE.wall || wallType === WALL_TYPE.weirdCrevice) === (topLeftHigh))) {
             uvOffset = 1
         }
-        if (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) {
+        if (wallType === WALL_TYPE.wall || wallType === WALL_TYPE.weirdCrevice) {
             if (topLeftHigh && bottomRightHigh) {
                 uvOffset = 0
             }

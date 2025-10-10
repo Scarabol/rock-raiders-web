@@ -1,7 +1,9 @@
-export enum WALL_TYPE {
-    FLOOR = 0,
-    CORNER = 1,
-    WALL = 2,
-    INVERTED_CORNER = 3,
-    WEIRD_CREVICE = 20,
-}
+export const WALL_TYPE = {
+    floor: 0,
+    corner: 1,
+    wall: 2,
+    invertedCorner: 3,
+    roof: 4,
+    weirdCrevice: 20,
+} as const
+export type WallType = typeof WALL_TYPE[keyof typeof WALL_TYPE]

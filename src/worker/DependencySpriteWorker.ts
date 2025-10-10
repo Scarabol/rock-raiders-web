@@ -6,7 +6,7 @@ import { createContext, imgDataToCanvas } from '../core/ImageHelper'
 import { EntityDependencyChecked } from '../cfg/GameConfig'
 import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
 
-export enum DependencySpriteWorkerRequestType {
+export const enum DependencySpriteWorkerRequestType {
     SETUP = 1, // start with 1 for truthiness safety
     CREATE_SPRITE,
 }

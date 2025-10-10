@@ -1,4 +1,4 @@
-import { AnimationActivity, AnimEntityActivity, BarrierActivity, BuildingActivity, DynamiteActivity, RaiderActivity } from '../anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY, AnimationActivity, BARRIER_ACTIVITY, BUILDING_ACTIVITY, DYNAMITE_ACTIVITY, RAIDER_ACTIVITY } from '../anim/AnimationActivity'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
 import { Job, JobFulfiller } from './Job'
@@ -10,13 +10,13 @@ import { SelectionFrameComponent } from '../../component/SelectionFrameComponent
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { EntityManager } from '../../EntityManager'
 import { SelectionChanged } from '../../../event/LocalEvents'
-import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
+import { RAIDER_SCARE_RANGE, RaiderScareComponent } from '../../component/RaiderScareComponent'
 import { MaterialSpawner } from '../../factory/MaterialSpawner'
-import { JobState } from './JobState'
+import { JOB_STATE } from './JobState'
 import { GameConfig } from '../../../cfg/GameConfig'
 import { EventBroker } from '../../../event/EventBroker'
 import { Vector2 } from 'three'
-import { PriorityIdentifier } from './PriorityIdentifier'
+import { PRIORITY_IDENTIFIER } from './PriorityIdentifier'
 import { GameState } from '../GameState'
 
 export class CarryJob extends Job {
@@ -48,7 +48,7 @@ export class CarryJob extends Job {
             this.target = entity.findShortestPath(this.findWorkplaces(entity))?.target
             if (this.target?.site) this.target.site.assign(this.carryItem)
         }
-        this.priorityIdentifier = this.target?.site ? PriorityIdentifier.CONSTRUCTION : this.carryItem.priorityIdentifier
+        this.priorityIdentifier = this.target?.site ? PRIORITY_IDENTIFIER.construction : this.carryItem.priorityIdentifier
         return this.target
     }
 
@@ -57,22 +57,22 @@ export class CarryJob extends Job {
         const entityMgr = carryItem.worldMgr.entityMgr
         switch (carryItem.entityType) {
             case EntityType.ORE:
-                if (GameState.priorityList.isEnabled(PriorityIdentifier.CONSTRUCTION)) {
+                if (GameState.priorityList.isEnabled(PRIORITY_IDENTIFIER.construction)) {
                     const oreSites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
                     if (oreSites.length > 0) return oreSites
                 }
-                if (GameState.priorityList.isEnabled(PriorityIdentifier.ORE)) {
+                if (GameState.priorityList.isEnabled(PRIORITY_IDENTIFIER.ore)) {
                     const oreRefineries = this.findReachableBuilding(entityMgr, EntityType.ORE_REFINERY, entity)
                     if (oreRefineries.length > 0) return oreRefineries
                     return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
                 }
                 return []
             case EntityType.CRYSTAL:
-                if (GameState.priorityList.isEnabled(PriorityIdentifier.CONSTRUCTION)) {
+                if (GameState.priorityList.isEnabled(PRIORITY_IDENTIFIER.construction)) {
                     const crystalSites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
                     if (crystalSites.length > 0) return crystalSites
                 }
-                if (GameState.priorityList.isEnabled(PriorityIdentifier.CRYSTAL)) {
+                if (GameState.priorityList.isEnabled(PRIORITY_IDENTIFIER.crystal)) {
                     const powerStations = this.findReachableBuilding(entityMgr, EntityType.POWER_STATION, entity)
                     if (powerStations.length > 0) return powerStations
                     return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
@@ -129,17 +129,17 @@ export class CarryJob extends Job {
 
     getWorkActivity(): AnimationActivity {
         if (this.fulfiller?.entityType === EntityType.PILOT) {
-            if (this.carryItem.entityType === EntityType.DEPLETED_CRYSTAL) return RaiderActivity.Recharge
+            if (this.carryItem.entityType === EntityType.DEPLETED_CRYSTAL) return RAIDER_ACTIVITY.recharge
             const building = this.target?.building?.entityType
-            return building === EntityType.POWER_STATION || building === EntityType.ORE_REFINERY ? RaiderActivity.Deposit : RaiderActivity.Place
+            return building === EntityType.POWER_STATION || building === EntityType.ORE_REFINERY ? RAIDER_ACTIVITY.deposit : RAIDER_ACTIVITY.place
         }
-        return AnimEntityActivity.Stand
+        return ANIM_ENTITY_ACTIVITY.stand
     }
 
     isReadyToComplete(): boolean {
         if (!this.target) return false
         if (this.target.building?.entityType === EntityType.POWER_STATION || this.target.building?.entityType === EntityType.ORE_REFINERY) {
-            return this.target.building.sceneEntity.currentAnimation === (this.target.building.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
+            return this.target.building.sceneEntity.currentAnimation === (this.target.building.isPowered() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
         }
         return true
     }
@@ -148,15 +148,15 @@ export class CarryJob extends Job {
         super.onJobComplete(fulfiller)
         const dropped = this.fulfiller?.dropCarried(false) || []
         dropped.forEach((droppedItem) => {
-            if (droppedItem.carryJob) droppedItem.carryJob.jobState = JobState.COMPLETE
+            if (droppedItem.carryJob) droppedItem.carryJob.jobState = JOB_STATE.complete
             if (this.target) droppedItem.setPosition(droppedItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
             const targetBuilding = this.target?.building
             if (targetBuilding) {
                 if (targetBuilding.entityType === EntityType.POWER_STATION || targetBuilding.entityType === EntityType.ORE_REFINERY) {
                     targetBuilding.pickupItem(droppedItem)
                     if (targetBuilding.sceneEntity.carriedByIndex.size >= targetBuilding.getMaxCarry()) {
-                        targetBuilding.sceneEntity.setAnimation(BuildingActivity.Deposit, () => {
-                            targetBuilding.sceneEntity.setAnimation(targetBuilding.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
+                        targetBuilding.sceneEntity.setAnimation(BUILDING_ACTIVITY.deposit, () => {
+                            targetBuilding.sceneEntity.setAnimation(targetBuilding.isPowered() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
                             targetBuilding.sceneEntity.removeAllCarried()
                             targetBuilding.depositItems()
                         })
@@ -195,7 +195,7 @@ export class CarryJob extends Job {
             } else {
                 droppedItem.sceneEntity.addToScene(droppedItem.worldMgr.sceneMgr, undefined, undefined)
                 if (droppedItem.entityType === EntityType.BARRIER) {
-                    droppedItem.sceneEntity.setAnimation(BarrierActivity.Expand, () => droppedItem.sceneEntity.setAnimation(BarrierActivity.Long))
+                    droppedItem.sceneEntity.setAnimation(BARRIER_ACTIVITY.expand, () => droppedItem.sceneEntity.setAnimation(BARRIER_ACTIVITY.long))
                     droppedItem.sceneEntity.lookAt(droppedItem.getSurface().getCenterWorld())
                 }
                 this.target?.site?.addItem(droppedItem)
@@ -204,10 +204,10 @@ export class CarryJob extends Job {
     }
 
     private igniteDynamite() {
-        this.carryItem.worldMgr.ecs.addComponent(this.carryItem.entity, new RaiderScareComponent(RaiderScareRange.DYNAMITE))
+        this.carryItem.worldMgr.ecs.addComponent(this.carryItem.entity, new RaiderScareComponent(RAIDER_SCARE_RANGE.dynamite))
         const targetSurface = this.carryItem.targetSurface
         if (targetSurface) this.carryItem.sceneEntity.headTowards(targetSurface.getCenterWorld2D())
-        this.carryItem.sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
+        this.carryItem.sceneEntity.setAnimation(DYNAMITE_ACTIVITY.tickDown, () => {
             this.carryItem.worldMgr.ecs.removeComponent(this.carryItem.entity, RaiderScareComponent)
             targetSurface?.collapse()
             this.carryItem.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.explosion, this.carryItem.getPosition(), this.carryItem.sceneEntity.heading, false)

@@ -23,7 +23,7 @@ export class LWOUVParser {
             throw new Error(`first line is not 2, but ${lines[0]}`)
         }
         fileIndex++
-        const numOfMats = parseInt(lines[fileIndex])
+        const numOfMats = Number(lines[fileIndex])
         if (this.verbose) console.log(`UV file should contain ${numOfMats} materials`)
         fileIndex++
         for (let c = 0; c < numOfMats; c++) {
@@ -38,20 +38,20 @@ export class LWOUVParser {
             result.mapNames.push(getFilename(mapName))
         }
         fileIndex += numOfMats
-        const numOfCoords = parseInt(lines[fileIndex])
+        const numOfCoords = Number(lines[fileIndex])
         if (this.verbose) console.log(`Expecting ${numOfCoords} coords`)
         fileIndex++
         for (let c = 0; c < numOfCoords; c++) {
             const tupleLine = lines[fileIndex]
             if (this.verbose) console.log('tupleLine', tupleLine)
             fileIndex++
-            const [uvIndex, uvLength] = tupleLine.split(' ').map((n) => parseInt(n))
+            const [uvIndex, uvLength] = tupleLine.split(' ').map((n) => Number(n))
             result.uvs[uvIndex] = []
             if (this.verbose) console.log(`tuple index is ${uvIndex} and length is ${uvLength}`)
             for (let t = 0; t < uvLength; t++) {
                 const uvLine = lines[fileIndex]
                 if (this.verbose) console.log(uvLine)
-                const [u, v, w] = uvLine.split(' ').map((n) => parseFloat(n))
+                const [u, v, w] = uvLine.split(' ').map((n) => Number(n))
                 if (w !== 0) console.warn(`Unexpected non zero third UV value w = ${w} given`)
                 result.uvs[uvIndex].push(u, v)
                 fileIndex++
@@ -61,7 +61,7 @@ export class LWOUVParser {
             const nextLine = lines[fileIndex]
             if (this.verbose) console.log('nextLine', nextLine)
             fileIndex++
-            const tupleLength = parseInt(nextLine) // should be always 4
+            const tupleLength = Number(nextLine) // should be always 4
             if (tupleLength !== 4) {
                 console.error(`Unexpected tuple length ${tupleLength}`)
                 continue

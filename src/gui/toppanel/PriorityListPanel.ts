@@ -2,7 +2,7 @@ import { ButtonPriorityListCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { PrioritiesImagePositionsCfg, PriorityButtonListCfg, PriorityPositionsEntry } from '../../cfg/PriorityButtonsCfg'
 import { EventKey } from '../../event/EventKeyEnum'
-import { PriorityIdentifier } from '../../game/model/job/PriorityIdentifier'
+import { PRIORITY_IDENTIFIER, PriorityIdentifier } from '../../game/model/job/PriorityIdentifier'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { UpdatePriorities } from '../../event/WorldEvents'
@@ -32,15 +32,15 @@ export class PriorityListPanel extends Panel {
         }
 
         this.prioPositions = cfgPos.positionByIndex
-        this.prioByName.set(PriorityIdentifier.GET_IN, this.addChild(new Button(cfg.aiPriorityGetIn)))
-        this.prioByName.set(PriorityIdentifier.CRYSTAL, this.addChild(new Button(cfg.aiPriorityCrystal)))
-        this.prioByName.set(PriorityIdentifier.ORE, this.addChild(new Button(cfg.aiPriorityOre)))
-        this.prioByName.set(PriorityIdentifier.REPAIR, this.addChild(new Button(cfg.aiPriorityRepair)))
-        this.prioByName.set(PriorityIdentifier.CLEARING, this.addChild(new Button(cfg.aiPriorityClearing)))
-        this.prioByName.set(PriorityIdentifier.DESTRUCTION, this.addChild(new Button(cfg.aiPriorityDestruction)))
-        this.prioByName.set(PriorityIdentifier.CONSTRUCTION, this.addChild(new Button(cfg.aiPriorityConstruction)))
-        this.prioByName.set(PriorityIdentifier.REINFORCE, this.addChild(new Button(cfg.aiPriorityReinforce)))
-        this.prioByName.set(PriorityIdentifier.RECHARGE, this.addChild(new Button(cfg.aiPriorityRecharge)))
+        this.prioByName.set(PRIORITY_IDENTIFIER.getIn, this.addChild(new Button(cfg.aiPriorityGetIn)))
+        this.prioByName.set(PRIORITY_IDENTIFIER.crystal, this.addChild(new Button(cfg.aiPriorityCrystal)))
+        this.prioByName.set(PRIORITY_IDENTIFIER.ore, this.addChild(new Button(cfg.aiPriorityOre)))
+        this.prioByName.set(PRIORITY_IDENTIFIER.repair, this.addChild(new Button(cfg.aiPriorityRepair)))
+        this.prioByName.set(PRIORITY_IDENTIFIER.clearing, this.addChild(new Button(cfg.aiPriorityClearing)))
+        this.prioByName.set(PRIORITY_IDENTIFIER.destruction, this.addChild(new Button(cfg.aiPriorityDestruction)))
+        this.prioByName.set(PRIORITY_IDENTIFIER.construction, this.addChild(new Button(cfg.aiPriorityConstruction)))
+        this.prioByName.set(PRIORITY_IDENTIFIER.reinforce, this.addChild(new Button(cfg.aiPriorityReinforce)))
+        this.prioByName.set(PRIORITY_IDENTIFIER.recharge, this.addChild(new Button(cfg.aiPriorityRecharge)))
         this.prioByName.forEach((btn) => btn.hoverFrame = true)
         this.registerEventListener(EventKey.UPDATE_PRIORITIES, (event: UpdatePriorities) => {
             this.updateList(event.priorityList)
@@ -54,7 +54,7 @@ export class PriorityListPanel extends Panel {
         priorityList.forEach((prioEntry, prioIndex) => {
             const prioButton = this.prioByName.get(prioEntry.key)
             if (!prioButton) {
-                if (VERBOSE) console.warn(`Could not find button for priority "${PriorityIdentifier[prioEntry.key]}"`)
+                if (VERBOSE) console.warn(`Could not find button for priority "${prioEntry.key}"`)
                 return
             }
             updated = updated || prioButton.hidden || prioButton.disabled !== !prioEntry.enabled

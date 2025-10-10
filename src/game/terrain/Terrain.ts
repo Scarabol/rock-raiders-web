@@ -132,7 +132,7 @@ export class Terrain {
         const toCheck: Surface[] = []
         let next: Surface | undefined = this.getSurfaceFromWorld2D(position)
         while (next) {
-            if (next.wallType === WALL_TYPE.WALL) return next
+            if (next.wallType === WALL_TYPE.wall) return next
             checked.add(next)
             toCheck.push(...next.neighbors.filter((n) => !checked.includes(n)))
             next = toCheck.shift()

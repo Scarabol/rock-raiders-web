@@ -7,15 +7,15 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { SceneSelectionComponent } from '../component/SceneSelectionComponent'
 import { BuildingSite } from '../model/building/BuildingSite'
 import { PositionComponent } from '../component/PositionComponent'
-import { BarrierActivity, DynamiteActivity } from '../model/anim/AnimationActivity'
-import { PriorityIdentifier } from '../model/job/PriorityIdentifier'
-import { RaiderTraining } from '../model/raider/RaiderTraining'
+import { BARRIER_ACTIVITY, DYNAMITE_ACTIVITY } from '../model/anim/AnimationActivity'
+import { PRIORITY_IDENTIFIER } from '../model/job/PriorityIdentifier'
+import { RAIDER_TRAINING } from '../model/raider/RaiderTraining'
 import { HealthComponent } from '../component/HealthComponent'
 import { LastWillComponent } from '../component/LastWillComponent'
 import { EventKey } from '../../event/EventKeyEnum'
 import { WorldLocationEvent } from '../../event/WorldEvents'
 import { BeamUpComponent } from '../component/BeamUpComponent'
-import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../component/MapMarkerComponent'
+import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE, MapMarkerComponent } from '../component/MapMarkerComponent'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
@@ -75,21 +75,21 @@ export class MaterialSpawner {
                 })
                 material.sceneEntity.add(depletedCrystalMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.powerCrystal))
-                material.priorityIdentifier = PriorityIdentifier.RECHARGE
+                material.priorityIdentifier = PRIORITY_IDENTIFIER.recharge
                 this.addTooltip(worldMgr, material.entity, EntityType.CRYSTAL, () => 0)
                 break
             case EntityType.BARRIER:
                 material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.barrier))
-                material.sceneEntity.setAnimation(BarrierActivity.Short)
+                material.sceneEntity.setAnimation(BARRIER_ACTIVITY.short)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {pickSphere: 10, collRadius: 10, collHeight: 0})) // XXX find any constant for pick sphere?
-                material.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
+                material.priorityIdentifier = PRIORITY_IDENTIFIER.construction
                 break
             case EntityType.DYNAMITE:
                 material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.dynamite))
-                material.sceneEntity.setAnimation(DynamiteActivity.Normal)
+                material.sceneEntity.setAnimation(DYNAMITE_ACTIVITY.normal)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {pickSphere: 8, collRadius: 8, collHeight: 0})) // XXX find any constant for pick sphere?
-                material.priorityIdentifier = PriorityIdentifier.DESTRUCTION
-                material.requiredTraining = RaiderTraining.DEMOLITION
+                material.priorityIdentifier = PRIORITY_IDENTIFIER.destruction
+                material.requiredTraining = RAIDER_TRAINING.demolition
                 break
             case EntityType.ELECTRIC_FENCE:
                 const electricFenceMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.electricFence)
@@ -97,7 +97,7 @@ export class MaterialSpawner {
                 material.sceneEntity.add(electricFenceMesh)
                 const statsFence = GameConfig.instance.stats.electricFence
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, statsFence))
-                material.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
+                material.priorityIdentifier = PRIORITY_IDENTIFIER.construction
                 const healthComponent = material.worldMgr.ecs.addComponent(material.entity, new HealthComponent(statsFence.damageCausesCallToArms, statsFence.collHeight, 10, material.sceneEntity, false, GameConfig.instance.getRockFallDamage(material.entityType, 0)))
                 material.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
                 material.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
@@ -118,8 +118,8 @@ export class MaterialSpawner {
         if (material.sceneEntity.visible) {
             material.setupCarryJob()
             worldMgr.entityMgr.materials.add(material) // TODO use game entities within entity manager
-            worldMgr.ecs.addComponent(material.entity, new MapMarkerComponent(MapMarkerType.MATERIAL))
-            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, material.entity, MapMarkerChange.UPDATE, floorPosition))
+            worldMgr.ecs.addComponent(material.entity, new MapMarkerComponent(MAP_MARKER_TYPE.material))
+            EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.material, material.entity, MAP_MARKER_CHANGE.update, floorPosition))
         } else {
             worldMgr.entityMgr.materialsUndiscovered.add(material) // TODO use game entities within entity manager
         }

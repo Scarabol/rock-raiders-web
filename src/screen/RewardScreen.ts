@@ -2,7 +2,7 @@ import { RewardCfg } from '../cfg/RewardCfg'
 import { SpriteImage } from '../core/Sprite'
 import { clearTimeoutSafe } from '../core/Util'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
-import { GameResult, GameResultState } from '../game/model/GameResult'
+import { GAME_RESULT_STATE, GameResult } from '../game/model/GameResult'
 import { LoadSaveLayer } from '../menu/LoadSaveLayer'
 import { MainMenuBaseItem } from '../menu/MainMenuBaseItem'
 import { RewardScreenButton } from '../menu/RewardScreenButton'
@@ -101,7 +101,7 @@ export class RewardScreen {
             return false
         })
         this.btnLayer.addEventListener('pointerdown', (event: PointerEvent): boolean => {
-            if (event.button === MOUSE_BUTTON.MAIN) {
+            if (event.button === MOUSE_BUTTON.main) {
                 const [canvasX, canvasY] = this.btnLayer.transformCoords(event.clientX, event.clientY)
                 this.btnSave.setHovered(this.btnSave.isHovered(canvasX, canvasY))
                 this.btnAdvance.setHovered(this.btnAdvance.isHovered(canvasX, canvasY))
@@ -115,7 +115,7 @@ export class RewardScreen {
             return false
         })
         this.btnLayer.addEventListener('pointerup', (event: PointerEvent): boolean => {
-            if (event.button === MOUSE_BUTTON.MAIN) {
+            if (event.button === MOUSE_BUTTON.main) {
                 this.btnSave.onMouseUp()
                 this.btnAdvance.onMouseUp()
                 if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) {
@@ -196,13 +196,13 @@ export class RewardScreen {
         if (!this.sfxAmbientLoop) this.sfxAmbientLoop = SoundManager.playLoopSound('SFX_MusicLoop')
         BitmapFontWorkerPool.instance.createTextImage(this.cfg.titleFont, result.levelFullName)
             .then((textImage) => this.levelFullNameImg = textImage)
-        this.btnSave.disabled = result.state !== GameResultState.COMPLETE
+        this.btnSave.disabled = result.state !== GAME_RESULT_STATE.complete
         this.resultText = this.cfg.quitText
         this.resultLastIndex = this.images.length - 2
-        if (result.state === GameResultState.COMPLETE) {
+        if (result.state === GAME_RESULT_STATE.complete) {
             this.resultText = this.cfg.completeText
             this.resultLastIndex = this.images.length - 1
-        } else if (result.state === GameResultState.FAILED) {
+        } else if (result.state === GAME_RESULT_STATE.failed) {
             this.resultText = this.cfg.failedText
         }
         this.screenshot = result.screenshot

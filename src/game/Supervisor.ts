@@ -3,8 +3,8 @@ import { JobCreateEvent, UpdatePriorities } from '../event/WorldEvents'
 import { CHECK_CLEAR_RUBBLE_INTERVAL, ITEM_ACTION_RANGE_SQ, JOB_SCHEDULE_INTERVAL } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { Job } from './model/job/Job'
-import { JobState } from './model/job/JobState'
-import { PriorityIdentifier } from './model/job/PriorityIdentifier'
+import { JOB_STATE } from './model/job/JobState'
+import { PRIORITY_IDENTIFIER, PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { GetToolJob } from './model/job/raider/GetToolJob'
 import { MoveJob } from './model/job/MoveJob'
 import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
@@ -76,8 +76,8 @@ export class Supervisor {
         this.assignJobsTimer %= JOB_SCHEDULE_INTERVAL
         const availableJobs: Job[] = []
         this.jobs = this.jobs.filter((j) => {
-            const result = j.jobState === JobState.INCOMPLETE
-            if (result && !j.hasFulfiller() && GameState.priorityList.isEnabled(j.priorityIdentifier) && (this.autoClearRubble || j.priorityIdentifier !== PriorityIdentifier.CLEARING)) {
+            const result = j.jobState === JOB_STATE.incomplete
+            if (result && !j.hasFulfiller() && GameState.priorityList.isEnabled(j.priorityIdentifier) && (this.autoClearRubble || j.priorityIdentifier !== PRIORITY_IDENTIFIER.clearing)) {
                 availableJobs.push(j)
             }
             return result
@@ -236,7 +236,7 @@ export class Supervisor {
                             const clearRubbleJob = surface.setupClearRubbleJob()
                             if (!clearRubbleJob || clearRubbleJob.hasFulfiller()) continue
                             if (raider.hasTool(clearRubbleJob.requiredTool)) {
-                                if (GameState.priorityList.isEnabled(PriorityIdentifier.CLEARING) && this.autoClearRubble && raider.findShortestPath(clearRubbleJob.lastRubblePositions)) {
+                                if (GameState.priorityList.isEnabled(PRIORITY_IDENTIFIER.clearing) && this.autoClearRubble && raider.findShortestPath(clearRubbleJob.lastRubblePositions)) {
                                     raider.setJob(clearRubbleJob)
                                 }
                                 return

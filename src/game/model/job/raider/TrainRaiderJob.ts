@@ -1,6 +1,6 @@
 import { RaiderTrainingCompleteEvent } from '../../../../event/LocalEvents'
 import { EntityManager } from '../../../EntityManager'
-import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
+import { AnimationActivity, RAIDER_ACTIVITY } from '../../anim/AnimationActivity'
 import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTraining, RaiderTrainings } from '../../raider/RaiderTraining'
@@ -47,7 +47,7 @@ export class TrainRaiderJob extends RaiderJob {
     }
 
     getWorkActivity(): AnimationActivity {
-        return RaiderActivity.Train
+        return RAIDER_ACTIVITY.train
     }
 
     getExpectedTimeLeft(): number {
