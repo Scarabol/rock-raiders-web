@@ -14,9 +14,9 @@ class FullScreenShader extends ShaderMaterial {
     constructor(parameters?: ShaderMaterialParameters) {
         super(parameters)
         const geometry = new BufferGeometry()
-    		geometry.setAttribute('position', new Float32BufferAttribute([-1, 3, 0, -1, -1, 0, 3, -1, 0 ], 3));
-    		geometry.setAttribute('uv', new Float32BufferAttribute([0, 2, 0, 0, 2, 0 ], 2));
-    		this.mesh = new Mesh(geometry, this)
+        geometry.setAttribute('position', new Float32BufferAttribute([-1, 3, 0, -1, -1, 0, 3, -1, 0], 3))
+        geometry.setAttribute('uv', new Float32BufferAttribute([0, 2, 0, 0, 2, 0], 2))
+        this.mesh = new Mesh(geometry, this)
     }
 
     dispose() {
@@ -32,8 +32,8 @@ class FullScreenShader extends ShaderMaterial {
 const TransparentBackgroundShader = {
     name: 'TransparentBackgroundShader',
     uniforms: {
-        'tDiffuse': { value: null as Texture | null },
-        'tDepth': { value: null as Texture | null },
+        'tDiffuse': {value: null as Texture | null},
+        'tDepth': {value: null as Texture | null},
     },
     vertexShader: `
         varying vec2 vUv;
@@ -52,7 +52,7 @@ const TransparentBackgroundShader = {
             gl_FragColor = sRGBTransferOETF(gl_FragColor);
         }
     `,
-};
+}
 
 class TransparentBackgroundRenderer extends BaseRenderer {
     renderTarget?: WebGLRenderTarget
@@ -68,7 +68,7 @@ class TransparentBackgroundRenderer extends BaseRenderer {
             uniforms.tDepth.value = this.renderTarget.depthTexture
             this.fsShader = new FullScreenShader({...TransparentBackgroundShader, uniforms})
         }
-        if (!this.renderer) return 
+        if (!this.renderer) return
         const size = this.renderer.getSize(new Vector2())
         this.renderTarget.setSize(size.width, size.height)
         this.renderer.setRenderTarget(this.renderTarget)
@@ -100,7 +100,7 @@ export class RockWipeLayer extends ScreenLayer {
         this.renderer = new TransparentBackgroundRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, {alpha: true})
         // Camera
         const aspect = this.canvas.width / this.canvas.height
-        this.camera = new PerspectiveCamera(45, aspect, 1 , 100)
+        this.camera = new PerspectiveCamera(45, aspect, 1, 100)
         this.camera.rotateY(Math.PI)
         this.camera.zoom = 2
         this.camera.position.add(new Vector3(0, 0, -5))
@@ -108,7 +108,6 @@ export class RockWipeLayer extends ScreenLayer {
         this.renderer.camera = this.camera
         this.scene = new Scene()
         // Lights
-        // XXX read from LWS file (the original game does not)
         this.scene.add(new AmbientLight(0xffffff, 0.25))
         const light = new DirectionalLight(0xffffff, 1)
         light.position.set(2, 2, -2)

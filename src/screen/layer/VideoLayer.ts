@@ -60,10 +60,12 @@ export class VideoLayer extends AbstractLayer {
                     // Audio
                     new Promise<void>((resolve, reject) => {
                         const sourceBuf = mediaSource.addSourceBuffer('audio/webm; codecs="opus"')
-                        sourceBuf.addEventListener("error", reject)
-                        sourceBuf.addEventListener("updateend", () => resolve())
+                        sourceBuf.addEventListener('error', reject)
+                        sourceBuf.addEventListener('updateend', () => resolve())
                         this.ffmpeg.transcodeAudio(videoFileName, videoData)
-                            .then((data) => sourceBuf.appendBuffer(data))
+                            .then((data) => {
+                                if (this.active) sourceBuf.appendBuffer(data)
+                            })
                             .catch(reject)
                     }),
                     // Video
@@ -73,15 +75,15 @@ export class VideoLayer extends AbstractLayer {
                         let currentSegment = 0
                         const nextSegment = () => this.ffmpeg.transcodeVideoSegment(videoFileName, videoData, currentSegment)
                             .then((data) => {
-                                if (!data) {
+                                if (!data || !this.active) {
                                     resolve()
-                                    return;
+                                    return
                                 }
                                 currentSegment++
                                 sourceBuf.appendBuffer(data)
                             })
                             .catch(reject)
-                        sourceBuf.addEventListener("error", reject)
+                        sourceBuf.addEventListener('error', reject)
                         sourceBuf.addEventListener('updateend', nextSegment)
                         nextSegment()
                     }),

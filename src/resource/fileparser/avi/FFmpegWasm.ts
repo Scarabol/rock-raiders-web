@@ -27,7 +27,7 @@ export class FFmpegWasm {
         const ffmpeg = await this.loadFFmpeg()
         try {
             await ffmpeg.createDir('/input')
-            ffmpeg.mount(FFFSType.WORKERFS, {files: [new File([videoFileData], videoFileName)]}, '/input')
+            await ffmpeg.mount(FFFSType.WORKERFS, {files: [new File([videoFileData], videoFileName)]}, '/input')
             const returnCode = await ffmpeg.exec([
                 '-i', `/input/${videoFileName}`,
                 '-vn',
@@ -46,14 +46,14 @@ export class FFmpegWasm {
         }
     }
 
-    async transcodeVideoSegment(videoFileName: string, videoFileData: ArrayBuffer, segmentNum: number): Promise<ArrayBuffer |  null> {
+    async transcodeVideoSegment(videoFileName: string, videoFileData: ArrayBuffer, segmentNum: number): Promise<ArrayBuffer | null> {
         const outputFilePath = `${videoFileName}-video-${(FFmpegWasm.SEGMENT_LENGTH)}-${segmentNum}.mp4`
         const fromCache = await cacheGetData<ArrayBuffer | null>(outputFilePath)
         if (fromCache !== undefined) return fromCache
         const ffmpeg = await this.loadFFmpeg()
         try {
             await ffmpeg.createDir('/input')
-            ffmpeg.mount(FFFSType.WORKERFS, {files: [new File([videoFileData], videoFileName)]}, '/input')
+            await ffmpeg.mount(FFFSType.WORKERFS, {files: [new File([videoFileData], videoFileName)]}, '/input')
             let isEmpty = false
             ffmpeg.on('log', ({type, message}) => {
                 if (type === 'stderr' && message.match(/^video:0kB audio:0kB /)) {
