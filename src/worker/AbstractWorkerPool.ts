@@ -23,8 +23,9 @@ export abstract class AbstractWorkerPool<M, R> {
             if (setupMessage) {
                 this.lastRequestId++
                 const message: WorkerRequestMessage<M> = {workerRequestHash: `message-${this.lastRequestId}`, request: setupMessage}
-                worker.sendMessage(message)
                 this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(() => this.sendBroadcasts(worker))
+                // response handler must be registered before sending, because send message is synchron with fallback worker
+                worker.sendMessage(message)
             } else {
                 this.sendBroadcasts(worker)
             }
@@ -68,14 +69,13 @@ export abstract class AbstractWorkerPool<M, R> {
             workerRequestHash = `message-${this.lastRequestId}`
         }
         const message = {workerRequestHash: workerRequestHash, request: request}
+        const openRequests = this.openRequests.getOrUpdate(message.workerRequestHash, () => [])
         const idleWorker = this.idleWorkers.shift()
-        if (idleWorker) {
-            idleWorker.sendMessage(message)
-        } else {
-            const duplicates = this.openRequests.getOrUpdate(message.workerRequestHash, () => [])
-            if (duplicates.length < 1) this.messageBacklog.push(message)
-        }
-        return new Promise<R>((resolve) => this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(resolve))
+        if (!idleWorker && openRequests.length < 1) this.messageBacklog.push(message)
+        // response handler must be registered before sending, because send message is synchron with fallback worker
+        const result = new Promise<R>((resolve) => openRequests.push(resolve))
+        idleWorker?.sendMessage(message)
+        return result
     }
 
     protected broadcast(broadcast: M): Promise<R>[] {
@@ -85,8 +85,9 @@ export abstract class AbstractWorkerPool<M, R> {
         this.allWorkers.forEach((worker) => {
             this.lastRequestId++
             const message = {workerRequestHash: `message-${this.lastRequestId}`, request: broadcast}
-            worker.sendMessage(message)
             result.push(new Promise<R>((resolve) => this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(resolve)))
+            // response handler must be registered before sending, because send message is synchron with fallback worker
+            worker.sendMessage(message)
         })
         return result
     }
