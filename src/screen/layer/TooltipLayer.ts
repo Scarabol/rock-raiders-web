@@ -1,5 +1,5 @@
 import { EventKey } from '../../event/EventKeyEnum'
-import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
+import { ChangeTooltip, ForceRedrawTooltip, HideTooltip } from '../../event/GuiCommand'
 import { ScreenLayer } from './ScreenLayer'
 import { CURSOR_MAX_HEIGHT, NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { clearTimeoutSafe } from '../../core/Util'
@@ -36,6 +36,10 @@ export class TooltipLayer extends ScreenLayer {
             if (!SaveGameManager.preferences.muteDevSounds && tooltipSfx) {
                 this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playVoice(tooltipSfx), event.timeoutSfx)
             }
+        })
+        EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_FORCE_REDRAW, async (event: ForceRedrawTooltip) => {
+            if (this.cursorLeft || !this.active || event.tooltipKey !== this.lastTooltipKey) return
+            this.changeTooltipImage(await event.getTooltipTextImg())
         })
         EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_HIDE, (event: HideTooltip) => {
             if (event.tooltipText && event.tooltipText !== this.lastTooltipKey) return

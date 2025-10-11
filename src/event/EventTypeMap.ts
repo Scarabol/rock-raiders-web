@@ -1,6 +1,6 @@
 import { AdvanceAfterRewardsEvent, BuildingsChangedEvent, DeselectAll, FollowerSetCanvasEvent, FollowerSetLookAtEvent, GuiBackButtonClicked, GuiBuildButtonClicked, GuiButtonBlinkEvent, GuiGetToolButtonClicked, GuiTrainRaiderButtonClicked, InitRadarMap, RaidersAmountChangedEvent, RaiderTrainingCompleteEvent, SelectionChanged, SelectionFrameChangeEvent, SetSpaceToContinueEvent, ShowGameResultEvent, ShowMissionAdvisorEvent, ShowMissionBriefingEvent, ShowOptionsEvent, UpdateRadarCamera, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain, VehicleUpgradeCompleteEvent } from './LocalEvents'
 import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, MonsterEmergeEvent, MonsterLaserHitEvent, NerpMessageEvent, NerpSuppressArrowEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, ShootLaserEvent, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged, WorldLocationEvent } from './WorldEvents'
-import { CameraControl, CancelBuilding, CancelSurfaceJobs, ChangeBuildingPowerState, ChangeCameraEvent, ChangePreferences, ChangeTooltip, CreateClearRubbleJob, CreateDrillJob, CreateDynamiteJob, CreatePowerPath, CreateReinforceJob, DropBirdScarer, HideTooltip, MakeRubble, PickTool, PlaceFence, PlaySoundEvent, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade, RepairBuilding, RepairLava, SelectBuildMode, TrainRaider, UpgradeBuilding, UpgradeVehicle, VehicleBeamUp, VehicleCallMan, VehicleDriverGetOut, VehicleLoad, VehicleUnload } from './GuiCommand'
+import { CameraControl, CancelBuilding, CancelSurfaceJobs, ChangeBuildingPowerState, ChangeCameraEvent, ChangePreferences, ChangeTooltip, CreateClearRubbleJob, CreateDrillJob, CreateDynamiteJob, CreatePowerPath, CreateReinforceJob, DropBirdScarer, ForceRedrawTooltip, HideTooltip, MakeRubble, PickTool, PlaceFence, PlaySoundEvent, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade, RepairBuilding, RepairLava, SelectBuildMode, TrainRaider, UpgradeBuilding, UpgradeVehicle, VehicleBeamUp, VehicleCallMan, VehicleDriverGetOut, VehicleLoad, VehicleUnload } from './GuiCommand'
 
 export class BaseEvent {
     constructor(readonly type: keyof EventTypeMap) {
@@ -41,6 +41,7 @@ export interface DefaultEventMap {
     'advance-after-rewards': AdvanceAfterRewardsEvent
 
     'command-tooltip-change': ChangeTooltip
+    'command-tooltip-force-redraw': ForceRedrawTooltip
     'command-tooltip-hide': HideTooltip
     'command-play-sound': PlaySoundEvent
     'command-create-power-path': CreatePowerPath

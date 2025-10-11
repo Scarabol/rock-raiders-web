@@ -1,5 +1,5 @@
 import { Button } from '../base/Button'
-import { ChangeTooltip } from '../../event/GuiCommand'
+import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
 import { DEV_MODE, TOOLTIP_DELAY_SFX } from '../../params'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EntityType, getEntityTypeByName } from '../../game/model/EntityType'
@@ -88,7 +88,14 @@ export class IconPanelButton extends Button {
         const targetState = this.isDisabled()
         const stateChanged = this.disabled !== targetState
         this.disabled = targetState
-        if (stateChanged && autoRedraw) this.notifyRedraw()
+        if (stateChanged) {
+            if (autoRedraw) this.notifyRedraw()
+            if (this.disabled) {
+                this.publishEvent(new HideTooltip(this.tooltip))
+            } else {
+                this.publishEvent(new HideTooltip(this.tooltipDisabled))
+            }
+        }
         return stateChanged
     }
 

@@ -30,6 +30,20 @@ export class ChangeTooltip extends BaseEvent {
     }
 }
 
+export class ForceRedrawTooltip extends BaseEvent {
+    tooltipKey: string
+
+    constructor(
+        public tooltipText: string,
+        readonly getTooltipTextImg: () => Promise<SpriteImage> = () => {
+            return TooltipSpriteBuilder.getTooltipSprite(this.tooltipText, 0)
+        },
+    ) {
+        super(EventKey.COMMAND_TOOLTIP_FORCE_REDRAW)
+        this.tooltipKey = tooltipText
+    }
+}
+
 export class HideTooltip extends BaseEvent {
     constructor(readonly tooltipText?: string) {
         super(EventKey.COMMAND_TOOLTIP_HIDE)

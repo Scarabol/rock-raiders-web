@@ -1,5 +1,5 @@
 import { EventKey } from '../../../event/EventKeyEnum'
-import { BeamUpBuilding, ChangeBuildingPowerState, ChangeTooltip, RepairBuilding, UpgradeBuilding } from '../../../event/GuiCommand'
+import { BeamUpBuilding, ChangeBuildingPowerState, ChangeTooltip, ForceRedrawTooltip, RepairBuilding, UpgradeBuilding } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { Panel } from '../../base/Panel'
 import { IconPanelToggleButton } from '../IconPanelToggleButton'
@@ -51,6 +51,13 @@ export class SelectBuildingPanel extends IconSubPanel {
             this.buildingCanUpgrade = event.buildingCanUpgrade
             this.buildingMissingOreForUpgrade = event.buildingMissingOreForUpgrade
             this.updateAllButtonStates()
+            if (this.buildingMissingOreForUpgrade) {
+                this.iconPanelButtons.forEach((b) => {
+                    b.publishEvent(new ForceRedrawTooltip(upgradeItem.tooltipDisabled, () => {
+                        return TooltipSpriteBuilder.getBuildingMissingOreForUpgradeTooltipSprite(this.buildingMissingOreForUpgrade)
+                    }))
+                })
+            }
         })
         this.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
             this.updateAllButtonStates()

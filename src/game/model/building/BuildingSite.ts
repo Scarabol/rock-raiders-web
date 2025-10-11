@@ -108,11 +108,15 @@ export class BuildingSite {
         this.onSiteByType.getOrUpdate(item.entityType, () => []).push(item)
         this.worldMgr.entityMgr.removeEntity(item.entity)
         this.checkComplete()
+        const event = this.worldMgr.ecs.getComponents(this.entity).get(TooltipComponent)?.createForceRedrawEvent()
+        if (event) EventBroker.publish(event)
     }
 
     removeItem(item: MaterialEntity) {
         this.unAssign(item)
         this.onSiteByType.getOrUpdate(item.entityType, () => []).remove(item)
+        const event = this.worldMgr.ecs.getComponents(this.entity).get(TooltipComponent)?.createForceRedrawEvent()
+        if (event) EventBroker.publish(event)
     }
 
     checkComplete() {

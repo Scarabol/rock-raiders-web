@@ -30,6 +30,7 @@ export const enum EventKey {
 
     // GUI command events
     COMMAND_TOOLTIP_CHANGE = 'command-tooltip-change',
+    COMMAND_TOOLTIP_FORCE_REDRAW = 'command-tooltip-force-redraw',
     COMMAND_TOOLTIP_HIDE = 'command-tooltip-hide',
     COMMAND_PLAY_SOUND = 'command-play-sound',
     COMMAND_CREATE_POWER_PATH = 'command-create-power-path',
