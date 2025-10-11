@@ -1,6 +1,6 @@
 import { Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
-import { RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
+import { RaidersAmountChangedEvent, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, RAIDER_PATH_PRECISION, SPIDER_SLIP_RANGE_SQ, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { WorldManager } from '../../WorldManager'
@@ -262,6 +262,11 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private slip() {
+        if (this.selected) {
+            this.deselect()
+            this.worldMgr.entityMgr.selection.raiders.remove(this)
+            EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
+        }
         this.dropCarried(true)
         if (PRNG.movement.randInt(100) < 10) this.stopJob()
         this.slipped = true

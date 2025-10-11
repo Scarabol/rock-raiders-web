@@ -188,7 +188,7 @@ export class SceneManager implements Updatable {
                 }
             }
         }
-        selectedEntity.sceneEntity.setAnimation(animationName)
+        if (selectedEntity.selected) selectedEntity.sceneEntity.setAnimation(animationName) // raider may have slipped, when moved
     }
 
     disposeScene() {
