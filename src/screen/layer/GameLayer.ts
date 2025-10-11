@@ -61,7 +61,7 @@ export class GameLayer extends ScreenLayer {
         })
         this.addEventListener('pointerup', (event): boolean => {
             if (event.button !== MOUSE_BUTTON.main) return false
-            const gameEvent = new GamePointerEvent(POINTER_EVENT.down, event)
+            const gameEvent = new GamePointerEvent(POINTER_EVENT.up, event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             this.handlePointerUpEvent(gameEvent)
             return false
