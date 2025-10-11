@@ -189,6 +189,12 @@ export class GameSelection {
         this.vehicles.forEach((v) => v.canUpgrade(upgrade) && v.setJob(new UpgradeVehicleJob(v.worldMgr, v, upgrade)))
     }
 
+    assignCompleteSurfaceJob(surface: Surface) {
+        const job = surface.setupCompleteSurfaceJob()
+        if (!job) return
+        [...this.raiders, ...this.vehicles].find((e) => e.isPrepared(job))?.setJob(job)
+    }
+
     canDrill(surface: Surface): boolean {
         return this.raiders.some((r) => r.canDrill(surface)) || this.vehicles.some((v) => v.canDrill(surface))
     }

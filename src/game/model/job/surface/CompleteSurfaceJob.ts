@@ -9,8 +9,8 @@ import { AnimationActivity, RAIDER_ACTIVITY } from '../../anim/AnimationActivity
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class CompleteSurfaceJob extends Job {
-    readonly fulfiller: JobFulfiller[] = []
     readonly workplace: PathTarget
+    fulfiller: JobFulfiller | undefined
 
     constructor(readonly surface: Surface, readonly placedItems: MaterialEntity[]) {
         super()
@@ -22,13 +22,14 @@ export class CompleteSurfaceJob extends Job {
     onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         this.placedItems.forEach((placed) => placed.disposeFromWorld())
+        this.surface.site = undefined
+        this.surface.completeSurfaceJob = undefined
         const targetSurfaceType = this.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE ? SurfaceType.POWER_PATH : SurfaceType.GROUND
         this.surface.setSurfaceType(targetSurfaceType)
-        this.surface.site = undefined
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
-        if (!this.surface.isWalkable()) return undefined
+        if (!this.surface.isWalkable() || !this.surface.site?.complete || this.surface.site.canceled) return undefined
         return this.workplace
     }
 
@@ -41,17 +42,15 @@ export class CompleteSurfaceJob extends Job {
     }
 
     assign(fulfiller: JobFulfiller) {
-        const index = this.fulfiller.indexOf(fulfiller)
-        if (fulfiller && index === -1) {
-            this.fulfiller.push(fulfiller)
-        }
+        if (this.fulfiller !== fulfiller) this.fulfiller?.stopJob()
+        this.fulfiller = fulfiller
     }
 
     unAssign(fulfiller: JobFulfiller) {
-        this.fulfiller.remove(fulfiller)
+        if (this.fulfiller === fulfiller) this.fulfiller = undefined
     }
 
     hasFulfiller(): boolean {
-        return this.fulfiller.length > 0
+        return !!this.fulfiller
     }
 }

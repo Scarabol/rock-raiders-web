@@ -1,9 +1,7 @@
 import { Vector2 } from 'three'
 import { DeselectAll } from '../../../event/LocalEvents'
-import { JobCreateEvent } from '../../../event/WorldEvents'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
-import { CompleteSurfaceJob } from '../job/surface/CompleteSurfaceJob'
 import { Surface } from '../../terrain/Surface'
 import { SurfaceType } from '../../terrain/SurfaceType'
 import { MaterialEntity } from '../material/MaterialEntity'
@@ -126,9 +124,7 @@ export class BuildingSite {
         if (!this.complete) return
         this.worldMgr.entityMgr.buildingSites.remove(this)
         if (!this.buildingType) {
-            const items: MaterialEntity[] = []
-            this.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
-            EventBroker.publish(new JobCreateEvent(new CompleteSurfaceJob(this.primarySurface, items)))
+            this.primarySurface.setupCompleteSurfaceJob()
         } else {
             this.worldMgr.entityMgr.completedBuildingSites.push(this)
         }

@@ -205,6 +205,8 @@ export class GameLayer extends ScreenLayer {
                     } else if (this.worldMgr.entityMgr.selection.canClear() && cursorTargetSurface.hasRubble()) {
                         const clearJob = cursorTargetSurface.setupClearRubbleJob()
                         if (clearJob) this.worldMgr.entityMgr.selection.assignClearRubbleJob(clearJob)
+                    } else if (this.worldMgr.entityMgr.selection.canClear() && !!cursorTargetSurface.site?.complete && !cursorTargetSurface.site.canceled && !cursorTargetSurface.site.buildingType) {
+                        this.worldMgr.entityMgr.selection.assignCompleteSurfaceJob(cursorTargetSurface)
                     } else if (this.worldMgr.entityMgr.selection.canMove()) {
                         if (cursorTargetSurface.isWalkable()) {
                             this.worldMgr.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(cursorTargetSurface.getRandomPosition())))

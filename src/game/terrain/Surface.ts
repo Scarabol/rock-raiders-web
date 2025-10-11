@@ -32,6 +32,8 @@ import { FluidSurfaceComponent } from '../component/FluidSurfaceComponent'
 import { MonsterSpawner } from '../factory/MonsterSpawner'
 import { PRNG } from '../factory/PRNG'
 import { GameState } from '../model/GameState'
+import { CompleteSurfaceJob } from '../model/job/surface/CompleteSurfaceJob'
+import { MaterialEntity } from '../model/material/MaterialEntity'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -46,6 +48,7 @@ export class Surface {
     reinforceJob?: ReinforceJob
     dynamiteJob?: Job
     clearRubbleJob?: ClearRubbleJob
+    completeSurfaceJob?: CompleteSurfaceJob
     seamLevel: number = 0
     drillProgress: number = 0
 
@@ -291,6 +294,7 @@ export class Surface {
         this.reinforceJob = Surface.safeRemoveJob(this.reinforceJob)
         this.dynamiteJob = undefined // Dynamite is carried back to storage
         this.clearRubbleJob = Surface.safeRemoveJob(this.clearRubbleJob)
+        this.completeSurfaceJob = Surface.safeRemoveJob(this.completeSurfaceJob)
         this.updateJobColor()
     }
 
@@ -625,6 +629,7 @@ export class Surface {
                 this.containedOres += 2
             }
         }
+        if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
     canPlaceFence(): boolean {
@@ -671,6 +676,16 @@ export class Surface {
         this.updateJobColor()
         EventBroker.publish(new JobCreateEvent(this.clearRubbleJob))
         return this.clearRubbleJob
+    }
+
+    setupCompleteSurfaceJob(): CompleteSurfaceJob | undefined {
+        if (!this.site?.complete || this.site.canceled) return undefined
+        if (this.completeSurfaceJob) return this.completeSurfaceJob
+        const items: MaterialEntity[] = []
+        this.site.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
+        this.completeSurfaceJob = new CompleteSurfaceJob(this, items)
+        EventBroker.publish(new JobCreateEvent(this.completeSurfaceJob))
+        return this.completeSurfaceJob
     }
 
     isBlockedByVehicle() {
