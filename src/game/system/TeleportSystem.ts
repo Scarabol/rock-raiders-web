@@ -1,7 +1,7 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
-import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged } from '../../event/WorldEvents'
+import { GameResultEvent, LevelSelectedEvent, MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged } from '../../event/WorldEvents'
 import { EntityType } from '../model/EntityType'
 import { TeleportComponent } from '../component/TeleportComponent'
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, TILESIZE } from '../../params'
@@ -21,6 +21,8 @@ import { MoveJob } from '../model/job/MoveJob'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../event/LocalEvents'
 import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE, MapMarkerComponent } from '../component/MapMarkerComponent'
 import { WorldManager } from '../WorldManager'
+import { GAME_RESULT_STATE, GameResultState } from '../model/GameResult'
+import { PRNG } from '../factory/PRNG'
 
 export class TeleportSystem extends AbstractGameSystem {
     readonly componentsRequired: Set<Function> = new Set([TeleportComponent])
@@ -29,15 +31,19 @@ export class TeleportSystem extends AbstractGameSystem {
     requestedVehicleTypes: EntityType[] = []
     spawnVehicleTimer: number = 0
     poweredBuildings: Set<GameEntity> = new Set()
+    disableEndTeleport: boolean = false
+    gameState: GameResultState = GAME_RESULT_STATE.undecided
 
     constructor(readonly worldMgr: WorldManager) {
         super()
-        EventBroker.subscribe(EventKey.LEVEL_SELECTED, () => {
+        EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
             this.requestedRaiders = 0
             this.spawnRaiderTimer = 0
             this.requestedVehicleTypes.length = 0
             this.spawnVehicleTimer = 0
             this.poweredBuildings?.clear()
+            this.disableEndTeleport = event.levelConf.disableEndTeleport
+            this.gameState = GAME_RESULT_STATE.undecided
         })
         EventBroker.subscribe(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
             this.requestedRaiders = event.numRequested
@@ -53,6 +59,9 @@ export class TeleportSystem extends AbstractGameSystem {
         })
         EventBroker.subscribe(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
             this.poweredBuildings = event.poweredBuildings
+        })
+        EventBroker.subscribe(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
+            this.gameState = event.result
         })
     }
 
@@ -83,6 +92,10 @@ export class TeleportSystem extends AbstractGameSystem {
                     this.worldMgr.sceneMgr.addSceneEntity(raider.sceneEntity)
                     raider.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.teleportIn, () => {
                         raider.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
+                        if (this.gameState !== GAME_RESULT_STATE.undecided) {
+                            if (!this.disableEndTeleport) setTimeout(() => raider.beamUp(), PRNG.animation.randInt(3000))
+                            return // no need to set up raider after game ended
+                        }
                         let healthComponent: HealthComponent
                         if (raider.entityType === EntityType.PILOT) {
                             healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
