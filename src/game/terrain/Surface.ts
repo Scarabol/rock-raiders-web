@@ -420,6 +420,8 @@ export class Surface {
             const powerPath = this.determinePowerPathTextureNameSuffixAndRotation(rotation, suffix)
             rotation = powerPath.rotation
             suffix = powerPath.suffix
+        } else if (!this.surfaceType.floor) { // unstable wall about to collapse (after mission briefing)
+            suffix = SurfaceType.RUBBLE4.matIndex
         } else {
             suffix = this.surfaceType.shaping ? '0' + this.surfaceType.matIndex : this.surfaceType.matIndex
         }
