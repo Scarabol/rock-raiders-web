@@ -135,6 +135,8 @@ export class Raider implements Updatable, JobFulfiller {
         this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.scanner, this.entity, MAP_MARKER_CHANGE.remove))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
+        this.worldMgr.entityMgr.raiders.remove(this)
+        this.worldMgr.entityMgr.raidersInBeam.push(this)
         EventBroker.publish(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
     }
 
