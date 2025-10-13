@@ -43,8 +43,8 @@ export class BirdViewControls extends MapControls {
         if (!SaveGameManager.preferences.cameraUnlimited) {
             this.minDistance = GameConfig.instance.main.minDist
             this.maxDistance = GameConfig.instance.main.maxDist
-            this.minPolarAngle = Math.PI / 2 - degToRad(GameConfig.instance.main.maxTilt)
-            this.maxPolarAngle = Math.PI / 2 - degToRad(GameConfig.instance.main.minTilt)
+            this.minPolarAngle = degToRad(GameConfig.instance.main.minTilt)
+            this.maxPolarAngle = degToRad(GameConfig.instance.main.maxTilt)
         }
         if (!USE_KEYBOARD_SHORTCUTS) this.useWASDToPanAndArrowKeysToRotate()
         EventBroker.subscribe(EventKey.PAUSE_GAME, () => {

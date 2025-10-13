@@ -56,7 +56,6 @@ export class SceneManager implements Updatable {
     entityTurnSpeed: number = 0
     entityMoveMultiplier: number = 0
     frustumUpdater: CameraFrustumUpdater
-    backgroundColor: Color = new Color()
     fogColor: Color = new Color()
 
     constructor(readonly worldMgr: WorldManager, canvas: HTMLCanvasElement) {
@@ -89,7 +88,7 @@ export class SceneManager implements Updatable {
         this.birdViewControls.disabled = !GameState.isBirdView
         if (this.roofGroup) this.roofGroup.visible = !GameState.isBirdView
         if (GameState.isBirdView) {
-            this.scene.background = this.backgroundColor
+            this.scene.background = null
             this.scene.fog = null
         } else {
             this.scene.background = this.fogColor // fog color must be equal to scene background to avoid "holes" in fog at max rendering distance
@@ -103,7 +102,6 @@ export class SceneManager implements Updatable {
 
     setupScene(levelConf: LevelConfData) {
         this.scene.clear()
-        this.backgroundColor = this.scene.background = new Color().fromArray(GameConfig.instance.main.ambientRGB)
         this.fogColor = new Color().fromArray(levelConf.fogColor)
         this.ambientLight = new LeveledAmbientLight()
         this.ambientLight.setLightLevel(SaveGameManager.preferences.gameBrightness)
