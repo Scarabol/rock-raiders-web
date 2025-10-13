@@ -30,6 +30,7 @@ import { CameraFrustumUpdater } from '../scene/CameraFrustumUpdater'
 import { SelectionNameComponent } from './component/SelectionNameComponent'
 import { GameConfig } from '../cfg/GameConfig'
 import { PositionComponent } from './component/PositionComponent'
+import { RaidersAmountChangedEvent } from '../event/LocalEvents'
 
 export class SceneManager implements Updatable {
     readonly scene: Scene
@@ -79,6 +80,12 @@ export class SceneManager implements Updatable {
         })
         EventBroker.subscribe(EventKey.GUI_GO_BACK_BUTTON_CLICKED, () => {
             this.setBuildModeSelection(undefined)
+        })
+        EventBroker.subscribe(EventKey.RAIDER_AMOUNT_CHANGED, (event: RaidersAmountChangedEvent) => {
+            if (!event.hasRaider) this.setBuildModeSelection(undefined) // TODO Check dependencies precisely
+        })
+        EventBroker.subscribe(EventKey.BUILDINGS_CHANGED, () => {
+            this.setBuildModeSelection(undefined) // TODO Check dependencies precisely
         })
     }
 
