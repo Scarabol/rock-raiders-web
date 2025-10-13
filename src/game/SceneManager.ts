@@ -11,7 +11,7 @@ import { BirdViewCamera } from '../scene/BirdViewCamera'
 import { TorchLightCursor } from '../scene/TorchLightCursor'
 import { SceneRenderer } from '../scene/SceneRenderer'
 import { Updatable, updateSafe } from './model/Updateable'
-import { CAMERA_FOV, CAMERA_MAX_SHAKE_BUMP, CAMERA_MIN_HEIGHT_ABOVE_TERRAIN, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
+import { CAMERA_FOV, CAMERA_MAX_SHAKE_BUMP, CAMERA_MIN_HEIGHT_ABOVE_TERRAIN, CAMERA_PAN_LIMIT_MARGIN, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { SceneEntity } from './SceneEntity'
@@ -42,6 +42,9 @@ export class SceneManager implements Updatable {
     readonly sprites: (Sprite & Updatable)[] = []
     readonly raycaster: Raycaster = new Raycaster()
     readonly objectPointer: ObjectPointer = new ObjectPointer()
+    readonly tempBirdTargetDelta: Vector3 = new Vector3()
+    readonly cameraMinPos = new Vector3()
+    readonly cameraMaxPos = new Vector3()
     ambientLight: LeveledAmbientLight = new LeveledAmbientLight()
     terrain!: Terrain // TODO Refactor terrain handling, split into data and mesh
     floorGroup: Group = new Group()
@@ -65,7 +68,7 @@ export class SceneManager implements Updatable {
         this.cameraFPV = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 8 * TILESIZE)
         this.renderer = new SceneRenderer(canvas)
         this.birdViewControls = new BirdViewControls(this.cameraBird, canvas)
-        if (!SaveGameManager.preferences.cameraUnlimited) this.birdViewControls.addEventListener('change', () => this.forceCameraBirdAboveFloor())
+        if (!SaveGameManager.preferences.cameraUnlimited) this.birdViewControls.addEventListener('change', () => this.limitCameraBird())
         this.frustumUpdater = new CameraFrustumUpdater(this.cameraBird)
         this.birdViewControls.addEventListener('change', () => this.frustumUpdater.onCameraMoved())
         this.setActiveCamera(this.cameraBird)
@@ -127,6 +130,9 @@ export class SceneManager implements Updatable {
         })
         this.scene.add(this.floorGroup)
         this.scene.add(this.roofGroup)
+
+        this.cameraMinPos.set(CAMERA_PAN_LIMIT_MARGIN * TILESIZE, -GameConfig.instance.main.maxDist, CAMERA_PAN_LIMIT_MARGIN * TILESIZE)
+        this.cameraMaxPos.set((this.terrain.width - CAMERA_PAN_LIMIT_MARGIN) * TILESIZE, GameConfig.instance.main.maxDist, (this.terrain.height - CAMERA_PAN_LIMIT_MARGIN) * TILESIZE)
 
         const followerCanvas = createCanvas(158, 158)
         this.followerRenderer = new FollowerRenderer(followerCanvas, this.scene, this.worldMgr.ecs)
@@ -281,6 +287,14 @@ export class SceneManager implements Updatable {
             if (sfxVolume > 0) audio.play()
         }
         return audioId
+    }
+
+    private limitCameraBird() {
+        this.tempBirdTargetDelta.copy(this.birdViewControls.target)
+        this.birdViewControls.target.clamp(this.cameraMinPos, this.cameraMaxPos)
+        this.tempBirdTargetDelta.sub(this.birdViewControls.target)
+        this.cameraBird.position.sub(this.tempBirdTargetDelta)
+        this.forceCameraBirdAboveFloor()
     }
 
     private forceCameraBirdAboveFloor() {
