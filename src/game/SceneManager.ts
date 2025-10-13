@@ -284,9 +284,9 @@ export class SceneManager implements Updatable {
     }
 
     private forceCameraBirdAboveFloor() {
-        const cameraBirdPos = this.cameraBird.getWorldPosition(new Vector3())
-        cameraBirdPos.y += TILESIZE
-        this.raycaster.set(cameraBirdPos, new Vector3(0, -1, 0))
+        const terrainCheckOrigin = this.cameraBird.getWorldPosition(new Vector3())
+        terrainCheckOrigin.y += TILESIZE
+        this.raycaster.set(terrainCheckOrigin, new Vector3(0, -1, 0))
         const terrainIntersectionPoint = this.raycaster.intersectObject(this.floorGroup, true)?.[0]?.point
         if (!terrainIntersectionPoint) return
         const minCameraPosY = terrainIntersectionPoint.y + CAMERA_MIN_HEIGHT_ABOVE_TERRAIN + CAMERA_MAX_SHAKE_BUMP
