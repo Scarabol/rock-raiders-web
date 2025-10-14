@@ -140,6 +140,13 @@ export class ResourceManager {
                 return texture ? [texture] : []
             }
         }
+        // TODO Refactor texture asset handling, search mesh textures in all subfolders of shared directories
+        const path = `vehicles/sharedug/drill_s/${textureFilepath}`
+        const imgData = this.resourceByName.get(path.toLowerCase())
+        if (imgData) {
+            const texture = this.createTexture(imgData, path)
+            return texture ? [texture] : []
+        }
         // ignore known texture issues
         if (VERBOSE || !['teofoilreflections.jpg', 'wingbase3.bmp', 'a_side.bmp', 'a_top.bmp', 'sand.bmp', 'display.bmp'].includes(textureFilepath)) {
             console.warn(`Could not find texture ${textureFilepath}`)
