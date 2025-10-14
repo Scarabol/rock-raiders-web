@@ -1,6 +1,6 @@
 import { MapControls } from 'three/examples/jsm/controls/MapControls'
 import { Camera, MOUSE, Object3D, Vector3 } from 'three'
-import { CAMERA_MAX_SHAKE_BUMP, CAMERA_MAX_SHAKE_TILES, DEV_MODE, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE, USE_KEYBOARD_SHORTCUTS } from '../params'
+import { CAMERA_MAX_SHAKE_BUMP, CAMERA_MAX_SHAKE_TILES, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE, USE_KEYBOARD_SHORTCUTS } from '../params'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { degToRad } from 'three/src/math/MathUtils'
 import { GameConfig } from '../cfg/GameConfig'
@@ -8,7 +8,6 @@ import { EventBroker } from '../event/EventBroker'
 import { EventKey } from '../event/EventKeyEnum'
 import { DynamiteExplosionEvent } from '../event/WorldEvents'
 import { SaveGameManager } from '../resource/SaveGameManager'
-import { LevelEntryCfg } from '../cfg/LevelsCfg'
 
 export const CAMERA_ROTATION = {
     none: 0,
@@ -31,7 +30,6 @@ export class BirdViewControls extends MapControls {
     shakeOrigin: Vector3 = new Vector3()
     shakeTimeout: number = 0
     bumpTimeout: number = 0
-    isTutorial: boolean = false
     buildingCycleIndex: number = 0
 
     constructor(camera: Camera, readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
@@ -60,10 +58,6 @@ export class BirdViewControls extends MapControls {
             this.shakeOrigin.set(event.position.x, 0, event.position.y)
             this.shakeTimeout = 1000
             this.bumpTimeout = 0
-        })
-        EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event) => {
-            this.isTutorial = LevelEntryCfg.isTutorial(event.levelConf.levelName)
-            this.updateEnabled()
         })
     }
 
@@ -218,6 +212,6 @@ export class BirdViewControls extends MapControls {
     }
 
     updateEnabled() {
-        this.enabled = !this.lockBuild && !this.moveTarget && !this.lockedObject && !this.disabled && !this.gamePaused && (!this.isTutorial || DEV_MODE)
+        this.enabled = !this.lockBuild && !this.moveTarget && !this.lockedObject && !this.disabled && !this.gamePaused
     }
 }
