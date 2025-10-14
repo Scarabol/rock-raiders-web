@@ -197,7 +197,7 @@ export class SurfaceType {
     static getByNum(typeNum: number) {
         switch (typeNum) {
             case 0:
-                return SurfaceType.POWER_PATH_BUILDING
+                return SurfaceType.GROUND
             case 1:
                 return SurfaceType.SOLID_ROCK
             case 2:
