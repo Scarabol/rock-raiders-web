@@ -130,9 +130,9 @@ export class MainMenuScreen {
     async selectLevel(levelName: string | undefined) {
         try {
             if (!levelName) return
+            const levelConf = LevelLoader.fromName(levelName) // Get config first in case of error
             this.sfxAmbientLoop?.stop()
             this.sfxAmbientLoop = undefined
-            const levelConf = LevelLoader.fromName(levelName) // Get config first in case of error
             this.menuLayers.forEach((m) => m.hide())
             this.rockWipeLayer.hide()
             if (SaveGameManager.preferences.playVideos) await this.screenMaster.videoLayer.playVideo(levelConf.video)

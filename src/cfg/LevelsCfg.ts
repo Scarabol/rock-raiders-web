@@ -222,14 +222,14 @@ export class LevelPrioritiesEntryConfig {
 export class LevelRewardConfig implements ConfigSetFromRecord {
     enable: boolean = true
     modifier: number = 0
-    importance: LevelRewardImportanceConfig | undefined
-    quota: LevelRewardQuotaConfig | undefined
+    importance: LevelRewardImportanceConfig = new LevelRewardImportanceConfig()
+    quota: LevelRewardQuotaConfig = new LevelRewardQuotaConfig()
 
     setFromRecord(cfgValue: CfgEntry): this {
         this.enable = cfgValue.getValue('Enable').toBoolean()
         this.modifier = cfgValue.getValue('Modifier').toNumber()
-        this.importance = new LevelRewardImportanceConfig().setFromRecord(cfgValue.getRecord('Importance'))
-        this.quota = new LevelRewardQuotaConfig().setFromRecord(cfgValue.getRecord('Quota'))
+        this.importance.setFromRecord(cfgValue.getRecord('Importance'))
+        this.quota.setFromRecord(cfgValue.getRecord('Quota'))
         return this
     }
 }

@@ -1,4 +1,3 @@
-import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
@@ -46,7 +45,7 @@ export class BriefingPanel extends Panel {
         this.objectiveSfx = undefined
     }
 
-    setup(dialogTitle: string, objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg, objectiveSfx: string) {
+    setup(dialogTitle: string, objectiveText: string, objectiveBackImgCfg: { filename: string, x: number, y: number }, objectiveSfx: string) {
         this.imgBack = ResourceManager.getImage(objectiveBackImgCfg.filename)
         this.relX = this.xIn = objectiveBackImgCfg.x
         this.relY = this.yIn = objectiveBackImgCfg.y

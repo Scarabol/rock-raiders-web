@@ -196,37 +196,39 @@ export class SurfaceType {
 
     static getByNum(typeNum: number) {
         switch (typeNum) {
-            case 0:
+            case SURFACE_TYPE.ground:
                 return SurfaceType.GROUND
-            case 1:
+            case SURFACE_TYPE.solidRock:
                 return SurfaceType.SOLID_ROCK
-            case 2:
+            case SURFACE_TYPE.hardRock:
                 return SurfaceType.HARD_ROCK
-            case 3:
+            case SURFACE_TYPE.looseRock:
                 return SurfaceType.LOOSE_ROCK
-            case 4:
+            case SURFACE_TYPE.dirt:
+            // fallthrough
             case 5: // soil(5) was removed pre-release, so replace it with dirt(4)
                 return SurfaceType.DIRT
-            case 6:
+            case SURFACE_TYPE.lava5:
                 return SurfaceType.LAVA5
-            case 8:
+            case SURFACE_TYPE.oreSeam:
                 return SurfaceType.ORE_SEAM
-            case 9:
+            case SURFACE_TYPE.water:
                 return SurfaceType.WATER
-            case 10:
+            case SURFACE_TYPE.crystalSeam:
                 return SurfaceType.CRYSTAL_SEAM
-            case 11:
+            case SURFACE_TYPE.rechargeSeam:
                 return SurfaceType.RECHARGE_SEAM
-            case 30:
-            case 40:
+            case SURFACE_TYPE.slugHole: // XXX slug hole hidden/exposed?
+            // fallthrough
+            case 40: // XXX slug hole hidden/exposed?
                 return SurfaceType.SLUG_HOLE
-            case 100:
+            case SURFACE_TYPE.rubble4:
                 return SurfaceType.RUBBLE4
-            case 101:
+            case SURFACE_TYPE.rubble3:
                 return SurfaceType.RUBBLE3
-            case 102:
+            case SURFACE_TYPE.rubble2:
                 return SurfaceType.RUBBLE2
-            case 103:
+            case SURFACE_TYPE.rubble1:
                 return SurfaceType.RUBBLE1
             default:
                 console.error(`Unexpected surface type num: ${typeNum}`)
@@ -241,4 +243,22 @@ export class SurfaceType {
     getSfxKey(): string {
         return GameConfig.instance.surfaceTypeDescriptions[this.name.toLowerCase()]?.sfxKey || ''
     }
+}
+
+export const SURFACE_TYPE = {
+    ground: 0,
+    solidRock: 1,
+    hardRock: 2,
+    looseRock: 3,
+    dirt: 4,
+    lava5: 6,
+    oreSeam: 8,
+    water: 9,
+    crystalSeam: 10,
+    rechargeSeam: 11,
+    slugHole: 30,
+    rubble4: 100,
+    rubble3: 101,
+    rubble2: 102,
+    rubble1: 103,
 }

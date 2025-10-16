@@ -25,25 +25,25 @@ export class TerrainLoader {
                 const surfaceTypeNum = levelConf.terrainMap[r][c]
                 let surfaceType = SurfaceType.getByNum(surfaceTypeNum)
                 const predugLevel = levelConf.predugMap[r][c]
-                if (predugLevel === PredugMap.CAVERN_EXPOSED) {
+                if (predugLevel === PREDUG_MAP.cavernExposed) {
                     if (surfaceType === SurfaceType.GROUND || surfaceType === SurfaceType.DIRT
                         || surfaceType === SurfaceType.SOLID_ROCK || surfaceType === SurfaceType.HARD_ROCK || surfaceType === SurfaceType.LOOSE_ROCK) {
                         surfaceType = SurfaceType.GROUND
                     } else if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA5) {
                         console.warn(`Unexpected cavern surface type: ${surfaceType.name}`)
                     }
-                } else if (predugLevel === PredugMap.SLUG_HOLE_EXPOSED || predugLevel === PredugMap.SLUG_HOLE_HIDDEN) {
+                } else if (predugLevel === PREDUG_MAP.slugHoleExposed || predugLevel === PREDUG_MAP.slugHoleHidden) {
                     surfaceType = SurfaceType.SLUG_HOLE
-                } else if (predugLevel !== PredugMap.WALL && predugLevel !== PredugMap.CAVERN_HIDDEN) {
+                } else if (predugLevel !== PREDUG_MAP.wall && predugLevel !== PREDUG_MAP.cavernHidden) {
                     console.warn(`Unexpected predug level: ${predugLevel}`)
                 }
                 // give the path map the highest priority, if it exists
-                const pathMapLevel = levelConf.pathMap && surfaceType.floor ? levelConf.pathMap[r][c] : PathMap.NONE
-                if (pathMapLevel === PathMap.RUBBLE) {
+                const pathMapLevel = levelConf.pathMap && surfaceType.floor ? levelConf.pathMap[r][c] : PATH_MAP.none
+                if (pathMapLevel === PATH_MAP.rubble) {
                     surfaceType = SurfaceType.RUBBLE4
-                } else if (pathMapLevel === PathMap.POWER_PATH) {
+                } else if (pathMapLevel === PATH_MAP.powerPath) {
                     surfaceType = SurfaceType.POWER_PATH
-                } else if (pathMapLevel !== PathMap.NONE) {
+                } else if (pathMapLevel !== PATH_MAP.none) {
                     console.warn(`Unexpected path map level: ${pathMapLevel}`)
                 }
 
@@ -72,7 +72,7 @@ export class TerrainLoader {
 
         // explore pre-dug surfaces
         terrain.forEachSurface((s) => {
-            if (levelConf.predugMap[s.y][s.x] === PredugMap.CAVERN_EXPOSED || levelConf.predugMap[s.y][s.x] === PredugMap.SLUG_HOLE_EXPOSED) { // map are rows (y) first, columns (x) second
+            if (levelConf.predugMap[s.y][s.x] === PREDUG_MAP.cavernExposed || levelConf.predugMap[s.y][s.x] === PREDUG_MAP.slugHoleExposed) { // map are rows (y) first, columns (x) second
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
                     for (let y = s.y - 1; y <= s.y + 1; y++) {
                         const surface = terrain.getSurfaceOrNull(x, y)
@@ -111,9 +111,9 @@ export class TerrainLoader {
 
         // create hidden caverns
         terrain.forEachSurface((surface) => {
-            if (levelConf.predugMap[surface.y][surface.x] === PredugMap.CAVERN_HIDDEN && !surface.surfaceType.floor) {
+            if (levelConf.predugMap[surface.y][surface.x] === PREDUG_MAP.cavernHidden && !surface.surfaceType.floor) {
                 surface.surfaceType = SurfaceType.HIDDEN_CAVERN
-            } else if (levelConf.predugMap[surface.y][surface.x] === PredugMap.SLUG_HOLE_HIDDEN) {
+            } else if (levelConf.predugMap[surface.y][surface.x] === PREDUG_MAP.slugHoleHidden) {
                 surface.surfaceType = SurfaceType.HIDDEN_SLUG_HOLE
             }
         })
@@ -168,16 +168,16 @@ export class TerrainLoader {
     }
 }
 
-const PathMap = {
-    NONE: 0,
-    RUBBLE: 1,
-    POWER_PATH: 2,
+export const PATH_MAP = {
+    none: 0,
+    rubble: 1,
+    powerPath: 2,
 } as const
 
-const PredugMap = {
-    WALL: 0,
-    CAVERN_EXPOSED: 1,
-    CAVERN_HIDDEN: 2,
-    SLUG_HOLE_EXPOSED: 3,
-    SLUG_HOLE_HIDDEN: 4,
+export const PREDUG_MAP = {
+    wall: 0,
+    cavernExposed: 1,
+    cavernHidden: 2,
+    slugHoleExposed: 3,
+    slugHoleHidden: 4,
 } as const

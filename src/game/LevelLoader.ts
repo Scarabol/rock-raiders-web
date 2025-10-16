@@ -1,4 +1,4 @@
-import { LevelPrioritiesEntryConfig, LevelRewardConfig, ObjectiveImageCfg } from '../cfg/LevelsCfg'
+import { LevelPrioritiesEntryConfig, LevelRewardConfig } from '../cfg/LevelsCfg'
 import { GameConfig } from '../cfg/GameConfig'
 import { ResourceManager } from '../resource/ResourceManager'
 import { NerpParser } from '../nerp/NerpParser'
@@ -34,7 +34,7 @@ export interface LevelConfData {
     nerpScript: NerpScript
     nerpMessages: NerpMessage[]
     objectiveTextCfg: LevelObjectiveTextEntry
-    objectiveImage: ObjectiveImageCfg
+    objectiveImage: { filename: string, x: number, y: number }
     priorities: LevelPrioritiesEntryConfig[]
     disableStartTeleport: boolean
     disableEndTeleport: boolean
@@ -47,7 +47,7 @@ export interface LevelConfData {
     emergeCreature: MonsterEntityType
     emergeTimeOutMs: number
     noMultiSelect: boolean
-    fogColor: [number, number, number]
+    fogColor: [r: number, g: number, b: number]
 }
 
 export class LevelLoader {
