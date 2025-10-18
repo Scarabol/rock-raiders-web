@@ -318,27 +318,25 @@ export class BuildingEntity {
     }
 
     setEnergized(energized: boolean) {
-        if (this.energized !== energized) {
-            this.energized = energized
-            if (this.energized) {
-                this.changeUsedCrystals(this.crystalDrain)
-                if (this.stats.powerBuilding) this.worldMgr.powerGrid.addEnergySource(this.surfaces)
-                if (this.stats.engineSound && !this.engineSoundId && !SaveGameManager.preferences.muteDevSounds) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.engineSound, true)
-                if (this.stats.oxygenCoef) this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.oxygenCoef))
-                const components = this.worldMgr.ecs.getComponents(this.entity)
-                if (!components.has(ScannerComponent)) {
-                    const scannerRange = this.stats.surveyRadius?.[this.level] ?? 0
-                    if (scannerRange > 0 && this.primarySurface) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(scannerRange))
-                }
-            } else {
-                this.changeUsedCrystals(-this.crystalDrain)
-                if (this.stats.powerBuilding) this.worldMgr.powerGrid.removeEnergySource(this.surfaces)
-                this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
-                this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
+        if (this.energized == energized) return
+        this.energized = energized
+        if (this.energized) {
+            this.changeUsedCrystals(this.crystalDrain)
+            if (this.stats.powerBuilding) this.worldMgr.powerGrid.addEnergySource(this.surfaces)
+            if (this.stats.engineSound && !this.engineSoundId && !SaveGameManager.preferences.muteDevSounds) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.engineSound, true)
+            if (this.stats.oxygenCoef) this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.oxygenCoef))
+            const components = this.worldMgr.ecs.getComponents(this.entity)
+            if (!components.has(ScannerComponent)) {
+                const scannerRange = this.stats.surveyRadius?.[this.level] ?? 0
+                if (scannerRange > 0 && this.primarySurface) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(scannerRange))
             }
-        }
-        if (this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.stand || this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.unpowered) {
-            this.sceneEntity.setAnimation(this.isPowered() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
+            if (this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.unpowered) this.sceneEntity.setAnimation(BUILDING_ACTIVITY.stand)
+        } else {
+            this.changeUsedCrystals(-this.crystalDrain)
+            if (this.stats.powerBuilding) this.worldMgr.powerGrid.removeEnergySource(this.surfaces)
+            this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
+            this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
+            if (this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.stand) this.sceneEntity.setAnimation(BUILDING_ACTIVITY.unpowered)
         }
         this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
         this.surfaces.forEach((s) => s.updateTexture())
