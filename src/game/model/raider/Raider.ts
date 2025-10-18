@@ -378,7 +378,7 @@ export class Raider implements Updatable, JobFulfiller {
         }
         const workActivity = this.job.getWorkActivity() || this.getDefaultAnimationName()
         if (!this.workAudioId && this.job.workSoundRaider) {
-            this.workAudioId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundRaider, this.job.getExpectedTimeLeft() !== null)
+            this.workAudioId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.job.workSoundRaider, this.job.getExpectedTimeLeft() !== undefined)
         }
         if (workActivity === RAIDER_ACTIVITY.drill) {
             const workplace = this.job.getWorkplace(this)
