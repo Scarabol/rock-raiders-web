@@ -140,10 +140,11 @@ export class MapRendererWorker {
         }, MAP_MAX_UPDATE_INTERVAL)
         context.clearRect(0, 0, context.canvas.width, context.canvas.height)
         context.fillStyle = rectColor
+        const normalizedRectSize = Math.max(1, Math.round(rectSize / 15 * msg.surfaceRectSize))
         msg.entities.forEach((e) => {
-            const x = Math.round(e.x * msg.surfaceRectSize / TILESIZE - msg.offset.x - rectSize / 2)
-            const y = Math.round(e.z * msg.surfaceRectSize / TILESIZE - msg.offset.y - rectSize / 2)
-            context.fillRect(x, y, rectSize, rectSize)
+            const x = Math.round(e.x * msg.surfaceRectSize / TILESIZE - msg.offset.x - normalizedRectSize / 2)
+            const y = Math.round(e.z * msg.surfaceRectSize / TILESIZE - msg.offset.y - normalizedRectSize / 2)
+            context.fillRect(x, y, normalizedRectSize, normalizedRectSize)
         })
     }
 
