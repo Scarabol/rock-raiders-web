@@ -40,6 +40,14 @@ export class ScreenMaster {
             })
         })
         this.setupToolbarButtons()
+        const closeButton = DebugHelper.element.querySelector<HTMLButtonElement>('button.game-debug-close-button')
+        if (!closeButton) throw new Error('Debug layer close button not found')
+        closeButton.onclick = () => DebugHelper.toggleDisplay()
+        const copyToClipboard = DebugHelper.element.querySelector<HTMLButtonElement>('button.game-debug-copy-button')
+        if (!copyToClipboard) throw new Error('Debug layer copy to clipboard button not found')
+        copyToClipboard.onclick = () => {
+            navigator.clipboard.writeText(Array.from(DebugHelper.messageContainer.children).map((e) => (e as HTMLElement).innerText).join('\n')).then()
+        }
         this.loadingLayer = this.addLayer(new LoadingLayer(), 1200)
         this.videoLayer = this.addLayer(new VideoLayer(), 1500)
     }

@@ -25,14 +25,6 @@ export class DebugHelper {
         const context = DebugHelper.element.querySelector<HTMLCanvasElement>('canvas.game-debug-fps-canvas')?.getContext('2d')
         if (!context) throw new Error('Could not get context for fps rendering')
         this.fpsContext = context
-        const closeButton = DebugHelper.element.querySelector<HTMLButtonElement>('button.game-debug-close-button')
-        if (!closeButton) throw new Error('Debug layer close button not found')
-        closeButton.onclick = () => DebugHelper.toggleDisplay()
-        const copyToClipboard = DebugHelper.element.querySelector<HTMLButtonElement>('button.game-debug-copy-button')
-        if (!copyToClipboard) throw new Error('Debug layer copy to clipboard button not found')
-        copyToClipboard.onclick = () => {
-            navigator.clipboard.writeText(Array.from(DebugHelper.messageContainer.children).map((e) => (e as HTMLElement).innerText).join('\n')).then()
-        }
     }
 
     static intersectConsoleLogging() {
