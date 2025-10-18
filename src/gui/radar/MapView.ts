@@ -95,12 +95,10 @@ export class MapView extends BaseElement {
                     entities.delete(event.entity)
                     break
             }
-            // TODO This should be limited in frontend, since requests blocked by worker still produce overhead
             this.mapRenderer.redrawEntities(this.offset, event.mapMarkerType, this.surfaceRectSize, Array.from(entities.values())).then(() => this.notifyRedraw())
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_CAMERA, (event: UpdateRadarCamera) => {
             this.cameraRect = event.cameraRect
-            // TODO This should be limited in frontend, since requests blocked by worker still produce overhead
             this.mapRenderer.redrawCamera(this.offset, this.surfaceRectSize, this.cameraRect).then(() => this.notifyRedraw())
         })
     }

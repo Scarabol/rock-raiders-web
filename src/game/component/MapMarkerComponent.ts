@@ -1,4 +1,5 @@
 import { AbstractGameComponent } from '../ECS'
+import { Vector3 } from 'three'
 
 export const MAP_MARKER_TYPE = {
     default: 1,
@@ -15,6 +16,9 @@ export const MAP_MARKER_CHANGE = {
 export type MapMarkerChange = typeof MAP_MARKER_CHANGE[keyof typeof MAP_MARKER_CHANGE]
 
 export class MapMarkerComponent extends AbstractGameComponent {
+    readonly lastPos: Vector3 = new Vector3()
+    lastUpdateMs: number = 0
+
     constructor(readonly mapMarkerType: MapMarkerType) {
         super()
     }
