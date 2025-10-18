@@ -51,11 +51,10 @@ export class MapView extends BaseElement {
         this.relY = 15
         this.onClick = (cx: number, cy: number) => {
             if (this.entityBelowCursor) EventBroker.publish(new FollowerSetLookAtEvent(this.entityBelowCursor))
-            const surfaceScale = this.surfaceRectSizeMin / this.surfaceRectSize
-            this.offset.x += (cx - this.x - this.width / 2) * surfaceScale
-            this.offset.y += (cy - this.y - this.height / 2) * surfaceScale
-            this.offset.x = Math.max(-this.width / 2, Math.min(this.terrainWidth * this.surfaceRectSizeMin - this.width / 2, this.offset.x))
-            this.offset.y = Math.max(-this.height / 2, Math.min(this.terrainHeight * this.surfaceRectSizeMin - this.height / 2, this.offset.y))
+            this.offset.x += (cx - this.x - this.width / 2)
+            this.offset.y += (cy - this.y - this.height / 2)
+            this.offset.x = Math.max(-this.width / 2, Math.min(this.terrainWidth * this.surfaceRectSize - this.width / 2, this.offset.x))
+            this.offset.y = Math.max(-this.height / 2, Math.min(this.terrainHeight * this.surfaceRectSize - this.height / 2, this.offset.y))
             this.redrawAll()
         }
         this.registerEventListener(EventKey.INIT_RADAR_MAP, (event: InitRadarMap) => {
