@@ -10,12 +10,13 @@ export class SoundManager {
     private static readonly MISSING_SFX = ['SurfaceSFX_Tunnel'].map((n) => n.toLowerCase()) // ignore known sfx issues
     static readonly playingAudio: Map<number, PositionalAudio> = new Map()
     static readonly sfxBuffersByKey: Map<string, AudioBuffer[]> = new Map()
-    static readonly sceneAudioListener: AudioListener = new AudioListener()
-    private static audioId: number = 1 // start with 1 for truthiness safety
+    static sceneAudioListener: AudioListener
     static sfxAudioTarget: GainNode
     static skipVoiceLines: boolean = false
+    private static audioId: number = 1 // start with 1 for truthiness safety
 
     static init() {
+        this.sceneAudioListener = new AudioListener() // late init to be compatible with eventual test setup
         this.playingAudio.forEach((audio) => {
             if (audio?.isPlaying) audio.stop()
         })

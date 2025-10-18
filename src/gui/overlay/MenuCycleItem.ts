@@ -8,8 +8,8 @@ import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 export class MenuCycleItem extends BaseElement {
     imgTextNormal?: SpriteImage
     imgTextHover?: SpriteImage
-    imgLabelOnNormal?: SpriteImage // TODO only toggle state with clicks on label
-    imgLabelOffNormal?: SpriteImage // TODO use button?
+    imgLabelOnNormal?: SpriteImage
+    imgLabelOffNormal?: SpriteImage
     imgLabelOnHover?: SpriteImage
     imgLabelOffHover?: SpriteImage
 

@@ -32,7 +32,7 @@ export class MaterialSpawner {
         targetSurface?: Surface,
         barrierLocation?: Vector2,
         targetSite?: BuildingSite,
-    ) {
+    ): MaterialEntity {
         const floorPosition = worldMgr.sceneMgr.getFloorPosition(worldPos)
         const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
         const material = new MaterialEntity(worldMgr, entityType, targetSurface, targetSite, barrierLocation)

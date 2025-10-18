@@ -189,7 +189,7 @@ export class CabFile {
         return CabFile.FALLBACK_MAJOR_VERSION
     }
 
-    async loadAllFiles(progress: SelectFilesProgress): Promise<VirtualFile[]> {
+    async loadAllFiles(progress: SelectFilesProgress | undefined): Promise<VirtualFile[]> {
         const result: VirtualFile[] = []
         await Promise.all(
             Array.from(this.lowerFilePathNameToFile.keys()).map(async (fileName, c) => {
@@ -198,7 +198,7 @@ export class CabFile {
                 // Move files from "program data files/", "0007-german files/" or "registration files/" to root directory
                 const mappedFileName = firstSlashIndex > 1 ? fileName.substring(firstSlashIndex) : fileName
                 result.push(VirtualFile.fromBuffer(mappedFileName, buffer))
-                progress.setProgress('Unpacking files from CAB...', c, this.lowerFilePathNameToFile.size)
+                progress?.setProgress('Unpacking files from CAB...', c, this.lowerFilePathNameToFile.size)
             })
         )
         return result

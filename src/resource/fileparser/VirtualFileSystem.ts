@@ -19,7 +19,7 @@ export class VirtualFileSystem {
         return file
     }
 
-    filterEntryNames(regexStr: string) {
+    filterEntryNames(regexStr: string): string[] {
         const regex = new RegExp(regexStr.toLowerCase())
         return Array.from(this.files.keys()).filter((f) => !!f.match(regex))
     }

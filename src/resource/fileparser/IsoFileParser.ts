@@ -13,7 +13,7 @@ export class IsoFileParser {
         this.reader = new ByteStreamReader(new DataView(buffer))
     }
 
-    async loadAllFiles(progress: SelectFilesProgress): Promise<VirtualFile[]> {
+    async loadAllFiles(progress: SelectFilesProgress | undefined): Promise<VirtualFile[]> {
         console.time('Parsing ISO file directory entries')
         for (let offset = 32 * 1024; offset < this.buffer.byteLength; offset += 2048) { // skip first 32 kB for system area
             this.reader.seek(offset)

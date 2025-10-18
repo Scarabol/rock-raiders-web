@@ -113,6 +113,8 @@ export function getEntityTypeByName(type: string): EntityType {
         return EntityType.BRICK
     } else if ('Barrier'.equalsIgnoreCase(type)) {
         return EntityType.BARRIER
+    } else if ('DepletedCrystal'.equalsIgnoreCase(type)) {
+        return EntityType.DEPLETED_CRYSTAL
     } else if ('Hoverboard'.equalsIgnoreCase(type)) {
         return EntityType.HOVERBOARD
     } else if ('SmallDigger'.equalsIgnoreCase(type)) {

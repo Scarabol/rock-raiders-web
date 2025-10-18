@@ -6,9 +6,11 @@ export class LevelObjectiveTextEntry {
     crystalFailure: string = ''
 }
 
+export type LevelObjectiveTexts = Record<string, LevelObjectiveTextEntry>
+
 export class ObjectiveTextParser {
-    parseObjectiveTextFile(txtFileText: string) {
-        const result: Record<string, LevelObjectiveTextEntry> = {}
+    parseObjectiveTextFile(txtFileText: string): LevelObjectiveTexts {
+        const result: LevelObjectiveTexts = {}
         let currentLevel: LevelObjectiveTextEntry
         txtFileText.split('\n').forEach((l) => {
             const line = l.trim()

@@ -90,6 +90,7 @@ export class SceneManager implements Updatable {
     }
 
     setActiveCamera(camera: PerspectiveCamera) {
+        if (this.cameraActive === camera) return
         GameState.isBirdView = camera === this.cameraBird
         if (this.torchLightCursor) this.torchLightCursor.visible = GameState.isBirdView
         this.birdViewControls.disabled = !GameState.isBirdView

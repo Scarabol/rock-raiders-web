@@ -118,6 +118,7 @@ export class ObjectListLoader {
             case EntityType.CRYSTAL:
             case EntityType.ORE:
             case EntityType.BRICK:
+            case EntityType.DEPLETED_CRYSTAL:
                 MaterialSpawner.spawnMaterial(this.worldMgr, entityType, worldPos, headingRad)
                 break
             case EntityType.SMALL_SPIDER:

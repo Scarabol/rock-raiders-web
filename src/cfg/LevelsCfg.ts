@@ -1,9 +1,10 @@
 import { PRIORITY_IDENTIFIER, PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { GameConfig } from './GameConfig'
 import { SaveGameManager } from '../resource/SaveGameManager'
-import { VERBOSE } from '../params'
+import { DEV_MODE, VERBOSE } from '../params'
 import { ConfigSetFromEntryValue, ConfigSetFromRecord } from './Configurable'
 import { CfgEntry, CfgEntryValue } from './CfgEntry'
+import { EntityType, getMonsterEntityTypeByName, MonsterEntityType } from '../game/model/EntityType'
 
 export class LevelEntryCfg implements ConfigSetFromRecord {
     fullName: string = ''
@@ -15,7 +16,7 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
     video: string = ''
     disableEndTeleport: boolean = false
     disableStartTeleport: boolean = false
-    emergeTimeOut: number = 0
+    emergeTimeOutMs: number = 0
     boulderAnimation: any = ''
     noMultiSelect: boolean = false
     noAutoEat: boolean = false
@@ -26,9 +27,9 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
     roofHeight: number = 40
     useRoof: boolean = true
     selBoxHeight: number = 10
-    fpRotLightRGB: [r: number, g: number, b: number] = [0, 0, 0]
-    fogColourRGB: [r: number, g: number, b: number] = [0, 0, 0]
-    highFogColourRGB: [r: number, g: number, b: number] = [0, 0, 0]
+    fpRotLight: [r: number, g: number, b: number] = [0, 0, 0]
+    fogColour: [r: number, g: number, b: number] = [0, 0, 0]
+    highFogColour: [r: number, g: number, b: number] = [0, 0, 0]
     fogRate: number = 0
     fallinMultiplier: number = 0 // time in seconds that is multiplied with fall in map value to get time between fall ins
     numberOfLandSlidesTillCaveIn: number = 0 // TODO after this number of fallins the area of effect is increased from 1 to 6
@@ -46,7 +47,7 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
     noGather: boolean = false
     textureSet: string = ''
     rockFallStyle: string = ''
-    emergeCreature: string = ''
+    emergeCreature: MonsterEntityType = EntityType.NONE
     safeCaverns: boolean = true
     seeThroughWalls: boolean = false
     oListFile: string = ''
@@ -54,10 +55,10 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
     nerpFile: string = ''
     nerpMessageFile: string = ''
     objectiveText: string = ''
-    objectiveImage640x480: ObjectiveImageCfg = new ObjectiveImageCfg()
-    erodeTriggerTime: number = 0 // 1, 20, 40, 60, 120 time in seconds to trigger a new erosion
-    erodeErodeTime: number = 0 // 1, 5, 7, 20, 30, 40, 60 time in seconds until next erosion level is reached
-    erodeLockTime: number = 0 // 1, 300, 500, 600 grace time no erosion happens on surface with power path
+    objectiveImage: ObjectiveImageCfg = new ObjectiveImageCfg()
+    erodeTriggerTimeMs: number = 0 // 1, 20, 40, 60, 120 time in seconds to trigger a new erosion
+    erodeErodeTimeMs: number = 0 // 1, 5, 7, 20, 30, 40, 60 time in seconds until next erosion level is reached
+    erodeLockTimeMs: number = 0 // 1, 300, 500, 600 grace time no erosion happens on surface with power path
     nextLevel: any = ''
     levelLinks: string[] = []
     frontEndX: number = 0
@@ -78,9 +79,9 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
         this.recallOLObjects = cfgValue.getValue('RecallOLObjects').toBoolean()
         this.generateSpiders = cfgValue.getValue('GenerateSpiders').toBoolean()
         this.video = cfgValue.getValue('Video').toFileName()
-        this.disableEndTeleport = cfgValue.getValue('DisableEndTeleport').toBoolean()
-        this.disableStartTeleport = cfgValue.getValue('DisableStartTeleport').toBoolean()
-        this.emergeTimeOut = cfgValue.getValue('EmergeTimeOut').toNumber()
+        this.disableEndTeleport = cfgValue.getValue('DisableEndTeleport').toBoolean() || DEV_MODE
+        this.disableStartTeleport = cfgValue.getValue('DisableStartTeleport').toBoolean() || DEV_MODE
+        this.emergeTimeOutMs = cfgValue.getValue('EmergeTimeOut').toNumber() / 1500 * 60 * 1000 // 1500 specifies 1 minute
         this.boulderAnimation = cfgValue.getValue('BoulderAnimation').toFileName()
         this.noMultiSelect = cfgValue.getValue('NoMultiSelect').toBoolean()
         this.noAutoEat = cfgValue.getValue('NoAutoEat').toBoolean()
@@ -91,9 +92,9 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
         this.roofHeight = cfgValue.getValue('RoofHeight').toNumber()
         this.useRoof = cfgValue.getValue('UseRoof').toBoolean()
         this.selBoxHeight = cfgValue.getValue('SelBoxHeight').toNumber()
-        this.fpRotLightRGB = cfgValue.getValue('FpRotLightRGB').toRGB(this.fpRotLightRGB)
-        this.fogColourRGB = cfgValue.getValue('FogColourRGB').toRGB()
-        this.highFogColourRGB = cfgValue.getValue('HighFogColourRGB').toRGB()
+        this.fpRotLight = cfgValue.getValue('FpRotLightRGB').toRGB(this.fpRotLight)
+        this.fogColour = cfgValue.getValue('FogColourRGB').toRGB()
+        this.highFogColour = cfgValue.getValue('HighFogColourRGB').toRGB()
         this.fogRate = cfgValue.getValue('FogRate').toNumber()
         this.fallinMultiplier = cfgValue.getValue('FallinMultiplier').toNumber()
         this.numberOfLandSlidesTillCaveIn = cfgValue.getValue('NumberOfLandSlidesTillCaveIn').toNumber()
@@ -111,7 +112,7 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
         this.noGather = cfgValue.getValue('NoGather').toBoolean()
         this.textureSet = cfgValue.getValue('TextureSet').toTextureSet()
         this.rockFallStyle = cfgValue.getValue('RockFallStyle').toString()
-        this.emergeCreature = cfgValue.getValue('EmergeCreature').toString()
+        this.emergeCreature = getMonsterEntityTypeByName(cfgValue.getValue('EmergeCreature').toString())
         this.safeCaverns = cfgValue.getValue('SafeCaverns').toBoolean()
         this.seeThroughWalls = cfgValue.getValue('SeeThroughWalls').toBoolean()
         this.oListFile = cfgValue.getValue('OListFile').toFileName()
@@ -123,10 +124,10 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
         }
         this.nerpMessageFile = cfgValue.getValue('NerpMessageFile').toFileName()
         this.objectiveText = cfgValue.getValue('ObjectiveText').toFileName()
-        this.objectiveImage640x480.setFromValue(cfgValue.getValue('ObjectiveImage640x480'))
-        this.erodeTriggerTime = cfgValue.getValue('ErodeTriggerTime').toNumber()
-        this.erodeErodeTime = cfgValue.getValue('ErodeErodeTime').toNumber()
-        this.erodeLockTime = cfgValue.getValue('ErodeLockTime').toNumber()
+        this.objectiveImage.setFromValue(cfgValue.getValue('ObjectiveImage640x480'))
+        this.erodeTriggerTimeMs = cfgValue.getValue('ErodeTriggerTime').toNumber() * 1000
+        this.erodeErodeTimeMs = cfgValue.getValue('ErodeErodeTime').toNumber() * 1000
+        this.erodeLockTimeMs = cfgValue.getValue('ErodeLockTime').toNumber() * 1000
         this.nextLevel = cfgValue.getValue('NextLevel').toLevelReference()
         this.levelLinks = cfgValue.getValue('LevelLinks').toArray(',', undefined).map((v) => v.toLevelReference())
         this.frontEndX = cfgValue.getValue('FrontEndX').toNumber()

@@ -71,7 +71,7 @@ export class LWOBParser {
     constructor(
         buffer: ArrayBuffer,
         readonly textureLoader: LWOBTextureLoader,
-        readonly uvData: UVData,
+        readonly uvData: UVData | undefined,
         readonly verbose: boolean = false,
     ) {
         this.lwoReader = new LWOBFileReader(buffer)
@@ -469,7 +469,7 @@ export class LWOBParser {
             }
         }
 
-        const uvIndex = this.uvData?.names.findIndex((name) => name === materialName)
+        const uvIndex = this.uvData?.names.findIndex((name) => name === materialName) ?? -1
         const textureName = this.uvData?.mapNames[uvIndex]
         if (textureName && textureName.toLowerCase() !== 'null') {
             this.textureLoader.load(textureName.toLowerCase(), (t) => material.setTextures(t))

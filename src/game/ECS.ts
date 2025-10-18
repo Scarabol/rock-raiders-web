@@ -94,7 +94,7 @@ export class ECS {
     public getComponents(entity: GameEntity): ComponentContainer {
         const container = this.entities.get(entity)
         if (container) return container
-        console.warn(`Entity (${entity}) unknow to ECS; must be reference otherwise`) // TODO Fix reference issues
+        console.warn(`Entity (${entity}) unknow to ECS; must be referenced otherwise`)
         return new ComponentContainer()
     }
 

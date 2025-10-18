@@ -26,7 +26,7 @@ export class MusicManager {
                 }
             }
             if (this.musicTracks.length < 1) console.warn('No music tracks found in cache')
-            // TODO unpause might occur before decoding finished, better make this async
+            if (!this.firstUnpause && this.playNext) this.playTracks()
         })().then()
         this.audioTarget.gain.value = SaveGameManager.getMusicVolume()
         this.audioTarget.connect(this.audioContext.destination)

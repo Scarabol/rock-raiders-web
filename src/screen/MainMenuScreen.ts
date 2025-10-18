@@ -135,7 +135,7 @@ export class MainMenuScreen {
             this.sfxAmbientLoop = undefined
             this.menuLayers.forEach((m) => m.hide())
             this.rockWipeLayer.hide()
-            if (SaveGameManager.preferences.playVideos) await this.screenMaster.videoLayer.playVideo(levelConf.video)
+            if (SaveGameManager.preferences.playVideos && levelConf.video) await this.screenMaster.videoLayer.playVideo(`data/${levelConf.video.toLowerCase()}`)
             this.screenMaster.loadingLayer.show()
             EventBroker.publish(new LevelSelectedEvent(levelConf))
             EventBroker.publish(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw

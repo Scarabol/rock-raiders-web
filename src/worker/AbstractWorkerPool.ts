@@ -37,7 +37,7 @@ export abstract class AbstractWorkerPool<M, R> {
         if (this.allWorkers.size < 1) throw new Error('No workers, has pool been started?')
         this.broadcastHistory.forEach((broadcast) => {
             this.lastRequestId++
-            const message: WorkerRequestMessage<M> = {workerRequestHash: `message-${this.lastRequestId}`, request: broadcast}
+            const message: WorkerRequestMessage<M> = {workerRequestHash: `broadcast-${this.lastRequestId}`, request: broadcast}
             worker.sendMessage(message)
         })
         this.processNextMessage(worker)
@@ -45,6 +45,7 @@ export abstract class AbstractWorkerPool<M, R> {
 
     terminatePool() {
         this.allWorkers.forEach((w) => w.terminate())
+        this.allWorkers.clear()
     }
 
     private createTypedWorker(): TypedWorker<WorkerRequestMessage<M>> {
@@ -84,7 +85,7 @@ export abstract class AbstractWorkerPool<M, R> {
         const result: Promise<R>[] = []
         this.allWorkers.forEach((worker) => {
             this.lastRequestId++
-            const message = {workerRequestHash: `message-${this.lastRequestId}`, request: broadcast}
+            const message = {workerRequestHash: `broadcast-${this.lastRequestId}`, request: broadcast}
             result.push(new Promise<R>((resolve) => this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(resolve)))
             // response handler must be registered before sending, because send message is synchron with fallback worker
             worker.sendMessage(message)
@@ -99,7 +100,10 @@ export abstract class AbstractWorkerPool<M, R> {
                 requests.forEach((r) => r(response.response))
                 this.openRequests.set(response.workerRequestHash, [])
             } else {
-                console.warn(`Received response for unknown request ${response.workerRequestHash}`)
+                // TODO When sending a broadcast, each broadcast message needs it's own request hash, otherwise two worker replying a broadcast trigger this warning. Or don't reply to broadcasts at all?
+                if (!response.workerRequestHash.startsWith('broadcast-')) {
+                    console.warn(`Received response for unknown request ${response.workerRequestHash}`)
+                }
             }
         } else {
             console.warn(`Received unexpected worker response`, response)

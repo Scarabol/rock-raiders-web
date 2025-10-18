@@ -67,7 +67,7 @@ export class LWSCParser {
             } else if (line.startsWith('PreviewFirstFrame ') || line.startsWith('PreviewLastFrame ') || line.startsWith('PreviewFrameStep ')) {
                 // only used in editor
             } else if (VERBOSE) {
-                console.warn(`Unexpected line: ${line}`) // XXX implement all LWS features
+                // console.warn(`Unexpected line: ${line}`) // XXX implement all LWS features
             }
         }
 
