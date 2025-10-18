@@ -653,7 +653,9 @@ export class BitmapWithPalette extends ImageData {
     applyAlpha(): BitmapWithPalette {
         const data = this.data
         for (let n = 0; n < data.length; n += 4) {
-            if (data[n] <= 2 && data[n + 1] <= 2 && data[n + 2] <= 2) { // Interface/Reward/RSoxygen.bmp uses 2/2/2 as "black" alpha background
+            // Interface/Reward/RSoxygen.bmp uses 2/2/2 as "black" alpha background
+            // Baz's mod uses 5/2/4 as "black" alpha background for level images
+            if (data[n] <= 12 && data[n + 1] <= 12 && data[n + 2] <= 12) {
                 data[n + 3] = 0
             }
         }
