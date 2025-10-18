@@ -90,6 +90,7 @@ export class ObjectListLoader {
             case EntityType.ORE_REFINERY:
             case EntityType.GUNSTATION:
             case EntityType.TELEPORT_BIG:
+                worldPos.divideScalar(TILESIZE).roundToZero().add({x: 0.5, y: 0.5}).multiplyScalar(TILESIZE) // Always snap building position to the center of the given tile
                 const building = new BuildingEntity(this.worldMgr, entityType, worldPos, -headingRad - Math.PI, this.disableStartTeleport)
                 if (entityType === EntityType.TOOLSTATION) {
                     if (!this.trackEntity && building.sceneEntity.visible) this.trackEntity = building.entity
