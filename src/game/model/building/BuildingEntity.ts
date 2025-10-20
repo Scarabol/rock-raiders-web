@@ -65,7 +65,7 @@ export class BuildingEntity {
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(this.buildingType.aeFilename))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.powerOffSprite = new BubbleSprite(GameConfig.instance.bubbles.bubblePowerOff)
-        this.powerOffSprite.visible = this.isPowered()
+        this.powerOffSprite.visible = false
         this.sceneEntity.add(this.powerOffSprite)
         this.worldMgr.sceneMgr.addSprite(this.powerOffSprite)
         const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.damageCausesCallToArms, 24, 14, this.sceneEntity, false, GameConfig.instance.getRockFallDamage(entityType, this.level)))
@@ -146,10 +146,8 @@ export class BuildingEntity {
         }
         if (this.surfaces.some((s) => s.selected)) EventBroker.publish(new DeselectAll())
         if (this.sceneEntity.visible && !disableTeleportIn) {
-            this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
             this.sceneEntity.setAnimation(BUILDING_ACTIVITY.teleport, () => {
                 this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
-                this.powerOffSprite.setEnabled(!this.isPowered())
                 this.onPlaceDown()
             })
         } else {
@@ -318,7 +316,7 @@ export class BuildingEntity {
     }
 
     setEnergized(energized: boolean) {
-        if (this.energized == energized) return
+        if (this.energized === energized) return
         this.energized = energized
         if (this.energized) {
             this.changeUsedCrystals(this.crystalDrain)
@@ -330,15 +328,17 @@ export class BuildingEntity {
                 const scannerRange = this.stats.surveyRadius?.[this.level] ?? 0
                 if (scannerRange > 0 && this.primarySurface) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(scannerRange))
             }
-            if (this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.unpowered) this.sceneEntity.setAnimation(BUILDING_ACTIVITY.stand)
         } else {
             this.changeUsedCrystals(-this.crystalDrain)
             if (this.stats.powerBuilding) this.worldMgr.powerGrid.removeEnergySource(this.surfaces)
             this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
             this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
-            if (this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.stand) this.sceneEntity.setAnimation(BUILDING_ACTIVITY.unpowered)
         }
-        this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
+        const powered = this.inBeam || this.isPowered()
+        if (this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.stand || this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.unpowered) {
+            this.sceneEntity.setAnimation(powered ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
+        }
+        this.powerOffSprite.setEnabled(!powered)
         this.surfaces.forEach((s) => s.updateTexture())
         EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         if (this.selected || (this.entityType === EntityType.UPGRADE && this.worldMgr.entityMgr.selection.vehicles.length > 0)) {
@@ -357,7 +357,9 @@ export class BuildingEntity {
     }
 
     private onPlaceDown() {
-        this.sceneEntity.setAnimation(BUILDING_ACTIVITY.stand)
+        const powered = this.isPowered()
+        this.sceneEntity.setAnimation(powered ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
+        this.powerOffSprite.setEnabled(!powered)
         this.updateEnergyState()
         this.surfaces.forEach((surface) => {
             surface.updateTexture()
