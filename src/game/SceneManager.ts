@@ -31,6 +31,7 @@ import { SelectionNameComponent } from './component/SelectionNameComponent'
 import { GameConfig } from '../cfg/GameConfig'
 import { PositionComponent } from './component/PositionComponent'
 import { RaidersAmountChangedEvent } from '../event/LocalEvents'
+import { RaiderInfoComponent } from './component/RaiderInfoComponent'
 
 export class SceneManager implements Updatable {
     readonly scene: Scene
@@ -102,7 +103,15 @@ export class SceneManager implements Updatable {
             this.scene.background = this.fogColor // fog color must be equal to scene background to avoid "holes" in fog at max rendering distance
             this.scene.fog = new FogExp2(this.fogColor, 0.007)
         }
+        // TODO Refactor raider info component updates with ECS
         this.worldMgr.entityMgr?.selection.raiders.forEach((r) => this.worldMgr.ecs.getComponents(r.entity).get(SelectionNameComponent)?.setVisible(GameState.isBirdView))
+        this.worldMgr.entityMgr?.raiders.forEach((r) => {
+            const infoComponent = r.worldMgr.ecs.getComponents(r.entity).get(RaiderInfoComponent)
+            if (infoComponent) {
+                infoComponent.bubbleSprite.updateVisibleState()
+                infoComponent.hungerSprite.visible = GameState.showObjInfo && GameState.isBirdView
+            }
+        })
         this.cameraActive = camera
         this.cameraActive.add(SoundManager.sceneAudioListener)
         this.renderer.camera = camera
