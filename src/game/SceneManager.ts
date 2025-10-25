@@ -72,7 +72,6 @@ export class SceneManager implements Updatable {
         if (!SaveGameManager.preferences.cameraUnlimited) this.birdViewControls.addEventListener('change', () => this.limitCameraBird())
         this.frustumUpdater = new CameraFrustumUpdater(this.cameraBird)
         this.birdViewControls.addEventListener('change', () => this.frustumUpdater.onCameraMoved())
-        this.setActiveCamera(this.cameraBird)
         EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
             this.setActiveCamera(this.cameraBird) // TODO Only reset camera, when camera parent is affected
         })
@@ -150,6 +149,7 @@ export class SceneManager implements Updatable {
 
         this.cameraMinPos.set(CAMERA_PAN_LIMIT_MARGIN * TILESIZE, -GameConfig.instance.main.maxDist, CAMERA_PAN_LIMIT_MARGIN * TILESIZE)
         this.cameraMaxPos.set((this.terrain.width - CAMERA_PAN_LIMIT_MARGIN) * TILESIZE, GameConfig.instance.main.maxDist, (this.terrain.height - CAMERA_PAN_LIMIT_MARGIN) * TILESIZE)
+        this.setActiveCamera(this.cameraBird)
 
         const followerCanvas = createCanvas(158, 158)
         this.followerRenderer = new FollowerRenderer(followerCanvas, this.scene, this.worldMgr.ecs)
