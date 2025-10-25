@@ -204,10 +204,15 @@ export class SceneManager implements Updatable {
                 animationName = !!((selectedEntity as Raider).carries) ? ANIM_ENTITY_ACTIVITY.carry : ANIM_ENTITY_ACTIVITY.route
                 selectedEntity.onEntityMoved()
             } else {
-                const drillTimeSeconds = selectedEntity.getDrillTimeSeconds(targetSurface)
-                if (drillTimeSeconds > 0) {
-                    animationName = RAIDER_ACTIVITY.drill
-                    targetSurface.addDrillTimeProgress(drillTimeSeconds, elapsedMs, selectedEntity.getPosition2D())
+                const origin = selectedEntity.getPosition()
+                const lookVector = new Vector3(0, 0, 1).applyMatrix4(selectedEntity.sceneEntity.matrix).sub(origin)
+                const vecToSurf = targetSurface.getCenterWorld().clone().sub(origin)
+                if (Math.abs(lookVector.angleTo(vecToSurf)) < Math.PI / 2) {
+                    const drillTimeSeconds = selectedEntity.getDrillTimeSeconds(targetSurface)
+                    if (drillTimeSeconds > 0) {
+                        animationName = RAIDER_ACTIVITY.drill
+                        targetSurface.addDrillTimeProgress(drillTimeSeconds, elapsedMs, selectedEntity.getPosition2D())
+                    }
                 }
             }
         }
