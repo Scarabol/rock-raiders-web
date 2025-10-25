@@ -316,6 +316,11 @@ export class BuildingEntity {
     }
 
     setEnergized(energized: boolean) {
+        const powered = this.inBeam || this.isPowered()
+        if (this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.stand || this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.unpowered) {
+            this.sceneEntity.setAnimation(powered ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
+        }
+        this.powerOffSprite.setEnabled(!powered)
         if (this.energized === energized) return
         this.energized = energized
         if (this.energized) {
@@ -334,11 +339,6 @@ export class BuildingEntity {
             this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
             this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
         }
-        const powered = this.inBeam || this.isPowered()
-        if (this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.stand || this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.unpowered) {
-            this.sceneEntity.setAnimation(powered ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
-        }
-        this.powerOffSprite.setEnabled(!powered)
         this.surfaces.forEach((s) => s.updateTexture())
         EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         if (this.selected || (this.entityType === EntityType.UPGRADE && this.worldMgr.entityMgr.selection.vehicles.length > 0)) {
@@ -357,9 +357,7 @@ export class BuildingEntity {
     }
 
     private onPlaceDown() {
-        const powered = this.isPowered()
-        this.sceneEntity.setAnimation(powered ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
-        this.powerOffSprite.setEnabled(!powered)
+        this.sceneEntity.setAnimation(BUILDING_ACTIVITY.stand)
         this.updateEnergyState()
         this.surfaces.forEach((surface) => {
             surface.updateTexture()
