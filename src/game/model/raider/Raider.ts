@@ -483,16 +483,17 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private grabJobItem(elapsedMs: number, carryItem: MaterialEntity | undefined): boolean {
-        if (this.carries === carryItem) return true
+        if (this.carries === carryItem) return this.sceneEntity.currentAnimation !== RAIDER_ACTIVITY.collect
         this.dropCarried(true)
         if (!carryItem) return true
         const positionAsPathTarget = PathTarget.fromLocation(carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)
         if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MOVE_STATE.targetReached) {
             this.sceneEntity.headTowards(carryItem.getPosition2D())
             this.sceneEntity.setAnimation(RAIDER_ACTIVITY.collect, () => {
-                this.carries = carryItem
-                this.sceneEntity.pickupEntity(carryItem.sceneEntity)
+                this.sceneEntity.setAnimation(this.getDefaultAnimationName())
             })
+            this.carries = carryItem
+            this.sceneEntity.pickupEntity(carryItem.sceneEntity)
         }
         return false
     }
