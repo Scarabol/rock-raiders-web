@@ -99,6 +99,8 @@ export class SceneManager implements Updatable {
         if (GameState.isBirdView) {
             this.scene.background = null
             this.scene.fog = null
+            const selectedEntityPosition = this.worldMgr.entityMgr?.selection.getPrimarySelected()?.getPosition2D()
+            if (selectedEntityPosition) this.birdViewControls.jumpTo(this.getFloorPosition(selectedEntityPosition))
         } else {
             this.scene.background = this.fogColor // fog color must be equal to scene background to avoid "holes" in fog at max rendering distance
             this.scene.fog = new FogExp2(this.fogColor, 0.007)
