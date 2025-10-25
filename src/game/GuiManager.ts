@@ -257,6 +257,9 @@ export class GuiManager {
                     return
                 }
                 entity.sceneEntity.camFPVJoint.add(worldMgr.sceneMgr.cameraFPV)
+                // inverse joint scale because it affects camera far
+                const jointScale = entity.sceneEntity.camFPVJoint.getWorldScale(new Vector3())
+                worldMgr.sceneMgr.cameraFPV.scale.set(1 / jointScale.x, 1 / jointScale.y, 1 / jointScale.z)
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraFPV)
             } else if (event.viewMode === CAMERA_VIEW_MODE.shoulder) {
                 if (!entity.sceneEntity.camShoulderJoint) {
@@ -264,6 +267,9 @@ export class GuiManager {
                     return
                 }
                 entity.sceneEntity.camShoulderJoint.add(worldMgr.sceneMgr.cameraShoulder)
+                // inverse joint scale because it affects camera far
+                const jointScale = entity.sceneEntity.camShoulderJoint.getWorldScale(new Vector3())
+                worldMgr.sceneMgr.cameraShoulder.scale.set(1 / jointScale.x, 1 / jointScale.y, 1 / jointScale.z)
                 worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraShoulder)
             }
         })

@@ -65,8 +65,8 @@ export class SceneManager implements Updatable {
         this.scene = new Scene()
         const aspect = canvas.width / canvas.height
         this.cameraBird = new BirdViewCamera(aspect)
-        this.cameraShoulder = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 8 * TILESIZE)
-        this.cameraFPV = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 8 * TILESIZE)
+        this.cameraShoulder = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 24 * TILESIZE)
+        this.cameraFPV = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 24 * TILESIZE)
         this.renderer = new SceneRenderer(canvas)
         this.birdViewControls = new BirdViewControls(this.cameraBird, canvas)
         if (!SaveGameManager.preferences.cameraUnlimited) this.birdViewControls.addEventListener('change', () => this.limitCameraBird())
@@ -102,7 +102,7 @@ export class SceneManager implements Updatable {
             if (selectedEntityPosition) this.birdViewControls.jumpTo(this.getFloorPosition(selectedEntityPosition))
         } else {
             this.scene.background = this.fogColor // fog color must be equal to scene background to avoid "holes" in fog at max rendering distance
-            this.scene.fog = new FogExp2(this.fogColor, 0.007)
+            this.scene.fog = new FogExp2(this.fogColor, 0.0025)
         }
         // TODO Refactor raider info component updates with ECS
         this.worldMgr.entityMgr?.selection.raiders.forEach((r) => this.worldMgr.ecs.getComponents(r.entity).get(SelectionNameComponent)?.setVisible(GameState.isBirdView))
