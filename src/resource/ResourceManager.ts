@@ -19,9 +19,9 @@ export class ResourceManager {
     static readonly resourceByName: Map<string, any> = new Map()
     static readonly imageCache: Map<string, SpriteImage> = new Map()
     static readonly lwoCache: Map<string, { geometry: BufferGeometry, material: SequenceTextureMaterial[] } | undefined> = new Map()
-    static readonly textureCache: Map<string, Map<number, Texture>> = new Map()
+    static readonly textureCache: Map<string, Map<number, Texture>> = new Map() // TODO Remove three.js dependency here and put texture cache into scene manager
 
-    static getResource(resourceName: string): any {
+    static getResource(resourceName: string): any { // TODO Replace with more type-safe approach
         const lName = resourceName?.toString()?.toLowerCase() || undefined
         if (!lName) return undefined
         return this.resourceByName.get(lName)

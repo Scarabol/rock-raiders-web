@@ -2,46 +2,42 @@ import { GameConfig } from '../cfg/GameConfig'
 import { MenuCfg } from '../cfg/MenuCfg'
 import { getPath, iGet, yieldToMainThread } from '../core/Util'
 import { RonFileParser } from './fileparser/RonFileParser'
-import { AssetLoader } from './AssetLoader'
+import { AlphaImageAssetLoader, AlphaTranslucentImageAssetLoader, AssetLoader, AVIAssetLoader, CreditsAssetLoader, FlhAssetLoader, FontAssetLoader, ImageAssetLoader, LWOAssetLoader, MapAssetLoader, NerpScriptAssetLoader, ObjectiveTextsAssetLoader, ObjectListAssetLoader, SoundAssetLoader, TextureAssetLoader, UVAssetLoader } from './AssetLoader'
 import { TOOLTIP_FONT_NAME } from '../params'
 import { ResourceManager } from './ResourceManager'
 import { AnimEntityParser } from './AnimEntityParser'
 import { LWSCParser } from './fileparser/LWSCParser'
 import { NerpMsgParser } from './fileparser/NerpMsgParser'
+import { VirtualFileSystem } from './fileparser/VirtualFileSystem'
 
-interface GameAsset {
-    method: (name: string) => Promise<any>
-    assetPath: string
-    optional: boolean
-    sfxKeys: string[]
-}
-
-export class AssetRegistry extends Map<string, GameAsset> {
+export class AssetRegistry {
+    readonly assetLoaders: Map<string, AssetLoader<any>> = new Map()
     readonly inProgress: Promise<void>[] = []
+    tooltipFontLoader: FontAssetLoader = new FontAssetLoader(TOOLTIP_FONT_NAME, 11)
 
-    constructor(readonly assetLoader: AssetLoader) {
-        super()
+    constructor(readonly vfs: VirtualFileSystem) {
     }
 
-    async registerAllAssets(gameConfig: GameConfig) {
+    async registerAllAssets(gameConfig: GameConfig): Promise<AssetLoader<any>[]> {
         // add fonts and cursors
-        this.addAssetFolder(this.assetLoader.loadAlphaImageAsset, 'Interface/Pointers/')
-        this.assetLoader.vfs.filterEntryNames(`Interface/Pointers/.+\\.flh`).forEach((assetPath) => {
-            this.addAsset(this.assetLoader.loadFlhAssetDefault, assetPath)
+        this.getImagesInFolder('Interface/Pointers/').forEach((assetPath) => {
+            this.addLoader(new AlphaImageAssetLoader(assetPath))
         })
-        this.addAsset(this.assetLoader.loadFontImageAsset, TOOLTIP_FONT_NAME)
+        this.vfs.filterEntryNames(`Interface/Pointers/.+\\.flh`).forEach((assetPath) => {
+            this.addLoader(new FlhAssetLoader(assetPath, true, false))
+        })
+        this.addLoader(this.tooltipFontLoader)
         // add menu assets
-        this.addMenuWithAssets(gameConfig.menu.mainMenuFull, false)
-        this.addMenuWithAssets(gameConfig.menu.pausedMenu)
-        this.addMenuWithAssets(gameConfig.menu.optionsMenu)
-        this.addAsset(this.assetLoader.loadAlphaImageAsset, 'Interface/BriefingPanel/BriefingPanel.bmp')
-        this.addAsset(this.assetLoader.loadObjectiveTexts, 'Languages/ObjectiveText.txt')
-        this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.image)
-        this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.contrastOverlay)
-        Object.values(gameConfig.reward.flics).forEach((f) => this.addAsset(this.assetLoader.loadFlhAssetDefault, f.flhFilepath, true))
+        this.addMenuWithAssets(gameConfig.menu.mainMenuFull, false, 43)
+        this.addMenuWithAssets(gameConfig.menu.pausedMenu, true, 17)
+        this.addMenuWithAssets(gameConfig.menu.optionsMenu, true, 17)
+        this.addLoader(new AlphaImageAssetLoader('Interface/BriefingPanel/BriefingPanel.bmp'))
+        this.addLoader(new ObjectiveTextsAssetLoader('Languages/ObjectiveText.txt'))
+        this.addLoader(new AlphaImageAssetLoader(gameConfig.dialog.image))
+        this.addLoader(new AlphaImageAssetLoader(gameConfig.dialog.contrastOverlay))
         this.addLWSFile('Interface/FrontEnd/Rock_Wipe/RockWipe.lws')
-        this.assetLoader.vfs.filterEntryNames(`Interface/FrontEnd/Rock_Wipe/.+\\.uv`).forEach((assetPath) => {
-            this.addAsset(this.assetLoader.loadUVFile, assetPath)
+        this.vfs.filterEntryNames(`Interface/FrontEnd/Rock_Wipe/.+\\.uv`).forEach((assetPath) => {
+            this.addLoader(new UVAssetLoader(assetPath))
         })
         this.addTextureFolder('Interface/FrontEnd/Rock_Wipe/')
         // add in-game assets
@@ -49,8 +45,8 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addAlphaImageFolder('Interface/RightPanel/') // crystal sidebar
         this.addAlphaImageFolder('Interface/RadarPanel/')
         this.addAlphaImageFolder('Interface/MessagePanel/')
-        this.addAsset(this.assetLoader.loadWadImageAsset, 'Interface/Airmeter/msgpanel_air_juice.bmp')
-        this.addAsset(this.assetLoader.loadAlphaImageAsset, 'Interface/Airmeter/msgpanel_noair.bmp')
+        this.addLoader(new ImageAssetLoader('Interface/Airmeter/msgpanel_air_juice.bmp'))
+        this.addLoader(new AlphaImageAssetLoader('Interface/Airmeter/msgpanel_noair.bmp'))
         this.addAlphaImageFolder('Interface/InfoPanel/')
         this.addAlphaImageFolder('Interface/PriorityPanel/')
         this.addAlphaImageFolder('Interface/Priorities')
@@ -62,33 +58,40 @@ export class AssetRegistry extends Map<string, GameAsset> {
         this.addAlphaImageFolder('Interface/Buttons/')
         this.addAlphaImageFolder('Interface/InfoImages/')
         this.addAlphaImageFolder('Interface/Fonts/HealthFont/')
-        this.addAssetFolder(this.assetLoader.loadAlphaTranslucentImageAsset, 'Interface/FrontEnd/Vol_')
-        this.addAssetFolder(this.assetLoader.loadWadImageAsset, 'Interface/FrontEnd/lp_')
-        this.addAssetFolder(this.assetLoader.loadAlphaImageAsset, 'Interface/ToolTipIcons/')
-        this.addAsset(this.assetLoader.loadAlphaImageAsset, 'Interface/FrontEnd/LowerPanel.bmp')
-        this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.main.tutorialIcon)
+        this.getImagesInFolder('Interface/FrontEnd/Vol_').forEach((assetPath) => {
+            this.addLoader(new AlphaTranslucentImageAssetLoader(assetPath))
+        })
+        this.getImagesInFolder('Interface/FrontEnd/lp_').forEach((assetPath) => {
+            this.addLoader(new ImageAssetLoader(assetPath))
+        })
+        this.getImagesInFolder('Interface/ToolTipIcons/').forEach((assetPath) => {
+            this.addLoader(new AlphaImageAssetLoader(assetPath))
+        })
+        this.addLoader(new AlphaImageAssetLoader('Interface/FrontEnd/LowerPanel.bmp'))
+        this.addLoader(new AlphaImageAssetLoader(gameConfig.main.tutorialIcon))
         // level files
-        this.addAsset(this.assetLoader.loadNerpAsset, 'Levels/nerpnrn.h')
+        this.addLoader(new NerpScriptAssetLoader('Levels/nerpnrn.h'))
         gameConfig.levels.forEach((level) => {
+            // TODO Replace group separate level config loader with combined level config loader
             level.menuBMP.forEach((bmpName) => {
-                this.addAsset(this.assetLoader.loadAlphaImageAsset, bmpName)
+                this.addLoader(new AlphaImageAssetLoader(bmpName))
             })
-            this.addAsset(this.assetLoader.loadMapAsset, level.surfaceMap)
-            this.addAsset(this.assetLoader.loadMapAsset, level.predugMap)
-            this.addAsset(this.assetLoader.loadMapAsset, level.terrainMap)
-            this.addAsset(this.assetLoader.loadMapAsset, level.blockPointersMap, true)
-            this.addAsset(this.assetLoader.loadMapAsset, level.cryOreMap, true)
-            this.addAsset(this.assetLoader.loadMapAsset, level.pathMap, true)
-            if (level.fallinMap) this.addAsset(this.assetLoader.loadMapAsset, level.fallinMap)
-            if (level.erodeMap) this.addAsset(this.assetLoader.loadMapAsset, level.erodeMap)
-            if (level.emergeMap) this.addAsset(this.assetLoader.loadMapAsset, level.emergeMap, true)
-            this.addAsset(this.assetLoader.loadObjectListAsset, level.oListFile)
-            this.addAsset(this.assetLoader.loadNerpAsset, level.nerpFile)
-            const content = this.assetLoader.vfs.getFile(level.nerpMessageFile).toText()
+            this.addLoader(new MapAssetLoader(level.surfaceMap))
+            this.addLoader(new MapAssetLoader(level.predugMap))
+            this.addLoader(new MapAssetLoader(level.terrainMap))
+            this.addLoader(new MapAssetLoader(level.blockPointersMap, true))
+            this.addLoader(new MapAssetLoader(level.cryOreMap, true))
+            this.addLoader(new MapAssetLoader(level.pathMap, true))
+            if (level.fallinMap) this.addLoader(new MapAssetLoader(level.fallinMap))
+            if (level.erodeMap) this.addLoader(new MapAssetLoader(level.erodeMap))
+            if (level.emergeMap) this.addLoader(new MapAssetLoader(level.emergeMap, true))
+            this.addLoader(new ObjectListAssetLoader(level.oListFile))
+            this.addLoader(new NerpScriptAssetLoader(level.nerpFile))
+            const content = this.vfs.getFile(level.nerpMessageFile).toText()
             const nerpMessages = NerpMsgParser.parseNerpMessages(content)
-            ResourceManager.resourceByName.set(level.nerpMessageFile.toLowerCase(), nerpMessages)
+            ResourceManager.resourceByName.set(level.nerpMessageFile.toLowerCase(), nerpMessages) // TODO Add nerp messages directly to level config
             nerpMessages.forEach((msg) => {
-                if (msg.snd) this.addAsset(this.assetLoader.loadWavAsset, msg.snd, true, [msg.snd])
+                if (msg.snd) this.addLoader(new SoundAssetLoader(msg.snd, [msg.snd]))
             })
         })
         // load all shared textures
@@ -108,8 +111,8 @@ export class AssetRegistry extends Map<string, GameAsset> {
         })
         // load monsters
         Object.values(GameConfig.instance.rockMonsterTypes).forEach((mType) => this.addMeshObjects(mType))
-        this.assetLoader.vfs.filterEntryNames(`Creatures/LavaMonster/.+\\.uv`).forEach((assetPath) => {
-            this.addAsset(this.assetLoader.loadUVFile, assetPath)
+        this.vfs.filterEntryNames(`Creatures/LavaMonster/.+\\.uv`).forEach((assetPath) => {
+            this.addLoader(new UVAssetLoader(assetPath))
         })
         await yieldToMainThread()
         // load vehicles
@@ -118,16 +121,16 @@ export class AssetRegistry extends Map<string, GameAsset> {
         })
         // load bubbles
         Object.values(gameConfig.bubbles).forEach((b) => {
-            this.addAsset(this.assetLoader.loadAlphaImageAsset, b)
+            this.addLoader(new AlphaImageAssetLoader(b))
         })
         // load misc objects
         this.addTextureFolder('MiscAnims/Crystal/')
-        this.addAsset(this.assetLoader.loadLWOFile, 'World/Shared/Crystal.lwo') // high-poly version
-        this.addAsset(this.assetLoader.loadWadTexture, 'MiscAnims/Ore/Ore.bmp')
-        this.addAsset(this.assetLoader.loadWadTexture, 'MiscAnims/Effects/rockfall.bmp')
-        this.addAsset(this.assetLoader.loadWadTexture, 'MiscAnims/Effects/rd_laserbolt.bmp')
-        this.addAsset(this.assetLoader.loadWadTexture, 'MiscAnims/Effects/rd_laserbolt_x.bmp')
-        this.addAsset(this.assetLoader.loadWadTexture, 'MiscAnims/Effects/rd_newstargreen.bmp')
+        this.addLoader(new LWOAssetLoader('World/Shared/Crystal.lwo')) // high-poly version
+        this.addLoader(new TextureAssetLoader('MiscAnims/Ore/Ore.bmp'))
+        this.addLoader(new TextureAssetLoader('MiscAnims/Effects/rockfall.bmp'))
+        this.addLoader(new TextureAssetLoader('MiscAnims/Effects/rd_laserbolt.bmp'))
+        this.addLoader(new TextureAssetLoader('MiscAnims/Effects/rd_laserbolt_x.bmp'))
+        this.addLoader(new TextureAssetLoader('MiscAnims/Effects/rd_newstargreen.bmp'))
         const miscObjects = iGet(gameConfig, 'MiscObjects')
         Object.values<string>(miscObjects).forEach((mType) => {
             this.addMeshObjects(mType)
@@ -139,16 +142,16 @@ export class AssetRegistry extends Map<string, GameAsset> {
                 this.addLWSFile(shape)
             })
         })
-        this.addAsset(this.assetLoader.loadAlphaImageAsset, 'Interface/Dependencies/+.bmp')
-        this.addAsset(this.assetLoader.loadAlphaImageAsset, 'Interface/Dependencies/=.bmp')
-        this.addAsset(this.assetLoader.loadAVI, gameConfig.main.creditsBackAVI, true)
-        this.addAsset(this.assetLoader.loadCreditsFile, gameConfig.main.creditsTextFile)
-        this.addAsset(this.assetLoader.loadFontImageAsset, 'Interface/Fonts/RSFont.bmp')
+        this.addLoader(new AlphaImageAssetLoader('Interface/Dependencies/+.bmp'))
+        this.addLoader(new AlphaImageAssetLoader('Interface/Dependencies/=.bmp'))
+        this.addLoader(new AVIAssetLoader(gameConfig.main.creditsBackAVI, true))
+        this.addLoader(new CreditsAssetLoader(gameConfig.main.creditsTextFile))
+        this.addLoader(new FontAssetLoader('Interface/Fonts/RSFont.bmp', 17))
         // surface textures
         this.addTextureFolder('World/WorldTextures/IceSplit/Ice')
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava')
         this.addTextureFolder('World/WorldTextures/RockSplit/Rock')
-        Object.values(gameConfig.textures.textureSetByName).forEach((s) => s.roofTexture && this.addAsset(this.assetLoader.loadWadTexture, s.roofTexture))
+        Object.values(gameConfig.textures.textureSetByName).forEach((s) => s.roofTexture && this.addLoader(new TextureAssetLoader(s.roofTexture)))
         // TODO Load pro meshes for high wall details
         // Array.from(gameConfig.textures.textureSetByName.values()).forEach((set) => {
         //     this.assetLoader.wad0File.filterEntryNames(`${set.meshBasename}.*.lwo`).forEach((meshName) => {
@@ -156,41 +159,45 @@ export class AssetRegistry extends Map<string, GameAsset> {
         //     })
         // })
         // reward screen
-        this.addAsset(this.assetLoader.loadWadImageAsset, gameConfig.reward.wallpaper)
-        this.addAsset(this.assetLoader.loadFontImageAsset, gameConfig.reward.backFont)
-        Object.values(gameConfig.reward.fonts).forEach(imgPath => this.addAsset(this.assetLoader.loadFontImageAsset, imgPath))
-        gameConfig.reward.images.forEach(img => this.addAsset(this.assetLoader.loadAlphaImageAsset, img.filePath))
-        gameConfig.reward.boxImages.forEach(img => this.addAsset(this.assetLoader.loadWadImageAsset, img.filePath));
+        this.addLoader(new ImageAssetLoader(gameConfig.reward.wallpaper))
+        this.addLoader(new FontAssetLoader(gameConfig.reward.backFont, 17))
+        Object.entries(gameConfig.reward.fonts).forEach(([key, imgPath]) => this.addLoader(new FontAssetLoader(imgPath, key.toLowerCase() !== 'score' ? 43 : 26)))
+        gameConfig.reward.images.forEach(img => this.addLoader(new AlphaImageAssetLoader(img.filePath)))
+        gameConfig.reward.boxImages.forEach(img => this.addLoader(new ImageAssetLoader(img.filePath)));
         [gameConfig.reward.saveButton, gameConfig.reward.advanceButton].forEach((cfg) => {
-            this.addAsset(this.assetLoader.loadWadImageAsset, cfg.imgNormalFilepath)
-            this.addAsset(this.assetLoader.loadWadImageAsset, cfg.imgHoverFilepath)
-            this.addAsset(this.assetLoader.loadWadImageAsset, cfg.imgPressedFilepath)
-            this.addAsset(this.assetLoader.loadWadImageAsset, cfg.imgDisabledFilepath)
+            this.addLoader(new ImageAssetLoader(cfg.imgNormalFilepath))
+            this.addLoader(new ImageAssetLoader(cfg.imgHoverFilepath))
+            this.addLoader(new ImageAssetLoader(cfg.imgPressedFilepath))
+            this.addLoader(new ImageAssetLoader(cfg.imgDisabledFilepath))
+        })
+        Object.values(gameConfig.reward.flics).forEach((f) => {
+            this.addLoader(new FlhAssetLoader(f.flhFilepath, true, false))
         })
         // sounds
         Object.entries(gameConfig.samples.pathToSfxKeys).forEach(([sndPath, sndKeys]) => {
-            this.addAsset(this.assetLoader.loadWavAsset, sndPath, true, sndKeys)
+            this.addLoader(new SoundAssetLoader(sndPath, sndKeys))
         })
         await Promise.all(this.inProgress)
+        return this.assetLoaders.values().toArray()
     }
 
     addMeshObjects(basePath: string) {
         const aeFilepath = `${basePath}/${basePath.split('/').last()}.ae`
-        if (this.assetLoader.vfs.hasEntry(aeFilepath)) this.addAnimatedEntity(aeFilepath)
+        if (this.vfs.hasEntry(aeFilepath)) this.addAnimatedEntity(aeFilepath)
         const aeSharedFilepath = `world/shared/${basePath.split('/').last()}.ae`
-        if (this.assetLoader.vfs.hasEntry(aeSharedFilepath)) this.addAnimatedEntity(aeSharedFilepath)
+        if (this.vfs.hasEntry(aeSharedFilepath)) this.addAnimatedEntity(aeSharedFilepath)
         const lwsFilepath = `${basePath}.lws`
-        if (this.assetLoader.vfs.hasEntry(lwsFilepath)) this.addLWSFile(lwsFilepath)
+        if (this.vfs.hasEntry(lwsFilepath)) this.addLWSFile(lwsFilepath)
         const lwsSharedFilepath = `world/shared/${basePath.split('/').last()}.lws`
-        if (this.assetLoader.vfs.hasEntry(lwsSharedFilepath)) this.addLWSFile(lwsSharedFilepath)
+        if (this.vfs.hasEntry(lwsSharedFilepath)) this.addLWSFile(lwsSharedFilepath)
         const lwoFilepath = `${basePath}.lwo`
-        if (this.assetLoader.vfs.hasEntry(lwoFilepath)) this.addLWOFile(lwoFilepath)
+        if (this.vfs.hasEntry(lwoFilepath)) this.addLWOFile(lwoFilepath)
         const lwoSharedFilepath = `world/shared/${basePath.split('/').last()}.lwo`
-        if (this.assetLoader.vfs.hasEntry(lwoSharedFilepath)) this.addLWOFile(lwoSharedFilepath)
+        if (this.vfs.hasEntry(lwoSharedFilepath)) this.addLWOFile(lwoSharedFilepath)
     }
 
     addAnimatedEntity(aeFile: string) {
-        const content = this.assetLoader.vfs.getFile(aeFile).toText()
+        const content = this.vfs.getFile(aeFile).toText()
         const cfgRoot = RonFileParser.parse(aeFile, content)
         const path = getPath(aeFile)
         // load all textures for this type
@@ -217,7 +224,7 @@ export class AssetRegistry extends Map<string, GameAsset> {
         const lwsPath = getPath(lwsFilepath).toLowerCase()
         this.inProgress.push(new Promise((resolve) => {
             try {
-                const content = this.assetLoader.vfs.getFile(lwsFilepath).toText()
+                const content = this.vfs.getFile(lwsFilepath).toText()
                 const lwscData = new LWSCParser(lwsFilepath, content).parse()
                 ResourceManager.resourceByName.set(lwsFilepath.toLowerCase(), lwscData)
                 lwscData.objects.forEach((obj) => {
@@ -236,47 +243,48 @@ export class AssetRegistry extends Map<string, GameAsset> {
     }
 
     addLWOFile(lwoFilepath: string, optional: boolean = false) {
-        this.addAsset(this.assetLoader.loadLWOFile, lwoFilepath, optional)
-        this.addAsset(this.assetLoader.loadUVFile, lwoFilepath.replace('.lwo', '.uv'), true)
+        this.addLoader(new LWOAssetLoader(lwoFilepath, optional))
+        this.addLoader(new UVAssetLoader(lwoFilepath.replace('.lwo', '.uv'), true))
     }
 
     addAlphaImageFolder(folderPath: string) {
-        this.addAssetFolder(this.assetLoader.loadAlphaImageAsset, folderPath)
+        this.getImagesInFolder(folderPath).forEach((assetPath) => {
+            this.addLoader(new AlphaImageAssetLoader(assetPath))
+        })
     }
 
     addTextureFolder(folderPath: string) {
-        this.addAssetFolder(this.assetLoader.loadWadTexture, folderPath)
-    }
-
-    addAssetFolder<T>(callback: (name: string) => Promise<T>, folderPath: string) {
-        this.assetLoader.vfs.filterEntryNames(`${folderPath}.+\\.bmp`).forEach((assetPath) => {
-            this.addAsset(callback, assetPath)
+        this.getImagesInFolder(folderPath).forEach((assetPath) => {
+            this.addLoader(new TextureAssetLoader(assetPath))
         })
     }
 
-    addMenuWithAssets(menuCfg: MenuCfg, menuImageAlpha: boolean = true) {
+    private getImagesInFolder(folderPath: string): string[] {
+        return this.vfs.filterEntryNames(`${folderPath}.+\\.bmp`)
+    }
+
+    addMenuWithAssets(menuCfg: MenuCfg, menuImageAlpha: boolean, fontCharHeight: number) {
         menuCfg.menus.forEach((menuCfg) => {
-            const method = menuImageAlpha ? this.assetLoader.loadAlphaImageAsset : this.assetLoader.loadWadImageAsset
-            this.addAsset(method, menuCfg.menuImage)
-            this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.menuFont)
-            this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.loFont)
-            this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.hiFont)
-            let flhCallback = this.assetLoader.loadFlhAssetDefault
-            if (menuCfg.title.equalsIgnoreCase('Main')) flhCallback = this.assetLoader.loadFlhAssetInterframe
-            menuCfg.overlays.forEach((overlay) => this.addAsset(flhCallback, overlay.flhFilepath, true))
+            this.addLoader(menuImageAlpha ? new AlphaImageAssetLoader(menuCfg.menuImage) : new ImageAssetLoader(menuCfg.menuImage))
+            this.addLoader(new FontAssetLoader(menuCfg.menuFont, fontCharHeight))
+            this.addLoader(new FontAssetLoader(menuCfg.loFont, fontCharHeight))
+            this.addLoader(new FontAssetLoader(menuCfg.hiFont, fontCharHeight))
+            const useInterFrameMode = menuCfg.title.equalsIgnoreCase('Main')
+            menuCfg.overlays.forEach((overlay) => {
+                this.addLoader(new FlhAssetLoader(overlay.flhFilepath, true, useInterFrameMode))
+            })
         })
     }
 
-    addAsset<T>(method: (name: string) => Promise<T>, assetPath: string, optional = false, sfxKeys: string[] = []) {
-        assetPath = assetPath?.toLowerCase()
-        if (!assetPath || this.has(assetPath) || assetPath.equalsIgnoreCase('NULL')) {
-            return // do not load assets twice
-        }
-        this.set(assetPath, {
-            method: method.bind(this.assetLoader),
-            assetPath: assetPath,
-            optional: optional,
-            sfxKeys: sfxKeys,
-        })
+    addLoader<T extends AssetLoader<unknown>>(loader: T): void {
+        if (!loader.lAssetName || this.assetLoaders.has(loader.lAssetName) || loader.lAssetName.equalsIgnoreCase('NULL')) return
+        this.assetLoaders.set(loader.lAssetName, loader)
+        loader.assetRegistry = this
+    }
+
+    getLoader<T extends AssetLoader<unknown>>(assetName: string): T {
+        const loader = this.assetLoaders.get(assetName.toLowerCase())
+        if (!loader) throw new Error(`No asset loader registered for "${assetName}"`)
+        return loader as T // XXX Do some kind of type checking?
     }
 }

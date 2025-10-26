@@ -1,7 +1,7 @@
 import { GameFilesLoader } from './resource/GameFilesLoader'
-import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME, VERBOSE } from './params'
+import { DEFAULT_FONT_NAME, VERBOSE } from './params'
 import { ScreenMaster } from './screen/ScreenMaster'
-import { AssetLoader } from './resource/AssetLoader'
+import { AssetRegistry } from './resource/AssetRegistry'
 import { ResourceManager } from './resource/ResourceManager'
 import { GameConfig } from './cfg/GameConfig'
 import { BitmapFontWorkerPool } from './worker/BitmapFontWorkerPool'
@@ -92,29 +92,39 @@ export async function start() {
         screenMaster.loadingLayer.enableGraphicMode(imgBackground, imgProgress, imgLabel)
         if (VERBOSE) console.log('Initial loading done.')
     })
-    const bitmapWorkerPool = new BitmapWorkerPool().startPool(16, undefined)
-    const assetLoader = new AssetLoader(vfs, bitmapWorkerPool)
-    await assetLoader.assetRegistry.registerAllAssets(GameConfig.instance) // dynamically register all assets from config
-    await assetLoader.loadRegisteredAssets((progress) => screenMaster.loadingLayer.setLoadingProgress(progress))
-    bitmapWorkerPool.terminatePool()
-    await Promise.all([
-        ResourceManager.loadAllCursor(),
-        ...[{name: 'Interface/FrontEnd/Menu_Font_Hi.bmp', charHeight: 43},
-            {name: 'Interface/FrontEnd/Menu_Font_Lo.bmp', charHeight: 43},
-            {name: 'Interface/Fonts/FSFont.bmp', charHeight: 17},
-            {name: 'Interface/Fonts/RSFont.bmp', charHeight: 17},
-            {name: 'Interface/Fonts/RSWritten.bmp', charHeight: 26},
-            {name: TOOLTIP_FONT_NAME, charHeight: 11},
-            {name: 'Interface/Fonts/MbriefFont2.bmp', charHeight: 17},
-            {name: 'Interface/Fonts/MbriefFont.bmp', charHeight: 17},
-        ].map((f) => {
-            const imgData = ResourceManager.getImageData(f.name)
-            const fontData = new BitmapFontData(imgData, f.charHeight)
-            BitmapFontWorkerPool.instance.addFont(f.name, fontData)
+    BitmapWorkerPool.instance.startPool(16, undefined)
+    const assetRegistry = new AssetRegistry(vfs)
+    const assetLoaders = await assetRegistry.registerAllAssets(GameConfig.instance) // dynamically register all assets from config
+    let assetCount = 0
+    await Promise.all(assetLoaders.map((asset) => {
+        return new Promise<void>((resolve) => {
+            setTimeout(async () => {
+                try {
+                    await asset.load()
+                } catch (e) {
+                    if (!asset.optional &&
+                        // ignore known issues
+                        !asset.lAssetName.equalsIgnoreCase('Vehicles/BullDozer/VLBD_light.lwo') &&
+                        !asset.lAssetName.equalsIgnoreCase('Vehicles/LargeDigger/LD_bucket.lwo') &&
+                        !asset.lAssetName.equalsIgnoreCase('Vehicles/LargeDigger/LD_main.lwo') &&
+                        !asset.lAssetName.equalsIgnoreCase('Vehicles/LargeDigger/LD_C_Pit.lwo') &&
+                        !asset.lAssetName.equalsIgnoreCase('Vehicles/LargeDigger/LD_Light01.lwo') &&
+                        !asset.lAssetName.equalsIgnoreCase('Vehicles/LargeDigger/digbodlight.lwo') &&
+                        !asset.lAssetName.equalsIgnoreCase('Vehicles/LargeDigger/LD_PipeL.lwo')
+                    ) {
+                        console.error(e)
+                    }
+                }
+                assetCount++
+                screenMaster.loadingLayer.setLoadingProgress(assetCount / assetLoaders.length)
+                resolve()
+            })
         })
-    ])
+    }))
+    BitmapWorkerPool.instance.terminatePool()
+    await ResourceManager.loadAllCursor()
     console.timeEnd('Total asset loading time')
-    console.log(`Loading of about ${(assetLoader.assetRegistry.size)} assets complete!`)
+    console.log(`Loading of about ${(assetLoaders.length)} assets complete!`)
     vfs.dispose()
     screenMaster.loadingLayer.hide()
     Array.from(document.getElementsByClassName('hide-after-loading-assets')).forEach((e) => {
@@ -132,7 +142,7 @@ export async function start() {
     })
     DependencySpriteWorkerPool.instance.setupPool({
         teleportManImageData: teleportManImageData,
-        tooltipFontData: new BitmapFontData(ResourceManager.getImageData(TOOLTIP_FONT_NAME), 11),
+        tooltipFontData: await assetRegistry.tooltipFontLoader.wait(),
         plusSign: ResourceManager.getImageData('Interface/Dependencies/+.bmp'),
         equalSign: ResourceManager.getImageData('Interface/Dependencies/=.bmp'),
         depInterfaceBuildImageData: depInterfaceBuildImageData,

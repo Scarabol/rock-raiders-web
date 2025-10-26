@@ -1,191 +1,235 @@
 import { getFilename } from '../core/Util'
-import { FlhParser } from './fileparser/FlhParser'
 import { BitmapWorkerPool } from '../worker/BitmapWorkerPool'
-import { ObjectiveTextParser } from './fileparser/ObjectiveTextParser'
+import { LevelObjectiveTexts, ObjectiveTextParser } from './fileparser/ObjectiveTextParser'
 import { WadParser } from './fileparser/WadParser'
-import { AssetRegistry } from './AssetRegistry'
-import { LWOUVParser } from './fileparser/LWOUVParser'
+import { LWOUVParser, UVData } from './fileparser/LWOUVParser'
 import { AudioContext } from 'three'
-import { AVIParser } from './fileparser/avi/AVIParser'
-import { VirtualFileSystem } from './fileparser/VirtualFileSystem'
+import { AVIFile, AVIParser } from './fileparser/avi/AVIParser'
+import { AssetRegistry } from './AssetRegistry'
 import { ResourceManager } from './ResourceManager'
-import { SoundManager } from '../audio/SoundManager'
 import { BitmapWithPalette } from './fileparser/BitmapWithPalette'
+import { FlhParser } from './fileparser/FlhParser'
+import { imgDataToCanvas } from '../core/ImageHelper'
+import { SoundManager } from '../audio/SoundManager'
+import { BitmapFontData } from '../core/BitmapFont'
+import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 import { TerrainMapData } from '../game/terrain/TerrainMapData'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
-import { imgDataToCanvas } from '../core/ImageHelper'
+import { SpriteImage } from '../core/Sprite'
 
-export class AssetLoader {
-    readonly assetRegistry: AssetRegistry = new AssetRegistry(this)
+export abstract class AssetLoader<T> {
+    readonly lAssetName: string
+    assetRegistry!: AssetRegistry
+    data?: Promise<T>
 
-    constructor(
-        readonly vfs: VirtualFileSystem,
-        readonly bitmapWorkerPool: BitmapWorkerPool
-    ) {
+    constructor(assetName: string, readonly optional: boolean = false) {
+        this.lAssetName = assetName.toLowerCase()
     }
 
-    loadRegisteredAssets(onProgress: (progress: number) => void) {
-        console.log(`Loading ${this.assetRegistry.size} assets...`)
-        const promises: Promise<void>[] = []
-        let assetCount = 0
-        this.assetRegistry.forEach((asset) => {
-            promises.push(new Promise<void>((resolve) => {
-                setTimeout(async () => {
-                    try {
-                        let assetName = asset.assetPath.toLowerCase()
-                        const assetObj = await asset.method(assetName)
-                        const alphaIndexMatch = assetName.match(/(.*a)(\d+)(_.+)/i)
-                        if (alphaIndexMatch) assetName = alphaIndexMatch[1] + alphaIndexMatch[3]
-                        ResourceManager.resourceByName.set(assetName, assetObj)
-                        if (assetObj) asset.sfxKeys?.forEach((sfxKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sfxKey, () => []).push(assetObj))
-                        assetCount++
-                        onProgress(assetCount / this.assetRegistry.size)
-                        resolve()
-                    } catch (e) {
-                        if (!asset.optional) console.error(e)
-                        assetCount++
-                        onProgress(assetCount / this.assetRegistry.size)
-                        resolve()
-                    }
-                })
-            }))
-        })
-        return Promise.all(promises)
+    abstract exec(): Promise<T>
+
+    async load(): Promise<void> {
+        if (!this.data) this.data = this.exec()
+        await this.data
     }
 
-    async loadWadImageAsset(name: string): Promise<BitmapWithPalette> {
-        return this.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
+    async wait(): Promise<T> {
+        if (!this.data) throw new Error('Asset loading not yet started')
+        return this.data
     }
+}
 
-    async loadWadTexture(name: string): Promise<BitmapWithPalette> {
-        const data = this.vfs.getFile(name).toBuffer()
-        const alphaIndexMatch = name.match(/(.*a)(\d+)(_.+)/i)
+export class ImageAssetLoader extends AssetLoader<BitmapWithPalette> {
+    async exec(): Promise<BitmapWithPalette> {
+        const data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
+        const bitmap = await BitmapWorkerPool.instance.decodeBitmap(data)
+        ResourceManager.resourceByName.set(this.lAssetName, bitmap) // TODO Add image to cache instead
+        return bitmap
+    }
+}
+
+export class TextureAssetLoader extends AssetLoader<BitmapWithPalette> {
+    async exec(): Promise<BitmapWithPalette> {
+        const data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
+        const alphaIndexMatch = this.lAssetName.match(/(.*a)(\d+)(_.+)/i)
+        let assetName: string = this.lAssetName, bitmap: BitmapWithPalette
         if (alphaIndexMatch) {
+            assetName = alphaIndexMatch[1] + alphaIndexMatch[3]
             const alphaIndex = Number(alphaIndexMatch[2])
-            return this.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex)
-        } else if (name.match(/\/a.*\d.*/i)) {
-            return this.bitmapWorkerPool.decodeBitmapWithAlpha(data)
+            bitmap = await BitmapWorkerPool.instance.decodeBitmapWithAlphaIndex(data, alphaIndex)
+        } else if (this.lAssetName.match(/\/a.*\d.*/i)) {
+            bitmap = await BitmapWorkerPool.instance.decodeBitmapWithAlpha(data)
         } else {
-            return this.bitmapWorkerPool.decodeBitmap(data)
+            bitmap = await BitmapWorkerPool.instance.decodeBitmap(data)
         }
+        ResourceManager.resourceByName.set(assetName, bitmap) // TODO Add texture to cache instead
+        return bitmap
+    }
+}
+
+export class AlphaImageAssetLoader extends AssetLoader<BitmapWithPalette> {
+    async exec(): Promise<BitmapWithPalette> {
+        const data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
+        const bitmap = await BitmapWorkerPool.instance.decodeBitmapWithAlpha(data)
+        const alphaIndexMatch = this.lAssetName.match(/(.*a)(\d+)(_.+)/i)
+        const assetName = alphaIndexMatch ? alphaIndexMatch[1] + alphaIndexMatch[3] : this.lAssetName
+        ResourceManager.resourceByName.set(assetName, bitmap) // TODO Add image to cache instead
+        return bitmap
+    }
+}
+
+export class AlphaTranslucentImageAssetLoader extends AssetLoader<BitmapWithPalette> {
+    async exec(): Promise<BitmapWithPalette> {
+        const data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
+        const bitmap = await BitmapWorkerPool.instance.decodeBitmapWithAlphaTranslucent(data)
+        const alphaIndexMatch = this.lAssetName.match(/(.*a)(\d+)(_.+)/i)
+        const assetName = alphaIndexMatch ? alphaIndexMatch[1] + alphaIndexMatch[3] : this.lAssetName
+        ResourceManager.resourceByName.set(assetName, bitmap) // TODO Add image to cache instead
+        return bitmap
+    }
+}
+
+export class FontAssetLoader extends AssetLoader<BitmapFontData> {
+    constructor(assetName: string, readonly charHeight: number) {
+        super(assetName, false)
     }
 
-    async loadAlphaImageAsset(name: string): Promise<ImageData> {
-        return this.bitmapWorkerPool.decodeBitmapWithAlpha(this.vfs.getFile(name).toBuffer())
+    async exec(): Promise<BitmapFontData> {
+        const data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
+        const bitmap = await BitmapWorkerPool.instance.decodeBitmap(data)
+        const fontData = new BitmapFontData(bitmap, this.charHeight)
+        await BitmapFontWorkerPool.instance.addFont(this.lAssetName, fontData)
+        return fontData
     }
+}
 
-    async loadAlphaTranslucentImageAsset(name: string): Promise<ImageData> {
-        return this.bitmapWorkerPool.decodeBitmapWithAlphaTranslucent(this.vfs.getFile(name).toBuffer())
+export class NerpScriptAssetLoader extends AssetLoader<string> {
+    async exec(): Promise<string> {
+        const script = this.assetRegistry.vfs.getFile(this.lAssetName).toText()
+        ResourceManager.resourceByName.set(this.lAssetName, script) // TODO Add to specific cache
+        return script
     }
+}
 
-    async loadFontImageAsset(name: string): Promise<ImageData> {
-        return await this.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
+export class ObjectiveTextsAssetLoader extends AssetLoader<LevelObjectiveTexts> {
+    async exec(): Promise<LevelObjectiveTexts> {
+        const text = this.assetRegistry.vfs.getFile(this.lAssetName).toText()
+        const objectives = new ObjectiveTextParser().parseObjectiveTextFile(text) // TODO Turn ObjectiveTextParser into an AssetLoader
+        ResourceManager.resourceByName.set(this.lAssetName, objectives) // TODO Add to specific cache
+        return objectives
     }
+}
 
-    async loadNerpAsset(name: string): Promise<string> {
-        return this.vfs.getFile(name).toText()
-    }
-
-    async loadObjectiveTexts(name: string) {
-        const text = this.vfs.getFile(name).toText()
-        return new ObjectiveTextParser().parseObjectiveTextFile(text)
-    }
-
-    async loadMapAsset(name: string): Promise<TerrainMapData> {
-        const view = this.vfs.getFile(name).toArray()
+export class MapAssetLoader extends AssetLoader<TerrainMapData> {
+    async exec(): Promise<TerrainMapData> {
+        const view = this.assetRegistry.vfs.getFile(this.lAssetName).toArray()
         if (view.length < 13 || String.fromCharCode(...view.slice(0, 3)) !== 'MAP') {
             throw new Error(`Invalid map data provided for: ${name}`)
         }
-        return WadParser.parseMap(view)
+        const map = WadParser.parseMap(view) // TODO Turn WadParser into an AssetLoader
+        ResourceManager.resourceByName.set(this.lAssetName, map) // TODO Add to specific cache
+        return map
+    }
+}
+
+export class ObjectListAssetLoader extends AssetLoader<Map<string, ObjectListEntryCfg>> {
+    async exec(): Promise<Map<string, ObjectListEntryCfg>> {
+        const data = this.assetRegistry.vfs.getFile(this.lAssetName).toText()
+        const objectList = WadParser.parseObjectList(data) // TODO Turn WadParser into an AssetLoader
+        ResourceManager.resourceByName.set(this.lAssetName, objectList) // TODO Add to specific cache
+        return objectList
+    }
+}
+
+export class SoundAssetLoader extends AssetLoader<AudioBuffer> {
+    constructor(assetName: string, readonly sndKeys: string[]) {
+        super(assetName, true)
     }
 
-    async loadObjectListAsset(name: string): Promise<Map<string, ObjectListEntryCfg>> {
-        const data = this.vfs.getFile(name).toText()
-        return WadParser.parseObjectList(data)
-    }
-
-    async loadWavAsset(path: string): Promise<AudioBuffer | undefined> {
-        let buffer: ArrayBuffer | undefined
+    async exec(): Promise<AudioBuffer> {
+        let data: ArrayBuffer | undefined
         const errors: unknown[] = []
         try {
-            buffer = this.vfs.getFile(path).toBuffer()
+            data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
         } catch (e2) {
             errors.push(e2)
             try {
-                buffer = this.vfs.getFile(`Data/${path}`).toBuffer()
+                data = this.assetRegistry.vfs.getFile(`Data/${(this.lAssetName)}`).toBuffer()
             } catch (e) {
                 errors.push(e)
             }
-            if (!buffer) {
-                const lPath = path.toLowerCase()
-                // XXX stats.wav and atmosdel.wav can only be found on ISO-File
-                if (!lPath.endsWith('/atmosdel.wav') &&
-                    !lPath.endsWith('/stats.wav') &&
-                    !lPath.endsWith('/dripsB.wav'.toLowerCase())
-                ) {
-                    throw new Error(`Could not find sound ${path}:\n` + errors.join('\n'))
-                }
-                return undefined
-            }
+            if (!data) return Promise.reject(`Could not find sound ${(this.lAssetName)}:\n` + errors.join('\n'))
         }
-        return AudioContext.getContext().decodeAudioData(buffer)
+        const audioBuffer = await AudioContext.getContext().decodeAudioData(data)
+        ResourceManager.resourceByName.set(this.lAssetName, audioBuffer) // TODO Add only to sound buffer
+        this.sndKeys.forEach((sndKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sndKey, () => []).push(audioBuffer))
+        return audioBuffer
     }
+}
 
-    async loadLWOFile(lwoFilepath: string): Promise<ArrayBuffer | undefined> {
+export class LWOAssetLoader extends AssetLoader<ArrayBuffer> {
+    async exec(): Promise<ArrayBuffer> {
+        let data: ArrayBuffer
         try {
-            return this.vfs.getFile(lwoFilepath).toBuffer()
+            data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
         } catch (e) {
             try {
-                return this.vfs.getFile(`world/shared/${getFilename(lwoFilepath)}`).toBuffer()
+                data = this.assetRegistry.vfs.getFile(`world/shared/${getFilename(this.lAssetName)}`).toBuffer()
             } catch (e) {
-                if (!lwoFilepath.equalsIgnoreCase('Vehicles/BullDozer/VLBD_light.lwo') // ignore known issues
-                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_bucket.lwo')
-                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_main.lwo')
-                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_C_Pit.lwo')
-                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_Light01.lwo')
-                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/digbodlight.lwo')
-                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_PipeL.lwo')) {
-                    throw new Error(`Could not load LWO file ${lwoFilepath}; Error: ${e}`)
-                }
-                return undefined
+                return Promise.reject(`Could not load LWO file ${(this.lAssetName)}; Error: ${e}`)
             }
         }
+        // TODO Parse LWO file here?
+        ResourceManager.resourceByName.set(this.lAssetName, data) // TODO Add to specific cache
+        return data
+    }
+}
+
+export class FlhAssetLoader extends AssetLoader<SpriteImage[]> {
+    constructor(assetName: string, optional: boolean, readonly interFrameMode: boolean) {
+        super(assetName, optional)
     }
 
-    async loadFlhAssetDefault(filename: string) {
-        return this.loadFlhAssetInternal(filename, false)
-    }
-
-    async loadFlhAssetInterframe(filename: string) {
-        return this.loadFlhAssetInternal(filename, true)
-    }
-
-    private async loadFlhAssetInternal(filename: string, interFrameMode: boolean) {
+    async exec(): Promise<SpriteImage[]> {
         let flhContent: DataView
         try {
-            flhContent = this.vfs.getFile(filename).toDataView()
+            flhContent = this.assetRegistry.vfs.getFile(this.lAssetName).toDataView()
         } catch (e) {
             try {
-                flhContent = this.vfs.getFile(filename).toDataView()
+                flhContent = this.assetRegistry.vfs.getFile(this.lAssetName).toDataView()
             } catch (e) {
-                flhContent = this.vfs.getFile(`Data/${filename}`).toDataView()
+                flhContent = this.assetRegistry.vfs.getFile(`Data/${(this.lAssetName)}`).toDataView()
             }
         }
-        const imgData = new FlhParser(flhContent, interFrameMode).parse()
-        return imgData.map((i) => imgDataToCanvas(i))
+        const imgData = new FlhParser(flhContent, this.interFrameMode).parse()
+        const images = imgData.map((i) => imgDataToCanvas(i))
+        ResourceManager.resourceByName.set(this.lAssetName, images) // TODO Add images to cache instead
+        return images
     }
+}
 
-    async loadUVFile(filename: string) {
-        const uvContent = this.vfs.getFile(filename).toText()
-        return new LWOUVParser().parse(uvContent)
+export class UVAssetLoader extends AssetLoader<UVData> {
+    async exec(): Promise<UVData> {
+        const uvContent = this.assetRegistry.vfs.getFile(this.lAssetName).toText()
+        const data = new LWOUVParser().parse(uvContent)
+        ResourceManager.resourceByName.set(this.lAssetName, data) // TODO Add data to specific cache instead
+        return data
     }
+}
 
-    async loadAVI(filename: string) {
-        const dataView = this.vfs.getFile(`Data/${filename}`).toDataView()
-        return new AVIParser(dataView).parse()
+export class AVIAssetLoader extends AssetLoader<AVIFile> {
+    async exec(): Promise<AVIFile> {
+        const dataView = this.assetRegistry.vfs.getFile(`Data/${this.lAssetName}`).toDataView()
+        const data = new AVIParser(dataView).parse()
+        ResourceManager.resourceByName.set(this.lAssetName, data) // TODO Add data to specific cache instead
+        return data
     }
+}
 
-    async loadCreditsFile(filename: string) {
-        return this.vfs.getFile(this.vfs.filterEntryNames(filename)[0]).toText()
+export class CreditsAssetLoader extends AssetLoader<string> {
+    async exec(): Promise<string> {
+        const data = this.assetRegistry.vfs.getFile(this.assetRegistry.vfs.filterEntryNames(this.lAssetName)[0]).toText() // TODO Assert array length before accessing
+        ResourceManager.resourceByName.set(this.lAssetName, data) // TODO Add data to specific cache instead
+        return data
     }
 }
