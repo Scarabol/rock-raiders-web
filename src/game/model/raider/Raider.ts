@@ -67,7 +67,7 @@ export class Raider implements Updatable, JobFulfiller {
     resting: boolean = false
     idleCounter: number = PRNG.animation.randInt(3000)
 
-    constructor(worldMgr: WorldManager) {
+    constructor(worldMgr: WorldManager, isTeamMember: boolean) {
         this.worldMgr = worldMgr
         this.addTool(RAIDER_TOOL.drill)
         this.entity = this.worldMgr.ecs.addEntity()
@@ -76,7 +76,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         const objectKey = this.entityType.toLowerCase()
-        this.teamMember = this.worldMgr.entityMgr.addRaiderToTeam(this)
+        this.teamMember = this.worldMgr.entityMgr.addRaiderToTeam(this, isTeamMember)
         const raiderName = this.teamMember.name || GameConfig.instance.objectNames[objectKey] || 'Rock Raider'
         const sfxKey = GameConfig.instance.objTtSFXs[objectKey] || ''
         this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, raiderName, sfxKey, () => {

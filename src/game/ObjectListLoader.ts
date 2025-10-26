@@ -47,7 +47,7 @@ export class ObjectListLoader {
             this.vehicleKeyToDriver.forEach((driver, vehicleKey) => {
                 const vehicle = this.vehicleByKey.get(vehicleKey)
                 if (!vehicle) {
-                    console.error(`Could not find vehicle for driver ${driver}`)
+                    console.error(`Could not find vehicle (${vehicleKey}) for driver`, this.vehicleByKey, driver)
                     return
                 }
                 driver.addTraining(vehicle.getRequiredTraining())
@@ -151,7 +151,7 @@ export class ObjectListLoader {
     }
 
     private spawnRaider(worldPos: Vector2, headingRad: number) {
-        const raider = new Raider(this.worldMgr)
+        const raider = new Raider(this.worldMgr, false)
         raider.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
         const healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)

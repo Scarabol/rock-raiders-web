@@ -77,7 +77,7 @@ export class TeleportSystem extends AbstractGameSystem {
                     if (!teleport) break
                     this.requestedRaiders--
                     EventBroker.publish(new RequestedRaidersChanged(this.requestedRaiders))
-                    const raider = new Raider(this.worldMgr)
+                    const raider = new Raider(this.worldMgr, true)
                     const heading = teleport.heading
                     const worldPosition = new Vector2(0, -TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(teleport.primaryPathSurface.getCenterWorld2D())
                     const walkOutPos = teleport.primaryPathSurface.getRandomPosition()

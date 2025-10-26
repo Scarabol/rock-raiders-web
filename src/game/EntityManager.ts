@@ -403,8 +403,8 @@ export class EntityManager {
         return result
     }
 
-    addRaiderToTeam(raider: Raider): SaveGameRaider {
-        let unassigned = GameState.unassignedTeam.shift()
+    addRaiderToTeam(raider: Raider, isTeamMember: boolean): SaveGameRaider {
+        let unassigned = isTeamMember ? GameState.unassignedTeam.shift() : undefined
         if (!unassigned) {
             unassigned = new SaveGameRaider('', 0, [])
             SaveGameManager.currentTeam.push(unassigned)
