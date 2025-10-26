@@ -499,6 +499,10 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     canUpgrade(upgrade: VehicleUpgrade): boolean {
         if (this.upgrades.has(upgrade)) return false
+        const costIndex = VehicleUpgrades.toCostIndex(upgrade)
+        const upgradeCostOre = this.stats.upgradeCostOre?.[costIndex] ?? 0
+        const upgradeCostBrick = this.stats.upgradeCostStuds?.[costIndex] ?? 0
+        if (GameState.numBrick < upgradeCostBrick && GameState.numOre < upgradeCostOre) return false
         const upgraded = new Set([...this.upgrades, upgrade])
         const nextUpgradeLevel = VehicleUpgrades.toUpgradeString(upgraded)
         return this.sceneEntity.animationData.some((animEntityData) => animEntityData.upgradesByLevel.get(nextUpgradeLevel))
