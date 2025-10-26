@@ -87,6 +87,9 @@ export class SceneManager implements Updatable {
         EventBroker.subscribe(EventKey.BUILDINGS_CHANGED, () => {
             this.setBuildModeSelection(undefined) // TODO Check dependencies precisely
         })
+        EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, (event) => {
+            this.terrain.forEachSurface((s) => s.mesh.setProMeshEnabled(SaveGameManager.preferences.wallDetails))
+        })
     }
 
     setActiveCamera(camera: PerspectiveCamera) {
@@ -135,10 +138,8 @@ export class SceneManager implements Updatable {
         this.setBuildModeSelection(undefined)
 
         this.floorGroup = new Group()
-        this.floorGroup.scale.setScalar(TILESIZE)
         this.roofGroup = new Group()
         this.roofGroup.visible = false
-        this.roofGroup.scale.setScalar(TILESIZE)
         this.terrain = TerrainLoader.loadTerrain(levelConf, this.worldMgr)
         this.terrain.forEachSurface((s) => {
             this.floorGroup.add(s.mesh)

@@ -1,6 +1,7 @@
 import { BufferGeometry, Vector2, Vector3 } from 'three'
 import { BufferAttribute } from 'three/src/core/BufferAttribute'
 import { WALL_TYPE, WallType } from './WallType'
+import { TILESIZE } from '../../params'
 
 export class SurfaceGeometry extends BufferGeometry {
     constructor() {
@@ -13,10 +14,10 @@ export class SurfaceGeometry extends BufferGeometry {
     setHeights(wallType: WallType, topLeft: SurfaceVertex, topRight: SurfaceVertex, bottomRight: SurfaceVertex, bottomLeft: SurfaceVertex) {
         const uvOffset = SurfaceGeometry.determineUvOffset(wallType, topLeft.high, bottomRight.high, topRight.high, bottomLeft.high)
 
-        const topLeftVertex = new Vector3(0, topLeft.height, 0)
-        const topRightVertex = new Vector3(1, topRight.height, 0)
-        const bottomRightVertex = new Vector3(1, bottomRight.height, 1)
-        const bottomLeftVertex = new Vector3(0, bottomLeft.height, 1)
+        const topLeftVertex = new Vector3(0, topLeft.height, 0).multiplyScalar(TILESIZE)
+        const topRightVertex = new Vector3(1, topRight.height, 0).multiplyScalar(TILESIZE)
+        const bottomRightVertex = new Vector3(1, bottomRight.height, 1).multiplyScalar(TILESIZE)
+        const bottomLeftVertex = new Vector3(0, bottomLeft.height, 1).multiplyScalar(TILESIZE)
 
         const vertices: Vector3[] = []
         const normals: Vector3[] = []

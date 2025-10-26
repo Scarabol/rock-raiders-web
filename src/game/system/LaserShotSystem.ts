@@ -88,7 +88,7 @@ export class LaserShotSystem extends AbstractGameSystem {
             this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LaserHit', false)
             this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.boulderExplode, rockyIntersection.point, PRNG.animation.random() * 2 * Math.PI, false)
         } else {
-            const floorIntersection = this.raycaster.intersectObjects<SurfaceMesh>(this.worldMgr.sceneMgr.floorGroup.children, false)[0]
+            const floorIntersection = this.raycaster.intersectObjects<SurfaceMesh>(this.worldMgr.sceneMgr.floorGroup.children, true)[0]
             if (floorIntersection) {
                 beamLength = floorIntersection.distance
                 const surface = floorIntersection.object.userData.selectable

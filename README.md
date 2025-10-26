@@ -65,7 +65,6 @@ using modern web technologies.
 - Orange smoke column above lava tiles missing
 - Add tiny rockies running around after crumbling
 - Two buttons in priority list can be hovered/pressed/released at the same time
-- Use pro-meshes to render high-detail walls in first person and shoulder view
 - Middle wheel meshes of small digger do not rotate after engine upgrade
 - When switching fast from one level to another in level selection no level name is shown, but the level is highlighted
 

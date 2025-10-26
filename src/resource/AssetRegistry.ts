@@ -2,7 +2,7 @@ import { GameConfig } from '../cfg/GameConfig'
 import { MenuCfg } from '../cfg/MenuCfg'
 import { getPath, iGet, yieldToMainThread } from '../core/Util'
 import { RonFileParser } from './fileparser/RonFileParser'
-import { AlphaImageAssetLoader, AlphaTranslucentImageAssetLoader, AssetLoader, AVIAssetLoader, CreditsAssetLoader, FlhAssetLoader, FontAssetLoader, ImageAssetLoader, LWOAssetLoader, MapAssetLoader, NerpScriptAssetLoader, ObjectiveTextsAssetLoader, ObjectListAssetLoader, SoundAssetLoader, TextureAssetLoader, UVAssetLoader } from './AssetLoader'
+import { AlphaImageAssetLoader, AlphaTranslucentImageAssetLoader, AssetLoader, AVIAssetLoader, CreditsAssetLoader, FlhAssetLoader, FontAssetLoader, ImageAssetLoader, LWOAssetLoader, MapAssetLoader, NerpScriptAssetLoader, ObjectiveTextsAssetLoader, ObjectListAssetLoader, ProMeshLoader, SoundAssetLoader, TextureAssetLoader, UVAssetLoader } from './AssetLoader'
 import { TOOLTIP_FONT_NAME } from '../params'
 import { ResourceManager } from './ResourceManager'
 import { AnimEntityParser } from './AnimEntityParser'
@@ -152,12 +152,10 @@ export class AssetRegistry {
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava')
         this.addTextureFolder('World/WorldTextures/RockSplit/Rock')
         Object.values(gameConfig.textures.textureSetByName).forEach((s) => s.roofTexture && this.addLoader(new TextureAssetLoader(s.roofTexture)))
-        // TODO Load pro meshes for high wall details
-        // Array.from(gameConfig.textures.textureSetByName.values()).forEach((set) => {
-        //     this.assetLoader.wad0File.filterEntryNames(`${set.meshBasename}.*.lwo`).forEach((meshName) => {
-        //         this.addAsset(this.assetLoader.loadLWOFile, meshName)
-        //     })
-        // })
+        // pro meshes for high wall details
+        const themes = ['rock', 'lava', 'ice']
+        const nums = ['01', '02', '03', '04', '05', '10', '20', '21', '22', '23', '24', '25', '31', '31', '32', '33', '34', '35', '40', '51', '52', '53', '54', '55']
+        themes.forEach((theme) => nums.forEach((num) => this.addLoader(new ProMeshLoader(theme, num))))
         // reward screen
         this.addLoader(new ImageAssetLoader(gameConfig.reward.wallpaper))
         this.addLoader(new FontAssetLoader(gameConfig.reward.backFont, 17))

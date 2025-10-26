@@ -1,4 +1,4 @@
-import { BackSide, Raycaster, Vector2, Vector3 } from 'three'
+import { Raycaster, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../audio/SoundManager'
 import { DeselectAll, SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, OreFoundEvent, WorldLocationEvent } from '../../event/WorldEvents'
@@ -13,7 +13,7 @@ import { DrillJob } from '../model/job/surface/DrillJob'
 import { ReinforceJob } from '../model/job/surface/ReinforceJob'
 import { GameEntity } from '../ECS'
 import { SurfaceVertex } from './SurfaceGeometry'
-import { SurfaceMesh } from './SurfaceMesh'
+import { RoofMesh, SurfaceMesh } from './SurfaceMesh'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
 import { WALL_TYPE, WallType } from './WallType'
@@ -34,6 +34,8 @@ import { PRNG } from '../factory/PRNG'
 import { GameState } from '../model/GameState'
 import { CompleteSurfaceJob } from '../model/job/surface/CompleteSurfaceJob'
 import { MaterialEntity } from '../model/material/MaterialEntity'
+import { ResourceManager } from '../../resource/ResourceManager'
+import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -53,7 +55,7 @@ export class Surface {
     drillProgress: number = 0
 
     readonly mesh: SurfaceMesh
-    readonly roofMesh: SurfaceMesh
+    readonly roofMesh: RoofMesh
     wallType: WallType = WALL_TYPE.floor
     needsMeshUpdate: boolean = false
 
@@ -83,15 +85,10 @@ export class Surface {
                 this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
                 break
         }
-        // TODO Use pro meshes for high wall details in FPV
-        // const proMesh = ResourceManager.getLwoModel(this.terrain.textureSet.meshBasename + '01b.lwo')
-        // proMesh.position.copy(this.mesh.position)
-        // proMesh.scale.setScalar(1 / TILESIZE)
-        // this.terrain.floorGroup.add(proMesh)
         this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
-        this.roofMesh = new SurfaceMesh(x, y, {})
-        this.roofMesh.material.side = BackSide
-        this.roofMesh.position.y = 3
+        this.mesh.setProMeshEnabled(SaveGameManager.preferences.wallDetails)
+        const roofTexture = ResourceManager.getSurfaceTexture(this.terrain.levelConf.roofTexture, 0) ?? null // TODO Move to config handling
+        this.roofMesh = new RoofMesh(x, y, roofTexture)
     }
 
     private updateObjectName() {
@@ -143,7 +140,7 @@ export class Surface {
                 case SurfaceType.LAVA5:
                 // fallthrough
                 case SurfaceType.WATER:
-                    this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.geometry.attributes.uv))
+                    this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes.uv))
                     break
                 case SurfaceType.HIDDEN_CAVERN:
                     this.surfaceType = SurfaceType.GROUND
@@ -351,7 +348,7 @@ export class Surface {
         this.terrain.pathFinder.updateSurface(this)
     }
 
-    private getVertex(x: number, y: number, s1: Surface, s2: Surface, s3: Surface): SurfaceVertex {
+    getVertex(x: number, y: number, s1: Surface, s2: Surface, s3: Surface): SurfaceVertex {
         const high = [this, s1, s2, s3].some((s) => !s.discovered) || ![this, s1, s2, s3].some((s) => s.surfaceType.floor)
         const minSeamProgress = Math.min(this.getSeamProgress(), s1.getSeamProgress(), s2.getSeamProgress(), s3.getSeamProgress())
         const offset = this.terrain.getHeightOffset(x, y)
@@ -365,9 +362,9 @@ export class Surface {
     private updateWallType(topLeft: SurfaceVertex, topRight: SurfaceVertex, bottomRight: SurfaceVertex, bottomLeft: SurfaceVertex) {
         let wallType: WallType = Surface.getWallType(topLeft.high, topRight.high, bottomRight.high, bottomLeft.high)
         if (wallType === WALL_TYPE.wall && topLeft.high === bottomRight.high) wallType = WALL_TYPE.weirdCrevice
-        this.wallType = wallType
+        this.wallType = wallType // TODO Update wall type only when necessary
         this.mesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
-        this.roofMesh.setHeights(wallType, topLeft.flipY(), topRight.flipY(), bottomRight.flipY(), bottomLeft.flipY())
+        this.roofMesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
         if (this.wallType !== WALL_TYPE.wall) this.cancelReinforceJobs()
         if (this.wallType < WALL_TYPE.wall) this.worldMgr.ecs.removeComponent(this.entity, EmergeComponent)
     }
@@ -427,7 +424,9 @@ export class Surface {
         }
         const textureFilepath = this.terrain.levelConf.textureBasename + suffix + '.bmp'
         this.mesh.setTexture(textureFilepath, rotation)
-        this.roofMesh.setTexture(this.terrain.levelConf.roofTexture, rotation)
+        const proMeshSuffix = suffix.startsWith('1') ? '10' : suffix
+        const proMeshFilepath = (this.terrain.levelConf.meshBasename + proMeshSuffix).toLowerCase()
+        this.mesh.updateProMesh(proMeshFilepath)
     }
 
     private determinePowerPathTextureNameSuffixAndRotation(rotation: number, suffix: string) {
@@ -480,7 +479,7 @@ export class Surface {
     select(): boolean {
         if (!this.isSelectable()) return false
         this.selected = true
-        this.mesh.setHighlightColor(0x6060a0)
+        this.setHighlightColor(0x6060a0)
         if (this.surfaceType.floor) SoundManager.playSfxSound('SFX_Floor')
         else if (this.surfaceType.shaping) SoundManager.playSfxSound('SFX_Wall')
         if (DEV_MODE) console.log(`Surface selected ${this.x}/${this.y}`, this)
@@ -502,7 +501,11 @@ export class Surface {
         } else if (this.drillJob) {
             color = 0xa0a0a0
         }
-        this.mesh.setHighlightColor(color)
+        this.setHighlightColor(color)
+    }
+
+    setHighlightColor(hex: number) {
+        this.mesh.setHighlightColor(hex)
     }
 
     hasRubble(): boolean {
@@ -595,7 +598,7 @@ export class Surface {
         const wasPath = this.surfaceType === SurfaceType.POWER_PATH || this.surfaceType === SurfaceType.POWER_PATH_BUILDING
         this.surfaceType = surfaceType
         if (this.surfaceType === SurfaceType.WATER || this.surfaceType === SurfaceType.LAVA5) {
-            this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.geometry.attributes.uv))
+            this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes.uv))
         } else {
             this.worldMgr.ecs.removeComponent(this.entity, FluidSurfaceComponent)
         }

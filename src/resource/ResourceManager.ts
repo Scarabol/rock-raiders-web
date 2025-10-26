@@ -14,12 +14,14 @@ import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { CursorManager } from '../screen/CursorManager'
 import { AnimatedCursorData } from '../screen/AnimatedCursor'
 import { SequenceTextureMaterial } from '../scene/SequenceTextureMaterial'
+import { SurfaceMeshPro } from '../game/terrain/SurfaceMesh'
 
 export class ResourceManager {
     static readonly resourceByName: Map<string, any> = new Map()
     static readonly imageCache: Map<string, SpriteImage> = new Map()
     static readonly lwoCache: Map<string, { geometry: BufferGeometry, material: SequenceTextureMaterial[] } | undefined> = new Map()
     static readonly textureCache: Map<string, Map<number, Texture>> = new Map() // TODO Remove three.js dependency here and put texture cache into scene manager
+    static readonly proMeshes: Map<string, SurfaceMeshPro> = new Map()
 
     static getResource(resourceName: string): any { // TODO Replace with more type-safe approach
         const lName = resourceName?.toString()?.toLowerCase() || undefined

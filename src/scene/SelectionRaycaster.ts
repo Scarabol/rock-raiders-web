@@ -58,7 +58,7 @@ export class SelectionRaycaster {
         const building = raycaster.getFirstEntity(this.worldMgr.entityMgr.buildings)
         if (building) return {building: building, entityType: building.entityType}
         if (this.terrain) {
-            const intersection = raycaster.raycaster.intersectObjects<SurfaceMesh>(this.worldMgr.sceneMgr.floorGroup.children, false)[0]
+            const intersection = raycaster.raycaster.intersectObjects<SurfaceMesh>(this.worldMgr.sceneMgr.floorGroup.children, true)[0]
             if (intersection) {
                 const surface = intersection.object.userData.selectable
                 if (surface?.discovered) {
@@ -105,7 +105,7 @@ class SceneRaycaster {
     }
 
     getSurfaceIntersection(surfaces: Object3D[]): Surface | undefined {
-        const intersection = this.raycaster.intersectObjects<SurfaceMesh>(surfaces, false)[0]
+        const intersection = this.raycaster.intersectObjects<SurfaceMesh>(surfaces, true)[0]
         if (intersection) return intersection?.object?.userData?.selectable
         return undefined
     }

@@ -268,7 +268,7 @@ export class NerpRunner {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         tutoBlocks.forEach((t) => {
             if (enabled) {
-                t.mesh.objectPointer?.setTargetPosition(t.getCenterWorld(), t.mesh)
+                t.mesh.objectPointer?.setTargetPosition(t.getCenterWorld(), t)
             } else {
                 t.mesh.objectPointer?.hide()
             }

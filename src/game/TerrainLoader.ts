@@ -83,7 +83,7 @@ export class TerrainLoader {
                                     case SurfaceType.LAVA5:
                                     // fallthrough
                                     case SurfaceType.WATER:
-                                        worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.geometry.attributes.uv))
+                                        worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.lowMesh.geometry.attributes.uv))
                                         break
                                     case SurfaceType.SLUG_HOLE:
                                         terrain.slugHoles.add(surface)

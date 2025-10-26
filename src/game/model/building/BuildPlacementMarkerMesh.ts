@@ -2,10 +2,11 @@ import { BufferGeometry, Mesh, MeshPhongMaterial, Vector2 } from 'three'
 import { TILESIZE } from '../../../params'
 import { SceneManager } from '../../SceneManager'
 import { Surface } from '../../terrain/Surface'
+import { SurfaceMesh } from '../../terrain/SurfaceMesh'
 
 export class BuildPlacementMarkerMesh extends Mesh<BufferGeometry, MeshPhongMaterial> {
     sceneMgr: SceneManager
-    lastSurfaceMesh?: Mesh
+    lastSurfaceMesh?: SurfaceMesh
 
     constructor(sceneMgr: SceneManager) {
         super(new BufferGeometry(), new MeshPhongMaterial({
@@ -28,7 +29,7 @@ export class BuildPlacementMarkerMesh extends Mesh<BufferGeometry, MeshPhongMate
         this.position.copy(surfaceMesh.position.clone().multiplyScalar(TILESIZE))
         this.position.y += TILESIZE / 20
         this.geometry?.dispose()
-        this.geometry = surfaceMesh.geometry.clone()
+        this.geometry = surfaceMesh.lowMesh.geometry.clone()
     }
 
     setColor(hexColor: number) {

@@ -3,7 +3,7 @@ import { BitmapWorkerPool } from '../worker/BitmapWorkerPool'
 import { LevelObjectiveTexts, ObjectiveTextParser } from './fileparser/ObjectiveTextParser'
 import { WadParser } from './fileparser/WadParser'
 import { LWOUVParser, UVData } from './fileparser/LWOUVParser'
-import { AudioContext } from 'three'
+import { AudioContext, BufferGeometry, NearestFilter, RepeatWrapping, SRGBColorSpace, Texture } from 'three'
 import { AVIFile, AVIParser } from './fileparser/avi/AVIParser'
 import { AssetRegistry } from './AssetRegistry'
 import { ResourceManager } from './ResourceManager'
@@ -16,6 +16,9 @@ import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 import { TerrainMapData } from '../game/terrain/TerrainMapData'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 import { SpriteImage } from '../core/Sprite'
+import { SurfaceMeshPro } from '../game/terrain/SurfaceMesh'
+import { LWOBParser, LWOBTextureLoader } from './fileparser/LWOBParser'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils'
 
 export abstract class AssetLoader<T> {
     readonly lAssetName: string
@@ -231,5 +234,107 @@ export class CreditsAssetLoader extends AssetLoader<string> {
         const data = this.assetRegistry.vfs.getFile(this.assetRegistry.vfs.filterEntryNames(this.lAssetName)[0]).toText() // TODO Assert array length before accessing
         ResourceManager.resourceByName.set(this.lAssetName, data) // TODO Add data to specific cache instead
         return data
+    }
+}
+
+class ProMeshTextureLoader extends LWOBTextureLoader {
+    constructor(readonly assetRegistry: AssetRegistry, readonly flipY: boolean, readonly theme: string, readonly num: string) {
+        super()
+    }
+
+    load(_textureFilename: string, onLoad: (textures: Texture[]) => void): void {
+        this.loadFromVfs().then((textures) => onLoad(textures))
+    }
+
+    async loadFromVfs(): Promise<Texture[]> {
+        const textureFilePaths = this.assetRegistry.vfs.filterEntryNames(`World/WorldTextures/.+${this.theme}${this.num}.bmp`)
+        return Promise.all(textureFilePaths.map(async (f) => {
+            const imgData = await this.assetRegistry.getLoader<TextureAssetLoader>(f).wait()
+            return this.createTexture(imgData, f)
+        }))
+    }
+
+    private createTexture(imgData: ImageData, textureFilepath: string): Texture {
+        // without repeat wrapping some entities are not fully textured
+        const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
+        texture.name = textureFilepath
+        texture.needsUpdate = true // without everything is just dark
+        texture.colorSpace = SRGBColorSpace
+        texture.magFilter = NearestFilter
+        if (this.flipY) texture.rotation += Math.PI
+        return texture
+    }
+}
+
+export class ProMeshLoader extends AssetLoader<SurfaceMeshPro> {
+    constructor(readonly theme: string, readonly num: string) {
+        super(`world/promeshes/${theme === 'ice' ? `${theme}/${theme}` : theme}pm${num}`, true) // ice in subfolder
+    }
+
+    async exec(): Promise<SurfaceMeshPro> {
+        const meshFilePathA = `${this.lAssetName}a.lwo`
+        if (!this.assetRegistry.vfs.hasEntry(meshFilePathA)) return Promise.reject(`Cannot load pro mesh, missing "${meshFilePathA}"`)
+        const meshFilePathB = `${this.lAssetName}b.lwo`
+        if (!this.assetRegistry.vfs.hasEntry(meshFilePathB)) return Promise.reject(`Cannot load pro mesh, missing "${meshFilePathB}"`)
+        const meshFileContentA = this.assetRegistry.vfs.getFile(meshFilePathA)
+        const meshFileContentB = this.assetRegistry.vfs.getFile(meshFilePathB)
+        const proMeshTextureLoaderA = new ProMeshTextureLoader(this.assetRegistry, false, this.theme, this.num)
+        const lwoDataA = new LWOBParser(meshFileContentA.toBuffer(), proMeshTextureLoaderA, undefined).parse()
+        if (!lwoDataA) return Promise.reject('Cannot parse pro mesh A')
+        const proMeshTextureLoaderB = new ProMeshTextureLoader(this.assetRegistry, true, this.theme, this.num)
+        const lwoDataB = new LWOBParser(meshFileContentB.toBuffer(), proMeshTextureLoaderB, undefined).parse()
+        if (!lwoDataB) return Promise.reject('Cannot parse pro mesh B')
+        this.assembleGeometries(lwoDataA.geometry, lwoDataB.geometry)
+        const proMesh = new SurfaceMeshPro(mergeGeometries([lwoDataA.geometry, lwoDataB.geometry], true), [...lwoDataA.material, ...lwoDataB.material])
+        proMesh.position.set(0.5, 0, 0.5)
+        ResourceManager.proMeshes.set(this.lAssetName, proMesh)
+        return proMesh
+    }
+
+    assembleGeometries(geoA: BufferGeometry, geoB: BufferGeometry) {
+        const scale1 = 0.4 // XXX ???
+        const scale2 = 0.566 // XXX ???
+        if (this.num.startsWith('0') || this.num.startsWith('2') || this.num === '40') { // walls
+            geoA.scale(scale1, scale2, scale1)
+            geoA.rotateY(Math.PI)
+            geoA.rotateX(-Math.PI / 4)
+            geoA.translate(-20, 0, 20)
+            geoB.scale(scale1, scale2, scale1)
+            geoB.rotateY(Math.PI)
+            geoB.rotateX(Math.PI / 4)
+            geoB.rotateZ(Math.PI)
+            geoB.translate(20, 40, -20)
+        } else if (this.num === '10') { // rubble
+            geoA.scale(scale1, scale1, scale1)
+            geoA.rotateX(Math.PI / 2)
+            geoA.translate(20, 0, -20)
+            geoB.scale(scale1, scale1, scale1)
+            geoB.rotateX(Math.PI / 2)
+            geoB.rotateY(Math.PI)
+            geoB.translate(-20, 0, 20)
+        } else if (this.num.startsWith('3')) { // inverted corner
+            geoA.scale(scale2, scale1, scale1)
+            geoA.rotateY(Math.PI / 2)
+            geoA.rotateZ(-Math.PI / 2)
+            geoA.rotateX(Math.PI / 4)
+            geoA.translate(-20, 40, -20)
+            geoB.scale(scale1, scale2, scale1)
+            geoB.rotateY(Math.PI / 2)
+            geoB.rotateX(Math.PI)
+            geoB.rotateZ(-Math.PI / 4)
+            geoB.translate(20, 40, 20)
+        } else if (this.num.startsWith('5')) { // corner
+            geoA.scale(scale1, scale2, scale1)
+            geoA.rotateX(Math.PI / 4)
+            geoA.rotateY(Math.PI / 2)
+            geoA.translate(-20, 0, -20)
+            geoB.scale(scale2, scale1, scale1)
+            geoB.rotateY(Math.PI)
+            geoB.rotateZ(Math.PI / 2)
+            geoB.rotateX(-Math.PI / 4)
+            geoB.translate(20, 0, 20)
+        } else {
+            console.warn(`Unexpected num (${(this.num)}) given`)
+        }
     }
 }
