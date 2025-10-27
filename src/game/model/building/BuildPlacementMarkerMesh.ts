@@ -16,7 +16,6 @@ export class BuildPlacementMarkerMesh extends Mesh<BufferGeometry, MeshPhongMate
         }))
         this.sceneMgr = sceneMgr
         this.visible = false
-        this.scale.setScalar(TILESIZE)
     }
 
     updateMesh(worldPosition: Vector2, offset: Vector2 | undefined, heading: number = 0) {
@@ -26,7 +25,7 @@ export class BuildPlacementMarkerMesh extends Mesh<BufferGeometry, MeshPhongMate
         const surfaceMesh = this.sceneMgr.terrain.getSurfaceFromWorld2D(posWithOffset).mesh
         if (surfaceMesh === this.lastSurfaceMesh) return
         this.lastSurfaceMesh = surfaceMesh
-        this.position.copy(surfaceMesh.position.clone().multiplyScalar(TILESIZE))
+        surfaceMesh.lowMesh.getWorldPosition(this.position)
         this.position.y += TILESIZE / 20
         this.geometry?.dispose()
         this.geometry = surfaceMesh.lowMesh.geometry.clone()

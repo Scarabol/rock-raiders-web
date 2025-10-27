@@ -20,6 +20,7 @@ export class SurfaceMesh extends Group {
 
     constructor(readonly x: number, readonly y: number, readonly userData: SurfaceMeshUserData) {
         super()
+        this.position.set(x, 0, y).multiplyScalar(TILESIZE)
         this.lowMesh = new SurfaceMeshLow(x, y, userData)
         this.add(this.lowMesh)
     }
@@ -62,7 +63,7 @@ export class SurfaceMesh extends Group {
             const wallAngle = SurfaceMesh.getWallAngle(surface.wallType, topLeftVertex.high, topRightVertex.high, bottomRightVertex.high, bottomLeftVertex.high)
             this.proMesh.rotation.y = wallAngle
             const posY = (topLeftVertex.offset + topRightVertex.offset + bottomRightVertex.offset + bottomLeftVertex.offset) / 4
-            this.proMesh.position.set(this.x + 0.5, posY, this.y + 0.5).multiplyScalar(TILESIZE)
+            this.proMesh.position.set(0.5, posY, 0.5).multiplyScalar(TILESIZE)
             this.add(this.proMesh)
             // Tear pro mesh to fit surface map offsets and close gaps in terrain
             const rotationIndex = (Math.round(wallAngle / (Math.PI / 2)) + 8) % 4
@@ -195,7 +196,6 @@ class SurfaceMeshLow extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
 
     constructor(x: number, y: number, userData: SurfaceMeshUserData) {
         super(new SurfaceGeometry(), new MeshPhongMaterial({shininess: 0}))
-        this.position.set(x, 0, y).multiplyScalar(TILESIZE)
         this.userData = userData
     }
 
