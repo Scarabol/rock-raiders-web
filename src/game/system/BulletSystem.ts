@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { BulletComponent } from '../component/BulletComponent'
 import { WorldManager } from '../WorldManager'
 import { Vector2 } from 'three'
@@ -14,27 +14,24 @@ import { HeadingComponent } from '../component/HeadingComponent'
 import { GameConfig } from '../../cfg/GameConfig'
 
 export class BulletSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([BulletComponent])
+    readonly bullets: FilteredEntities = this.addEntityFilter(BulletComponent)
+    readonly targetMonsters: FilteredEntities = this.addEntityFilter(MonsterStatsComponent, PositionComponent, HealthComponent, AnimatedSceneEntityComponent)
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
-        const targets = [...this.worldMgr.entityMgr.rockMonsters, ...this.worldMgr.entityMgr.slugs]
-            .map((e) => {
-                const components = ecs.getComponents(e)
-                return {
-                    entity: e,
-                    stats: components.get(MonsterStatsComponent)?.stats,
-                    pos: components.get(PositionComponent),
-                    health: components.get(HealthComponent),
-                    heading: components.get(AnimatedSceneEntityComponent).sceneEntity.rotation.y,
-                }
-            }).filter((t) => t.health.health > 0)
-        for (const entity of entities) {
+    update(ecs: ECS, elapsedMs: number): void {
+        const targets = Array.from(this.targetMonsters.entries())
+            .map(([entity, components]) => ({
+                entity: entity,
+                stats: components.get(MonsterStatsComponent).stats,
+                pos: components.get(PositionComponent),
+                health: components.get(HealthComponent),
+                heading: components.get(AnimatedSceneEntityComponent).sceneEntity.rotation.y,
+            })).filter((t) => t.health.health > 0)
+        for (const [entity, components] of this.bullets) {
             try {
-                const components = ecs.getComponents(entity)
                 const bulletComponent = components.get(BulletComponent)
                 const location = new Vector2(bulletComponent.bulletAnim.position.x, bulletComponent.bulletAnim.position.z)
                 if (bulletComponent.targetLocation.distanceToSquared(location) > 1) {

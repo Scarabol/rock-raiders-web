@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { HealthComponent } from '../component/HealthComponent'
 import { LastWillComponent } from '../component/LastWillComponent'
 import { SelectionFrameComponent } from '../component/SelectionFrameComponent'
@@ -7,17 +7,15 @@ import { WorldManager } from '../WorldManager'
 import { EventBroker } from '../../event/EventBroker'
 
 export class DeathSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([HealthComponent, LastWillComponent])
-    override readonly dirtyComponents: Set<Function> = new Set([HealthComponent])
+    readonly withLastWill: FilteredEntities = this.addEntityFilter(HealthComponent, LastWillComponent)
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(ecs: ECS, _elapsedMs: number, _entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
-        for (const entity of dirty) {
+    update(ecs: ECS, _elapsedMs: number): void {
+        for (const [entity, components] of this.withLastWill) {
             try {
-                const components = ecs.getComponents(entity)
                 const healthComponent = components.get(HealthComponent)
                 if (healthComponent.health <= 0) {
                     const selectionFrameComponent = components.getOptional(SelectionFrameComponent)

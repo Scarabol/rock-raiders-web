@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { OxygenComponent } from '../component/OxygenComponent'
 import { GameState } from '../model/GameState'
 import { AirLevelChanged, GameResultEvent, LevelSelectedEvent } from '../../event/WorldEvents'
@@ -7,7 +7,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { EventBroker } from '../../event/EventBroker'
 
 export class OxygenSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([OxygenComponent])
+    readonly oxygenEntities: FilteredEntities = this.addEntityFilter(OxygenComponent)
     levelOxygenRate: number = 0
 
     constructor() {
@@ -17,11 +17,10 @@ export class OxygenSystem extends AbstractGameSystem {
         })
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
+    update(_ecs: ECS, elapsedMs: number): void {
         let coefSum = 0
-        for (const entity of entities) {
+        for (const [_entity, components] of this.oxygenEntities) {
             try {
-                const components = ecs.getComponents(entity)
                 const oxygenComponent = components.get(OxygenComponent)
                 coefSum += oxygenComponent.oxygenCoefficient
             } catch (e) {

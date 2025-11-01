@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { PositionComponent } from '../component/PositionComponent'
@@ -8,12 +8,11 @@ import { HeadingComponent } from '../component/HeadingComponent'
 import { PRNG } from '../factory/PRNG'
 
 export class RandomMoveBehaviorSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([RandomMoveComponent, PositionComponent, MovableStatsComponent])
+    readonly randomMoveCandidates: FilteredEntities = this.addEntityFilter(RandomMoveComponent, PositionComponent, MovableStatsComponent)
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
-        for (const entity of entities) {
+    update(ecs: ECS, elapsedMs: number): void {
+        for (const [entity, components] of this.randomMoveCandidates) {
             try {
-                const components = ecs.getComponents(entity)
                 const randomMoveComponent = components.get(RandomMoveComponent)
                 if (randomMoveComponent.isOnIdleTimer(elapsedMs) || components.has(WorldTargetComponent)) continue
                 const positionComponent = components.get(PositionComponent)

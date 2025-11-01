@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities, GameEntity } from '../ECS'
 import { ROCK_MONSTER_BEHAVIOR_STATE, RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { WorldManager } from '../WorldManager'
 import { EntityType } from '../model/EntityType'
@@ -41,7 +41,7 @@ const ROCKY_BOULDER_THROW_DISTANCE_SQ = 80 * 80
 const ROCKY_MELEE_ATTACK_DISTANCE_SQ = 30 * 30
 
 export class RockMonsterBehaviorSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([RockMonsterBehaviorComponent, PositionComponent, AnimatedSceneEntityComponent, MonsterStatsComponent])
+    readonly rockMonsters: FilteredEntities = this.addEntityFilter(RockMonsterBehaviorComponent, PositionComponent, AnimatedSceneEntityComponent, MonsterStatsComponent)
 
     constructor(readonly worldMgr: WorldManager) {
         super()
@@ -84,16 +84,15 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         })
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number): void {
         const pathFinder = this.worldMgr.sceneMgr.terrain?.pathFinder
         const crystals = this.worldMgr.entityMgr.materials.filter((m) => m.entityType === EntityType.CRYSTAL)
         const drivingVehiclePositions = this.worldMgr.entityMgr.vehicles
             .filter((v) => v.sceneEntity.currentAnimation === ANIM_ENTITY_ACTIVITY.route)
             .map((v) => ecs.getComponents(v.entity).get(PositionComponent).getPosition2D())
         const monsterTargetBuildings = GameState.monsterAttackPowerStation ? this.worldMgr.entityMgr.buildings.filter((b) => b.entityType === EntityType.POWER_STATION) : this.worldMgr.entityMgr.buildings
-        for (const entity of entities) {
+        for (const [entity, components] of this.rockMonsters) {
             try {
-                const components = ecs.getComponents(entity)
                 const behaviorComponent = components.get(RockMonsterBehaviorComponent)
                 const positionComponent = components.get(PositionComponent)
                 const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity

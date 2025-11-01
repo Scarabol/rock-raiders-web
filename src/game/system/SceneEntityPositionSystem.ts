@@ -1,15 +1,14 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 
 export class SceneEntityPositionSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([AnimatedSceneEntityComponent, PositionComponent])
-    override readonly dirtyComponents: Set<Function> = new Set([PositionComponent])
+    readonly entitiesWithPosition: FilteredEntities = this.addEntityFilter(AnimatedSceneEntityComponent, PositionComponent)
 
-    update(ecs: ECS, _elapsedMs: number, _entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
-        for (const entity of dirty) {
+    update(_ecs: ECS, _elapsedMs: number): void {
+        // TODO Only update if position changed (dirty) and with certain timing
+        for (const [_entity, components] of this.entitiesWithPosition) {
             try {
-                const components = ecs.getComponents(entity)
                 const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                 const positionComponent = components.get(PositionComponent)
                 sceneEntityComponent.sceneEntity.position.copy(positionComponent.position)

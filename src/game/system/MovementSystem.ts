@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { PositionComponent } from '../component/PositionComponent'
 import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
@@ -10,16 +10,15 @@ import { HeadingComponent } from '../component/HeadingComponent'
 import { WorldManager } from '../WorldManager'
 
 export class MovementSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([PositionComponent, WorldTargetComponent, MovableStatsComponent])
+    readonly movableEntities: FilteredEntities = this.addEntityFilter(PositionComponent, WorldTargetComponent, MovableStatsComponent)
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
-        for (const entity of entities) {
+    update(ecs: ECS, elapsedMs: number): void {
+        for (const [entity, components] of this.movableEntities) {
             try {
-                const components = ecs.getComponents(entity)
                 const positionComponent = components.get(PositionComponent)
                 if (!positionComponent.isDiscovered()) continue
                 const worldTargetComponent = components.get(WorldTargetComponent)

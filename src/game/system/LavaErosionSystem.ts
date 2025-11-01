@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { LavaErosionComponent } from '../component/LavaErosionComponent'
 import { SurfaceType } from '../terrain/SurfaceType'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -23,7 +23,7 @@ import { EventBroker } from '../../event/EventBroker'
  * In Level24 ( 40,  5, 300) a surface with erosion map value 9 progress each  6 seconds, but new take 20 seconds
  */
 export class LavaErosionSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([LavaErosionComponent])
+    readonly erosionSurfaces: FilteredEntities = this.addEntityFilter(LavaErosionComponent)
     erodeTriggerTimeMs: number = 0
     increaseErosionDelayMs: number = 0
     powerPathLockTimeMs: number = 0
@@ -45,11 +45,10 @@ export class LavaErosionSystem extends AbstractGameSystem {
         })
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number): void {
         let canStartNewErosion = false
-        for (const entity of entities) {
+        for (const [entity, components] of this.erosionSurfaces) {
             try {
-                const components = ecs.getComponents(entity)
                 const erosionComponent = components.get(LavaErosionComponent)
                 if (erosionComponent.surface.surfaceType === SurfaceType.LAVA5) {
                     ecs.removeComponent(entity, LavaErosionComponent)

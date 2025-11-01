@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { SLUG_BEHAVIOR_STATE, SlugBehaviorComponent } from '../component/SlugBehaviorComponent'
 import { WorldManager } from '../WorldManager'
 import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
@@ -26,18 +26,17 @@ const SLUG_SUCK_DISTANCE_SQ = 25 * 25
 const SLUG_ENTER_DISTANCE_SQ = 5 * 5
 
 export class SlugBehaviorSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([SlugBehaviorComponent, MonsterStatsComponent])
+    readonly slugs: FilteredEntities = this.addEntityFilter(SlugBehaviorComponent, MonsterStatsComponent)
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number): void {
         const pathFinder = this.worldMgr.sceneMgr.terrain?.pathFinder
         const scarerPositions = this.worldMgr.entityMgr.birdScarer.map((b) => ecs.getComponents(b).get(PositionComponent))
-        for (const entity of entities) {
+        for (const [entity, components] of this.slugs) {
             try {
-                const components = ecs.getComponents(entity)
                 const behaviorComponent = components.get(SlugBehaviorComponent)
                 const positionComponent = components.get(PositionComponent)
                 const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity

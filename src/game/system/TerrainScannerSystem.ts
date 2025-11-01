@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { ScannerComponent } from '../component/ScannerComponent'
 import { PositionComponent } from '../component/PositionComponent'
 import { UpdateRadarEntityEvent, UpdateRadarTerrain } from '../../event/LocalEvents'
@@ -7,17 +7,16 @@ import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE } from '../component/MapMarkerCompon
 import { EventBroker } from '../../event/EventBroker'
 
 export class TerrainScannerSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([ScannerComponent, PositionComponent])
+    readonly activeScanners: FilteredEntities = this.addEntityFilter(ScannerComponent, PositionComponent)
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
+    update(_ecs: ECS, elapsedMs: number): void {
         let scanned = false
-        for (const entity of entities) {
+        for (const [entity, components] of this.activeScanners) {
             try {
-                const components = ecs.getComponents(entity)
                 const scannerComponent = components.get(ScannerComponent)
                 const positionComponent = components.get(PositionComponent)
                 if (scannerComponent.scanDelay > 0) {

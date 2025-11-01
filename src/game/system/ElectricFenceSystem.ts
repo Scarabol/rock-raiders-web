@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { PositionComponent } from '../component/PositionComponent'
 import { HealthComponent } from '../component/HealthComponent'
 import { WorldManager } from '../WorldManager'
@@ -15,7 +15,7 @@ import { PRNG } from '../factory/PRNG'
 const FENCE_RANGE_SQ = TILESIZE / 4 * TILESIZE / 4
 
 export class ElectricFenceSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([PositionComponent, HealthComponent, MonsterStatsComponent, RockMonsterBehaviorComponent])
+    readonly eligibleMonsters: FilteredEntities = this.addEntityFilter(PositionComponent, HealthComponent, MonsterStatsComponent, RockMonsterBehaviorComponent)
     beamDelayMs: number = 0
 
     constructor(readonly worldMgr: WorldManager) {
@@ -25,7 +25,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         })
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number): void {
         const fenceProtectedSurfaces = this.getFenceProtectedSurfaces(ecs)
         const studProtectedSurfaces = this.getStudProtectedSurfaces(fenceProtectedSurfaces)
         if (this.beamDelayMs > 0) {
@@ -34,9 +34,8 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             this.addBeamEffect(ecs, studProtectedSurfaces)
         }
         fenceProtectedSurfaces.add(...studProtectedSurfaces)
-        for (const entity of entities) {
+        for (const [_entity, components] of this.eligibleMonsters) {
             try {
-                const components = ecs.getComponents(entity)
                 if (!components.get(MonsterStatsComponent).stats.canBeHitByFence) continue
                 const positionComponent = components.get(PositionComponent)
                 fenceProtectedSurfaces.forEach((f) => {
@@ -71,9 +70,9 @@ export class ElectricFenceSystem extends AbstractGameSystem {
 
     private getFenceProtectedSurfaces(ecs: ECS): Surface[] {
         const fenceProtectedSurfaces: Surface[] = []
-        const energizedBuildingSurfaces = this.worldMgr.entityMgr.buildings.filter((b) => b.energized)
+        const energizedBuildingSurfaces = this.worldMgr.entityMgr.buildings.filter((b) => b.energized) // TODO Replace with entity filter once energy system is implemented
             .flatMap((b) => b.buildingSurfaces)
-        const toCheck = this.worldMgr.entityMgr.placedFences
+        const toCheck = this.worldMgr.entityMgr.placedFences // TODO Replace with entity filter
             .map((f) => ecs.getComponents(f.entity).get(PositionComponent))
         energizedBuildingSurfaces.forEach((s) => {
             [[2, 0], [1, 0], [0, 2], [0, 1], [-2, 0], [-1, 0], [0, -2], [0, -1]].forEach((o) => {

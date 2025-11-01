@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { EmergeComponent } from '../component/EmergeComponent'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -16,7 +16,7 @@ import { WALL_TYPE } from '../terrain/WallType'
 import { SurfaceType } from '../terrain/SurfaceType'
 
 export class EmergeSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([EmergeComponent])
+    readonly activeEmerges: FilteredEntities = this.addEntityFilter(EmergeComponent)
 
     emergeCreature: MonsterEntityType = EntityType.NONE
     emergeTimeoutMs: number = 0
@@ -32,16 +32,15 @@ export class EmergeSystem extends AbstractGameSystem {
         })
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number): void {
         if (!this.emergeCreature) return
         const busySurfaces = new Set<Surface>()
-        ;[...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles]
+        ;[...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles] // TODO Replace with entity filter
             .forEach((e) => busySurfaces.add(ecs.getComponents(e.entity).get(PositionComponent).surface))
         const emergeSpawns: Map<number, Surface[]> = new Map()
         const triggeredEmerges: Set<EmergeComponent> = new Set()
-        for (const entity of entities) {
+        for (const [_entity, components] of this.activeEmerges) {
             try {
-                const components = ecs.getComponents(entity)
                 const emergeComponent = components.get(EmergeComponent)
                 if (emergeComponent.emergeDelayMs > 0) {
                     emergeComponent.emergeDelayMs -= elapsedMs

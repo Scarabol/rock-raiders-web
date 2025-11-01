@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { BoulderComponent } from '../component/BoulderComponent'
 import { Vector2 } from 'three'
 import { HealthComponent } from '../component/HealthComponent'
@@ -12,7 +12,7 @@ import { WorldManager } from '../WorldManager'
 import { WeaponTypeCfg } from '../../cfg/WeaponTypeCfg'
 
 export class BoulderSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([BoulderComponent])
+    readonly boulders: FilteredEntities = this.addEntityFilter(BoulderComponent)
     readonly boulderStats: WeaponTypeCfg
 
     constructor(readonly worldMgr: WorldManager) {
@@ -20,10 +20,9 @@ export class BoulderSystem extends AbstractGameSystem {
         this.boulderStats = GameConfig.instance.weaponTypes.boulder
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
-        for (const entity of entities) {
+    update(ecs: ECS, elapsedMs: number): void {
+        for (const [entity, components] of this.boulders) {
             try {
-                const components = ecs.getComponents(entity)
                 const boulderComponent = components.get(BoulderComponent)
                 const location = new Vector2(boulderComponent.mesh.position.x, boulderComponent.mesh.position.z)
                 if (boulderComponent.targetLocation.distanceToSquared(location) > 1) {

@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
 import { MaterialAmountChanged, MonsterLaserHitEvent, ShootLaserEvent } from '../../event/WorldEvents'
@@ -24,7 +24,7 @@ class LaserShot {
 }
 
 export class LaserShotSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([LaserBeamTurretComponent])
+    readonly laserTurrets: FilteredEntities = this.addEntityFilter(LaserBeamTurretComponent, AnimatedSceneEntityComponent, PositionComponent)
     readonly raycaster: Raycaster = new Raycaster()
     readonly laserShots: LaserShot[] = []
 
@@ -36,12 +36,12 @@ export class LaserShotSystem extends AbstractGameSystem {
     }
 
     private onShootLaser(ecs: ECS, event: ShootLaserEvent) {
-        const components = ecs.getComponents(event.entity)
-        const turretComponent = components.get(LaserBeamTurretComponent)
-        if (turretComponent.fireDelay > 0) return
+        const components = this.laserTurrets.get(event.entity)
+        if (!components) return
+        const turretComponent = components.getOptional(LaserBeamTurretComponent)
         const sceneEntityComponent = components.getOptional(AnimatedSceneEntityComponent)
         const positionComponent = components.getOptional(PositionComponent)
-        if (!turretComponent || !sceneEntityComponent || !positionComponent) return
+        if (!turretComponent || !sceneEntityComponent || !positionComponent || turretComponent.fireDelay > 0) return
         const dischargeRate = turretComponent.weaponCfg.dischargeRate
         if (GameState.numCrystal < GameState.dischargedCrystals + dischargeRate) {
             console.warn(`Not enough crystals ${GameState.dischargedCrystals}/${GameState.numCrystal} to shoot laser with discharge rate ${dischargeRate}`)
@@ -121,7 +121,7 @@ export class LaserShotSystem extends AbstractGameSystem {
         this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LazerRecharge', false)
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
+    update(_ecs: ECS, elapsedMs: number): void {
         const currentShots = [...this.laserShots]
         this.laserShots.length = 0
         currentShots.forEach((s) => {
@@ -132,9 +132,8 @@ export class LaserShotSystem extends AbstractGameSystem {
                 this.worldMgr.sceneMgr.scene.remove(s.group)
             }
         })
-        for (const entity of entities) {
+        for (const [_entity, components] of this.laserTurrets) {
             try {
-                const components = ecs.getComponents(entity)
                 const turretComponent = components.get(LaserBeamTurretComponent)
                 if (turretComponent.fireDelay > 0) {
                     turretComponent.fireDelay -= elapsedMs

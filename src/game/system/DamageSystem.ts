@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { HealthComponent } from '../component/HealthComponent'
 import { EventKey } from '../../event/EventKeyEnum'
 import { DynamiteExplosionEvent, WorldLocationEvent } from '../../event/WorldEvents'
@@ -10,7 +10,7 @@ import { EventBroker } from '../../event/EventBroker'
 import { PRNG } from '../factory/PRNG'
 
 export class DamageSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
+    readonly damageable: FilteredEntities = this.addEntityFilter(PositionComponent, HealthComponent)
     readonly landslides: PositionComponent[] = []
     readonly dynamiteExplosions: DynamiteExplosionEvent[] = []
     readonly dynamiteRadiusSq: number = 0
@@ -28,10 +28,9 @@ export class DamageSystem extends AbstractGameSystem {
         })
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
-        for (const entity of entities) {
+    update(_ecs: ECS, elapsedMs: number): void {
+        for (const [_entity, components] of this.damageable) {
             try {
-                const components = ecs.getComponents(entity)
                 const positionComponent = components.get(PositionComponent)
                 const healthComponent = components.get(HealthComponent)
                 const position = positionComponent.getPosition2D()

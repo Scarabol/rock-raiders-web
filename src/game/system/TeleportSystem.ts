@@ -1,4 +1,4 @@
-import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities, GameEntity } from '../ECS'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameResultEvent, LevelSelectedEvent, MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged } from '../../event/WorldEvents'
@@ -25,7 +25,7 @@ import { GAME_RESULT_STATE, GameResultState } from '../model/GameResult'
 import { PRNG } from '../factory/PRNG'
 
 export class TeleportSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([TeleportComponent])
+    readonly teleporter: FilteredEntities = this.addEntityFilter(TeleportComponent)
     requestedRaiders: number = 0
     spawnRaiderTimer: number = 0
     requestedVehicleTypes: EntityType[] = []
@@ -65,10 +65,10 @@ export class TeleportSystem extends AbstractGameSystem {
         })
     }
 
-    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number): void {
         const teleports: TeleportComponent[] = []
-        entities.forEach((e) => {
-            if (this.poweredBuildings.has(e)) teleports.add(ecs.getComponents(e).get(TeleportComponent))
+        this.teleporter.forEach((t, e) => { // TODO Replace by using powered component from yet to implement energy system
+            if (this.poweredBuildings.has(e)) teleports.add(t.get(TeleportComponent))
         })
         try {
             for (this.spawnRaiderTimer += elapsedMs; this.spawnRaiderTimer >= CHECK_SPAWN_RAIDER_TIMER; this.spawnRaiderTimer -= CHECK_SPAWN_RAIDER_TIMER) {
