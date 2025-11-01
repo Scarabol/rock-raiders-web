@@ -355,7 +355,8 @@ export class Raider implements Updatable, JobFulfiller {
         if (!this.carries) return []
         if (unAssignFromSite) this.carries.carryJob?.target?.site?.unAssign(this.carries)
         this.sceneEntity.removeAllCarried()
-        const floorPosition = this.carries.worldMgr.sceneMgr.getFloorPosition(this.carries.getPosition2D())
+        const dropTarget = this.carries.getSurface().isWalkable() ? this.carries.getPosition2D() : this.getPosition2D() // XXX Find walkable drop target surface
+        const floorPosition = this.carries.worldMgr.sceneMgr.getFloorPosition(dropTarget)
         this.carries.setPosition(floorPosition)
         this.carries.worldMgr.sceneMgr.addSceneEntity(this.carries.sceneEntity)
         const carriedEntity = this.carries
