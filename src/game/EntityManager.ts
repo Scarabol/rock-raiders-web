@@ -57,7 +57,6 @@ export class EntityManager {
     vehiclesInBeam: VehicleEntity[] = []
     completedBuildingSites: BuildingSite[] = []
     recordedEntities: GameEntity[] = []
-    birdScarer: GameEntity[] = []
 
     constructor(readonly worldMgr: WorldManager) {
         this.worldMgr.entityMgr = this
@@ -94,7 +93,6 @@ export class EntityManager {
         this.vehiclesInBeam.length = 0
         this.completedBuildingSites.length = 0
         this.recordedEntities.length = 0
-        this.birdScarer.length = 0
     }
 
     update(elapsedMs: number) {
@@ -331,9 +329,6 @@ export class EntityManager {
                     this.undiscoveredRockMonsters.add(entity)
                 }
                 break
-            case EntityType.BIRD_SCARER:
-                this.birdScarer.add(entity)
-                break
         }
     }
 
@@ -373,7 +368,6 @@ export class EntityManager {
         this.vehiclesUndiscovered.removeAll((e) => e.entity === entity)
         this.vehiclesInBeam.removeAll((e) => e.entity === entity)
         this.recordedEntities.remove(entity)
-        this.birdScarer.remove(entity)
     }
 
     findVehicleInRange(position2d: Vector2, rangeSq: number): VehicleTarget | undefined {

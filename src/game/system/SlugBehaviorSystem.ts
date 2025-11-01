@@ -21,12 +21,14 @@ import { EventBroker } from '../../event/EventBroker'
 import { PRNG } from '../factory/PRNG'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
 import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE } from '../component/MapMarkerComponent'
+import { BirdScarerComponent } from '../component/BirdScarerComponent'
 
 const SLUG_SUCK_DISTANCE_SQ = 25 * 25
 const SLUG_ENTER_DISTANCE_SQ = 5 * 5
 
 export class SlugBehaviorSystem extends AbstractGameSystem {
     readonly slugs: FilteredEntities = this.addEntityFilter(SlugBehaviorComponent, MonsterStatsComponent)
+    readonly scaryThings: FilteredEntities = this.addEntityFilter(BirdScarerComponent)
 
     constructor(readonly worldMgr: WorldManager) {
         super()
@@ -34,7 +36,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
 
     update(ecs: ECS, elapsedMs: number): void {
         const pathFinder = this.worldMgr.sceneMgr.terrain?.pathFinder
-        const scarerPositions = this.worldMgr.entityMgr.birdScarer.map((b) => ecs.getComponents(b).get(PositionComponent))
+        const scarerPositions = this.scaryThings.values().map((c) => c.get(BirdScarerComponent))
         for (const [entity, components] of this.slugs) {
             try {
                 const behaviorComponent = components.get(SlugBehaviorComponent)
@@ -74,7 +76,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             ecs.removeComponent(entity, HeadingComponent)
                             this.changeToIdle(sceneEntity, behaviorComponent)
                         } else {
-                            const scarerInRange = scarerPositions.find((pos) => pos.getPosition2D().distanceToSquared(slugPos) < stats.alertRadiusSq)
+                            const scarerInRange = scarerPositions.find((pos) => pos.position2D.distanceToSquared(slugPos) < stats.alertRadiusSq)
                             if (scarerInRange) {
                                 ecs.removeComponent(entity, WorldTargetComponent)
                                 ecs.removeComponent(entity, HeadingComponent)

@@ -28,6 +28,7 @@ import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityCom
 import { Vector3 } from 'three'
 import { PRNG } from './factory/PRNG'
 import { GameState } from './model/GameState'
+import { BirdScarerComponent } from './component/BirdScarerComponent'
 
 export class GuiManager {
     constructor(worldMgr: WorldManager) {
@@ -232,7 +233,7 @@ export class GuiManager {
                 sceneEntity.setAnimation(DYNAMITE_ACTIVITY.normal, () => {
                     sceneEntity.setAnimation(DYNAMITE_ACTIVITY.tickDown, () => {
                         const birdScarer = worldMgr.ecs.addEntity()
-                        worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
+                        worldMgr.ecs.addComponent(birdScarer, new BirdScarerComponent(r.getPosition2D(), r.getSurface()))
                         entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
                         sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.birdScarer, position, PRNG.animation.random() * 2 * Math.PI, false, () => {
                             sceneMgr.disposeSceneEntity(sceneEntity)
