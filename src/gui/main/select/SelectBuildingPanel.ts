@@ -64,7 +64,7 @@ export class SelectBuildingPanel extends IconSubPanel {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.buildingCanSwitchPower = false
         this.buildingPowerSwitchState = false

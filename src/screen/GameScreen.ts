@@ -37,7 +37,7 @@ export class GameScreen {
     readonly sceneMgr: SceneManager
     readonly entityMgr: EntityManager
     readonly guiMgr: GuiManager
-    levelConf?: LevelConfData
+    levelConf: LevelConfData | undefined
 
     constructor(readonly screenMaster: ScreenMaster) {
         this.worldMgr = new WorldManager()

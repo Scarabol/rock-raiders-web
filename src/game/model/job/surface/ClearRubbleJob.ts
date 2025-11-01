@@ -11,7 +11,7 @@ export class ClearRubbleJob extends Job {
     readonly fulfiller: JobFulfiller[] = []
     lastRubblePositions: PathTarget[] = []
 
-    constructor(readonly surface: Surface) {
+    constructor(override readonly surface: Surface) {
         super()
         this.lastRubblePositions = this.surface.rubblePositions.map((p) => PathTarget.fromLocation(p))
         this.requiredTool = RAIDER_TOOL.shovel
@@ -32,7 +32,7 @@ export class ClearRubbleJob extends Job {
         }
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         if (fulfiller.entityType === EntityType.BULLDOZER) {
             while (this.surface.hasRubble()) {
                 this.surface.reduceRubble()
@@ -48,11 +48,11 @@ export class ClearRubbleJob extends Job {
         }
     }
 
-    getWorkActivity(): AnimationActivity {
+    override getWorkActivity(): AnimationActivity {
         return RAIDER_ACTIVITY.clear
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleDig'
     }
 

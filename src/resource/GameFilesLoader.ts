@@ -27,12 +27,13 @@ export class GameFilesLoader {
         this.loadingLayer.setLoadingMessage('Try loading files from cache...')
         console.time('Files loaded from cache')
         try {
-            const vfsFileNames: string[] | undefined = await cacheGetData('vfs')
+            const vfsFileNames = await cacheGetData<string[]>('vfs')
             if (vfsFileNames) {
-                const encoding = (await cacheGetData('encoding')) as VFSEncoding || 'default'
+                const encoding = await cacheGetData<VFSEncoding>('encoding') || 'default'
                 const vfs = new VirtualFileSystem(encoding)
                 await Promise.all(vfsFileNames.map(async (fileName) => {
-                    const buffer = await cacheGetData(fileName)
+                    const buffer = await cacheGetData<ArrayBuffer>(fileName)
+                    if (!buffer) return
                     vfs.registerFile(VirtualFile.fromBuffer(fileName, buffer))
                 }))
                 console.timeEnd('Files loaded from cache')

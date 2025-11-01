@@ -15,11 +15,11 @@ export class MainMenuCreditsLayer extends ScaledLayer {
     readonly currentLines: (SpriteImage | undefined)[] = []
     readonly renderedBitmapLines: (SpriteImage | undefined)[] = []
     readonly backVideo?: AVIVideoStream
-    backImg?: SpriteImage
-    loopIndexTimeout?: NodeJS.Timeout
+    backImg: SpriteImage | undefined
+    loopIndexTimeout: NodeJS.Timeout | undefined
     offsetY: number = 0
     counter: number = 0
-    onExitCredits?: UiElementCallback
+    onExitCredits: UiElementCallback | undefined
 
     constructor() {
         super('credits')
@@ -66,7 +66,7 @@ export class MainMenuCreditsLayer extends ScaledLayer {
         })
     }
 
-    show() {
+    override show() {
         super.show()
         this.increaseLoopIndex()
     }
@@ -87,7 +87,7 @@ export class MainMenuCreditsLayer extends ScaledLayer {
         }, NATIVE_UPDATE_INTERVAL)
     }
 
-    hide() {
+    override hide() {
         super.hide()
         this.loopIndexTimeout = clearTimeoutSafe(this.loopIndexTimeout)
         this.offsetY = 0

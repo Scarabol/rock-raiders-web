@@ -39,7 +39,7 @@ export class ManVehicleJob extends RaiderJob {
         return entity.findShortestPath(this.workplaces)?.target
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         this.vehicle.callManJob = undefined
         super.onJobComplete(fulfiller)
         if (!this.raider) return
@@ -47,7 +47,7 @@ export class ManVehicleJob extends RaiderJob {
         this.vehicle.unblockBuildingPowerPath()
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleDrive'
     }
 }

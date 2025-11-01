@@ -9,7 +9,7 @@ export class VirtualFileSystem {
     }
 
     registerFile(file: VirtualFile) {
-        this.files.set(file.fileName.toLowerCase(), file)
+        this.files.set(file.lFileName, file)
     }
 
     getFile(filename: string): VirtualFile {

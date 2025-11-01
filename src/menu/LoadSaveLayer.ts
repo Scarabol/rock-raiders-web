@@ -13,7 +13,7 @@ export class LoadSaveLayer extends MainMenuLayer {
     menuCfg: GameMenuCfg
     buttons: MainMenuLoadSaveButton[] = []
     loadSaveTextWindow: MainMenuWindow
-    activeOverlay?: FlicAnimOverlay
+    activeOverlay: FlicAnimOverlay | undefined
 
     constructor(menuCfg: MenuEntryCfg, loading: boolean) {
         super(menuCfg)
@@ -49,7 +49,7 @@ export class LoadSaveLayer extends MainMenuLayer {
         this.items.add(btn)
     }
 
-    set onItemAction(callback: (item: MainMenuBaseItem) => void) {
+    override set onItemAction(callback: (item: MainMenuBaseItem) => void) {
         super.onItemAction = async (item) => {
             if (this.activeOverlay) return // Overlay in progress
             if (LoadSaveLayer.hasOverlay(item)) {
@@ -65,7 +65,7 @@ export class LoadSaveLayer extends MainMenuLayer {
         return !!((item as { overlay?: FlicAnimOverlay }).overlay)
     }
 
-    show() {
+    override show() {
         Promise.all(SaveGameManager.screenshots).then((screenshots) => {
             this.buttons.forEach((btn) => {
                 btn.saveGameImg = screenshots[btn.targetIndex]
@@ -75,7 +75,7 @@ export class LoadSaveLayer extends MainMenuLayer {
         super.show()
     }
 
-    handlePointerEvent(event: GamePointerEvent): boolean {
+    override handlePointerEvent(event: GamePointerEvent): boolean {
         return super.handlePointerEvent(event) || true
     }
 }

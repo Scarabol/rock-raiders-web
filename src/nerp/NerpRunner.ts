@@ -77,7 +77,7 @@ export class NerpRunner {
 
     readonly registers = new Array(8).fill(0)
     readonly timers = new Array(4).fill(0)
-    interval?: NodeJS.Timeout
+    interval: NodeJS.Timeout | undefined
     programCounter: number = 0
     // more state variables and switches
     messagePermit: boolean = true
@@ -87,7 +87,7 @@ export class NerpRunner {
     timeForNoSample: number = 0
     currentMessage: number = -1
     messageTimerMs: number = 0
-    messageSfx?: AudioBufferSourceNode
+    messageSfx: AudioBufferSourceNode | undefined
     tutoBlocksById: Map<number, Surface[]> = new Map()
     iconClicked: Map<string, number> = new Map()
     buildingsTeleported: number = 0
@@ -136,7 +136,7 @@ export class NerpRunner {
             const iconName = RaiderTrainings.toStatsProperty(event.training).toLowerCase()
             this.iconClicked.upsert(iconName, (current) => (current || 0) + 1)
         })
-        EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event) => {
+        EventBroker.subscribe(EventKey.TOGGLE_ALARM, (_event) => {
             this.iconClicked.upsert('callToArms'.toLowerCase(), (current) => (current || 0) + 1)
         })
     }
@@ -241,7 +241,7 @@ export class NerpRunner {
      * End the level as failure and show the score screen.
      */
     setLevelFail(): void {
-        console.log(`NerpRunner marks level as failed; at line: ${this.script.lines[this.programCounter]}`)
+        console.log(`Nerp runner marks level as failed; at line: ${this.script.lines[this.programCounter]}`)
         EventBroker.publish(new GameResultEvent(GAME_RESULT_STATE.failed))
     }
 
@@ -379,7 +379,7 @@ export class NerpRunner {
             console.warn(`Invalid recorded entity index ${recordedEntity} given`, this.worldMgr.entityMgr.recordedEntities)
             return
         }
-        const sceneEntity = this.worldMgr.ecs.getComponents(entity).get(AnimatedSceneEntityComponent)?.sceneEntity
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity).getOptional(AnimatedSceneEntityComponent)?.sceneEntity
         if (!sceneEntity) {
             console.warn(`Given entity ${entity} has no scene entity to jump to`)
             return
@@ -394,7 +394,7 @@ export class NerpRunner {
             console.warn(`Invalid monster entity index ${monster} given`, this.worldMgr.entityMgr.rockMonsters)
             return
         }
-        const sceneEntity = this.worldMgr.ecs.getComponents(entity).get(AnimatedSceneEntityComponent)?.sceneEntity
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity).getOptional(AnimatedSceneEntityComponent)?.sceneEntity
         if (!sceneEntity) {
             console.warn(`Given entity ${entity} has no scene entity to jump to`)
             return
@@ -625,7 +625,7 @@ export class NerpRunner {
             console.warn(`Invalid entity ${recordedEntity} given`)
             return
         }
-        const sceneEntity = this.worldMgr.ecs.getComponents(entity).get(AnimatedSceneEntityComponent)?.sceneEntity
+        const sceneEntity = this.worldMgr.ecs.getComponents(entity).getOptional(AnimatedSceneEntityComponent)?.sceneEntity
         if (!sceneEntity) {
             console.warn(`Given entity ${entity} has no scene entity to point to`)
             return
@@ -674,7 +674,7 @@ export class NerpRunner {
         })
     }
 
-    setCrystalPriority(targetIndex: number): void {
+    setCrystalPriority(_targetIndex: number): void {
         GameState.priorityList.setPriorityIndex(PRIORITY_IDENTIFIER.crystal, 0)
     }
 

@@ -27,7 +27,7 @@ export class GetToolJob extends RaiderJob {
         return entity.findShortestPath(this.workplaces)?.target
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         if (!this.raider) return
         this.raider.addTool(this.tool)
@@ -45,7 +45,7 @@ export class GetToolJob extends RaiderJob {
         }
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         switch (this.tool) {
             case RAIDER_TOOL.drill:
                 return 'bubbleCollectDrill'

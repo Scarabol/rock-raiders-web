@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { PositionComponent } from '../component/PositionComponent'
 import { FlockComponent } from '../component/FlockComponent'
@@ -11,11 +11,11 @@ function clamp(value: number, min: number, max: number): number {
 export class FlockBehaviorSystem extends AbstractGameSystem {
     readonly componentsRequired: Set<Function> = new Set([PositionComponent, FlockComponent])
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         const frameMult = elapsedMs / NATIVE_UPDATE_INTERVAL
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const positionComponent = components.get(PositionComponent)
                 if (!positionComponent.isDiscovered()) continue
                 const flockComponent = components.get(FlockComponent)

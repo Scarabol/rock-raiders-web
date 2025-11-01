@@ -53,23 +53,23 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
     readonly worldMgr: WorldManager
     readonly entity: GameEntity
-    currentPath?: TerrainPath
+    currentPath: TerrainPath | undefined
     level: number = 0
-    job?: Job
-    followUpJob?: Job
-    workAudioId?: number
+    job: Job | undefined
+    followUpJob: Job | undefined
+    workAudioId: number | undefined
     stats: VehicleEntityStats
     sceneEntity: AnimatedSceneEntity
-    driver?: Raider
-    callManJob?: ManVehicleJob
-    engineSoundId?: number
+    driver: Raider | undefined
+    callManJob: ManVehicleJob | undefined
+    engineSoundId: number | undefined
     carriedItems: Set<MaterialEntity> = new Set()
-    carriedVehicle?: VehicleEntity
+    carriedVehicle: VehicleEntity | undefined
     upgrades: Set<VehicleUpgrade> = new Set()
     loadItemDelayMs: number = 0
     upgrading: boolean = false
     portering: boolean = false
-    carriedBy?: GameEntity
+    carriedBy: GameEntity | undefined
 
     constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity | AnimEntityActivity = ANIM_ENTITY_ACTIVITY.stand, readonly driverActivityRoute: RaiderActivity | AnimEntityActivity = ANIM_ENTITY_ACTIVITY.stand) {
         this.entityType = entityType
@@ -86,7 +86,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const objectName = GameConfig.instance.objectNames[objectKey] || ''
         const sfxKey = GameConfig.instance.objTtSFXs[objectKey] || ''
         if (objectName) this.worldMgr.ecs.addComponent(this.entity, new TooltipComponent(this.entity, objectName, sfxKey, () => {
-            const health = this.worldMgr.ecs.getComponents(this.entity).get(HealthComponent)?.health ?? 0
+            const health = this.worldMgr.ecs.getComponents(this.entity).getOptional(HealthComponent)?.health ?? 0
             return TooltipSpriteBuilder.getTooltipSprite(objectName, health)
         }))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
@@ -151,7 +151,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         }
         const components = this.worldMgr.ecs.getComponents(this.entity)
         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_DEATH, components.get(PositionComponent)))
-        components.get(SelectionFrameComponent)?.deselect()
+        components.getOptional(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, this.entity, MAP_MARKER_CHANGE.remove))
@@ -239,7 +239,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const dir = new Vector2(dir3d.x, dir3d.z)
         const step = currentPath.step(pos, dir, stepLength, maxTurn)
         const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(step.position)
-        targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
+        targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).getOptional(PositionComponent)?.floorOffset ?? 0
         return new EntityStep(targetWorld, step.position.clone().add(step.direction), stepLength - step.remainingStepLength, step.targetReached)
     }
 
@@ -260,8 +260,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
      */
 
     get selected(): boolean {
-        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)
-        return selectionFrameComponent?.isSelected()
+        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)
+        return !!selectionFrameComponent?.isSelected()
     }
 
     isInSelection(): boolean {
@@ -270,7 +270,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     select(primary: boolean): boolean {
         if (!this.isSelectable()) return false
-        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)
+        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)
         primary ? selectionFrameComponent?.select() : selectionFrameComponent?.selectSecondary()
         this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
         this.workAudioId = SoundManager.stopAudio(this.workAudioId)
@@ -278,7 +278,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     deselect() {
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+        this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)?.deselect()
     }
 
     isSelectable(): boolean {
@@ -356,7 +356,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             const fulfillerPos = this.getPosition2D()
             const matNearby = this.worldMgr.entityMgr.materials.find((m) => { // XXX Move to entity manager and optimize with quad tree
                 if (m.entityType !== this.job?.carryItem?.entityType || m.carryJob?.hasFulfiller() || m.carryJob?.jobState !== JOB_STATE.incomplete) return false
-                const pos = this.worldMgr.ecs.getComponents(m.entity).get(PositionComponent)
+                const pos = this.worldMgr.ecs.getComponents(m.entity).getOptional(PositionComponent)
                 if (!pos) return false
                 return pos.getPosition2D().distanceToSquared(fulfillerPos) < Math.pow(3 * TILESIZE, 2) // XXX Improve range, since this is executed on each frame
             })
@@ -408,7 +408,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         }
         this.worldMgr.ecs.removeComponent(this.driver.entity, MapMarkerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, this.driver.entity, MAP_MARKER_CHANGE.remove))
-        const driverScannerComponent = this.worldMgr.ecs.getComponents(this.driver.entity).get(ScannerComponent)
+        const driverScannerComponent = this.worldMgr.ecs.getComponents(this.driver.entity).getOptional(ScannerComponent)
         if (driverScannerComponent) this.worldMgr.ecs.addComponent(this.entity, driverScannerComponent)
         if (this.stats.engineSound && !this.engineSoundId && !SaveGameManager.preferences.muteDevSounds) this.engineSoundId = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.engineSound, true)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
@@ -431,7 +431,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.worldMgr.ecs.addComponent(this.driver.entity, new MapMarkerComponent(MAP_MARKER_TYPE.default))
         EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, this.driver.entity, MAP_MARKER_CHANGE.update, floorPosition))
         this.driver.sceneEntity.visible = true
-        const scannerComponent = this.worldMgr.ecs.getComponents(this.entity).get(ScannerComponent)
+        const scannerComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(ScannerComponent)
         if (scannerComponent) this.worldMgr.ecs.getComponents(this.driver.entity).add(scannerComponent)
         const scannerRange = this.stats.surveyRadius?.[this.level] ?? 0
         if (!scannerRange) {
@@ -461,7 +461,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     doubleSelect(): boolean {
         if (!this.selected || !this.stats.canDoubleSelect || !this.driver) return false
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.doubleSelect()
+        this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)?.doubleSelect()
         return true
     }
 
@@ -533,14 +533,14 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     setPosition(position: Vector3) {
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
-        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(PositionComponent)
         if (positionComponent) {
             positionComponent.position.copy(position)
             positionComponent.surface = surface
             positionComponent.markDirty()
         }
         this.carriedItems.forEach((carriedItem) => {
-            const carriedPositionComponent = this.worldMgr.ecs.getComponents(carriedItem.entity).get(PositionComponent)
+            const carriedPositionComponent = this.worldMgr.ecs.getComponents(carriedItem.entity).getOptional(PositionComponent)
             if (carriedPositionComponent) {
                 carriedItem.sceneEntity.getWorldPosition(carriedPositionComponent.position)
                 carriedPositionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(carriedPositionComponent.position)

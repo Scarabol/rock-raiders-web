@@ -6,10 +6,10 @@ import { GameConfig } from '../cfg/GameConfig'
 
 export class MainMenuOverwritePanel extends MainMenuBaseItem {
     overwriteBack: SpriteImage
-    titleImg?: SpriteImage
+    titleImg: SpriteImage | undefined
     titleX: number = 0
     titleY: number = 0
-    textImg?: SpriteImage
+    textImg: SpriteImage | undefined
     textX: number = 0
     textY: number = 0
 
@@ -41,7 +41,7 @@ export class MainMenuOverwritePanel extends MainMenuBaseItem {
         })
     }
 
-    draw(context: SpriteContext) {
+    override draw(context: SpriteContext) {
         super.draw(context)
         context.drawImage(this.overwriteBack, this.x, this.y)
         if (this.titleImg) context.drawImage(this.titleImg, this.titleX, this.titleY)

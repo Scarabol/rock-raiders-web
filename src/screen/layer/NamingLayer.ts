@@ -71,11 +71,11 @@ export class NamingLayer extends ScaledLayer {
                     l.active = false
                 }
             })
-            this.gameScreen.worldMgr.ecs.getComponents(selectedRaider).get(SelectionNameComponent)?.setVisible(false)
+            this.gameScreen.worldMgr.ecs.getComponents(selectedRaider).getOptional(SelectionNameComponent)?.setVisible(false)
             this.raiderOnScreen = this.raiderToScreenPos(selectedRaider)
         } else {
             raiderSaveGame.name = this.raiderName || raiderSaveGame.name || ''
-            const selectionNameComponent = this.gameScreen.worldMgr.ecs.getComponents(selectedRaider).get(SelectionNameComponent)
+            const selectionNameComponent = this.gameScreen.worldMgr.ecs.getComponents(selectedRaider).getOptional(SelectionNameComponent)
             selectionNameComponent?.setName(raiderSaveGame.name)
             selectionNameComponent?.setVisible(true)
             this.visibleLayers.forEach((l) => l.active = true)
@@ -111,7 +111,7 @@ export class NamingLayer extends ScaledLayer {
         return false
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.showBackdrop = false
         this.raiderName = ''

@@ -10,14 +10,14 @@ import { GameState } from '../GameState'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
 
 export class UpgradeVehicleJob extends Job {
-    readonly workplace?: PathTarget
+    readonly workplace: PathTarget | undefined
 
     constructor(worldMgr: WorldManager, readonly vehicle: VehicleEntity, readonly upgrade: VehicleUpgrade) {
         super()
         this.workplace = vehicle.findShortestPath(worldMgr.entityMgr.getVehicleUpgradePathTargets())?.target
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
+    getWorkplace(_entity: JobFulfiller): PathTarget | undefined {
         if (!this.workplace?.building?.isPowered()) {
             this.vehicle.upgrading = false
             return undefined
@@ -25,7 +25,7 @@ export class UpgradeVehicleJob extends Job {
         return this.workplace
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         const costIndex = VehicleUpgrades.toCostIndex(this.upgrade)
         const upgradeCostOre = this.vehicle.stats.upgradeCostOre?.[costIndex] ?? 0
         const upgradeCostBrick = this.vehicle.stats.upgradeCostStuds?.[costIndex] ?? 0
@@ -66,7 +66,7 @@ export class UpgradeVehicleJob extends Job {
         throw new Error('Job already assigned')
     }
 
-    unAssign(vehicle: VehicleEntity): void {
+    unAssign(_vehicle: VehicleEntity): void {
         // This job should not be unassigned
     }
 

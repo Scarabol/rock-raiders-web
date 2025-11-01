@@ -24,10 +24,10 @@ type RockMonsterBehaviorState = typeof ROCK_MONSTER_BEHAVIOR_STATE[keyof typeof 
 export class RockMonsterBehaviorComponent extends AbstractGameComponent {
     state: RockMonsterBehaviorState = ROCK_MONSTER_BEHAVIOR_STATE.idle
     numCrystalsEaten: number = 0
-    targetCrystal?: MaterialEntity
-    targetWall?: Surface
-    boulder?: SceneMesh
-    targetBuilding?: BuildingEntity
+    targetCrystal: MaterialEntity | undefined
+    targetWall: Surface | undefined
+    boulder: SceneMesh | undefined
+    targetBuilding: BuildingEntity | undefined
 
     changeToIdle() {
         this.state = ROCK_MONSTER_BEHAVIOR_STATE.idle

@@ -123,7 +123,7 @@ export class OverlayLayer extends ScaledLayer {
         this.animationFrame.notifyRedraw()
     }
 
-    reset(): void {
+    override reset(): void {
         this.rootElement.reset()
         this.panels.forEach((p) => p.reset())
         this.setActivePanel(SaveGameManager.preferences.skipBriefings ? undefined : this.panelBriefing)

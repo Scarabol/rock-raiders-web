@@ -17,10 +17,10 @@ export class IconPanelButton extends Button {
     isDisabled: () => boolean = () => true
     hasRaider: boolean = false
     discoveredBuildingsMaxLevel: Map<EntityType, number> = new Map()
-    dependencyTooltipImage?: SpriteImage
+    dependencyTooltipImage: SpriteImage | undefined
     showDependencies: boolean = false
     hasUnfulfilledDependency: boolean = false
-    showDependenciesTimeout?: NodeJS.Timeout
+    showDependenciesTimeout: NodeJS.Timeout | undefined
 
     constructor(interfaceImageCfg: InterfaceImageEntryCfg, parentWidth: number, menuIndex: number) {
         super(interfaceImageCfg)
@@ -63,14 +63,14 @@ export class IconPanelButton extends Button {
         this.updateState(true)
     }
 
-    showTooltipDisabled() {
+    override showTooltipDisabled() {
         super.showTooltipDisabled()
         if (this.tooltipDisabled || this.tooltipDisabledSfx) {
             this.publishEvent(new ChangeTooltip(this.tooltipDisabled, 0, this.tooltipDisabledSfx, TOOLTIP_DELAY_SFX))
         }
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.hasUnfulfilledDependency = false
         this.hasRaider = false
@@ -79,7 +79,7 @@ export class IconPanelButton extends Button {
         this.showDependenciesTimeout = clearTimeoutSafe(this.showDependenciesTimeout)
     }
 
-    hide() {
+    override hide() {
         super.hide()
         this.showDependenciesTimeout = clearTimeoutSafe(this.showDependenciesTimeout)
     }
@@ -99,7 +99,7 @@ export class IconPanelButton extends Button {
         return stateChanged
     }
 
-    onPointerLeave(): boolean {
+    override onPointerLeave(): boolean {
         let stateChanged = super.onPointerLeave()
         if (this.showDependencies || this.showDependenciesTimeout) {
             this.showDependencies = false
@@ -109,14 +109,14 @@ export class IconPanelButton extends Button {
         return stateChanged
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         super.onRedraw(context)
         if (this.showDependencies && this.dependencyTooltipImage) {
             context.drawImage(this.dependencyTooltipImage, this.x - this.dependencyTooltipImage.width, this.y + (this.height - this.dependencyTooltipImage.height) / 2)
         }
     }
 
-    isInRect(sx: number, sy: number): boolean {
+    override isInRect(sx: number, sy: number): boolean {
         const inRect = super.isInRect(sx, sy)
         if (inRect) {
             if (!this.showDependenciesTimeout) {

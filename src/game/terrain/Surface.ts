@@ -46,11 +46,11 @@ export class Surface {
     scanned: boolean = false
     selected: boolean = false
     reinforced: boolean = false
-    drillJob?: DrillJob
-    reinforceJob?: ReinforceJob
-    dynamiteJob?: Job
-    clearRubbleJob?: ClearRubbleJob
-    completeSurfaceJob?: CompleteSurfaceJob
+    drillJob: DrillJob | undefined
+    reinforceJob: ReinforceJob | undefined
+    dynamiteJob: Job | undefined
+    clearRubbleJob: ClearRubbleJob | undefined
+    completeSurfaceJob: CompleteSurfaceJob | undefined
     seamLevel: number = 0
     drillProgress: number = 0
 
@@ -61,11 +61,11 @@ export class Surface {
 
     rubblePositions: Vector2[] = []
 
-    building?: BuildingEntity
+    building: BuildingEntity | undefined
     pathBlockedByBuilding: boolean = false
-    site?: BuildingSite
-    fence?: GameEntity
-    stud?: AnimationGroup
+    site: BuildingSite | undefined
+    fence: GameEntity | undefined
+    stud: AnimationGroup | undefined
     fenceRequested: boolean = false
     energized: boolean = false
 
@@ -87,14 +87,14 @@ export class Surface {
         }
         this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
         this.mesh.setProMeshEnabled(SaveGameManager.preferences.wallDetails)
-        const roofTexture = ResourceManager.getSurfaceTexture(this.terrain.levelConf.roofTexture, 0) ?? null // TODO Move to config handling
+        const roofTexture = ResourceManager.getSurfaceTexture(this.terrain.levelConf.roofTexture, 0) // TODO Move to config handling
         this.roofMesh = new RoofMesh(x, y, roofTexture)
     }
 
     private updateObjectName() {
         const objectName = this.surfaceType.getObjectName()
         if (objectName) {
-            const tooltipComponent = this.worldMgr.ecs.getComponents(this.entity).get(TooltipComponent)
+            const tooltipComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(TooltipComponent)
             if (tooltipComponent) {
                 tooltipComponent.tooltipText = objectName
                 tooltipComponent.sfxKey = this.surfaceType.getSfxKey()
@@ -140,7 +140,7 @@ export class Surface {
                 case SurfaceType.LAVA5:
                 // fallthrough
                 case SurfaceType.WATER:
-                    this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes.uv))
+                    this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes['uv']))
                     break
                 case SurfaceType.HIDDEN_CAVERN:
                     this.surfaceType = SurfaceType.GROUND
@@ -598,7 +598,7 @@ export class Surface {
         const wasPath = this.surfaceType === SurfaceType.POWER_PATH || this.surfaceType === SurfaceType.POWER_PATH_BUILDING
         this.surfaceType = surfaceType
         if (this.surfaceType === SurfaceType.WATER || this.surfaceType === SurfaceType.LAVA5) {
-            this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes.uv))
+            this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes['uv']))
         } else {
             this.worldMgr.ecs.removeComponent(this.entity, FluidSurfaceComponent)
         }

@@ -80,7 +80,7 @@ export class SelectionChanged extends BaseEvent {
         this.buildingCanUpgrade = !!entityMgr.selection.building?.canUpgrade()
         this.buildingMissingOreForUpgrade = entityMgr.selection.building?.missingOreForUpgrade() || 0
         const buildingEntity = entityMgr.selection.building?.entity
-        const buildingHealthComponent = buildingEntity ? entityMgr.worldMgr.ecs.getComponents(buildingEntity).get(HealthComponent) : undefined
+        const buildingHealthComponent = buildingEntity ? entityMgr.worldMgr.ecs.getComponents(buildingEntity).getOptional(HealthComponent) : undefined
         this.buildingNeedsRepair = buildingHealthComponent ? buildingHealthComponent.health < buildingHealthComponent.maxHealth : false
         this.buildingCanSwitchPower = !entityMgr.selection.building?.stats.selfPowered && !entityMgr.selection.building?.stats.powerBuilding && !!(entityMgr.selection.building?.energized || entityMgr.selection.building?.surfaces.some((s) => s.energized))
         this.buildingPowerSwitchState = !!entityMgr.selection.building?.powerSwitch

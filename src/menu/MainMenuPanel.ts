@@ -20,11 +20,11 @@ export class MainMenuPanel extends MainMenuBaseItem {
         this.readbackContext.putImageData(imgData, 0, 0)
     }
 
-    isHovered(sx: number, sy: number): boolean {
+    override isHovered(sx: number, sy: number): boolean {
         return super.isHovered(sx, sy) && this.readbackContext.getImageData(sx, sy, 1, 1).data[3] > 0
     }
 
-    draw(context: SpriteContext) {
+    override draw(context: SpriteContext) {
         super.draw(context)
         super.draw(this.readbackContext)
         context.drawImage(this.context.canvas, this.x, this.y, this.width, this.height)

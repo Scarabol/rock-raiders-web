@@ -1,8 +1,10 @@
 export class VirtualFile {
+    readonly lFileName: string
     private buffer?: ArrayBuffer
     private text?: string
 
-    private constructor(readonly fileName: string, private view: DataView<ArrayBuffer>) {
+    private constructor(fileName: string, private view: DataView<ArrayBuffer>) {
+        this.lFileName = fileName.toLowerCase()
     }
 
     static fromView(fileName: string, view: DataView<ArrayBuffer>): VirtualFile {

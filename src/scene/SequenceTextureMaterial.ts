@@ -16,7 +16,7 @@ export class SequenceTextureMaterial extends MeshPhongMaterial {
         this.name = name
     }
 
-    clone(): this {
+    override clone(): this {
         const clone = super.clone() as this
         clone.setTextures(this.textures)
         return clone

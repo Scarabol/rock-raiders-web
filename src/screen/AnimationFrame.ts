@@ -6,7 +6,7 @@ type AnimationFrameRedrawCallback = (context: SpriteContext) => void
 export class AnimationFrame {
     readonly context: SpriteContext
     readonly readbackContext: SpriteContext
-    private lastAnimationRequest?: number
+    private lastAnimationRequest: number | undefined
     private onRedrawCallback?: AnimationFrameRedrawCallback
     scaleX: number = 1
     scaleY: number = 1

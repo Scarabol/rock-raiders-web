@@ -1,4 +1,4 @@
-import { AbstractGameSystem } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
 import { MaterialAmountChanged, MonsterLaserHitEvent, ShootLaserEvent } from '../../event/WorldEvents'
@@ -31,31 +31,36 @@ export class LaserShotSystem extends AbstractGameSystem {
     constructor(readonly worldMgr: WorldManager) {
         super()
         EventBroker.subscribe(EventKey.SHOOT_LASER, (event: ShootLaserEvent) => {
-            this.onShootLaser(event)
+            this.onShootLaser(worldMgr.ecs, event)
         })
     }
 
-    private onShootLaser(event: ShootLaserEvent) {
-        if (GameState.numCrystal < 1) return
-        const components = this.worldMgr.ecs.getComponents(event.entity)
+    private onShootLaser(ecs: ECS, event: ShootLaserEvent) {
+        const components = ecs.getComponents(event.entity)
         const turretComponent = components.get(LaserBeamTurretComponent)
         if (turretComponent.fireDelay > 0) return
-        const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
-        const positionComponent = components.get(PositionComponent)
+        const sceneEntityComponent = components.getOptional(AnimatedSceneEntityComponent)
+        const positionComponent = components.getOptional(PositionComponent)
         if (!turretComponent || !sceneEntityComponent || !positionComponent) return
-        GameState.dischargedCrystals += turretComponent.weaponCfg.dischargeRate
-        if (GameState.dischargedCrystals >= 1) {
+        const dischargeRate = turretComponent.weaponCfg.dischargeRate
+        if (GameState.numCrystal < GameState.dischargedCrystals + dischargeRate) {
+            console.warn(`Not enough crystals ${GameState.dischargedCrystals}/${GameState.numCrystal} to shoot laser with discharge rate ${dischargeRate}`)
+            return
+        }
+        GameState.dischargedCrystals += dischargeRate
+        while (GameState.dischargedCrystals >= 1) {
+            GameState.dischargedCrystals--
             this.spawnDepletedEnergyCrystal(positionComponent)
         }
         turretComponent.fireDelay = turretComponent.weaponCfg.rechargeTimeMs
         sceneEntityComponent.sceneEntity.getFireNullParents().forEach((parent) => {
             this.worldMgr.sceneMgr.addPositionalAudio(sceneEntityComponent.sceneEntity, 'SFX_Laser', false)
-            this.addLaserShot(parent, turretComponent)
+            this.addLaserShot(ecs, parent, turretComponent)
         })
     }
 
     private spawnDepletedEnergyCrystal(positionComponent: PositionComponent) {
-        GameState.dischargedCrystals--
+        if (GameState.numCrystal < 1) return
         GameState.numCrystal--
         EventBroker.publish(new MaterialAmountChanged())
         const closestToolstore = this.worldMgr.entityMgr.getClosestBuildingByType(positionComponent.position, EntityType.TOOLSTATION)
@@ -71,13 +76,13 @@ export class LaserShotSystem extends AbstractGameSystem {
         if (spawnPos) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.DEPLETED_CRYSTAL, spawnPos)
     }
 
-    private addLaserShot(parent: { worldPos: Vector3; worldDirection: Vector3 }, turretComponent: LaserBeamTurretComponent) {
+    private addLaserShot(ecs: ECS, parent: { worldPos: Vector3; worldDirection: Vector3 }, turretComponent: LaserBeamTurretComponent) {
         this.raycaster.set(parent.worldPos, parent.worldDirection)
         this.raycaster.far = turretComponent.weaponCfg.weaponRange
         let beamLength = turretComponent.weaponCfg.weaponRange
         // TODO Check laser beam shot collision with buildings and vehicles
         const rockyPickSpheres = this.worldMgr.entityMgr.rockMonsters
-            .map((r) => this.ecs.getComponents(r).get(SceneSelectionComponent)?.pickSphere).filter((m) => !!m)
+            .map((r) => ecs.getComponents(r).getOptional(SceneSelectionComponent)?.pickSphere).filter((m) => !!m)
         const rockyIntersection = this.raycaster.intersectObjects<PickSphereMesh>(rockyPickSpheres, false)[0]
         if (rockyIntersection) {
             beamLength = rockyIntersection.distance
@@ -116,7 +121,7 @@ export class LaserShotSystem extends AbstractGameSystem {
         this.worldMgr.sceneMgr.addPositionalAudio(soundParent, 'SFX_LazerRecharge', false)
     }
 
-    update(elapsedMs: number, entities: Set<number>, dirty: Set<number>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         const currentShots = [...this.laserShots]
         this.laserShots.length = 0
         currentShots.forEach((s) => {
@@ -129,7 +134,7 @@ export class LaserShotSystem extends AbstractGameSystem {
         })
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const turretComponent = components.get(LaserBeamTurretComponent)
                 if (turretComponent.fireDelay > 0) {
                     turretComponent.fireDelay -= elapsedMs

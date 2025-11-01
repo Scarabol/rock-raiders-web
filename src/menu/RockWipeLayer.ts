@@ -19,7 +19,7 @@ class FullScreenShader extends ShaderMaterial {
         this.mesh = new Mesh(geometry, this)
     }
 
-    dispose() {
+    override dispose() {
         this.mesh.geometry.dispose()
         super.dispose()
     }
@@ -55,10 +55,10 @@ const TransparentBackgroundShader = {
 }
 
 class TransparentBackgroundRenderer extends BaseRenderer {
-    renderTarget?: WebGLRenderTarget
-    fsShader?: FullScreenShader
+    renderTarget: WebGLRenderTarget | undefined
+    fsShader: FullScreenShader | undefined
 
-    render() {
+    override render() {
         if (!this.renderTarget) {
             this.renderTarget = new WebGLRenderTarget(0, 0, {depthTexture: new DepthTexture(0, 0)})
         }
@@ -81,7 +81,7 @@ class TransparentBackgroundRenderer extends BaseRenderer {
         this.fsShader.render(this.renderer)
     }
 
-    dispose() {
+    override dispose() {
         this.fsShader?.dispose()
         this.renderTarget?.dispose()
         super.dispose()
@@ -93,7 +93,7 @@ export class RockWipeLayer extends ScreenLayer {
     readonly scene: Scene
     readonly group: AnimationGroup
     readonly camera: PerspectiveCamera
-    groupUpdateInterval?: NodeJS.Timeout
+    groupUpdateInterval: NodeJS.Timeout | undefined
 
     constructor() {
         super()
@@ -119,7 +119,7 @@ export class RockWipeLayer extends ScreenLayer {
         this.scene.add(this.group)
     }
 
-    show() {
+    override show() {
         super.show()
         this.group.resetAnimation()
         SoundManager.playSfxSound('SFX_RockWipe')
@@ -131,14 +131,14 @@ export class RockWipeLayer extends ScreenLayer {
         return this.group.maxDurationMs
     }
 
-    resize(width: number, height: number) {
+    override resize(width: number, height: number) {
         super.resize(width, height)
         this.renderer.setSize(width, height)
         this.camera.aspect = width / height
         this.camera.updateProjectionMatrix()
     }
 
-    hide() {
+    override hide() {
         super.hide()
         this.groupUpdateInterval = clearIntervalSafe(this.groupUpdateInterval)
         this.group.resetAnimation()

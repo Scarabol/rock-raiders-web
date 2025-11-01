@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { ROCK_MONSTER_BEHAVIOR_STATE, RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { WorldManager } from '../WorldManager'
 import { EntityType } from '../model/EntityType'
@@ -47,22 +47,22 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         super()
         EventBroker.subscribe(EventKey.DYNAMITE_EXPLOSION, (event: DynamiteExplosionEvent) => {
             this.worldMgr.entityMgr.rockMonsters.forEach((m) => {
-                const components = this.ecs.getComponents(m)
+                const components = worldMgr.ecs.getComponents(m)
                 const positionComponent = components.get(PositionComponent)
                 if (positionComponent.getPosition2D().distanceToSquared(event.position) < Math.pow(GameConfig.instance.main.DynamiteDamageRadius, 2)) {
                     components.get(AnimatedSceneEntityComponent).sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.wakeUp, () => {
-                        this.ecs.addComponent(m, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
-                        this.ecs.addComponent(m, new RockMonsterBehaviorComponent())
+                        worldMgr.ecs.addComponent(m, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
+                        worldMgr.ecs.addComponent(m, new RockMonsterBehaviorComponent())
                         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                     })
                 }
             })
         })
         EventBroker.subscribe(EventKey.MONSTER_LASER_HIT, (event: MonsterLaserHitEvent) => {
-            const components = this.ecs.getComponents(event.entity)
+            const components = worldMgr.ecs.getComponents(event.entity)
             const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
             sceneEntity.removeAllCarried()
-            let behaviorComponent = components.get(RockMonsterBehaviorComponent)
+            let behaviorComponent = components.getOptional(RockMonsterBehaviorComponent)
             if (behaviorComponent) {
                 behaviorComponent.boulder = undefined
                 behaviorComponent.changeToIdle()
@@ -74,8 +74,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             healthComponent.changeHealth(-laserDamage)
             sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.hitHard, () => {
                 if (!behaviorComponent) {
-                    this.ecs.addComponent(event.entity, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
-                    behaviorComponent = this.ecs.addComponent(event.entity, new RockMonsterBehaviorComponent())
+                    worldMgr.ecs.addComponent(event.entity, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
+                    behaviorComponent = worldMgr.ecs.addComponent(event.entity, new RockMonsterBehaviorComponent())
                     const positionComponent = components.get(PositionComponent)
                     EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                 }
@@ -84,16 +84,16 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         })
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         const pathFinder = this.worldMgr.sceneMgr.terrain?.pathFinder
         const crystals = this.worldMgr.entityMgr.materials.filter((m) => m.entityType === EntityType.CRYSTAL)
         const drivingVehiclePositions = this.worldMgr.entityMgr.vehicles
             .filter((v) => v.sceneEntity.currentAnimation === ANIM_ENTITY_ACTIVITY.route)
-            .map((v) => this.ecs.getComponents(v.entity).get(PositionComponent).getPosition2D())
+            .map((v) => ecs.getComponents(v.entity).get(PositionComponent).getPosition2D())
         const monsterTargetBuildings = GameState.monsterAttackPowerStation ? this.worldMgr.entityMgr.buildings.filter((b) => b.entityType === EntityType.POWER_STATION) : this.worldMgr.entityMgr.buildings
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const behaviorComponent = components.get(RockMonsterBehaviorComponent)
                 const positionComponent = components.get(PositionComponent)
                 const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
@@ -110,17 +110,17 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 const targetWall = behaviorComponent.targetWall
                 switch (behaviorComponent.state) {
                     case ROCK_MONSTER_BEHAVIOR_STATE.idle:
-                        this.doIdle(behaviorComponent, pathFinder, rockyPos, stats, entity, crystals)
+                        this.doIdle(ecs, behaviorComponent, pathFinder, rockyPos, stats, entity, crystals)
                         break
                     case ROCK_MONSTER_BEHAVIOR_STATE.gotoCrystal:
                         if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH) {
-                            const prevTargetComponent = components.get(WorldTargetComponent)
-                            this.ecs.removeComponent(entity, WorldTargetComponent)
-                            this.ecs.removeComponent(entity, HeadingComponent)
+                            const prevTargetComponent = components.getOptional(WorldTargetComponent)
+                            ecs.removeComponent(entity, WorldTargetComponent)
+                            ecs.removeComponent(entity, HeadingComponent)
                             sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.stamp, () => {
                                 if (prevTargetComponent) {
-                                    this.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
-                                    this.ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
+                                    ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
+                                    ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
                                 }
                                 sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                             }, 0, () => {
@@ -130,13 +130,13 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         } else {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.findVehicleInRange(rockyPos, ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (vehicleInMeleeRange) {
-                                this.punchVehicle(behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
+                                this.punchVehicle(ecs, behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
                             } else {
                                 const raiderInGrabRange = this.worldMgr.entityMgr.raiders
                                     .find((r) => !r.thrown && r.getPosition2D().distanceToSquared(rockyPos) < ROCKY_GRAB_DISTANCE_SQ)
                                 const targetCrystal = behaviorComponent.targetCrystal
                                 if (raiderInGrabRange) {
-                                    this.throwRaider(behaviorComponent, entity, sceneEntity, raiderInGrabRange, positionComponent)
+                                    this.throwRaider(ecs, behaviorComponent, entity, sceneEntity, raiderInGrabRange, positionComponent)
                                 } else if (!targetCrystal || !this.worldMgr.entityMgr.materials.includes(targetCrystal)) {
                                     behaviorComponent.changeToIdle()
                                 } else if (!components.has(WorldTargetComponent)) {
@@ -158,8 +158,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         const path = pathFinder.findShortestPath(rockyPos, crystalPathTarget, stats, 1)
                                         if (path && path.locations.length > 0) {
                                             const targetLocation = path.locations[0]
-                                            this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, ROCKY_GRAB_DISTANCE_SQ))
-                                            this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
+                                            ecs.addComponent(entity, new WorldTargetComponent(targetLocation, ROCKY_GRAB_DISTANCE_SQ))
+                                            ecs.addComponent(entity, new HeadingComponent(targetLocation))
                                         } else {
                                             behaviorComponent.changeToIdle()
                                         }
@@ -183,13 +183,13 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 } else {
                                     behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.goHome
                                 }
-                            } else if (this.ecs.getComponents(targetBuilding.entity).has(BeamUpComponent) || !monsterTargetBuildings.includes(targetBuilding)) {
+                            } else if (ecs.getComponents(targetBuilding.entity).has(BeamUpComponent) || !monsterTargetBuildings.includes(targetBuilding)) {
                                 behaviorComponent.changeToIdle()
                             } else {
                                 const targetBuildingSurface = targetBuilding.buildingSurfaces.find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_BOULDER_THROW_DISTANCE_SQ)
                                 if (targetBuildingSurface) {
-                                    this.ecs.removeComponent(entity, WorldTargetComponent)
-                                    this.ecs.removeComponent(entity, HeadingComponent)
+                                    ecs.removeComponent(entity, WorldTargetComponent)
+                                    ecs.removeComponent(entity, HeadingComponent)
                                     const targetLocation = targetBuildingSurface.getCenterWorld2D()
                                     sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetLocation))
                                     behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.throw
@@ -198,8 +198,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         if (behaviorComponent.boulder) {
                                             behaviorComponent.boulder.lookAt(targetBuildingSurface.getCenterWorld())
                                             this.worldMgr.sceneMgr.scene.add(behaviorComponent.boulder)
-                                            const bulletEntity = this.ecs.addEntity()
-                                            this.ecs.addComponent(bulletEntity, new BoulderComponent(EntityType.BOULDER, behaviorComponent.boulder, targetBuilding.entity, targetBuilding.buildingType, targetBuilding.level, targetLocation))
+                                            const bulletEntity = ecs.addEntity()
+                                            ecs.addComponent(bulletEntity, new BoulderComponent(EntityType.BOULDER, behaviorComponent.boulder, targetBuilding.entity, targetBuilding.buildingType, targetBuilding.level, targetLocation))
                                             this.worldMgr.entityMgr.addEntity(bulletEntity, EntityType.BOULDER)
                                         }
                                         behaviorComponent.boulder = undefined
@@ -211,8 +211,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     const path = pathFinder.findShortestPath(rockyPos, buildingPathTargets, stats, 1)
                                     if (path && path.locations.length > 0) {
                                         const targetLocation = path.locations[0]
-                                        this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation))
-                                        this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
+                                        ecs.addComponent(entity, new WorldTargetComponent(targetLocation))
+                                        ecs.addComponent(entity, new HeadingComponent(targetLocation))
                                     } else {
                                         console.warn('Rocky cannot find path to targets', buildingPathTargets)
                                         behaviorComponent.changeToIdle()
@@ -223,8 +223,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     if (PRNG.movement.random() < chanceToRestPerSecond * elapsedMs / 1000) {
                                         const prevState = behaviorComponent.state
                                         behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.resting
-                                        this.ecs.removeComponent(entity, WorldTargetComponent)
-                                        this.ecs.removeComponent(entity, HeadingComponent)
+                                        ecs.removeComponent(entity, WorldTargetComponent)
+                                        ecs.removeComponent(entity, HeadingComponent)
                                         sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.rest, () => {
                                             behaviorComponent.state = prevState
                                         })
@@ -238,13 +238,13 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         break
                     case ROCK_MONSTER_BEHAVIOR_STATE.meleeAttack:
                         if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH) {
-                            const prevTargetComponent = components.get(WorldTargetComponent)
-                            this.ecs.removeComponent(entity, WorldTargetComponent)
-                            this.ecs.removeComponent(entity, HeadingComponent)
+                            const prevTargetComponent = components.getOptional(WorldTargetComponent)
+                            ecs.removeComponent(entity, WorldTargetComponent)
+                            ecs.removeComponent(entity, HeadingComponent)
                             sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.stamp, () => {
                                 if (prevTargetComponent) {
-                                    this.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
-                                    this.ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
+                                    ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
+                                    ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
                                 }
                                 sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                             }, 0, () => {
@@ -254,12 +254,12 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         } else {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.findVehicleInRange(rockyPos, ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (vehicleInMeleeRange) {
-                                this.punchVehicle(behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
+                                this.punchVehicle(ecs, behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
                             } else {
                                 const raiderInGrabRange = this.worldMgr.entityMgr.raiders
                                     .find((r) => !r.thrown && r.getPosition2D().distanceToSquared(rockyPos) < ROCKY_GRAB_DISTANCE_SQ)
                                 if (raiderInGrabRange) {
-                                    this.throwRaider(behaviorComponent, entity, sceneEntity, raiderInGrabRange, positionComponent)
+                                    this.throwRaider(ecs, behaviorComponent, entity, sceneEntity, raiderInGrabRange, positionComponent)
                                 } else if (!targetBuilding) {
                                     const closestBuilding = pathFinder.findClosestBuilding(rockyPos, monsterTargetBuildings, stats, 1)
                                     if (closestBuilding) {
@@ -267,20 +267,20 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     } else {
                                         behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.goHome
                                     }
-                                } else if (this.ecs.getComponents(targetBuilding.entity).has(BeamUpComponent) || !monsterTargetBuildings.includes(targetBuilding)) {
+                                } else if (ecs.getComponents(targetBuilding.entity).has(BeamUpComponent) || !monsterTargetBuildings.includes(targetBuilding)) {
                                     behaviorComponent.changeToIdle()
                                 } else {
                                     const targetBuildingSurface = targetBuilding.buildingSurfaces.find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                                     if (targetBuildingSurface) {
-                                        this.ecs.removeComponent(entity, WorldTargetComponent)
-                                        this.ecs.removeComponent(entity, HeadingComponent)
+                                        ecs.removeComponent(entity, WorldTargetComponent)
+                                        ecs.removeComponent(entity, HeadingComponent)
                                         sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetBuildingSurface.getCenterWorld2D()))
                                         behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.punch
                                         sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.punch, () => {
                                             sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                                             behaviorComponent.changeToIdle()
                                         }, 0, () => {
-                                            const buildingComponents = this.ecs.getComponents(targetBuilding.entity)
+                                            const buildingComponents = ecs.getComponents(targetBuilding.entity)
                                             const healthComponent = buildingComponents.get(HealthComponent)
                                             healthComponent.changeHealth(stats.repairValue)
                                             if (healthComponent.triggerAlarm) EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_UNDER_ATTACK, buildingComponents.get(PositionComponent)))
@@ -290,8 +290,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         const path = pathFinder.findShortestPath(rockyPos, buildingPathTargets, stats, 1)
                                         if (path && path.locations.length > 0) {
                                             const targetLocation = path.locations[0]
-                                            this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation))
-                                            this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
+                                            ecs.addComponent(entity, new WorldTargetComponent(targetLocation))
+                                            ecs.addComponent(entity, new HeadingComponent(targetLocation))
                                         } else {
                                             console.warn('Rocky cannot find path to targets', buildingPathTargets)
                                             behaviorComponent.changeToIdle()
@@ -303,13 +303,13 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         break
                     case ROCK_MONSTER_BEHAVIOR_STATE.gotoWall:
                         if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH) {
-                            const prevTargetComponent = components.get(WorldTargetComponent)
-                            this.ecs.removeComponent(entity, WorldTargetComponent)
-                            this.ecs.removeComponent(entity, HeadingComponent)
+                            const prevTargetComponent = components.getOptional(WorldTargetComponent)
+                            ecs.removeComponent(entity, WorldTargetComponent)
+                            ecs.removeComponent(entity, HeadingComponent)
                             sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.stamp, () => {
                                 if (prevTargetComponent) {
-                                    this.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
-                                    this.ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
+                                    ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
+                                    ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
                                 }
                                 sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                             }, 0, () => {
@@ -319,12 +319,12 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         } else {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.findVehicleInRange(rockyPos, ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (vehicleInMeleeRange) {
-                                this.punchVehicle(behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
+                                this.punchVehicle(ecs, behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
                             } else {
                                 const raiderInGrabRange = this.worldMgr.entityMgr.raiders
                                     .find((r) => !r.thrown && r.getPosition2D().distanceToSquared(rockyPos) < ROCKY_GRAB_DISTANCE_SQ)
                                 if (raiderInGrabRange) {
-                                    this.throwRaider(behaviorComponent, entity, sceneEntity, raiderInGrabRange, positionComponent)
+                                    this.throwRaider(ecs, behaviorComponent, entity, sceneEntity, raiderInGrabRange, positionComponent)
                                 } else if (targetWall?.wallType !== WALL_TYPE.wall) {
                                     behaviorComponent.changeToIdle()
                                 } else if (!components.has(WorldTargetComponent)) {
@@ -345,8 +345,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         const path = pathFinder.findShortestPath(rockyPos, wallPathTargets, stats, 1)
                                         if (path && path.locations.length > 0) {
                                             const targetLocation = path.locations[0]
-                                            this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, ROCKY_GATHER_DISTANCE_SQ))
-                                            this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
+                                            ecs.addComponent(entity, new WorldTargetComponent(targetLocation, ROCKY_GATHER_DISTANCE_SQ))
+                                            ecs.addComponent(entity, new HeadingComponent(targetLocation))
                                         } else {
                                             behaviorComponent.changeToIdle()
                                         }
@@ -367,15 +367,15 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
                                     EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.monster, entity, MAP_MARKER_CHANGE.remove))
                                     this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntity)
-                                    this.ecs.removeEntity(entity)
+                                    ecs.removeEntity(entity)
                                 })
                             } else {
                                 const wallPathTargets = targetWall.getDigPositions().map((p) => PathTarget.fromLocation(p, ROCKY_GATHER_DISTANCE_SQ))
                                 const path = pathFinder.findShortestPath(rockyPos, wallPathTargets, stats, 1)
                                 if (path && path.locations.length > 0) {
                                     const targetLocation = path.locations[0]
-                                    this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, ROCKY_GATHER_DISTANCE_SQ))
-                                    this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
+                                    ecs.addComponent(entity, new WorldTargetComponent(targetLocation, ROCKY_GATHER_DISTANCE_SQ))
+                                    ecs.addComponent(entity, new HeadingComponent(targetLocation))
                                 } else {
                                     behaviorComponent.changeToIdle()
                                 }
@@ -389,7 +389,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         }
     }
 
-    private doIdle(behaviorComponent: RockMonsterBehaviorComponent, pathFinder: PathFinder, rockyPos: Vector2, stats: MonsterEntityStats, entity: number, crystals: MaterialEntity[]) {
+    private doIdle(ecs: ECS, behaviorComponent: RockMonsterBehaviorComponent, pathFinder: PathFinder, rockyPos: Vector2, stats: MonsterEntityStats, entity: number, crystals: MaterialEntity[]) {
         if (behaviorComponent.boulder) {
             behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.boulderAttack
         } else if (behaviorComponent.numCrystalsEaten < stats.capacity && crystals.length > 0) {
@@ -404,8 +404,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             const path = pathFinder.findShortestPath(rockyPos, [PathTarget.fromLocation(GameState.monsterCongregation)], stats, 1)
             if (path && path.locations.length > 0) {
                 const targetLocation = path.locations[0]
-                this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, 1))
-                this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
+                ecs.addComponent(entity, new WorldTargetComponent(targetLocation, 1))
+                ecs.addComponent(entity, new HeadingComponent(targetLocation))
                 return
             }
         } else {
@@ -413,10 +413,10 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         }
     }
 
-    private punchVehicle(behaviorComponent: RockMonsterBehaviorComponent, entity: number, sceneEntity: AnimatedSceneEntity, vehicleInMeleeRange: VehicleTarget, rockyPos: Vector2, stats: MonsterEntityStats) {
+    private punchVehicle(ecs: ECS, behaviorComponent: RockMonsterBehaviorComponent, entity: number, sceneEntity: AnimatedSceneEntity, vehicleInMeleeRange: VehicleTarget, rockyPos: Vector2, stats: MonsterEntityStats) {
         const prevState = behaviorComponent.state
-        this.ecs.removeComponent(entity, WorldTargetComponent)
-        this.ecs.removeComponent(entity, HeadingComponent)
+        ecs.removeComponent(entity, WorldTargetComponent)
+        ecs.removeComponent(entity, HeadingComponent)
         sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(vehicleInMeleeRange.position.getPosition2D()))
         behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.punch
         sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.punch, () => {
@@ -424,7 +424,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             behaviorComponent.state = prevState
         }, 0, () => {
             if (vehicleInMeleeRange.position.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
-                const vehicleComponents = this.ecs.getComponents(vehicleInMeleeRange.entity)
+                const vehicleComponents = ecs.getComponents(vehicleInMeleeRange.entity)
                 const healthComponent = vehicleComponents.get(HealthComponent)
                 healthComponent.changeHealth(stats.repairValue)
                 if (healthComponent.triggerAlarm) EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_UNDER_ATTACK, vehicleComponents.get(PositionComponent)))
@@ -432,16 +432,16 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         })
     }
 
-    private throwRaider(behaviorComponent: RockMonsterBehaviorComponent, entity: GameEntity, sceneEntity: AnimatedSceneEntity, raider: Raider, positionComponent: PositionComponent) {
+    private throwRaider(ecs: ECS, behaviorComponent: RockMonsterBehaviorComponent, entity: GameEntity, sceneEntity: AnimatedSceneEntity, raider: Raider, positionComponent: PositionComponent) {
         const prevState = behaviorComponent.state
-        this.ecs.removeComponent(entity, WorldTargetComponent)
-        this.ecs.removeComponent(entity, HeadingComponent)
+        ecs.removeComponent(entity, WorldTargetComponent)
+        ecs.removeComponent(entity, HeadingComponent)
         behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.throwMan
         const prevScale = raider.sceneEntity.getWorldScale(new Vector3())
         sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.throwMan, () => {
             raider.sceneEntity.getWorldPosition(raider.sceneEntity.position)
             raider.sceneEntity.rotation.copy(sceneEntity.rotation)
-            const raiderPositionComponent = this.ecs.getComponents(raider.entity).get(PositionComponent)
+            const raiderPositionComponent = ecs.getComponents(raider.entity).get(PositionComponent)
             raiderPositionComponent.position.copy(raider.sceneEntity.position)
             raiderPositionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(raiderPositionComponent.position)
             raiderPositionComponent.markDirty()

@@ -8,7 +8,7 @@ export class MusicManager {
     static readonly audioContext: AudioContext = new AudioContext()
     static readonly musicTracks: AudioBuffer[] = []
     static audioTarget: GainNode = this.audioContext.createGain()
-    static currentTrack?: AudioBufferSourceNode
+    static currentTrack: AudioBufferSourceNode | undefined
     static firstUnpause: boolean = true
     static playNext: boolean = true
 
@@ -17,7 +17,7 @@ export class MusicManager {
         ;(async () => {
             for (let c = 0; c < 10; c++) {
                 try {
-                    const musicData = await cacheGetData(`musictrack${c}`)
+                    const musicData = await cacheGetData<ArrayBuffer>(`musictrack${c}`)
                     if (!musicData) continue
                     const audioBuffer = await this.audioContext.decodeAudioData(musicData)
                     this.musicTracks.push(audioBuffer)

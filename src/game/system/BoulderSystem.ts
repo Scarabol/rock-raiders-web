@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { BoulderComponent } from '../component/BoulderComponent'
 import { Vector2 } from 'three'
 import { HealthComponent } from '../component/HealthComponent'
@@ -20,10 +20,10 @@ export class BoulderSystem extends AbstractGameSystem {
         this.boulderStats = GameConfig.instance.weaponTypes.boulder
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const boulderComponent = components.get(BoulderComponent)
                 const location = new Vector2(boulderComponent.mesh.position.x, boulderComponent.mesh.position.z)
                 if (boulderComponent.targetLocation.distanceToSquared(location) > 1) {
@@ -34,13 +34,13 @@ export class BoulderSystem extends AbstractGameSystem {
                     const boulderExplode = boulderComponent.entityType === EntityType.BOULDER_ICE ? GameConfig.instance.miscObjects.boulderExplodeIce : GameConfig.instance.miscObjects.boulderExplode
                     this.worldMgr.sceneMgr.addMiscAnim(boulderExplode, boulderComponent.mesh.position, 0, false)
                     const boulderDamage = this.boulderStats.damageByEntityType[boulderComponent.targetBuildingType.entityType]?.[boulderComponent.targetLevel] || this.boulderStats.defaultDamage
-                    const buildingComponents = this.ecs.getComponents(boulderComponent.targetEntity)
+                    const buildingComponents = ecs.getComponents(boulderComponent.targetEntity)
                     const healthComponent = buildingComponents.get(HealthComponent)
                     healthComponent.changeHealth(-boulderDamage)
                     if (healthComponent.triggerAlarm) EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_UNDER_ATTACK, buildingComponents.get(PositionComponent)))
                     this.worldMgr.entityMgr.removeEntity(entity)
                     this.worldMgr.sceneMgr.scene.remove(boulderComponent.mesh)
-                    this.ecs.removeEntity(entity)
+                    ecs.removeEntity(entity)
                 }
             } catch (e) {
                 console.error(e)

@@ -22,13 +22,13 @@ export class MessagePanel extends Panel {
 
     imgAir: SpriteImage
     imgNoAir: SpriteImage
-    currentMessage?: TextInfoMessage
-    messageTimeout?: NodeJS.Timeout
+    currentMessage: TextInfoMessage | undefined
+    messageTimeout: NodeJS.Timeout | undefined
 
     airLevelWidth: number = this.maxAirLevelWidth
     nextAirWarning: number = 1 - AIR_LEVEL_WARNING_STEP
     blinkLabel: boolean = false
-    blinkInterval?: NodeJS.Timeout
+    blinkInterval: NodeJS.Timeout | undefined
 
     btnNext: Button
     btnRepeat: Button
@@ -112,7 +112,7 @@ export class MessagePanel extends Panel {
         this.notifyRedraw()
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.airLevelWidth = this.maxAirLevelWidth
         this.nextAirWarning = 1 - AIR_LEVEL_WARNING_STEP
@@ -164,7 +164,7 @@ export class MessagePanel extends Panel {
         this.notifyRedraw()
     }
 
-    updatePosition() {
+    override updatePosition() {
         super.updatePosition()
         this.btnNext.relY = GameConfig.instance.main.nextButtonPos.y - this.y
         this.btnNext.updatePosition()
@@ -172,7 +172,7 @@ export class MessagePanel extends Panel {
         this.btnRepeat.updatePosition()
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         super.onRedraw(context)
         context.drawImage(this.imgAir, this.x + 85, this.y + 6, this.airLevelWidth, 8)
         if (this.blinkLabel) context.drawImage(this.imgNoAir, this.x + 21, this.y)

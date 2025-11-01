@@ -10,8 +10,8 @@ import { BaseEvent } from '../../event/EventTypeMap'
 
 export class FollowerView extends BaseElement {
     readonly overlay: SpriteImage
-    renderInterval?: NodeJS.Timeout
-    followerCanvas?: SpriteImage
+    renderInterval: NodeJS.Timeout | undefined
+    followerCanvas: SpriteImage | undefined
 
     constructor(panelCfg: PanelCfg) {
         super()
@@ -23,7 +23,7 @@ export class FollowerView extends BaseElement {
         })
     }
 
-    show() {
+    override show() {
         super.show()
         this.renderInterval = clearIntervalSafe(this.renderInterval)
         this.renderInterval = setInterval(() => {
@@ -32,19 +32,19 @@ export class FollowerView extends BaseElement {
         EventBroker.publish(new BaseEvent(EventKey.FOLLOWER_RENDER_START))
     }
 
-    hide() {
+    override hide() {
         super.hide()
         this.renderInterval = clearIntervalSafe(this.renderInterval)
         EventBroker.publish(new BaseEvent(EventKey.FOLLOWER_RENDER_STOP))
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.renderInterval = clearIntervalSafe(this.renderInterval)
         EventBroker.publish(new BaseEvent(EventKey.FOLLOWER_RENDER_STOP))
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         if (this.followerCanvas) {
             context.drawImage(this.followerCanvas, this.x - 8, this.y - 2)

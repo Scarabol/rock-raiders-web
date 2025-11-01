@@ -2,7 +2,7 @@ import { Raider } from '../../raider/Raider'
 import { Job } from '../Job'
 
 export abstract class RaiderJob extends Job {
-    raider?: Raider
+    raider: Raider | undefined
 
     assign(raider: Raider) {
         if (this.raider === raider) return

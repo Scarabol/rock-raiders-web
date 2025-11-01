@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { PositionComponent } from '../component/PositionComponent'
 import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
@@ -16,10 +16,10 @@ export class MovementSystem extends AbstractGameSystem {
         super()
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const positionComponent = components.get(PositionComponent)
                 if (!positionComponent.isDiscovered()) continue
                 const worldTargetComponent = components.get(WorldTargetComponent)
@@ -29,14 +29,14 @@ export class MovementSystem extends AbstractGameSystem {
                 targetWorld.y += positionComponent.floorOffset
                 const step = targetWorld.clone().sub(positionComponent.position)
                 const entitySpeed = statsComponent.getSpeed(positionComponent.surface.isPath(), positionComponent.surface.hasRubble()) * elapsedMs / NATIVE_UPDATE_INTERVAL
-                const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
+                const sceneEntityComponent = components.getOptional(AnimatedSceneEntityComponent)
                 if (targetWorld.distanceToSquared(positionComponent.position) <= worldTargetComponent.radiusSq) {
-                    this.ecs.removeComponent(entity, WorldTargetComponent)
-                    this.ecs.removeComponent(entity, HeadingComponent)
-                    this.ecs.removeComponent(entity, EntityPushedComponent)
+                    ecs.removeComponent(entity, WorldTargetComponent)
+                    ecs.removeComponent(entity, HeadingComponent)
+                    ecs.removeComponent(entity, EntityPushedComponent)
                     if (positionComponent.surface.wallType && statsComponent.enterWall) {
                         this.worldMgr.entityMgr.removeEntity(entity)
-                        this.ecs.removeEntity(entity)
+                        ecs.removeEntity(entity)
                         if (sceneEntityComponent) this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntityComponent.sceneEntity)
                     } else if (sceneEntityComponent) {
                         sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? ANIM_ENTITY_ACTIVITY.standCarry : ANIM_ENTITY_ACTIVITY.stand)
@@ -54,9 +54,9 @@ export class MovementSystem extends AbstractGameSystem {
                         }
                     } else {
                         // TODO Move entity along the wall until there is no other option
-                        this.ecs.removeComponent(entity, WorldTargetComponent)
-                        this.ecs.removeComponent(entity, HeadingComponent)
-                        this.ecs.removeComponent(entity, EntityPushedComponent)
+                        ecs.removeComponent(entity, WorldTargetComponent)
+                        ecs.removeComponent(entity, HeadingComponent)
+                        ecs.removeComponent(entity, EntityPushedComponent)
                     }
                 } else {
                     console.warn(`Entity ${entity} speed (${entitySpeed}) is zero or less`)

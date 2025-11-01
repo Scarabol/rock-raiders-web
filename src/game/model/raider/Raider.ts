@@ -50,17 +50,17 @@ export class Raider implements Updatable, JobFulfiller {
     readonly trainings: RaiderTraining[] = []
     readonly teamMember: SaveGameRaider
     worldMgr: WorldManager
-    currentPath?: TerrainPath
+    currentPath: TerrainPath | undefined
     level: number = 0
-    job?: Job
-    followUpJob?: Job
-    workAudioId?: number
+    job: Job | undefined
+    followUpJob: Job | undefined
+    workAudioId: number | undefined
     sceneEntity: AnimatedSceneEntity
-    carries?: MaterialEntity
+    carries: MaterialEntity | undefined
     slipped: boolean = false
     thrown: boolean = false
     foodLevel: number = 1
-    vehicle?: VehicleEntity
+    vehicle: VehicleEntity | undefined
     scared: boolean = false
     toolsIndex: number = 0
     weaponCooldown: number = 0
@@ -127,8 +127,8 @@ export class Raider implements Updatable, JobFulfiller {
         this.stopJob()
         const components = this.worldMgr.ecs.getComponents(this.entity)
         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_DEATH, components.get(PositionComponent)))
-        components.get(SelectionFrameComponent)?.deselect()
-        components.get(SelectionNameComponent)?.setVisible(false)
+        components.getOptional(SelectionFrameComponent)?.deselect()
+        components.getOptional(SelectionNameComponent)?.setVisible(false)
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, this.entity, MAP_MARKER_CHANGE.remove))
@@ -175,7 +175,7 @@ export class Raider implements Updatable, JobFulfiller {
                 this.slip()
                 this.worldMgr.entityMgr.removeEntity(spider)
                 this.worldMgr.ecs.removeEntity(spider)
-                const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
+                const sceneEntityComponent = components.getOptional(AnimatedSceneEntityComponent)
                 if (sceneEntityComponent) this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntityComponent.sceneEntity)
                 return true
             }
@@ -241,7 +241,7 @@ export class Raider implements Updatable, JobFulfiller {
         const dir = new Vector2(dir3d.x, dir3d.z)
         const step = currentPath.step(pos, dir, stepLength, maxTurn)
         const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(step.position)
-        targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
+        targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).getOptional(PositionComponent)?.floorOffset ?? 0
         return new EntityStep(targetWorld, step.position.clone().add(step.direction), stepLength - step.remainingStepLength, step.targetReached)
     }
 
@@ -282,8 +282,8 @@ export class Raider implements Updatable, JobFulfiller {
      */
 
     get selected(): boolean {
-        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)
-        return selectionFrameComponent?.isSelected()
+        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)
+        return !!selectionFrameComponent?.isSelected()
     }
 
     isInSelection(): boolean {
@@ -293,9 +293,9 @@ export class Raider implements Updatable, JobFulfiller {
     select(primary: boolean): boolean {
         if (!this.isSelectable()) return false
         const components = this.worldMgr.ecs.getComponents(this.entity)
-        const selectionFrameComponent = components.get(SelectionFrameComponent)
+        const selectionFrameComponent = components.getOptional(SelectionFrameComponent)
         primary ? selectionFrameComponent?.select() : selectionFrameComponent?.selectSecondary()
-        components.get(SelectionNameComponent)?.setVisible(true)
+        components.getOptional(SelectionNameComponent)?.setVisible(true)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         this.workAudioId = SoundManager.stopAudio(this.workAudioId)
         return true
@@ -307,8 +307,8 @@ export class Raider implements Updatable, JobFulfiller {
 
     deselect() {
         const components = this.worldMgr.ecs.getComponents(this.entity)
-        components.get(SelectionFrameComponent)?.deselect()
-        components.get(SelectionNameComponent)?.setVisible(false)
+        components.getOptional(SelectionFrameComponent)?.deselect()
+        components.getOptional(SelectionNameComponent)?.setVisible(false)
     }
 
     isSelectable(): boolean {
@@ -576,14 +576,14 @@ export class Raider implements Updatable, JobFulfiller {
 
     setPosition(position: Vector3) {
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
-        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(PositionComponent)
         if (positionComponent) {
             positionComponent.position.copy(position)
             positionComponent.surface = surface
             positionComponent.markDirty()
         }
         if (this.carries) {
-            const carriedPositionComponent = this.worldMgr.ecs.getComponents(this.carries.entity).get(PositionComponent)
+            const carriedPositionComponent = this.worldMgr.ecs.getComponents(this.carries.entity).getOptional(PositionComponent)
             if (carriedPositionComponent) {
                 this.carries.sceneEntity.getWorldPosition(carriedPositionComponent.position)
                 carriedPositionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(carriedPositionComponent.position)

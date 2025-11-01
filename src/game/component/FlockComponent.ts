@@ -13,7 +13,6 @@ export interface FlockEntity {
 }
 
 export class FlockComponent extends AbstractGameComponent {
-
     readonly entities: Required<FlockEntity>[]
 
     constructor(entities: FlockEntity[], defaults?: Omit<FlockEntity, 'sceneEntity'>) {

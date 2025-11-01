@@ -36,7 +36,7 @@ export class OverwriteLayer extends MainMenuLayer {
         this.items.push(noBtn)
     }
 
-    handlePointerEvent(event: GamePointerEvent): boolean {
+    override handlePointerEvent(event: GamePointerEvent): boolean {
         super.handlePointerEvent(event)
         return event.eventEnum !== POINTER_EVENT.leave
     }

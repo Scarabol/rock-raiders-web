@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { OxygenComponent } from '../component/OxygenComponent'
 import { GameState } from '../model/GameState'
 import { AirLevelChanged, GameResultEvent, LevelSelectedEvent } from '../../event/WorldEvents'
@@ -17,11 +17,11 @@ export class OxygenSystem extends AbstractGameSystem {
         })
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         let coefSum = 0
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const oxygenComponent = components.get(OxygenComponent)
                 coefSum += oxygenComponent.oxygenCoefficient
             } catch (e) {

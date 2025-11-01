@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { ScannerComponent } from '../component/ScannerComponent'
 import { PositionComponent } from '../component/PositionComponent'
 import { UpdateRadarEntityEvent, UpdateRadarTerrain } from '../../event/LocalEvents'
@@ -13,11 +13,11 @@ export class TerrainScannerSystem extends AbstractGameSystem {
         super()
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         let scanned = false
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const scannerComponent = components.get(ScannerComponent)
                 const positionComponent = components.get(PositionComponent)
                 if (scannerComponent.scanDelay > 0) {

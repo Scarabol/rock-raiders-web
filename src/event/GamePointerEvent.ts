@@ -1,7 +1,7 @@
 import { MOUSE_BUTTON, MouseButtonType, PointerEventType } from './EventTypeEnum'
 
 export class GamePointerEvent implements PointerEventInit {
-    pointerId: number | undefined
+    pointerId: number
     type: string
     eventEnum: PointerEventType
     bubbles: boolean

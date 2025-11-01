@@ -31,10 +31,10 @@ export class MapView extends BaseElement {
     surfaceRectSize: number = 10
     terrainWidth: number = 0
     terrainHeight: number = 0
-    lastSurface?: MapSurfaceRect
-    lastEntity?: GameEntity
-    entityBelowCursor?: GameEntity
-    cameraRect?: MapRendererCameraRect
+    lastSurface: MapSurfaceRect | undefined
+    lastEntity: GameEntity | undefined
+    entityBelowCursor: GameEntity | undefined
+    cameraRect: MapRendererCameraRect | undefined
 
     constructor(readonly parentPanel: Panel) {
         super()
@@ -103,7 +103,7 @@ export class MapView extends BaseElement {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.surfaceMap.length = 0
         this.entitiesByOrder.clear()
@@ -139,7 +139,7 @@ export class MapView extends BaseElement {
         ]).then(() => this.notifyRedraw())
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         super.onRedraw(context)
         context.drawImage(this.surfaceSprite, this.x, this.y)
@@ -150,7 +150,7 @@ export class MapView extends BaseElement {
         context.drawImage(this.cameraSprite, this.x, this.y)
     }
 
-    isInRect(sx: number, sy: number): boolean {
+    override isInRect(sx: number, sy: number): boolean {
         const inRect = super.isInRect(sx, sy)
         this.entityBelowCursor = undefined
         if (inRect) {
@@ -184,7 +184,7 @@ export class MapView extends BaseElement {
         return inRect
     }
 
-    onDrag(x: number, y: number) {
+    override onDrag(x: number, y: number) {
         super.onDrag(x, y)
         const tx = (x - this.x + this.offset.x)
         const ty = (y - this.y + this.offset.y)
@@ -192,7 +192,7 @@ export class MapView extends BaseElement {
         EventBroker.publish(new CameraControl({jumpToWorld: worldPos}))
     }
 
-    notifyRedraw() {
+    override notifyRedraw() {
         if (this.parentPanel.movedIn) return
         super.notifyRedraw()
     }

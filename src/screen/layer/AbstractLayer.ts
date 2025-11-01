@@ -4,7 +4,7 @@ import { SpriteImage } from '../../core/Sprite'
 
 export abstract class AbstractLayer {
     readonly eventListener: Set<string> = new Set()
-    screenMaster?: ScreenMaster
+    screenMaster: ScreenMaster | undefined
     zIndex: number = 0
     active: boolean = false
     ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT

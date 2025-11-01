@@ -42,7 +42,7 @@ export async function start() {
     if (SaveGameManager.preferences.playVideos) await screenMaster.videoLayer.playVideo(`data/${GameConfig.instance.main.rrAvi}`)
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')
     const cursorImageName = GameConfig.instance.pointers.standard.fileName
-    await cacheGetData(cursorImageName).then((animatedCursorData) => {
+    await cacheGetData<AnimatedCursorData>(cursorImageName).then((animatedCursorData) => {
         if (!animatedCursorData) {
             const fileData = vfs.getFile(cursorImageName).toDataView()
             const imgData = BitmapWithPalette.decode(fileData).applyAlpha()
@@ -154,7 +154,7 @@ export async function start() {
             if (!mNs) return
             try {
                 game.dispose()
-                game = new mNs.GameModule(screenMaster)
+                game = new mNs['GameModule'](screenMaster)
             } catch (e) {
                 console.error(e)
             }

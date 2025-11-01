@@ -12,14 +12,14 @@ export class CompleteSurfaceJob extends Job {
     readonly workplace: PathTarget
     fulfiller: JobFulfiller | undefined
 
-    constructor(readonly surface: Surface, readonly placedItems: MaterialEntity[]) {
+    constructor(override readonly surface: Surface, readonly placedItems: MaterialEntity[]) {
         super()
         this.requiredTool = RAIDER_TOOL.shovel
         this.priorityIdentifier = PRIORITY_IDENTIFIER.construction
         this.workplace = PathTarget.fromLocation(surface.getRandomPosition())
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         this.placedItems.forEach((placed) => placed.disposeFromWorld())
         this.surface.site = undefined
@@ -28,16 +28,16 @@ export class CompleteSurfaceJob extends Job {
         this.surface.setSurfaceType(targetSurfaceType)
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
+    getWorkplace(_entity: JobFulfiller): PathTarget | undefined {
         if (!this.surface.isWalkable() || !this.surface.site?.complete || this.surface.site.canceled) return undefined
         return this.workplace
     }
 
-    getWorkActivity(): AnimationActivity {
+    override getWorkActivity(): AnimationActivity {
         return RAIDER_ACTIVITY.clear
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleBuildPath'
     }
 

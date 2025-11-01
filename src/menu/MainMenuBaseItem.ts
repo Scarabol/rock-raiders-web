@@ -40,7 +40,7 @@ export class MainMenuBaseItem {
         return this.state.onMouseUp()
     }
 
-    draw(context: SpriteContext) {
+    draw(_context: SpriteContext) {
         this.state.clearStateChanged()
     }
 

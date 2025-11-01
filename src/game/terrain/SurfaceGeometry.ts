@@ -96,11 +96,11 @@ export class SurfaceGeometry extends BufferGeometry {
     }
 
     private setAttributes(vertices: Vector3[], normals: Vector3[], vertexUvs: Vector2[]) {
-        const positionAttribute = this.attributes.position as BufferAttribute
+        const positionAttribute = this.attributes['position'] as BufferAttribute
         SurfaceGeometry.copyVectorsToBuffer(positionAttribute, vertices, 3)
-        const normalAttribute = this.attributes.normal as BufferAttribute
+        const normalAttribute = this.attributes['normal'] as BufferAttribute
         SurfaceGeometry.copyVectorsToBuffer(normalAttribute, normals, 3)
-        const uvAttribute = this.attributes.uv as BufferAttribute
+        const uvAttribute = this.attributes['uv'] as BufferAttribute
         SurfaceGeometry.copyVectorsToBuffer(uvAttribute, vertexUvs, 2)
         this.computeBoundingBox()
         this.computeBoundingSphere()

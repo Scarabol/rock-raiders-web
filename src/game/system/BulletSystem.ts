@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { BulletComponent } from '../component/BulletComponent'
 import { WorldManager } from '../WorldManager'
 import { Vector2 } from 'three'
@@ -20,10 +20,10 @@ export class BulletSystem extends AbstractGameSystem {
         super()
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         const targets = [...this.worldMgr.entityMgr.rockMonsters, ...this.worldMgr.entityMgr.slugs]
             .map((e) => {
-                const components = this.ecs.getComponents(e)
+                const components = ecs.getComponents(e)
                 return {
                     entity: e,
                     stats: components.get(MonsterStatsComponent)?.stats,
@@ -31,10 +31,10 @@ export class BulletSystem extends AbstractGameSystem {
                     health: components.get(HealthComponent),
                     heading: components.get(AnimatedSceneEntityComponent).sceneEntity.rotation.y,
                 }
-            }).filter((t) => !!t.stats && !!t.pos && !!t.health && t.health.health > 0)
+            }).filter((t) => t.health.health > 0)
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const bulletComponent = components.get(BulletComponent)
                 const location = new Vector2(bulletComponent.bulletAnim.position.x, bulletComponent.bulletAnim.position.z)
                 if (bulletComponent.targetLocation.distanceToSquared(location) > 1) {
@@ -54,32 +54,32 @@ export class BulletSystem extends AbstractGameSystem {
                         } else if (bulletComponent.bulletType === EntityType.FREEZER_SHOT) {
                             this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.freezerHit, t.pos.position, 0, false)
                             t.health.changeHealth(-targetStats.freezerDamage)
-                            if (targetStats.canFreeze && !this.ecs.getComponents(t.entity).has(EntityFrozenComponent)) {
+                            if (targetStats.canFreeze && !ecs.getComponents(t.entity).has(EntityFrozenComponent)) {
                                 const entityFrozenComponent = new EntityFrozenComponent(this.worldMgr, t.entity, targetStats.freezerTimeMs, t.pos.position, t.heading)
-                                this.ecs.removeComponent(t.entity, WorldTargetComponent)
-                                this.ecs.removeComponent(t.entity, HeadingComponent)
-                                this.ecs.addComponent(t.entity, entityFrozenComponent)
+                                ecs.removeComponent(t.entity, WorldTargetComponent)
+                                ecs.removeComponent(t.entity, HeadingComponent)
+                                ecs.addComponent(t.entity, entityFrozenComponent)
                             }
                         } else if (bulletComponent.bulletType === EntityType.PUSHER_SHOT) {
                             this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.pusherHit, t.pos.position, 0, false)
                             t.health.changeHealth(-targetStats.pusherDamage)
-                            if (targetStats.canPush && !this.ecs.getComponents(t.entity).has(EntityPushedComponent)) {
-                                this.ecs.removeComponent(t.entity, WorldTargetComponent)
-                                this.ecs.removeComponent(t.entity, HeadingComponent)
-                                const pushTarget = t.pos.getPosition2D().add(step.clone().setLength(t.stats.pusherDist))
-                                this.ecs.addComponent(t.entity, new WorldTargetComponent(pushTarget, 1))
-                                this.ecs.addComponent(t.entity, new EntityPushedComponent())
+                            if (targetStats.canPush && !ecs.getComponents(t.entity).has(EntityPushedComponent)) {
+                                ecs.removeComponent(t.entity, WorldTargetComponent)
+                                ecs.removeComponent(t.entity, HeadingComponent)
+                                const pushTarget = t.pos.getPosition2D().add(step.clone().setLength(targetStats.pusherDist))
+                                ecs.addComponent(t.entity, new WorldTargetComponent(pushTarget, 1))
+                                ecs.addComponent(t.entity, new EntityPushedComponent())
                             }
                         }
                         this.worldMgr.entityMgr.removeEntity(entity)
                         this.worldMgr.sceneMgr.disposeSceneEntity(bulletComponent.bulletAnim)
-                        this.ecs.removeEntity(entity)
+                        ecs.removeEntity(entity)
                         return true
                     })
                 } else {
                     this.worldMgr.entityMgr.removeEntity(entity)
                     this.worldMgr.sceneMgr.disposeSceneEntity(bulletComponent.bulletAnim)
-                    this.ecs.removeEntity(entity)
+                    ecs.removeEntity(entity)
                 }
             } catch (e) {
                 console.error(e)

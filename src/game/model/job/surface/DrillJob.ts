@@ -11,7 +11,7 @@ export class DrillJob extends Job {
     readonly fulfiller: JobFulfiller[] = []
     digPositionsByFulfiller: Map<GameEntity, PathTarget[]> = new Map()
 
-    constructor(readonly surface: Surface) {
+    constructor(override readonly surface: Surface) {
         super()
         this.requiredTool = RAIDER_TOOL.drill
         this.priorityIdentifier = PRIORITY_IDENTIFIER.destruction
@@ -38,11 +38,11 @@ export class DrillJob extends Job {
         return entity.findShortestPath(digPositions)?.target
     }
 
-    getWorkActivity(): AnimationActivity {
+    override getWorkActivity(): AnimationActivity {
         return RAIDER_ACTIVITY.drill
     }
 
-    getExpectedTimeLeft(): number {
+    override getExpectedTimeLeft(): number {
         const drillPerSecond = this.fulfiller.map((f) => f.getDrillTimeSeconds(this.surface))
             .map((drillTime) => drillTime > 0 ? 1 / drillTime : 0).reduce((l, r) => l + r, 0)
         if (!drillPerSecond) {
@@ -52,7 +52,7 @@ export class DrillJob extends Job {
         return 1000 / drillPerSecond
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleDrill'
     }
 

@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { LavaErosionComponent } from '../component/LavaErosionComponent'
 import { SurfaceType } from '../terrain/SurfaceType'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -45,14 +45,14 @@ export class LavaErosionSystem extends AbstractGameSystem {
         })
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         let canStartNewErosion = false
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const erosionComponent = components.get(LavaErosionComponent)
                 if (erosionComponent.surface.surfaceType === SurfaceType.LAVA5) {
-                    this.ecs.removeComponent(entity, LavaErosionComponent)
+                    ecs.removeComponent(entity, LavaErosionComponent)
                 } else if (erosionComponent.surface.discovered && LavaErosionSystem.erodibleSurfaceTypes.includes(erosionComponent.surface.surfaceType)) {
                     if (erosionComponent.surface.surfaceType.hasErosion) {
                         erosionComponent.erosionTimer += elapsedMs

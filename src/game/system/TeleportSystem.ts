@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameResultEvent, LevelSelectedEvent, MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged } from '../../event/WorldEvents'
@@ -65,10 +65,10 @@ export class TeleportSystem extends AbstractGameSystem {
         })
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         const teleports: TeleportComponent[] = []
         entities.forEach((e) => {
-            if (this.poweredBuildings.has(e)) teleports.add(this.ecs.getComponents(e).get(TeleportComponent))
+            if (this.poweredBuildings.has(e)) teleports.add(ecs.getComponents(e).get(TeleportComponent))
         })
         try {
             for (this.spawnRaiderTimer += elapsedMs; this.spawnRaiderTimer >= CHECK_SPAWN_RAIDER_TIMER; this.spawnRaiderTimer -= CHECK_SPAWN_RAIDER_TIMER) {
@@ -84,7 +84,7 @@ export class TeleportSystem extends AbstractGameSystem {
                     teleport.operating = true
                     const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPosition)
                     const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(floorPosition)
-                    const positionComponent = this.worldMgr.ecs.addComponent(raider.entity, new PositionComponent(floorPosition, surface))
+                    const positionComponent = ecs.addComponent(raider.entity, new PositionComponent(floorPosition, surface))
                     raider.sceneEntity.position.copy(floorPosition)
                     raider.sceneEntity.position.y += positionComponent.floorOffset
                     raider.sceneEntity.rotation.y = heading
@@ -98,23 +98,23 @@ export class TeleportSystem extends AbstractGameSystem {
                         }
                         let healthComponent: HealthComponent
                         if (raider.entityType === EntityType.PILOT) {
-                            healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
-                            this.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.oxygenCoef))
-                            const infoComp = this.worldMgr.ecs.addComponent(raider.entity, new RaiderInfoComponent(raider.sceneEntity))
+                            healthComponent = ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
+                            ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.oxygenCoef))
+                            const infoComp = ecs.addComponent(raider.entity, new RaiderInfoComponent(raider.sceneEntity))
                             this.worldMgr.sceneMgr.addSprite(infoComp.bubbleSprite)
                             infoComp.setHungerIndicator((raider as Raider).foodLevel)
                         } else {
-                            healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 24, 14, raider.sceneEntity, false, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
+                            healthComponent = ecs.addComponent(raider.entity, new HealthComponent(false, 24, 14, raider.sceneEntity, false, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
                         }
                         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
                         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
-                        const sceneSelectionComponent = this.worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
-                        this.worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, raider.stats))
+                        const sceneSelectionComponent = ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
+                        ecs.addComponent(raider.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, raider.stats))
                         if (walkOutPos) raider.setJob(new MoveJob(walkOutPos))
                         this.worldMgr.entityMgr.raidersInBeam.remove(raider)
                         this.worldMgr.entityMgr.raiders.push(raider)
                         EventBroker.publish(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
-                        this.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MAP_MARKER_TYPE.default))
+                        ecs.addComponent(raider.entity, new MapMarkerComponent(MAP_MARKER_TYPE.default))
                         EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.default, raider.entity, MAP_MARKER_CHANGE.update, floorPosition))
                         teleport.operating = false
                     })

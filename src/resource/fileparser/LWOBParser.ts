@@ -170,7 +170,7 @@ export class LWOBParser {
                     vertices.push(this.vertices[vertIndex * 3 + i] ?? 0)
                 }
                 uvs.push(
-                    faceUvs[faceUvIndex * 2 + 0] ?? 0,
+                    faceUvs[faceUvIndex * 2] ?? 0,
                     1 - (faceUvs[faceUvIndex * 2 + 1] ?? 1),
                 )
                 indices.push(indices.length)
@@ -522,9 +522,6 @@ export class LWOBParser {
                 } else if (flags & YAXIS_BIT) {
                     u = x / size.x
                     v = z / size.z
-                    // TODO drill_icon.bmp on top of large digger is shown duplicated with 2 rows and 4 columns
-                    // u = (x / size.x + 0.5) / 4
-                    // v = (z / size.z + 0.5) / 2
                 } else if (flags & ZAXIS_BIT) {
                     u = x / size.x
                     v = y / size.y
@@ -538,7 +535,7 @@ export class LWOBParser {
 }
 
 export class LWOBTextureLoader extends Loader {
-    load(textureFilename: string, onLoad: (textures: Texture[]) => void): void {
+    override load(_textureFilename: string, _onLoad: (textures: Texture[]) => void): void {
     }
 }
 

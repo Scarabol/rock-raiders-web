@@ -44,14 +44,14 @@ export class PanelCrystalSideBar extends Panel {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.numCrystal = 0
         this.usedCrystals = 0
         this.totalOre = 0
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         super.onRedraw(context)
         // draw crystals
         let curX = this.x + this.width - 8

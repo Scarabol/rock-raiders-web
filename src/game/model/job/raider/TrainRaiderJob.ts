@@ -13,7 +13,7 @@ import { SurfaceType } from '../../../terrain/SurfaceType'
 import { DEV_MODE } from '../../../../params'
 
 export class TrainRaiderJob extends RaiderJob {
-    building?: BuildingEntity
+    building: BuildingEntity | undefined
     workplaces: PathTarget[]
 
     constructor(readonly entityMgr: EntityManager, readonly training: RaiderTraining, building?: BuildingEntity | undefined) {
@@ -29,7 +29,7 @@ export class TrainRaiderJob extends RaiderJob {
         return target
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         if (!this.raider) return
         this.raider.addTraining(this.training)
@@ -46,15 +46,15 @@ export class TrainRaiderJob extends RaiderJob {
         }
     }
 
-    getWorkActivity(): AnimationActivity {
+    override getWorkActivity(): AnimationActivity {
         return RAIDER_ACTIVITY.train
     }
 
-    getExpectedTimeLeft(): number {
+    override getExpectedTimeLeft(): number {
         return DEV_MODE ? 2000 : 10000 // XXX balance training time
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleTrain'
     }
 }

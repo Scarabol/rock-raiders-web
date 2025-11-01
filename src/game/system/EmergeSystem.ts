@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { EmergeComponent } from '../component/EmergeComponent'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -28,20 +28,20 @@ export class EmergeSystem extends AbstractGameSystem {
             this.emergeTimeoutMs = event.levelConf.emergeTimeOutMs
         })
         EventBroker.subscribe(EventKey.MONSTER_EMERGE, (event: MonsterEmergeEvent) => {
-            this.emergeFromSurface(event.surface)
+            this.emergeFromSurface(worldMgr.ecs, event.surface)
         })
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         if (!this.emergeCreature) return
         const busySurfaces = new Set<Surface>()
         ;[...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles]
-            .forEach((e) => busySurfaces.add(this.ecs.getComponents(e.entity).get(PositionComponent).surface))
+            .forEach((e) => busySurfaces.add(ecs.getComponents(e.entity).get(PositionComponent).surface))
         const emergeSpawns: Map<number, Surface[]> = new Map()
         const triggeredEmerges: Set<EmergeComponent> = new Set()
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const emergeComponent = components.get(EmergeComponent)
                 if (emergeComponent.emergeDelayMs > 0) {
                     emergeComponent.emergeDelayMs -= elapsedMs
@@ -66,20 +66,20 @@ export class EmergeSystem extends AbstractGameSystem {
         })
     }
 
-    emergeFromSurface(spawn: Surface) {
+    emergeFromSurface(ecs: ECS, spawn: Surface) {
         const target = spawn.neighbors.find((n) => n.surfaceType.floor && n.discovered && n.surfaceType !== SurfaceType.LAVA5 && n.surfaceType !== SurfaceType.WATER)
         if (!target) return
         const spawnCenter = spawn.getCenterWorld2D()
         const targetCenter = target.getCenterWorld2D()
         const angle = Math.atan2(targetCenter.x - spawnCenter.x, targetCenter.y - spawnCenter.y)
         const monster = MonsterSpawner.spawnMonster(this.worldMgr, this.emergeCreature, spawnCenter.clone().add(targetCenter).divideScalar(2), angle)
-        const components = this.ecs.getComponents(monster)
+        const components = ecs.getComponents(monster)
         const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
         const positionComponent = components.get(PositionComponent)
         sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.emerge, () => {
             sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
-            this.ecs.addComponent(monster, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
-            this.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
+            ecs.addComponent(monster, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
+            ecs.addComponent(monster, new RockMonsterBehaviorComponent())
         })
         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
     }

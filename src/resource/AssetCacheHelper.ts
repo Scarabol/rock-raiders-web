@@ -43,7 +43,7 @@ function defaultGetStore() {
     return defaultGetStoreFunc
 }
 
-export function cacheGetData<T = any>(
+export function cacheGetData<T = never>(
     key: IDBValidKey,
     customStore = defaultGetStore(),
 ): Promise<T | undefined> {
@@ -52,7 +52,7 @@ export function cacheGetData<T = any>(
 
 export function cachePutData(
     key: IDBValidKey,
-    value: any,
+    value: unknown,
     customStore = defaultGetStore(),
 ): Promise<void> {
     return customStore('readwrite', (store) => {

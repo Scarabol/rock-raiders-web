@@ -10,7 +10,7 @@ import { InfoMessagesEntryConfig } from '../../cfg/InfoMessagesCfg'
 export class InfoDockButton extends Button {
     messages: WorldLocationEvent[] = [] // newest message first
     text: string
-    animationTimeout?: NodeJS.Timeout
+    animationTimeout: NodeJS.Timeout | undefined
     animationSpeedX = 0.5
     animationSpeedY = 1
 
@@ -25,7 +25,7 @@ export class InfoDockButton extends Button {
         }
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
         this.hidden = true
@@ -54,7 +54,7 @@ export class InfoDockButton extends Button {
         this.notifyRedraw()
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         super.onRedraw(context)
         if (this.hidden) return
         context.textAlign = 'left'

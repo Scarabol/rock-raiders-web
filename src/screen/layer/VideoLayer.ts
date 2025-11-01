@@ -8,7 +8,7 @@ import { createContext } from '../../core/ImageHelper'
 export class VideoLayer extends AbstractLayer {
     readonly video: HTMLVideoElement
     readonly ffmpeg: FFmpegWasm
-    currentVideo?: () => void
+    currentVideo: (() => void) | undefined
 
     constructor() {
         super()
@@ -44,7 +44,7 @@ export class VideoLayer extends AbstractLayer {
             console.error(`Unsupported video file format "${videoFilePath}"`)
             return
         }
-        const videoData = await cacheGetData(videoFilePath) as ArrayBuffer
+        const videoData = await cacheGetData<ArrayBuffer>(videoFilePath)
         if (!videoData) {
             console.warn(`Video data for ${videoFilePath} not found in cache`)
             return
@@ -112,7 +112,7 @@ export class VideoLayer extends AbstractLayer {
         this.video.height = height
     }
 
-    hide() {
+    override hide() {
         super.hide()
         this.video.pause()
         this.video.src = ''

@@ -1,8 +1,5 @@
 /*
  Inspired by https://gist.github.com/mbforbes/5604a426a7f9b054d0308ac3cc170037
-
- - With elapsedMs on system updates
- - With start/stop and interval to call systems.update()
  */
 
 export type GameEntity = number
@@ -15,9 +12,8 @@ export abstract class AbstractGameComponent {
 export abstract class AbstractGameSystem {
     abstract readonly componentsRequired: Set<Function>
     readonly dirtyComponents: Set<Function> = new Set()
-    ecs!: ECS
 
-    abstract update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void
+    abstract update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void
 }
 
 export type ComponentClass<T extends AbstractGameComponent> = new (...args: any[]) => T
@@ -25,21 +21,25 @@ export type ComponentClass<T extends AbstractGameComponent> = new (...args: any[
 export class ComponentContainer {
     private map = new Map<Function, AbstractGameComponent>()
 
-    public add(component: AbstractGameComponent): void {
+    add(component: AbstractGameComponent): void {
         this.map.set(component.constructor, component)
     }
 
-    public get<T extends AbstractGameComponent>(
-        componentClass: ComponentClass<T>,
-    ): T {
-        return this.map.get(componentClass) as T // TODO Fix possible NPE
+    get<T extends AbstractGameComponent>(componentClass: ComponentClass<T>): T {
+        const component = this.map.get(componentClass)
+        if (!component) throw new Error(`Component ${componentClass.name} not found`)
+        return component as T
     }
 
-    public has(componentClass: Function): boolean {
+    getOptional<T extends AbstractGameComponent>(componentClass: ComponentClass<T>): T | undefined {
+        return this.map.get(componentClass) as T | undefined
+    }
+
+    has(componentClass: Function): boolean {
         return this.map.has(componentClass)
     }
 
-    public hasAll(componentClasses: Iterable<Function>): boolean {
+    hasAll(componentClasses: Iterable<Function>): boolean {
         for (const cls of componentClasses) {
             if (!this.map.has(cls)) {
                 return false
@@ -48,7 +48,7 @@ export class ComponentContainer {
         return true
     }
 
-    public delete(componentClass: Function): void {
+    delete(componentClass: Function): void {
         this.map.delete(componentClass)
     }
 }
@@ -61,7 +61,7 @@ export class ECS {
     private dirtySystemsCare = new Map<Function, Set<AbstractGameSystem>>()
     private dirtyEntities = new Map<AbstractGameSystem, Set<GameEntity>>()
 
-    public reset(): void {
+    reset(): void {
         this.entities.clear()
         this.nextEntityID = 1
         this.entitiesToDestroy.length = 0
@@ -69,18 +69,18 @@ export class ECS {
         this.dirtyEntities.forEach((m) => m.clear())
     }
 
-    public addEntity(): GameEntity {
+    addEntity(): GameEntity {
         const entity = this.nextEntityID
         this.nextEntityID++
         this.entities.set(entity, new ComponentContainer())
         return entity
     }
 
-    public removeEntity(entity: GameEntity): void {
+    removeEntity(entity: GameEntity): void {
         this.entitiesToDestroy.push(entity)
     }
 
-    public addComponent<T extends AbstractGameComponent>(entity: GameEntity, component: T): T {
+    addComponent<T extends AbstractGameComponent>(entity: GameEntity, component: T): T {
         this.entities.get(entity)?.add(component)
         component.markDirty = () => {
             this.componentDirty(entity, component)
@@ -91,16 +91,14 @@ export class ECS {
         return component
     }
 
-    public getComponents(entity: GameEntity): ComponentContainer {
+    getComponents(entity: GameEntity): ComponentContainer {
         const container = this.entities.get(entity)
         if (container) return container
         console.warn(`Entity (${entity}) unknow to ECS; must be referenced otherwise`)
         return new ComponentContainer()
     }
 
-    public removeComponent(
-        entity: GameEntity, componentClass: Function,
-    ): void {
+    removeComponent(entity: GameEntity, componentClass: Function): void {
         this.entities.get(entity)?.delete(componentClass)
         this.dirtyEntities.forEach((entities, system) => {
             if (system.dirtyComponents.has(componentClass)) entities.delete(entity)
@@ -108,13 +106,12 @@ export class ECS {
         this.checkEntity(entity)
     }
 
-    public addSystem<T extends AbstractGameSystem>(system: T): T {
+    addSystem<T extends AbstractGameSystem>(system: T): T {
         if (system.componentsRequired.size == 0) {
             console.warn('System not added: empty Components list.')
             console.warn(system)
             return system
         }
-        system.ecs = this
         this.systems.set(system, new Set())
         for (const entity of this.entities.keys()) {
             this.checkEntityWithSystem(entity, system)
@@ -129,10 +126,10 @@ export class ECS {
         return system
     }
 
-    public update(elapsedMs: number): void {
+    update(elapsedMs: number): void {
         for (const [system, entities] of this.systems.entries()) {
             const dirtySystemEntities = this.dirtyEntities.get(system) ?? new Set()
-            system.update(elapsedMs, entities, dirtySystemEntities)
+            system.update(this, elapsedMs, entities, dirtySystemEntities)
             dirtySystemEntities?.clear()
         }
         while (this.entitiesToDestroy.length > 0) {

@@ -50,7 +50,7 @@ export class WorldManager {
     entityMgr!: EntityManager
     nerpRunner: NerpRunner = new NerpRunner(this, new NerpScript(), [])
     powerGrid: PowerGrid
-    gameLoopInterval?: NodeJS.Timeout
+    gameLoopInterval: NodeJS.Timeout | undefined
     gameTimeMs: number = 0
     firstUnpause: boolean = true
     crystalsQuota: number = 0

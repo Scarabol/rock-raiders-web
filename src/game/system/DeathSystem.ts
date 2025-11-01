@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { HealthComponent } from '../component/HealthComponent'
 import { LastWillComponent } from '../component/LastWillComponent'
 import { SelectionFrameComponent } from '../component/SelectionFrameComponent'
@@ -8,22 +8,22 @@ import { EventBroker } from '../../event/EventBroker'
 
 export class DeathSystem extends AbstractGameSystem {
     readonly componentsRequired: Set<Function> = new Set([HealthComponent, LastWillComponent])
-    readonly dirtyComponents: Set<Function> = new Set([HealthComponent])
+    override readonly dirtyComponents: Set<Function> = new Set([HealthComponent])
 
     constructor(readonly worldMgr: WorldManager) {
         super()
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, _elapsedMs: number, _entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
         for (const entity of dirty) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const healthComponent = components.get(HealthComponent)
                 if (healthComponent.health <= 0) {
-                    const selectionFrameComponent = components.get(SelectionFrameComponent)
-                    this.ecs.removeComponent(entity, SelectionFrameComponent)
+                    const selectionFrameComponent = components.getOptional(SelectionFrameComponent)
+                    ecs.removeComponent(entity, SelectionFrameComponent)
                     components.get(LastWillComponent).onDeath()
-                    this.ecs.removeComponent(entity, LastWillComponent)
+                    ecs.removeComponent(entity, LastWillComponent)
                     if (selectionFrameComponent?.isSelected()) {
                         if (this.worldMgr.entityMgr.selection.building?.entity === entity) {
                             this.worldMgr.entityMgr.selection.building = undefined

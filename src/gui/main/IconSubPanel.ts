@@ -36,7 +36,7 @@ export class IconSubPanel extends Panel {
         return menuItem
     }
 
-    toggleState(onDone?: () => void) {
+    override toggleState(onDone?: () => void) {
         super.toggleState(onDone)
         if (this.movedIn) {
             this.iconPanelButtons.forEach((button) => button.showDependencies = false)
@@ -50,11 +50,11 @@ export class IconSubPanel extends Panel {
         this.notifyRedraw()
     }
 
-    isInactive(): boolean {
+    override isInactive(): boolean {
         return this.movedIn || super.isInactive()
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.movedIn) return
         super.onRedraw(context)
     }

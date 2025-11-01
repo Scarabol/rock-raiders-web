@@ -10,7 +10,7 @@ export class ReinforceJob extends Job {
     readonly fulfiller: JobFulfiller[] = []
     digPositions: PathTarget[] = []
 
-    constructor(readonly surface: Surface) {
+    constructor(override readonly surface: Surface) {
         super()
         this.digPositions = this.surface.getDigPositions().map((p) => PathTarget.fromLocation(p))
         this.requiredTool = RAIDER_TOOL.hammer
@@ -27,20 +27,20 @@ export class ReinforceJob extends Job {
         return entity.findShortestPath(this.digPositions)?.target
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         this.surface.reinforce()
     }
 
-    getWorkActivity(): AnimationActivity {
+    override getWorkActivity(): AnimationActivity {
         return RAIDER_ACTIVITY.reinforce
     }
 
-    getExpectedTimeLeft(): number {
+    override getExpectedTimeLeft(): number {
         return 2700
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleReinforce'
     }
 

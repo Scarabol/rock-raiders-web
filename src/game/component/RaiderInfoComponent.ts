@@ -24,18 +24,18 @@ export class RaiderInfoComponent extends AbstractGameComponent {
         this.hungerSprite.visible = GameState.showObjInfo && GameState.isBirdView
     }
 
-    setBubbleTexture(textureName: keyof BubblesCfg | undefined) {
+    setBubbleTexture(textureName: keyof BubblesCfg | undefined): void {
         if (!textureName) return
         const textureFilepath = GameConfig.instance.bubbles[textureName] as string
-        this.bubbleSprite.material.map = textureFilepath ? ResourceManager.getTexture(textureFilepath) ?? null : null
+        this.bubbleSprite.material.map = textureFilepath ? ResourceManager.getTexture(textureFilepath) : null
         if (textureName !== 'bubbleIdle') this.bubbleSprite.showDelayMs = 1000
     }
 
-    setHungerIndicator(hungerLevel: number) {
-        this.hungerSprite.material.map = ResourceManager.getTexture(this.getHungerTextureName(hungerLevel)) ?? null
+    setHungerIndicator(hungerLevel: number): void {
+        this.hungerSprite.material.map = ResourceManager.getTexture(this.getHungerTextureName(hungerLevel))
     }
 
-    private getHungerTextureName(hungerLevel: number) {
+    private getHungerTextureName(hungerLevel: number): string {
         if (hungerLevel >= 0.8) return GameConfig.instance.objInfo.hungerImages.hungerImage4
         else if (hungerLevel >= 0.6) return GameConfig.instance.objInfo.hungerImages.hungerImage3
         else if (hungerLevel >= 0.4) return GameConfig.instance.objInfo.hungerImages.hungerImage2

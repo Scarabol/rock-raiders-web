@@ -11,10 +11,10 @@ export class ObjectPointer extends Sprite implements Updatable {
 
     heightOffset: number = ObjectPointer.HEIGHT_OFFSET_STATIC
     timer: number = 0
-    surface?: Surface
+    surface: Surface | undefined
 
     constructor() {
-        super(new SpriteMaterial(({map: ResourceManager.getTexture(GameConfig.instance.main.tutorialIcon), depthTest: false})))
+        super(new SpriteMaterial(({map: ResourceManager.getTexture(GameConfig.instance.main.tutorialIcon) ?? null, depthTest: false})))
         this.scale.setScalar(15)
         this.visible = false
     }

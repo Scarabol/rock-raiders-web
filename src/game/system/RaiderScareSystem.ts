@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { RaiderScareComponent } from '../component/RaiderScareComponent'
 import { PositionComponent } from '../component/PositionComponent'
 import { WorldManager } from '../WorldManager'
@@ -13,16 +13,16 @@ export class RaiderScareSystem extends AbstractGameSystem {
         super()
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, _elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const positionComponent = components.get(PositionComponent)
                 const scareComponent = components.get(RaiderScareComponent)
                 let selectionChanged: boolean = false
                 this.worldMgr.entityMgr.raiders.forEach((r) => {
                     if (!r.canBeScared()) return
-                    const raiderPos = this.ecs.getComponents(r.entity).get(PositionComponent)
+                    const raiderPos = ecs.getComponents(r.entity).get(PositionComponent)
                     const distanceSq = raiderPos.getPosition2D().distanceToSquared(positionComponent.getPosition2D())
                     if (distanceSq >= scareComponent.scareRadiusSq) return
                     r.scared = true

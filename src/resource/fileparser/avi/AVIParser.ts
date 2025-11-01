@@ -25,7 +25,7 @@ export class AVIParser {
     readonly videoStreams: AVIVideoStream[] = []
     readonly audioStreams: AVIAudioStream[] = []
     readonly chunksByStreamIndex: Map<number, ByteStreamReader[]> = new Map()
-    mainHeader?: AVIMainHeader
+    mainHeader: AVIMainHeader | undefined
 
     constructor(dataView: DataView) {
         this.reader = new AVIReader(dataView)

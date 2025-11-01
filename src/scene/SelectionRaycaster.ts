@@ -87,7 +87,7 @@ class SceneRaycaster {
         if (!intersection) return []
         const gameEntity = intersection.object.userData.gameEntity
         if (gameEntity) {
-            const selectionFrameComponent = this.worldMgr.ecs.getComponents(gameEntity).get(SelectionFrameComponent)
+            const selectionFrameComponent = this.worldMgr.ecs.getComponents(gameEntity).getOptional(SelectionFrameComponent)
             if (!!selectionFrameComponent && (!selectionFrameComponent.isSelected() || allowDoubleSelection)) {
                 const selectable = entities.find((e) => e.entity === gameEntity)
                 if (selectable) return [selectable]

@@ -13,12 +13,12 @@ export interface BitmapFontWorkerRequest {
     fontName: string
     fontData?: BitmapFontData
     text?: string
-    maxWidth?: number
+    maxWidth?: number | undefined
     autoCenter?: boolean
 }
 
 export interface BitmapFontWorkerResponse {
-    textImageData?: ImageData
+    textImageData: ImageData | undefined
 }
 
 export class BitmapFontSystem extends AbstractWorkerSystem<BitmapFontWorkerRequest, BitmapFontWorkerResponse> {

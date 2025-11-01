@@ -52,7 +52,7 @@ export class SceneManager implements Updatable {
     floorGroup: Group = new Group()
     roofGroup: Group = new Group()
     torchLightCursor: TorchLightCursor = new TorchLightCursor()
-    buildMarker?: BuildPlacementMarker
+    buildMarker: BuildPlacementMarker | undefined
     followerRenderer!: FollowerRenderer
     cameraActive!: PerspectiveCamera
     entityTurnSpeed: number = 0
@@ -87,7 +87,7 @@ export class SceneManager implements Updatable {
         EventBroker.subscribe(EventKey.BUILDINGS_CHANGED, () => {
             this.setBuildModeSelection(undefined) // TODO Check dependencies precisely
         })
-        EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, (event) => {
+        EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             this.terrain.forEachSurface((s) => s.mesh.setProMeshEnabled(SaveGameManager.preferences.wallDetails))
         })
     }
@@ -108,9 +108,9 @@ export class SceneManager implements Updatable {
             this.scene.fog = new FogExp2(this.fogColor, 0.0025)
         }
         // TODO Refactor raider info component updates with ECS
-        this.worldMgr.entityMgr?.selection.raiders.forEach((r) => this.worldMgr.ecs.getComponents(r.entity).get(SelectionNameComponent)?.setVisible(GameState.isBirdView))
+        this.worldMgr.entityMgr?.selection.raiders.forEach((r) => this.worldMgr.ecs.getComponents(r.entity).getOptional(SelectionNameComponent)?.setVisible(GameState.isBirdView))
         this.worldMgr.entityMgr?.raiders.forEach((r) => {
-            const infoComponent = r.worldMgr.ecs.getComponents(r.entity).get(RaiderInfoComponent)
+            const infoComponent = r.worldMgr.ecs.getComponents(r.entity).getOptional(RaiderInfoComponent)
             if (infoComponent) {
                 infoComponent.bubbleSprite.updateVisibleState()
                 infoComponent.hungerSprite.visible = GameState.showObjInfo && GameState.isBirdView
@@ -130,7 +130,7 @@ export class SceneManager implements Updatable {
 
         this.torchLightCursor = new TorchLightCursor()
         this.scene.add(this.torchLightCursor)
-        this.birdViewControls.reset()
+        this.birdViewControls.setupControls()
         this.birdViewControls.addEventListener('change', this.torchLightCursor.changeListener)
 
         this.buildMarker = new BuildPlacementMarker(this.worldMgr)
@@ -198,7 +198,7 @@ export class SceneManager implements Updatable {
             const step = selectedEntity.sceneEntity.getWorldDirection(new Vector3()).setLength(selectedEntity.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL).multiplyScalar(this.entityMoveMultiplier)
             const world = selectedEntity.getPosition().add(step)
             const targetPosition = this.worldMgr.sceneMgr.getFloorPosition(new Vector2(world.x, world.z))
-            targetPosition.y += this.worldMgr.ecs.getComponents(selectedEntity.entity).get(PositionComponent)?.floorOffset ?? 0
+            targetPosition.y += this.worldMgr.ecs.getComponents(selectedEntity.entity).getOptional(PositionComponent)?.floorOffset ?? 0
             const targetSurface = this.terrain.getSurfaceFromWorld(targetPosition)
             if (selectedEntity.getSurface() === targetSurface || PathFinder.getWeight(targetSurface, selectedEntity.stats) > 0) {
                 selectedEntity.setPosition(targetPosition)

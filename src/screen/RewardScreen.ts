@@ -36,12 +36,12 @@ export class RewardScreen {
     resultIndex: number = 0
     resultLastIndex: number = 0
     texts: (SpriteImage | undefined)[] = []
-    uncoverTimeout?: NodeJS.Timeout
-    levelFullNameImg?: SpriteImage
+    uncoverTimeout: NodeJS.Timeout | undefined
+    levelFullNameImg: SpriteImage | undefined
     resultText: string = ''
     resultValues: (SpriteImage | undefined)[] = []
-    screenshot?: HTMLCanvasElement
-    sfxAmbientLoop?: AudioBufferSourceNode
+    screenshot: HTMLCanvasElement | undefined
+    sfxAmbientLoop: AudioBufferSourceNode | undefined
 
     constructor(readonly screenMaster: ScreenMaster) {
         this.cfg = GameConfig.instance.reward

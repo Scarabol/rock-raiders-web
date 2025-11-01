@@ -14,7 +14,7 @@ export class SelectionFrameLayer extends ScreenLayer {
     private static readonly touchControlDeadOffset = 0.025
     private static readonly touchControlMax = 0.075
     readonly animationFrame: AnimationFrame
-    selectionRect?: Rect
+    selectionRect: Rect | undefined
     touchControlled: number = 0 // -1 = left, 1 = right
 
     constructor(readonly worldMgr: WorldManager) {
@@ -58,12 +58,12 @@ export class SelectionFrameLayer extends ScreenLayer {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.selectionRect = undefined
     }
 
-    resize(width: number, height: number) {
+    override resize(width: number, height: number) {
         super.resize(width, height)
         this.animationFrame.notifyRedraw()
     }

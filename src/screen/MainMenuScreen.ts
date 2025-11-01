@@ -12,7 +12,7 @@ import { ScaledLayer } from './layer/ScaledLayer'
 import { RockWipeLayer } from '../menu/RockWipeLayer'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
-import { LevelLoader } from '../game/LevelLoader'
+import { LevelConfData, LevelLoader } from '../game/LevelLoader'
 import { SoundManager } from '../audio/SoundManager'
 import { PRNG } from '../game/factory/PRNG'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
@@ -21,7 +21,7 @@ export class MainMenuScreen {
     readonly menuLayers: ScaledLayer[] = []
     readonly creditsLayer: MainMenuCreditsLayer
     readonly rockWipeLayer: RockWipeLayer
-    sfxAmbientLoop?: AudioBufferSourceNode
+    sfxAmbientLoop: AudioBufferSourceNode | undefined
 
     constructor(readonly screenMaster: ScreenMaster) {
         GameConfig.instance.menu.mainMenuFull.menus.forEach((menuCfg) => {
@@ -131,16 +131,20 @@ export class MainMenuScreen {
         try {
             if (!levelName) return
             const levelConf = LevelLoader.fromName(levelName) // Get config first in case of error
-            this.sfxAmbientLoop?.stop()
-            this.sfxAmbientLoop = undefined
-            this.menuLayers.forEach((m) => m.hide())
-            this.rockWipeLayer.hide()
-            if (SaveGameManager.preferences.playVideos && levelConf.video) await this.screenMaster.videoLayer.playVideo(`data/${levelConf.video.toLowerCase()}`)
-            this.screenMaster.loadingLayer.show()
-            EventBroker.publish(new LevelSelectedEvent(levelConf))
-            EventBroker.publish(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
+            await this.startLevel(levelConf)
         } catch (e) {
             console.error(e)
         }
+    }
+
+    async startLevel(levelConf: LevelConfData) {
+        this.sfxAmbientLoop?.stop()
+        this.sfxAmbientLoop = undefined
+        this.menuLayers.forEach((m) => m.hide())
+        this.rockWipeLayer.hide()
+        if (SaveGameManager.preferences.playVideos && levelConf.video) await this.screenMaster.videoLayer.playVideo(`data/${levelConf.video.toLowerCase()}`)
+        this.screenMaster.loadingLayer.show()
+        EventBroker.publish(new LevelSelectedEvent(levelConf))
+        EventBroker.publish(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
     }
 }

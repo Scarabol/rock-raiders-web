@@ -12,19 +12,19 @@ export class MoveJob extends Job {
         this.doOnAlarm = true
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
+    getWorkplace(_entity: JobFulfiller): PathTarget | undefined {
         return this.target
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleGoto'
     }
 
-    assign(fulfiller: JobFulfiller) {
+    assign(_fulfiller: JobFulfiller) {
         // This job should be always assigned
     }
 
-    unAssign(fulfiller: JobFulfiller) {
+    unAssign(_fulfiller: JobFulfiller) {
         // This job should not be unassigned
     }
 

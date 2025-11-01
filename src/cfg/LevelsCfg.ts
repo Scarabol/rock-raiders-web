@@ -65,7 +65,7 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
     frontEndY: number = 0
     frontEndOpen: boolean = false
     priorities: LevelPrioritiesEntryConfig[] = [] // priority order matters!
-    reward?: LevelRewardConfig
+    reward: LevelRewardConfig | undefined
     menuBMP: string[] = []
 
     constructor(readonly levelName: string) {

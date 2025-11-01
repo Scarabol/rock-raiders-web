@@ -15,13 +15,13 @@ import { UpgradeVehicleJob } from './job/UpgradeVehicleJob'
 import { GameEntity } from '../ECS'
 
 export class GameSelection {
-    surface?: Surface
-    building?: BuildingEntity
+    surface: Surface | undefined
+    building: BuildingEntity | undefined
     raiders: Raider[] = []
     vehicles: VehicleEntity[] = []
-    fence?: MaterialEntity
-    doubleSelect?: BuildingEntity | VehicleEntity
-    primarySelect?: Raider | VehicleEntity
+    fence: MaterialEntity | undefined
+    doubleSelect: BuildingEntity | VehicleEntity | undefined
+    primarySelect: Raider | VehicleEntity | undefined
 
     isEmpty(): boolean {
         return !this.surface && !this.building && this.raiders.length < 1 && this.vehicles.length < 1 && !this.fence
@@ -37,7 +37,7 @@ export class GameSelection {
         this.surface?.deselect()
         this.surface = undefined
         this.doubleSelect = undefined
-        this.fence?.worldMgr.ecs.getComponents(this.fence.entity).get(SelectionFrameComponent)?.deselect()
+        this.fence?.worldMgr.ecs.getComponents(this.fence.entity).getOptional(SelectionFrameComponent)?.deselect()
         this.fence = undefined
         this.primarySelect = undefined
     }
@@ -66,7 +66,7 @@ export class GameSelection {
             }
         }
         if (this.fence !== selection.fence) {
-            this.fence?.worldMgr.ecs.getComponents(this.fence.entity).get(SelectionFrameComponent)?.deselect()
+            this.fence?.worldMgr.ecs.getComponents(this.fence.entity).getOptional(SelectionFrameComponent)?.deselect()
             this.fence = selection.fence
             if (selection.fence) {
                 const selectionFrameComponent = selection.fence.worldMgr.ecs.getComponents(selection.fence.entity).get(SelectionFrameComponent)

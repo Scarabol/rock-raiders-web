@@ -7,8 +7,8 @@ import { SoundManager } from '../audio/SoundManager'
 export class FlicAnimOverlay {
     hidden: boolean = true
     animIndex: number = 0
-    timeout?: NodeJS.Timeout
-    sfx?: AudioBufferSourceNode
+    timeout: NodeJS.Timeout | undefined
+    sfx: AudioBufferSourceNode | undefined
 
     constructor(
         readonly animationFrame: AnimationFrame,

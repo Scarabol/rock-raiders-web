@@ -45,7 +45,7 @@ export class MonsterSpawner {
         worldMgr.ecs.addComponent(entity, new AnimatedSceneEntityComponent(sceneEntity))
         switch (entityType) {
             case EntityType.SMALL_SPIDER:
-                positionComponent.floorOffset = 1
+                positionComponent.floorOffset = TILESIZE / 40
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/SpiderSB'))
                 sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                 const spiderStats = GameConfig.instance.stats.smallSpider
@@ -127,7 +127,7 @@ export class MonsterSpawner {
         worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
             const components = worldMgr.ecs.getComponents(entity)
-            const numCrystalsEaten = components.get(RockMonsterBehaviorComponent)?.numCrystalsEaten || 0
+            const numCrystalsEaten = components.getOptional(RockMonsterBehaviorComponent)?.numCrystalsEaten || 0
             worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
             worldMgr.ecs.removeComponent(entity, HeadingComponent)
             worldMgr.ecs.removeComponent(entity, EntityPushedComponent)

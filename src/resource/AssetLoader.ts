@@ -242,7 +242,7 @@ class ProMeshTextureLoader extends LWOBTextureLoader {
         super()
     }
 
-    load(_textureFilename: string, onLoad: (textures: Texture[]) => void): void {
+    override load(_textureFilename: string, onLoad: (textures: Texture[]) => void): void {
         this.loadFromVfs().then((textures) => onLoad(textures))
     }
 

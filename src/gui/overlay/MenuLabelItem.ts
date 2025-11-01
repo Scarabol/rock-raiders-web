@@ -9,8 +9,8 @@ import { LevelEntryCfg } from '../../cfg/LevelsCfg'
 
 export class MenuLabelItem extends BaseElement {
     target: string
-    loImg?: SpriteImage
-    hiImg?: SpriteImage
+    loImg: SpriteImage | undefined
+    hiImg: SpriteImage | undefined
 
     constructor(menuCfg: MenuEntryCfg, itemCfg: MenuLabelItemCfg, parentCenterX: number) {
         super()
@@ -31,30 +31,30 @@ export class MenuLabelItem extends BaseElement {
         })
     }
 
-    onPointerMove(event: GuiHoverEvent): void {
+    override onPointerMove(event: GuiHoverEvent): void {
         super.onPointerMove(event)
         if (event.hoverStateChanged) this.notifyRedraw()
     }
 
-    onPointerDown(event: GuiPointerDownEvent): boolean {
+    override onPointerDown(event: GuiPointerDownEvent): boolean {
         const stateChanged = super.onPointerDown(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    onPointerUp(event: GuiPointerUpEvent): boolean {
+    override onPointerUp(event: GuiPointerUpEvent): boolean {
         const stateChanged = super.onPointerUp(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    onPointerLeave(): boolean {
+    override onPointerLeave(): boolean {
         const stateChanged = super.onPointerLeave()
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         if (this.hover) {
             if (this.hiImg) context.drawImage(this.hiImg, this.x, this.y)

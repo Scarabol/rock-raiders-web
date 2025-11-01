@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { HealthComponent } from '../component/HealthComponent'
 import { EventKey } from '../../event/EventKeyEnum'
 import { DynamiteExplosionEvent, WorldLocationEvent } from '../../event/WorldEvents'
@@ -28,10 +28,10 @@ export class DamageSystem extends AbstractGameSystem {
         })
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 const positionComponent = components.get(PositionComponent)
                 const healthComponent = components.get(HealthComponent)
                 const position = positionComponent.getPosition2D()
@@ -45,7 +45,7 @@ export class DamageSystem extends AbstractGameSystem {
                 if (healthComponent.hitByLavaTimeoutMs > 0) {
                     healthComponent.hitByLavaTimeoutMs -= elapsedMs
                 } else {
-                    const movableComponent = components.get(MovableStatsComponent)
+                    const movableComponent = components.getOptional(MovableStatsComponent)
                     if (!movableComponent?.crossLava && positionComponent.surface.surfaceType === SurfaceType.LAVA5) {
                         healthComponent.changeHealth(-(20 + PRNG.damage.randInt(20)))
                         healthComponent.hitByLavaTimeoutMs = 2000

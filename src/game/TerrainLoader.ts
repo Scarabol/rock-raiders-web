@@ -83,7 +83,7 @@ export class TerrainLoader {
                                     case SurfaceType.LAVA5:
                                     // fallthrough
                                     case SurfaceType.WATER:
-                                        worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.lowMesh.geometry.attributes.uv))
+                                        worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.lowMesh.geometry.attributes['uv']))
                                         break
                                     case SurfaceType.SLUG_HOLE:
                                         terrain.slugHoles.add(surface)
@@ -125,8 +125,8 @@ export class TerrainLoader {
                 for (let y = 0; y < terrain.height; y++) {
                     const maxTimerMs = levelConf.fallinMap[y][x] * levelConf.fallinMultiplier * 1000
                     if (maxTimerMs > 0) {
-                        const surface = terrain.surfaces[x][y]
-                        worldMgr.ecs.addComponent(surface.entity, new FallInComponent(surface, maxTimerMs))
+                        const targetSurface = terrain.surfaces[x][y]
+                        worldMgr.ecs.addComponent(targetSurface.entity, new FallInComponent(targetSurface, maxTimerMs))
                     }
                 }
             }

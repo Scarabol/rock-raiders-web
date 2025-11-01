@@ -64,7 +64,7 @@ export class GuiManager {
             const fence = entityMgr.selection.fence
             if (!fence) return
             EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_DEATH, fence.worldMgr.ecs.getComponents(fence.entity).get(PositionComponent)))
-            fence.worldMgr.ecs.getComponents(fence.entity).get(SelectionFrameComponent)?.deselect()
+            fence.worldMgr.ecs.getComponents(fence.entity).getOptional(SelectionFrameComponent)?.deselect()
             fence.worldMgr.ecs.removeComponent(fence.entity, SelectionFrameComponent)
             fence.worldMgr.entityMgr.removeEntity(fence.entity)
             if (fence.targetSurface) {
@@ -188,7 +188,7 @@ export class GuiManager {
             }
         })
         EventBroker.subscribe(EventKey.FOLLOWER_SET_LOOK_AT, (event: FollowerSetLookAtEvent) => {
-            const sceneEntity = worldMgr.ecs.getComponents(event.entity).get(AnimatedSceneEntityComponent)?.sceneEntity
+            const sceneEntity = worldMgr.ecs.getComponents(event.entity).getOptional(AnimatedSceneEntityComponent)?.sceneEntity
             if (sceneEntity) cameraControls.jumpTo(sceneEntity.getWorldPosition(new Vector3()))
         })
         EventBroker.subscribe(EventKey.COMMAND_REPAIR_LAVA, () => {

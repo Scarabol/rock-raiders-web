@@ -40,7 +40,7 @@ export class MainPanel extends Panel {
     numRequestedRaiders: number = 0
     hasRaiderTeleport: boolean = false
     hasMaxRaiders: boolean = false
-    lastSelectionEvent?: SelectionChanged
+    lastSelectionEvent: SelectionChanged | undefined
 
     constructor() {
         super()
@@ -153,7 +153,7 @@ export class MainPanel extends Panel {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.relX = this.xOut
         this.relY = this.yOut
@@ -196,11 +196,11 @@ export class MainPanel extends Panel {
         }
     }
 
-    isInactive(): boolean {
+    override isInactive(): boolean {
         return this.movedIn || super.isInactive()
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.movedIn) return
         super.onRedraw(context)
     }

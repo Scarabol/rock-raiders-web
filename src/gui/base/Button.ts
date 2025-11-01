@@ -13,15 +13,15 @@ import { GuiButtonBlinkEvent } from '../../event/LocalEvents'
 
 export class Button extends BaseElement {
     buttonType: string
-    imgNormal?: SpriteImage
-    imgHover?: SpriteImage
-    imgPressed?: SpriteImage
-    imgDisabled?: SpriteImage
+    imgNormal: SpriteImage | undefined
+    imgHover: SpriteImage | undefined
+    imgPressed: SpriteImage | undefined
+    imgDisabled: SpriteImage | undefined
     tooltip: string
     tooltipSfx: string
     hoverFrame: boolean = false
     blink: boolean = false
-    blinkInterval?: NodeJS.Timeout
+    blinkInterval: NodeJS.Timeout | undefined
 
     constructor(btnCfgPart: Partial<BaseButtonCfg>, readonly blinkingByDefault: boolean = false) {
         super()
@@ -68,7 +68,7 @@ export class Button extends BaseElement {
         this.notifyRedraw()
     }
 
-    reset() {
+    override reset() {
         super.reset()
         if (this.blinkingByDefault) {
             this.startBlinking()
@@ -77,7 +77,7 @@ export class Button extends BaseElement {
         }
     }
 
-    onHoverStart(): void {
+    override onHoverStart(): void {
         super.onHoverStart()
         if (this.isInactive()) {
             this.showTooltipDisabled()
@@ -86,7 +86,7 @@ export class Button extends BaseElement {
         }
     }
 
-    onHoverEnd() {
+    override onHoverEnd() {
         super.onHoverEnd()
         this.publishEvent(new HideTooltip(this.tooltip))
     }
@@ -98,35 +98,35 @@ export class Button extends BaseElement {
     showTooltipDisabled() {
     }
 
-    onPointerMove(event: GuiHoverEvent): void {
+    override onPointerMove(event: GuiHoverEvent): void {
         super.onPointerMove(event)
         if (event.hoverStateChanged) this.notifyRedraw()
     }
 
-    onPointerDown(event: GuiPointerDownEvent): boolean {
+    override onPointerDown(event: GuiPointerDownEvent): boolean {
         const stateChanged = super.onPointerDown(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    onPointerUp(event: GuiPointerUpEvent): boolean {
+    override onPointerUp(event: GuiPointerUpEvent): boolean {
         const stateChanged = super.onPointerUp(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    clicked(event: GuiPointerDownEvent) {
+    override clicked(event: GuiPointerDownEvent) {
         super.clicked(event)
         this.publishEvent(new HideTooltip(this.tooltip))
     }
 
-    onPointerLeave(): boolean {
+    override onPointerLeave(): boolean {
         const stateChanged = super.onPointerLeave()
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         let img = this.imgNormal
         if (this.disabled) {
@@ -140,7 +140,7 @@ export class Button extends BaseElement {
         super.onRedraw(context)
     }
 
-    drawHover(context: SpriteContext) {
+    override drawHover(context: SpriteContext) {
         super.drawHover(context)
         if (!this.disabled && this.hover && this.hoverFrame) {
             context.strokeStyle = '#0f0'

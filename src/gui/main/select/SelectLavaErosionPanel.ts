@@ -19,7 +19,7 @@ export class SelectLavaErosionPanel extends IconSubPanel {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.hasRepairLava = false
     }

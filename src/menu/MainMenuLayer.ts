@@ -18,15 +18,15 @@ export class MainMenuLayer extends ScaledLayer {
     static readonly SCROLL_AREA_HEIGHT = 180
 
     readonly cfg: MenuEntryCfg
-    readonly menuImage?: SpriteImage
+    readonly menuImage: SpriteImage | undefined
     readonly items: MainMenuBaseItem[] = []
     readonly overlays: FlicAnimOverlay[] = []
     scrollY: number = 0
     scrollSpeedY: number = 0
-    scrollInterval?: NodeJS.Timeout
-    overlayTimeout?: NodeJS.Timeout
+    scrollInterval: NodeJS.Timeout | undefined
+    overlayTimeout: NodeJS.Timeout | undefined
     overlayIndex: number = 0
-    overlay?: FlicAnimOverlay
+    overlay: FlicAnimOverlay | undefined
     lastScrollY: number = 0
     hasScrolled: boolean = false
 
@@ -55,7 +55,7 @@ export class MainMenuLayer extends ScaledLayer {
             if (this.menuImage) context.drawImage(this.menuImage, 0, -this.scrollY)
             this.overlay?.draw(context)
             if (titleImage) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position.y)
-            this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context))
+            this.items.forEach((_item, index) => (this.items[this.items.length - 1 - index]).draw(context))
         }
         new Map<keyof HTMLElementEventMap, PointerEventType>([
             ['pointermove', POINTER_EVENT.move],
@@ -88,7 +88,7 @@ export class MainMenuLayer extends ScaledLayer {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.items.forEach((item) => item.reset())
         this.scrollY = 0
@@ -98,13 +98,13 @@ export class MainMenuLayer extends ScaledLayer {
         this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
     }
 
-    show() {
+    override show() {
         this.items.sort((a, b) => b.zIndex - a.zIndex)
         super.show()
         if (this.cfg.playRandom) this.playRandomOverlay()
     }
 
-    hide() {
+    override hide() {
         this.items.forEach((item) => item.reset())
         this.scrollSpeedY = 0
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)

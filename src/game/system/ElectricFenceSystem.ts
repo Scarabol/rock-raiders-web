@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, GameEntity } from '../ECS'
 import { PositionComponent } from '../component/PositionComponent'
 import { HealthComponent } from '../component/HealthComponent'
 import { WorldManager } from '../WorldManager'
@@ -25,18 +25,18 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         })
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
-        const fenceProtectedSurfaces = this.getFenceProtectedSurfaces()
+    update(ecs: ECS, elapsedMs: number, entities: Set<GameEntity>, _dirty: Set<GameEntity>): void {
+        const fenceProtectedSurfaces = this.getFenceProtectedSurfaces(ecs)
         const studProtectedSurfaces = this.getStudProtectedSurfaces(fenceProtectedSurfaces)
         if (this.beamDelayMs > 0) {
             this.beamDelayMs -= elapsedMs
         } else {
-            this.addBeamEffect(studProtectedSurfaces)
+            this.addBeamEffect(ecs, studProtectedSurfaces)
         }
         fenceProtectedSurfaces.add(...studProtectedSurfaces)
         for (const entity of entities) {
             try {
-                const components = this.ecs.getComponents(entity)
+                const components = ecs.getComponents(entity)
                 if (!components.get(MonsterStatsComponent).stats.canBeHitByFence) continue
                 const positionComponent = components.get(PositionComponent)
                 fenceProtectedSurfaces.forEach((f) => {
@@ -69,17 +69,17 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         this.worldMgr.sceneMgr.addMiscAnim(lwsFilename, beamPos, 0, false)
     }
 
-    private getFenceProtectedSurfaces(): Surface[] {
+    private getFenceProtectedSurfaces(ecs: ECS): Surface[] {
         const fenceProtectedSurfaces: Surface[] = []
         const energizedBuildingSurfaces = this.worldMgr.entityMgr.buildings.filter((b) => b.energized)
             .flatMap((b) => b.buildingSurfaces)
         const toCheck = this.worldMgr.entityMgr.placedFences
-            .map((f) => this.ecs.getComponents(f.entity).get(PositionComponent))
+            .map((f) => ecs.getComponents(f.entity).get(PositionComponent))
         energizedBuildingSurfaces.forEach((s) => {
             [[2, 0], [1, 0], [0, 2], [0, 1], [-2, 0], [-1, 0], [0, -2], [0, -1]].forEach((o) => {
                 const next = this.worldMgr.sceneMgr.terrain.getSurface(s.x + o[0], s.y + o[1])
                 if (next.fence) {
-                    const positionComponent = this.ecs.getComponents(next.fence).get(PositionComponent)
+                    const positionComponent = ecs.getComponents(next.fence).get(PositionComponent)
                     toCheck.remove(positionComponent)
                     fenceProtectedSurfaces.add(positionComponent.surface)
                 }
@@ -131,7 +131,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         return studPositions
     }
 
-    addBeamEffect(studProtectedSurfaces: Surface[]) {
+    addBeamEffect(ecs: ECS, studProtectedSurfaces: Surface[]) {
         const longBeams = studProtectedSurfaces.map((surface) => {
             const lwsFilename = GameConfig.instance.miscObjects.longElectricFenceBeam
             const beamPos = surface.getCenterWorld()
@@ -148,7 +148,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         })
         const shortBeams: { lwsFilename: string, beamPos: Vector3, beamHeading: number }[] = []
         this.worldMgr.entityMgr.placedFences.forEach((fence) => {
-            const components = this.ecs.getComponents(fence.entity)
+            const components = ecs.getComponents(fence.entity)
             const fenceSurface = components.get(PositionComponent).surface
             const neighbors = fenceSurface.neighbors.filter((n) => !!n.fence || n.building?.primarySurface === n || n.building?.secondarySurface === n)
             neighbors.forEach((n) => {

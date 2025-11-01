@@ -87,10 +87,6 @@ export class SelectFilesModal {
                     this.zipFilesPanel.replaceChildren(this.zipFilesProgress.root)
                     const buffers = await Promise.all([0, 1].map((n) => {
                         const url = `https://scarabol.github.io/wad-editor/mirror-archive.org/Rock%20Raiders%20%28${f.name}%29%20small.zip.part${n}`
-                        const urlFileName = url.split('/').last()
-                        if (!urlFileName) return new ArrayBuffer()
-                        const fileName = decodeURIComponent(urlFileName)
-                        this.zipFilesProgress.setProgress(fileName, 0, 100)
                         return SelectFilesModal.loadFileFromUrl(url, this.zipFilesProgress)
                     }))
                     const zipFileLength = buffers.reduce((prev, file) => prev + file.byteLength, 0)
@@ -128,11 +124,8 @@ export class SelectFilesModal {
                     this.zipFilesPanel.replaceChildren(this.zipFilesProgress.root)
                     const vfs = new VirtualFileSystem(f.encoding)
                     await Promise.all([0, 1].map(async (n) => {
-                        const url = `https://scarabol.github.io/wad-editor/mirror-archive.org/${f.code}/RR${n}.wad`
-                        const urlFileName = url.split('/').last()
-                        if (!urlFileName) return
-                        const fileName = decodeURIComponent(urlFileName)
-                        this.zipFilesProgress.setProgress(fileName, 0, 100)
+                        const fileName = `RR${n}.wad`
+                        const url = `https://scarabol.github.io/wad-editor/mirror-archive.org/${f.code}/${fileName}`
                         const buffer = await SelectFilesModal.loadFileFromUrl(url, this.zipFilesProgress)
                         const lFileName = fileName.toLowerCase()
                         vfs.registerFile(VirtualFile.fromBuffer(lFileName, buffer))
@@ -162,8 +155,8 @@ export class SelectFilesModal {
                 const allFiles = await isoFile.loadAllFiles(cueBinFilesProgress)
                 const vfs = new VirtualFileSystem() // TODO Set encoding when starting from CUE/BIN
                 await Promise.all(allFiles.map(async (f) => {
-                    if (f.fileName.equalsIgnoreCase('data1.hdr') || f.fileName.equalsIgnoreCase('data1.cab')) return // only cache unpacked files
-                    await cachePutData(f.fileName.toLowerCase(), f.toBuffer())
+                    if (f.lFileName === 'data1.hdr' || f.lFileName === 'data1.cab') return // only cache unpacked files
+                    await cachePutData(f.lFileName, f.toBuffer())
                     vfs.registerFile(f)
                 }))
                 await Promise.all(cueFile.audioTracks.map(async (audioBuffer, c) => {
@@ -188,8 +181,8 @@ export class SelectFilesModal {
                 const allFiles = await isoFile.loadAllFiles(isoFilesProgress)
                 const vfs = new VirtualFileSystem() // TODO Set encoding when starting from ISO
                 await Promise.all(allFiles.map(async (f) => {
-                    if (f.fileName.equalsIgnoreCase('data1.hdr') || f.fileName.equalsIgnoreCase('data1.cab')) return // only cache unpacked files
-                    await cachePutData(f.fileName.toLowerCase(), f.toBuffer())
+                    if (f.lFileName === 'data1.hdr' || f.lFileName === 'data1.cab') return // only cache unpacked files
+                    await cachePutData(f.lFileName, f.toBuffer())
                     vfs.registerFile(f)
                 }))
                 this.onFilesLoaded(vfs)
@@ -228,7 +221,7 @@ export class SelectFilesModal {
                 console.timeEnd('Unpack CAB files')
                 const vfs = new VirtualFileSystem() // TODO Set encoding when starting from CAB
                 await Promise.all(allFiles.map(async (f) => {
-                    await cachePutData(f.fileName.toLowerCase(), f.toBuffer())
+                    await cachePutData(f.lFileName, f.toBuffer())
                     vfs.registerFile(f)
                 }))
                 this.onFilesLoaded(vfs)
@@ -249,11 +242,18 @@ export class SelectFilesModal {
                 return
             }
             const fileName = decodeURIComponent(urlFileName)
-            console.log(`Loading file from ${url}`)
+            console.log(`Loading file "${fileName}" from url ${url}`)
+            progress.setProgress(fileName, 0, 100)
             const xhr = new XMLHttpRequest()
             xhr.open('GET', url)
             xhr.responseType = 'arraybuffer'
-            xhr.onprogress = (event) => progress.setProgress(fileName, event.loaded, event.total)
+            xhr.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    progress.setProgress(fileName, event.loaded, event.total)
+                } else {
+                    progress.setProgress(fileName, 50, 100)
+                }
+            }
             xhr.onerror = (event) => reject(event)
             xhr.onload = () => {
                 if (xhr.status !== 200) {
@@ -261,6 +261,7 @@ export class SelectFilesModal {
                 } else if (!xhr.response) {
                     reject(new Error(`No response content for request received, please restart browser`))
                 } else {
+                    progress.setProgress(fileName, 100, 100)
                     resolve(xhr.response)
                 }
             }

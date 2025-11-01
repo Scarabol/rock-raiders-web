@@ -20,6 +20,7 @@ export interface JobFulfiller {
     stats: PickSphereStats
 
     findShortestPath(targets: PathTarget[] | PathTarget | undefined): TerrainPath | undefined
+    setJob(job: Job, followUpJob?: Job): void
     stopJob(): void
     dropCarried(unAssign: boolean): MaterialEntity[]
     getDrillTimeSeconds(surface: Surface): number
@@ -28,13 +29,13 @@ export interface JobFulfiller {
 
 export abstract class Job {
     jobState: JobState = JOB_STATE.incomplete
-    surface?: Surface
-    carryItem?: MaterialEntity
+    surface: Surface | undefined
+    carryItem: MaterialEntity | undefined
     requiredTool: RaiderTool = RAIDER_TOOL.none
     requiredTraining: RaiderTraining = RAIDER_TRAINING.none
     priorityIdentifier: PriorityIdentifier = PRIORITY_IDENTIFIER.none
-    workSoundRaider?: string
-    workSoundVehicle?: string
+    workSoundRaider: string | undefined
+    workSoundVehicle: string | undefined
     doOnAlarm: boolean = false
 
     abstract assign(fulfiller: JobFulfiller): void
@@ -47,7 +48,7 @@ export abstract class Job {
         return true
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    onJobComplete(_fulfiller: JobFulfiller): void {
         this.jobState = JOB_STATE.complete
     }
 

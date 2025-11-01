@@ -17,12 +17,12 @@ import { SpriteImage } from '../core/Sprite'
 export class FollowerRenderer {
     static readonly MAX_FPS = 30
     readonly camera: Camera = new PerspectiveCamera(45, 1, 0.1, 200)
-    renderer?: WebGLRenderer
-    composer?: EffectComposer
-    trackEntity?: GameEntity
+    renderer: WebGLRenderer | undefined
+    composer: EffectComposer | undefined
+    trackEntity: GameEntity | undefined
     started: boolean = false
-    renderInterval?: NodeJS.Timeout
-    lastAnimationRequest?: number
+    renderInterval: NodeJS.Timeout | undefined
+    lastAnimationRequest: number | undefined
     angle: number = 0
 
     constructor(readonly canvas: SpriteImage, readonly scene: Scene, readonly ecs: ECS) {
@@ -61,7 +61,7 @@ export class FollowerRenderer {
                 this.composer.addPass(new OutputPass())
             }
             const components = this.ecs.getComponents(this.trackEntity)
-            const lookAtPosition = components?.get(AnimatedSceneEntityComponent)?.sceneEntity?.getWorldPosition(new Vector3())
+            const lookAtPosition = components?.getOptional(AnimatedSceneEntityComponent)?.sceneEntity?.getWorldPosition(new Vector3())
             if (components?.has(BeamUpComponent) || !lookAtPosition) {
                 this.resetTracking()
                 return
