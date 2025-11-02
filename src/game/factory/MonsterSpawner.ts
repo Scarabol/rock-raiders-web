@@ -95,12 +95,10 @@ export class MonsterSpawner {
                     sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                     EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.monster, entity, MAP_MARKER_CHANGE.remove))
                 }))
+                worldMgr.ecs.addComponent(entity, new SceneSelectionComponent(sceneEntity, {gameEntity: entity, entityType: entityType}, GameConfig.instance.stats.slug))
                 const objectKey = entityType.toLowerCase()
                 const objectName = GameConfig.instance.objectNames[objectKey] || ''
-                if (objectName) {
-                    const sfxKey = GameConfig.instance.objTtSFXs[objectKey] || ''
-                    worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, sfxKey))
-                }
+                if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, GameConfig.instance.objTtSFXs[objectKey] || ''))
                 break
             case EntityType.ICE_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster', entityType, GameConfig.instance.stats.iceMonster)

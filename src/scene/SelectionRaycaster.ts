@@ -18,6 +18,7 @@ export interface CursorTarget {
     vehicle?: VehicleEntity
     monster?: { entity: GameEntity }
     fence?: MaterialEntity
+    slug?: { entity: GameEntity }
     building?: BuildingEntity
     material?: MaterialEntity
     surface?: Surface
@@ -55,6 +56,8 @@ export class SelectionRaycaster {
         if (monster) return {monster: monster, entityType: EntityType.ROCK_MONSTER}
         const fence = raycaster.getFirstEntity(this.worldMgr.entityMgr.placedFences)
         if (fence) return {fence: fence, entityType: EntityType.ELECTRIC_FENCE}
+        const slug = raycaster.getFirstEntity(this.worldMgr.entityMgr.slugs.map((m) => ({entity: m})))
+        if (slug) return {slug: slug, entityType: EntityType.SLUG}
         const building = raycaster.getFirstEntity(this.worldMgr.entityMgr.buildings)
         if (building) return {building: building, entityType: building.entityType}
         if (this.terrain) {

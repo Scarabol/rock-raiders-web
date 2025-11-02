@@ -124,6 +124,7 @@ export class GameLayer extends ScreenLayer {
             cursorTarget.vehicle?.entity,
             cursorTarget.monster?.entity,
             cursorTarget.fence?.entity,
+            cursorTarget.slug?.entity,
             cursorTarget.building?.entity,
             cursorTarget.surface?.site?.entity,
             cursorTarget.surface?.entity,
@@ -363,6 +364,7 @@ export class GameLayer extends ScreenLayer {
         }
         if (cursorTarget.monster) return 'selected'
         if (cursorTarget.fence) return 'selected'
+        if (cursorTarget.slug) return 'selected'
         if (cursorTarget.building) return 'selected'
         if (cursorTarget.material) return this.determineMaterialCursor(cursorTarget.material)
         if (cursorTarget.surface) return this.determineSurfaceCursor(cursorTarget.surface)
