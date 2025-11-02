@@ -8,15 +8,19 @@ import { PositionComponent } from '../component/PositionComponent'
 import { Surface } from '../terrain/Surface'
 import { MonsterSpawner } from '../factory/MonsterSpawner'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
-import { ANIM_ENTITY_ACTIVITY, ROCK_MONSTER_ACTIVITY } from '../model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY, ROCK_MONSTER_ACTIVITY, SLUG_ACTIVITY } from '../model/anim/AnimationActivity'
 import { RAIDER_SCARE_RANGE, RaiderScareComponent } from '../component/RaiderScareComponent'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { WorldManager } from '../WorldManager'
 import { WALL_TYPE } from '../terrain/WallType'
 import { SurfaceType } from '../terrain/SurfaceType'
+import { SlugHoleComponent } from '../component/SlugHoleComponent'
+import { PRNG } from '../factory/PRNG'
+import { SLUG_BEHAVIOR_STATE, SlugBehaviorComponent } from '../component/SlugBehaviorComponent'
 
 export class EmergeSystem extends AbstractGameSystem {
     readonly activeEmerges: FilteredEntities = this.addEntityFilter(EmergeComponent)
+    readonly slugHoles: FilteredEntities = this.addEntityFilter(SlugHoleComponent)
 
     emergeCreature: MonsterEntityType = EntityType.NONE
     emergeTimeoutMs: number = 0
@@ -28,7 +32,10 @@ export class EmergeSystem extends AbstractGameSystem {
             this.emergeTimeoutMs = event.levelConf.emergeTimeOutMs
         })
         EventBroker.subscribe(EventKey.MONSTER_EMERGE, (event: MonsterEmergeEvent) => {
-            this.emergeFromSurface(worldMgr.ecs, event.surface)
+            this.emergeFromSurface(event.surface)
+        })
+        EventBroker.subscribe(EventKey.SLUG_EMERGE, () => {
+            this.emergeSlug()
         })
     }
 
@@ -65,21 +72,35 @@ export class EmergeSystem extends AbstractGameSystem {
         })
     }
 
-    emergeFromSurface(ecs: ECS, spawn: Surface) {
+    emergeFromSurface(spawn: Surface) {
         const target = spawn.neighbors.find((n) => n.surfaceType.floor && n.discovered && n.surfaceType !== SurfaceType.LAVA5 && n.surfaceType !== SurfaceType.WATER)
         if (!target) return
         const spawnCenter = spawn.getCenterWorld2D()
         const targetCenter = target.getCenterWorld2D()
         const angle = Math.atan2(targetCenter.x - spawnCenter.x, targetCenter.y - spawnCenter.y)
         const monster = MonsterSpawner.spawnMonster(this.worldMgr, this.emergeCreature, spawnCenter.clone().add(targetCenter).divideScalar(2), angle)
-        const components = ecs.getComponents(monster)
+        const components = this.worldMgr.ecs.getComponents(monster)
         const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
         const positionComponent = components.get(PositionComponent)
         sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.emerge, () => {
             sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
-            ecs.addComponent(monster, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
-            ecs.addComponent(monster, new RockMonsterBehaviorComponent())
+            this.worldMgr.ecs.addComponent(monster, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
+            this.worldMgr.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
         })
         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
+    }
+
+    emergeSlug() {
+        const slugHole = PRNG.nerp.sample(this.slugHoles.values().map((c) => c.get(SlugHoleComponent)).toArray())
+        if (!slugHole) return
+        const slug = MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SLUG, slugHole.getRandomPosition(), PRNG.animation.random() * 2 * Math.PI)
+        const behaviorComponent = this.worldMgr.ecs.addComponent(slug, new SlugBehaviorComponent())
+        const components = this.worldMgr.ecs.getComponents(slug)
+        const sceneEntity = components.get(AnimatedSceneEntityComponent)
+        sceneEntity.sceneEntity.setAnimation(SLUG_ACTIVITY.emerge, () => {
+            sceneEntity.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
+            behaviorComponent.state = SLUG_BEHAVIOR_STATE.idle
+        })
+        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_SLUG_EMERGE, components.get(PositionComponent)))
     }
 }

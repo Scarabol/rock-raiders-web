@@ -87,6 +87,7 @@ export interface DefaultEventMap {
     'ore-found': OreFoundEvent
     'air-level-changed': AirLevelChanged
     'monster-emerge': MonsterEmergeEvent
+    'slug-emerge': BaseEvent
     'nerp-message': NerpMessageEvent
     'nerp-message-next': BaseEvent
     'nerp-suppress-arrow': NerpSuppressArrowEvent

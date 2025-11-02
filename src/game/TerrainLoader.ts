@@ -13,6 +13,7 @@ import { FluidSurfaceComponent } from './component/FluidSurfaceComponent'
 import { isNum } from '../core/Util'
 import { PRNG } from './factory/PRNG'
 import { WALL_TYPE } from './terrain/WallType'
+import { SlugHoleComponent } from './component/SlugHoleComponent'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelConfData, worldMgr: WorldManager): Terrain {
@@ -86,7 +87,7 @@ export class TerrainLoader {
                                         worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.lowMesh.geometry.attributes['uv']))
                                         break
                                     case SurfaceType.SLUG_HOLE:
-                                        terrain.slugHoles.add(surface)
+                                        worldMgr.ecs.addComponent(surface.entity, new SlugHoleComponent(surface.x, surface.y))
                                         break
                                     case SurfaceType.RECHARGE_SEAM:
                                         terrain.rechargeSeams.add(surface)

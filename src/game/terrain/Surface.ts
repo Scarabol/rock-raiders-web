@@ -36,6 +36,7 @@ import { CompleteSurfaceJob } from '../model/job/surface/CompleteSurfaceJob'
 import { MaterialEntity } from '../model/material/MaterialEntity'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SaveGameManager } from '../../resource/SaveGameManager'
+import { SlugHoleComponent } from '../component/SlugHoleComponent'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -149,7 +150,7 @@ export class Surface {
                     break
                 case SurfaceType.HIDDEN_SLUG_HOLE:
                     this.surfaceType = SurfaceType.SLUG_HOLE
-                    this.terrain.slugHoles.add(this)
+                    this.worldMgr.ecs.addComponent(this.entity, new SlugHoleComponent(this.x, this.y))
                     this.needsMeshUpdate = true
                     this.updateObjectName()
                     break

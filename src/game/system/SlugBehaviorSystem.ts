@@ -22,6 +22,7 @@ import { PRNG } from '../factory/PRNG'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
 import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE } from '../component/MapMarkerComponent'
 import { BirdScarerComponent } from '../component/BirdScarerComponent'
+import { SlugHoleComponent } from '../component/SlugHoleComponent'
 
 const SLUG_SUCK_DISTANCE_SQ = 25 * 25
 const SLUG_ENTER_DISTANCE_SQ = 5 * 5
@@ -29,6 +30,7 @@ const SLUG_ENTER_DISTANCE_SQ = 5 * 5
 export class SlugBehaviorSystem extends AbstractGameSystem {
     readonly slugs: FilteredEntities = this.addEntityFilter(SlugBehaviorComponent, MonsterStatsComponent)
     readonly scaryThings: FilteredEntities = this.addEntityFilter(BirdScarerComponent)
+    readonly slugHoles: FilteredEntities = this.addEntityFilter(SlugHoleComponent)
 
     constructor(readonly worldMgr: WorldManager) {
         super()
@@ -120,7 +122,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                         break
                     case SLUG_BEHAVIOR_STATE.goEnter:
                         if (!behaviorComponent.targetEnter) {
-                            const enterTargets = this.worldMgr.sceneMgr.terrain.slugHoles.map((h) => PathTarget.fromLocation(h.getRandomPosition(), SLUG_ENTER_DISTANCE_SQ))
+                            const enterTargets = this.slugHoles.values().map((s) => PathTarget.fromLocation(s.get(SlugHoleComponent).getRandomPosition(), SLUG_ENTER_DISTANCE_SQ)).toArray()
                             const path = pathFinder.findShortestPath(positionComponent.getPosition2D(), enterTargets, stats, 1)
                             if (path && path.locations.length > 0) {
                                 behaviorComponent.targetEnter = path.target

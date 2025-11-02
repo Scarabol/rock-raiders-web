@@ -11,13 +11,10 @@ import { GAME_RESULT_STATE } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpReturnType, NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL } from '../params'
-import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, RequestedRaidersChanged, WorldLocationEvent } from '../event/WorldEvents'
+import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, RequestedRaidersChanged } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
-import { MonsterSpawner } from '../game/factory/MonsterSpawner'
 import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEntityComponent'
-import { ANIM_ENTITY_ACTIVITY, SLUG_ACTIVITY } from '../game/model/anim/AnimationActivity'
-import { SLUG_BEHAVIOR_STATE, SlugBehaviorComponent } from '../game/component/SlugBehaviorComponent'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { SoundManager } from '../audio/SoundManager'
@@ -334,17 +331,7 @@ export class NerpRunner {
     }
 
     generateSlug(): void {
-        const slugHole = PRNG.nerp.sample(this.worldMgr.sceneMgr.terrain.slugHoles)
-        if (!slugHole) return
-        const slug = MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SLUG, slugHole.getRandomPosition(), PRNG.animation.random() * 2 * Math.PI)
-        const behaviorComponent = this.worldMgr.ecs.addComponent(slug, new SlugBehaviorComponent())
-        const components = this.worldMgr.ecs.getComponents(slug)
-        const sceneEntity = components.get(AnimatedSceneEntityComponent)
-        sceneEntity.sceneEntity.setAnimation(SLUG_ACTIVITY.emerge, () => {
-            sceneEntity.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
-            behaviorComponent.state = SLUG_BEHAVIOR_STATE.idle
-        })
-        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_SLUG_EMERGE, components.get(PositionComponent)))
+        EventBroker.publish(new BaseEvent(EventKey.SLUG_EMERGE))
     }
 
     /**

@@ -17,7 +17,6 @@ export class Terrain {
     height: number = 0
     surfaces: Surface[][] = []
     pathFinder: PathFinder = new PathFinder(this.surfaces)
-    slugHoles: Surface[] = []
     rechargeSeams: Surface[] = []
 
     constructor(readonly worldMgr: WorldManager, readonly levelConf: LevelConfData) {
