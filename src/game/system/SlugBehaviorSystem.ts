@@ -57,7 +57,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             behaviorComponent.state = SLUG_BEHAVIOR_STATE.goEnter
                         } else if (!components.has(WorldTargetComponent)) {
                             behaviorComponent.idleTimer += elapsedMs
-                            const energizedBuildings = this.worldMgr.entityMgr.buildings.filter((b) => b.energized && b.getPosition2D().distanceToSquared(slugPos) < Math.pow(stats.attackRadius, 2))
+                            const energizedBuildings = this.worldMgr.entityMgr.buildings.filter((b) => b.energized && b.getPosition2D().distanceToSquared(slugPos) < stats.attackRadiusSq)
                             const closestBuilding = pathFinder.findClosestBuilding(slugPos, energizedBuildings, stats, 1)
                             if (closestBuilding) {
                                 behaviorComponent.state = SLUG_BEHAVIOR_STATE.leech
@@ -75,7 +75,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             ecs.removeComponent(entity, HeadingComponent)
                             this.changeToIdle(sceneEntity, behaviorComponent)
                         } else {
-                            const scarerInRange = scarerPositions.find((pos) => pos.getPosition2D().distanceToSquared(slugPos) < stats.alertRadius)
+                            const scarerInRange = scarerPositions.find((pos) => pos.getPosition2D().distanceToSquared(slugPos) < stats.alertRadiusSq)
                             if (scarerInRange) {
                                 ecs.removeComponent(entity, WorldTargetComponent)
                                 ecs.removeComponent(entity, HeadingComponent)

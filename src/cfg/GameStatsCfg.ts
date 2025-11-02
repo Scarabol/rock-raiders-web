@@ -177,8 +177,8 @@ export class MonsterEntityStats implements MovableEntityStats, ConfigSetFromReco
     wakeRadius: number = 0
     capacity: number = 0
     repairValue: number = 0
-    attackRadius: number = 0
-    alertRadius: number = 0
+    attackRadiusSq: number = 0
+    alertRadiusSq: number = 0
 
     setFromRecord(cfgValue: CfgEntry): this {
         this.pickSphere = cfgValue.getValue('PickSphere').toNumber()
@@ -207,8 +207,8 @@ export class MonsterEntityStats implements MovableEntityStats, ConfigSetFromReco
         this.wakeRadius = cfgValue.getValue('WakeRadius').toNumber()
         this.capacity = cfgValue.getValue('Capacity').toNumber()
         this.repairValue = cfgValue.getValue('RepairValue').toNumber()
-        this.attackRadius = cfgValue.getValue('AttackRadius').toNumber()
-        this.alertRadius = cfgValue.getValue('AlertRadius').toNumber()
+        this.attackRadiusSq = Math.pow(cfgValue.getValue('AttackRadius').toNumber(), 2)
+        this.alertRadiusSq = Math.pow(cfgValue.getValue('AlertRadius').toNumber(), 2)
         return this
     }
 
