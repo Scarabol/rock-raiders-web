@@ -76,7 +76,7 @@ export class TerrainLoader {
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
                     for (let y = s.y - 1; y <= s.y + 1; y++) {
                         const surface = terrain.getSurfaceOrNull(x, y)
-                        if (surface) {
+                        if (surface && !surface.discovered) {
                             surface.discovered = true
                             if (surface.neighbors.some((n) => n.surfaceType.floor)) {
                                 switch (surface.surfaceType) {
