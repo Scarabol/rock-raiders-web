@@ -14,6 +14,7 @@ import { isNum } from '../core/Util'
 import { PRNG } from './factory/PRNG'
 import { WALL_TYPE } from './terrain/WallType'
 import { SlugHoleComponent } from './component/SlugHoleComponent'
+import { LavaSmoke } from './terrain/LavaSmoke'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelConfData, worldMgr: WorldManager): Terrain {
@@ -77,12 +78,14 @@ export class TerrainLoader {
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
                     for (let y = s.y - 1; y <= s.y + 1; y++) {
                         const surface = terrain.getSurfaceOrNull(x, y)
-                        if (surface) {
+                        if (surface && !surface.discovered) {
                             surface.discovered = true
                             if (surface.neighbors.some((n) => n.surfaceType.floor)) {
                                 switch (surface.surfaceType) {
                                     case SurfaceType.LAVA5:
-                                    // fallthrough
+                                        LavaSmoke.addToSurface(surface, true)
+                                        worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.lowMesh.geometry.attributes['uv']))
+                                        break
                                     case SurfaceType.WATER:
                                         worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.lowMesh.geometry.attributes['uv']))
                                         break

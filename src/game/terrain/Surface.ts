@@ -37,6 +37,8 @@ import { MaterialEntity } from '../model/material/MaterialEntity'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SaveGameManager } from '../../resource/SaveGameManager'
 import { SlugHoleComponent } from '../component/SlugHoleComponent'
+import { ParticleEmitterComponent } from '../component/ParticleEmitterComponent'
+import { LavaSmoke } from './LavaSmoke'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -139,7 +141,9 @@ export class Surface {
         if (this.neighbors8.some((n) => n.discovered && n.surfaceType.floor)) {
             switch (this.surfaceType) {
                 case SurfaceType.LAVA5:
-                // fallthrough
+                    LavaSmoke.addToSurface(this, true)
+                    this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes['uv']))
+                    break
                 case SurfaceType.WATER:
                     this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes['uv']))
                     break
@@ -596,6 +600,11 @@ export class Surface {
         const oldSurfaceType = this.surfaceType
         const wasPath = this.surfaceType === SurfaceType.POWER_PATH || this.surfaceType === SurfaceType.POWER_PATH_BUILDING
         this.surfaceType = surfaceType
+        if (this.surfaceType === SurfaceType.LAVA5) {
+            LavaSmoke.addToSurface(this)
+        } else {
+            this.worldMgr.ecs.removeComponent(this.entity, ParticleEmitterComponent)
+        }
         if (this.surfaceType === SurfaceType.WATER || this.surfaceType === SurfaceType.LAVA5) {
             this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes['uv']))
         } else {
