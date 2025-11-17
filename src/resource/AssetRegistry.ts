@@ -125,6 +125,7 @@ export class AssetRegistry {
         })
         // load misc objects
         this.addTextureFolder('MiscAnims/Crystal/')
+        this.addTextureFolder('MiscAnims/Smoke/')
         this.addLoader(new LWOAssetLoader('World/Shared/Crystal.lwo')) // high-poly version
         this.addLoader(new TextureAssetLoader('MiscAnims/Ore/Ore.bmp'))
         this.addLoader(new TextureAssetLoader('MiscAnims/Effects/rockfall.bmp'))

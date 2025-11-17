@@ -13,6 +13,7 @@ import { FluidSurfaceComponent } from './component/FluidSurfaceComponent'
 import { isNum } from '../core/Util'
 import { PRNG } from './factory/PRNG'
 import { WALL_TYPE } from './terrain/WallType'
+import { LavaSmoke } from './terrain/LavaSmoke'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelConfData, worldMgr: WorldManager): Terrain {
@@ -81,6 +82,7 @@ export class TerrainLoader {
                             if (surface.neighbors.some((n) => n.surfaceType.floor)) {
                                 switch (surface.surfaceType) {
                                     case SurfaceType.LAVA5:
+                                        LavaSmoke.addToSurface(surface, true)
                                     // fallthrough
                                     case SurfaceType.WATER:
                                         worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.lowMesh.geometry.attributes.uv))

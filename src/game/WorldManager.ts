@@ -42,6 +42,7 @@ import { LaserShotSystem } from './system/LaserShotSystem'
 import { GAME_RESULT_STATE } from './model/GameResult'
 import { NerpScript } from '../nerp/NerpScript'
 import { PRNG } from './factory/PRNG'
+import { ParticleSystem } from './system/ParticleSystem'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -80,6 +81,7 @@ export class WorldManager {
         this.ecs.addSystem(new FallInSystem())
         this.ecs.addSystem(new FluidSurfaceSystem())
         this.ecs.addSystem(new LaserShotSystem(this))
+        this.ecs.addSystem(new ParticleSystem())
         EventBroker.subscribe(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBroker.subscribe(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {
