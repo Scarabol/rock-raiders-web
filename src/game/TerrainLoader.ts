@@ -92,10 +92,9 @@ export class TerrainLoader {
                                         terrain.rechargeSeams.add(surface)
                                         const floorNeighbor = surface.neighbors.find((n) => n.surfaceType.floor)
                                         if (floorNeighbor) { // TODO Same code as in surface class
-                                            const position = new Vector3(0.5, 0.5 + surface.terrain.getHeightOffset(surface.x, surface.y), 0.5)
+                                            const position = new Vector3(TILESIZE / 2, 45 + surface.terrain.getHeightOffset(surface.x, surface.y), TILESIZE / 2)
                                             const angle = Math.atan2(floorNeighbor.y - surface.y, surface.x - floorNeighbor.x) + Math.PI / 2
                                             const grp = worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.rechargeSparkle, position, angle, true)
-                                            grp.scale.setScalar(1 / TILESIZE)
                                             surface.mesh.add(grp)
                                         } else {
                                             console.warn('Could not add sparkles to recharge seam, because of missing floor neighbor')
