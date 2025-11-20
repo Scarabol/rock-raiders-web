@@ -42,6 +42,7 @@ import { TooltipSpriteBuilder } from '../../../resource/TooltipSpriteBuilder'
 import { SelectionNameComponent } from '../../component/SelectionNameComponent'
 import { PRNG } from '../../factory/PRNG'
 import { SaveGameRaider } from '../../../resource/SaveGameManager'
+import { PathFinder } from '../../terrain/PathFinder'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -201,6 +202,7 @@ export class Raider implements Updatable, JobFulfiller {
 
     private moveToClosestTargetInternal(target: PathTarget | undefined, elapsedMs: number): MoveState {
         if (!target) return MOVE_STATE.targetUnreachable
+        let pathUpdated = false
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
             const path = this.findShortestPath(target)
             this.currentPath = path && path.locations.length > 0 ? path : undefined
@@ -209,28 +211,39 @@ export class Raider implements Updatable, JobFulfiller {
             currentPath.locations.forEach((l, index) => {
                 if (index < currentPath.locations.length - 1) l.add(new Vector2().random().subScalar(0.5).multiplyScalar(TILESIZE / RAIDER_PATH_PRECISION))
             }) // XXX Externalize precision
+            pathUpdated = true
         }
         const step = this.determineStep(elapsedMs, this.currentPath)
         if (step.targetReached) {
             return MOVE_STATE.targetReached
-        } else {
-            this.setPosition(step.position)
-            this.sceneEntity.headTowards(step.focusPoint)
-            this.sceneEntity.setAnimation(this.getRouteActivity())
-            if (this.foodLevel > 0) this.foodLevel -= step.stepLength * step.stepLength / TILESIZE / TILESIZE / 5
-            if (!!this.carries) {
-                // XXX Adjust balancing for resting
-                const chanceToRestPerSecond = this.stats.restPercent / 20 * Math.max(0, 1 - this.foodLevel / this.stats.restPercent)
-                if (PRNG.movement.random() < chanceToRestPerSecond * elapsedMs / 1000) {
-                    this.resting = true
-                    this.sceneEntity.setAnimation('Activity_Rest', () => {
-                        this.resting = false
-                    })
-                }
-            }
-            this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setHungerIndicator(this.foodLevel)
-            return MOVE_STATE.moved
         }
+        if (!pathUpdated) {
+            const pathFinder = this.worldMgr.sceneMgr.terrain.pathFinder
+            const currentSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.getPosition())
+            const nextSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(step.position)
+            if (PathFinder.getWeight(pathFinder.surfaces[currentSurface.x][currentSurface.y], this.stats) !== 0 &&
+                PathFinder.getWeight(pathFinder.surfaces[nextSurface.x][nextSurface.y], this.stats) === 0) {
+                // Recalculate path when running into obstacle
+                this.currentPath = undefined
+                return this.moveToClosestTarget(target, elapsedMs)
+            }
+        }
+        this.setPosition(step.position)
+        this.sceneEntity.headTowards(step.focusPoint)
+        this.sceneEntity.setAnimation(this.getRouteActivity())
+        if (this.foodLevel > 0) this.foodLevel -= step.stepLength * step.stepLength / TILESIZE / TILESIZE / 5
+        if (!!this.carries) {
+            // XXX Adjust balancing for resting
+            const chanceToRestPerSecond = this.stats.restPercent / 20 * Math.max(0, 1 - this.foodLevel / this.stats.restPercent)
+            if (PRNG.movement.random() < chanceToRestPerSecond * elapsedMs / 1000) {
+                this.resting = true
+                this.sceneEntity.setAnimation('Activity_Rest', () => {
+                    this.resting = false
+                })
+            }
+        }
+        this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setHungerIndicator(this.foodLevel)
+        return MOVE_STATE.moved
     }
 
     private determineStep(elapsedMs: number, currentPath: TerrainPath): EntityStep {

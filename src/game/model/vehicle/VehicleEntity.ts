@@ -48,6 +48,7 @@ import { MaterialSpawner } from '../../factory/MaterialSpawner'
 import { MovableStatsComponent } from '../../component/MovableStatsComponent'
 import { PRNG } from '../../factory/PRNG'
 import { SaveGameManager } from '../../../resource/SaveGameManager'
+import { PathFinder } from '../../terrain/PathFinder'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -212,23 +213,35 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     private moveToClosestTargetInternal(target: PathTarget | undefined, elapsedMs: number): MoveState {
         if (!target) return MOVE_STATE.targetUnreachable
+        let pathUpdated = false
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
             const path = this.findShortestPath(target)
             this.currentPath = path && path.locations.length > 0 ? path : undefined
             if (!this.currentPath) return MOVE_STATE.targetUnreachable
+            pathUpdated = true
         }
         const step = this.determineStep(elapsedMs, this.currentPath)
         if (step.targetReached) {
             if (target.building) this.sceneEntity.headTowards(target.building.primarySurface.getCenterWorld2D())
             return MOVE_STATE.targetReached
-        } else {
-            this.setPosition(step.position)
-            this.sceneEntity.headTowards(step.focusPoint)
-            this.sceneEntity.setAnimation(this.getRouteActivity())
-            const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
-            this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
-            return MOVE_STATE.moved
         }
+        if (!pathUpdated) {
+            const pathFinder = this.worldMgr.sceneMgr.terrain.pathFinder
+            const currentSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.getPosition())
+            const nextSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(step.position)
+            if (PathFinder.getWeight(pathFinder.surfaces[currentSurface.x][currentSurface.y], this.stats) !== 0 &&
+                PathFinder.getWeight(pathFinder.surfaces[nextSurface.x][nextSurface.y], this.stats) === 0) {
+                // Recalculate path when running into obstacle
+                this.currentPath = undefined
+                return this.moveToClosestTarget(target, elapsedMs)
+            }
+        }
+        this.setPosition(step.position)
+        this.sceneEntity.headTowards(step.focusPoint)
+        this.sceneEntity.setAnimation(this.getRouteActivity())
+        const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
+        this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
+        return MOVE_STATE.moved
     }
 
     private determineStep(elapsedMs: number, currentPath: TerrainPath): EntityStep {
