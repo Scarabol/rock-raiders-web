@@ -428,7 +428,7 @@ export class Surface {
         }
         const textureFilepath = this.terrain.levelConf.textureBasename + suffix + '.bmp'
         this.mesh.setTexture(textureFilepath, rotation)
-        this.mesh.updateProMesh(this.terrain.levelConf.meshBasename, suffix, this.terrain.levelConf.textureBasename)
+        this.mesh.updateProMesh(this.terrain.levelConf.meshBasename, this.wallType, suffix, this.terrain.levelConf.textureBasename)
     }
 
     private determinePowerPathTextureNameSuffixAndRotation(rotation: number, suffix: string) {

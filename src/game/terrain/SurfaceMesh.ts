@@ -40,10 +40,10 @@ export class SurfaceMesh extends Group {
         this.lowMesh.setTexture(textureFilepath, textureRotation)
     }
 
-    updateProMesh(meshBasename: string, textureSuffix: string, textureBasename: string) {
+    updateProMesh(meshBasename: string, wallType: WallType, textureSuffix: string, textureBasename: string) {
         const surface = this.userData.surface
         if (!surface) return
-        const proMeshSuffix = SurfaceMesh.getProMeshSuffix(textureSuffix)
+        const proMeshSuffix = SurfaceMesh.getProMeshSuffix(wallType, textureSuffix)
         const proMeshFilepath = (meshBasename + proMeshSuffix).toLowerCase()
         // TODO Keep the shape of the surface separately
         const adjacent = surface.terrain.getAdjacent(this.x, this.y)
@@ -84,11 +84,13 @@ export class SurfaceMesh extends Group {
         this.lowMesh.visible = !this.proMesh?.visible
     }
 
-    private static getProMeshSuffix(textureSuffix: string): string {
+    private static getProMeshSuffix(wallType: WallType, textureSuffix: string): string {
         if (textureSuffix.startsWith('1')) { // rubble
             return '10'
-        } else if (textureSuffix.startsWith('6')) { // recharge seam
+        } else if (wallType === WALL_TYPE.wall && textureSuffix.startsWith('6')) { // recharge seam
             return '05'
+        } else if (wallType === WALL_TYPE.corner && (textureSuffix === '20' || textureSuffix === '40')) { // Tutorial02 has crystal seam on corner
+            return '51'
         } else {
             return textureSuffix
         }
