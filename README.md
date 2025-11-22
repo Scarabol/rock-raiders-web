@@ -50,7 +50,8 @@ using modern web technologies.
 ### v0.9.x - Polishing
 
 - Implement clickOnly... methods for tutorials and disable all non-flashing UI elements in tutorial mode
-- Improve compatibility with Baz's mod and others
+- Fix balancing for lava erosion, see #35
+- Fix clear rubble job priority not effective, see #43
 
 ### v1.0.0 - Final Release
 
@@ -62,11 +63,10 @@ using modern web technologies.
 
 - Adjust entities rotation speed and play turnLeft, turnRight animations
 - Advisor not shown in tutorials near icon panel
-- Orange smoke column above lava tiles missing
 - Add tiny rockies running around after crumbling
 - Two buttons in priority list can be hovered/pressed/released at the same time
 - Middle wheel meshes of small digger do not rotate after engine upgrade
-- When switching fast from one level to another in level selection no level name is shown, but the level is highlighted
+- Wheels jump back and forth when starting or stopping movement
 
 ### Authentic
 
