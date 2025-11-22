@@ -48,7 +48,6 @@ export class EntityManager {
     buildingSites: BuildingSite[] = []
     spiders: GameEntity[] = []
     undiscoveredSpiders: GameEntity[] = []
-    bats: GameEntity[] = []
     undiscoveredBats: GameEntity[] = []
     rockMonsters: GameEntity[] = []
     undiscoveredRockMonsters: GameEntity[] = []
@@ -58,7 +57,6 @@ export class EntityManager {
     vehiclesInBeam: VehicleEntity[] = []
     completedBuildingSites: BuildingSite[] = []
     recordedEntities: GameEntity[] = []
-    birdScarer: GameEntity[] = []
 
     constructor(readonly worldMgr: WorldManager) {
         this.worldMgr.entityMgr = this
@@ -86,7 +84,6 @@ export class EntityManager {
         this.buildingSites.length = 0
         this.spiders.length = 0
         this.undiscoveredSpiders.length = 0
-        this.bats.length = 0
         this.undiscoveredBats.length = 0
         this.rockMonsters.length = 0
         this.undiscoveredRockMonsters.length = 0
@@ -96,7 +93,6 @@ export class EntityManager {
         this.vehiclesInBeam.length = 0
         this.completedBuildingSites.length = 0
         this.recordedEntities.length = 0
-        this.birdScarer.length = 0
     }
 
     update(elapsedMs: number) {
@@ -253,7 +249,6 @@ export class EntityManager {
             this.spiders.push(m)
         })
         this.undiscoveredBats = this.removeInRectNew(this.undiscoveredBats, minX, maxX, minZ, maxZ, (m) => {
-            this.bats.push(m)
             this.addMapMarker(m)
         })
         this.undiscoveredRockMonsters = this.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
@@ -306,11 +301,10 @@ export class EntityManager {
     }
 
     addEntity(entity: GameEntity, entityType: EntityType) {
-        const discovered = this.worldMgr.ecs.getComponents(entity).get(PositionComponent)?.isDiscovered()
+        const discovered = this.worldMgr.ecs.getComponents(entity).getOptional(PositionComponent)?.isDiscovered()
         switch (entityType) {
             case EntityType.BAT:
                 if (discovered) {
-                    this.bats.add(entity)
                     this.addMapMarker(entity)
                 } else {
                     this.undiscoveredBats.add(entity)
@@ -335,18 +329,6 @@ export class EntityManager {
                     this.undiscoveredRockMonsters.add(entity)
                 }
                 break
-            case EntityType.ORE:
-            case EntityType.CRYSTAL:
-            case EntityType.BRICK:
-            case EntityType.BARRIER:
-            case EntityType.DYNAMITE:
-            case EntityType.ELECTRIC_FENCE:
-                // if (discovered) this.materials.add(entity) // TODO use game entities within entity manager
-                // else this.materialsUndiscovered.add(entity) // TODO use game entities within entity manager
-                break
-            case EntityType.BIRD_SCARER:
-                this.birdScarer.add(entity)
-                break
         }
     }
 
@@ -357,7 +339,7 @@ export class EntityManager {
     }
 
     removeEntity(entity: GameEntity) {
-        const healthComponent = this.worldMgr.ecs.getComponents(entity).get(HealthComponent)
+        const healthComponent = this.worldMgr.ecs.getComponents(entity).getOptional(HealthComponent)
         const healthBarSprite = healthComponent?.healthBarSprite
         if (healthBarSprite) {
             healthBarSprite.visible = false
@@ -378,7 +360,6 @@ export class EntityManager {
         this.placedFences.removeAll((e) => e.entity === entity)
         this.spiders.remove(entity)
         this.undiscoveredSpiders.remove(entity)
-        this.bats.remove(entity)
         this.undiscoveredBats.remove(entity)
         this.rockMonsters.remove(entity)
         this.undiscoveredRockMonsters.remove(entity)
@@ -387,7 +368,6 @@ export class EntityManager {
         this.vehiclesUndiscovered.removeAll((e) => e.entity === entity)
         this.vehiclesInBeam.removeAll((e) => e.entity === entity)
         this.recordedEntities.remove(entity)
-        this.birdScarer.remove(entity)
     }
 
     findVehicleInRange(position2d: Vector2, rangeSq: number): VehicleTarget | undefined {

@@ -28,17 +28,17 @@ export class RepairBuildingJob extends RaiderJob {
         return entity.findShortestPath(this.workplaces)?.target
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         const healthComponent = this.building.worldMgr.ecs.getComponents(this.building.entity).get(HealthComponent)
         healthComponent.changeHealth(fulfiller.getRepairValue())
         if (healthComponent.health >= healthComponent.maxHealth) super.onJobComplete(fulfiller)
     }
 
-    getWorkActivity(): AnimationActivity {
+    override getWorkActivity(): AnimationActivity {
         return RAIDER_ACTIVITY.repair
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleRepair'
     }
 }

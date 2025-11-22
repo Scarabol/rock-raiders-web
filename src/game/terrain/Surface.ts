@@ -36,6 +36,7 @@ import { CompleteSurfaceJob } from '../model/job/surface/CompleteSurfaceJob'
 import { MaterialEntity } from '../model/material/MaterialEntity'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SaveGameManager } from '../../resource/SaveGameManager'
+import { SlugHoleComponent } from '../component/SlugHoleComponent'
 import { ParticleEmitterComponent } from '../component/ParticleEmitterComponent'
 import { LavaSmoke } from './LavaSmoke'
 
@@ -48,11 +49,11 @@ export class Surface {
     scanned: boolean = false
     selected: boolean = false
     reinforced: boolean = false
-    drillJob?: DrillJob
-    reinforceJob?: ReinforceJob
-    dynamiteJob?: Job
-    clearRubbleJob?: ClearRubbleJob
-    completeSurfaceJob?: CompleteSurfaceJob
+    drillJob: DrillJob | undefined
+    reinforceJob: ReinforceJob | undefined
+    dynamiteJob: Job | undefined
+    clearRubbleJob: ClearRubbleJob | undefined
+    completeSurfaceJob: CompleteSurfaceJob | undefined
     seamLevel: number = 0
     drillProgress: number = 0
 
@@ -63,11 +64,11 @@ export class Surface {
 
     rubblePositions: Vector2[] = []
 
-    building?: BuildingEntity
+    building: BuildingEntity | undefined
     pathBlockedByBuilding: boolean = false
-    site?: BuildingSite
-    fence?: GameEntity
-    stud?: AnimationGroup
+    site: BuildingSite | undefined
+    fence: GameEntity | undefined
+    stud: AnimationGroup | undefined
     fenceRequested: boolean = false
     energized: boolean = false
 
@@ -89,14 +90,14 @@ export class Surface {
         }
         this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
         this.mesh.setProMeshEnabled(SaveGameManager.preferences.wallDetails)
-        const roofTexture = ResourceManager.getSurfaceTexture(this.terrain.levelConf.roofTexture, 0) ?? null // TODO Move to config handling
+        const roofTexture = ResourceManager.getSurfaceTexture(this.terrain.levelConf.roofTexture, 0) // TODO Move to config handling
         this.roofMesh = new RoofMesh(x, y, roofTexture)
     }
 
     private updateObjectName() {
         const objectName = this.surfaceType.getObjectName()
         if (objectName) {
-            const tooltipComponent = this.worldMgr.ecs.getComponents(this.entity).get(TooltipComponent)
+            const tooltipComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(TooltipComponent)
             if (tooltipComponent) {
                 tooltipComponent.tooltipText = objectName
                 tooltipComponent.sfxKey = this.surfaceType.getSfxKey()
@@ -143,7 +144,7 @@ export class Surface {
                     LavaSmoke.addToSurface(this, true)
                 // fallthrough
                 case SurfaceType.WATER:
-                    this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes.uv))
+                    this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes['uv']))
                     break
                 case SurfaceType.HIDDEN_CAVERN:
                     this.surfaceType = SurfaceType.GROUND
@@ -152,7 +153,7 @@ export class Surface {
                     break
                 case SurfaceType.HIDDEN_SLUG_HOLE:
                     this.surfaceType = SurfaceType.SLUG_HOLE
-                    this.terrain.slugHoles.add(this)
+                    this.worldMgr.ecs.addComponent(this.entity, new SlugHoleComponent(this.x, this.y))
                     this.needsMeshUpdate = true
                     this.updateObjectName()
                     break
@@ -427,9 +428,7 @@ export class Surface {
         }
         const textureFilepath = this.terrain.levelConf.textureBasename + suffix + '.bmp'
         this.mesh.setTexture(textureFilepath, rotation)
-        const proMeshSuffix = suffix.startsWith('1') ? '10' : suffix
-        const proMeshFilepath = (this.terrain.levelConf.meshBasename + proMeshSuffix).toLowerCase()
-        this.mesh.updateProMesh(proMeshFilepath)
+        this.mesh.updateProMesh(this.terrain.levelConf.meshBasename, suffix, this.terrain.levelConf.textureBasename)
     }
 
     private determinePowerPathTextureNameSuffixAndRotation(rotation: number, suffix: string) {
@@ -606,7 +605,7 @@ export class Surface {
             this.worldMgr.ecs.removeComponent(this.entity, ParticleEmitterComponent)
         }
         if (this.surfaceType === SurfaceType.WATER || this.surfaceType === SurfaceType.LAVA5) {
-            this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes.uv))
+            this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes['uv']))
         } else {
             this.worldMgr.ecs.removeComponent(this.entity, FluidSurfaceComponent)
         }

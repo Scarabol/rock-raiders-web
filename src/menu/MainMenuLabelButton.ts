@@ -7,8 +7,8 @@ import { UiElementCallback } from './UiElementState'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 
 export class MainMenuLabelButton extends MainMenuBaseItem {
-    labelImgLo?: SpriteImage
-    labelImgHi?: SpriteImage
+    labelImgLo: SpriteImage | undefined
+    labelImgHi: SpriteImage | undefined
 
     constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {
         super()
@@ -28,14 +28,14 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
         if (this.actionName?.equalsIgnoreCase('Next')) this.targetIndex = Number(cfg.target.slice('menu'.length)) - 1
     }
 
-    set onPressed(callback: UiElementCallback) {
+    override set onPressed(callback: UiElementCallback) {
         super.onPressed = () => {
             SoundManager.playSfxSound('SFX_ButtonPressed')
             callback()
         }
     }
 
-    draw(context: SpriteContext) {
+    override draw(context: SpriteContext) {
         super.draw(context)
         const img = this.state.hover && !this.state.pressed ? this.labelImgHi : this.labelImgLo
         if (img) context.drawImage(img, this.x, this.y)

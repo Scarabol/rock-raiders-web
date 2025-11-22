@@ -47,7 +47,7 @@ export class SelectVehicleManedPanel extends IconSubPanel {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.noVehicleWithCarried = false
         this.someVehicleCanLoad = false

@@ -25,7 +25,7 @@ export class UpgradeRaiderJob extends RaiderJob {
         return entity.findShortestPath(this.workplaces)?.target
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         if (!this.raider) return
         if (this.raider.level < this.raider.stats.maxLevel) {
@@ -44,15 +44,15 @@ export class UpgradeRaiderJob extends RaiderJob {
         }
     }
 
-    getWorkActivity(): AnimationActivity {
+    override getWorkActivity(): AnimationActivity {
         return RAIDER_ACTIVITY.train
     }
 
-    getExpectedTimeLeft(): number {
+    override getExpectedTimeLeft(): number {
         return DEV_MODE ? 2000 : 30000 // XXX balance upgrade time
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleUpgrade'
     }
 }

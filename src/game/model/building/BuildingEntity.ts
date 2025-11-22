@@ -47,14 +47,14 @@ export class BuildingEntity {
     level: number = 0
     powerSwitch: boolean = true
     primarySurface: Surface
-    secondarySurface?: Surface
-    primaryPathSurface?: Surface
-    secondaryPathSurface?: Surface
-    waterPathSurface?: Surface
+    secondarySurface: Surface | undefined
+    primaryPathSurface: Surface | undefined
+    secondaryPathSurface: Surface | undefined
+    waterPathSurface: Surface | undefined
     energized: boolean = false
-    getToolPathTarget?: PathTarget
-    carryPathTarget?: PathTarget
-    engineSoundId?: number
+    getToolPathTarget: PathTarget | undefined
+    carryPathTarget: PathTarget | undefined
+    engineSoundId: number | undefined
     surfaces: Surface[] = []
     pathSurfaces: Surface[] = []
 
@@ -169,8 +169,8 @@ export class BuildingEntity {
     }
 
     get selected(): boolean {
-        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)
-        return selectionFrameComponent?.isSelected()
+        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)
+        return !!selectionFrameComponent?.isSelected()
     }
 
     isSelectable(): boolean {
@@ -183,18 +183,18 @@ export class BuildingEntity {
 
     select(): boolean {
         if (!this.isSelectable()) return false
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
+        this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)?.select()
         return true
     }
 
     doubleSelect(): boolean {
         if (!this.selected || !this.isPowered()) return false
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.doubleSelect()
+        this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)?.doubleSelect()
         return true
     }
 
     deselect() {
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+        this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)?.deselect()
     }
 
     getDropPosition2D(): Vector2 {
@@ -229,7 +229,7 @@ export class BuildingEntity {
         EventBroker.publish(new DeselectAll())
         EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.upgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.heading, false)
-        components.get(ScannerComponent)?.setRange(this.stats.surveyRadius?.[this.level] ?? 0)
+        components.getOptional(ScannerComponent)?.setRange(this.stats.surveyRadius?.[this.level] ?? 0)
         this.sceneEntity.setUpgradeLevel(this.level.toString(2).padStart(4, '0'))
     }
 
@@ -240,7 +240,7 @@ export class BuildingEntity {
     }
 
     beamUp() {
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+        this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.primarySurface.pathBlockedByBuilding = false
         if (this.secondarySurface) this.secondarySurface.pathBlockedByBuilding = false
@@ -350,7 +350,7 @@ export class BuildingEntity {
     }
 
     get crystalDrain(): number {
-        return Array.ensure(this.stats.crystalDrain)[this.level] || 0
+        return this.stats.crystalDrain[this.level] || 0
     }
 
     private changeUsedCrystals(changedCrystals: number) {
@@ -423,7 +423,7 @@ export class BuildingEntity {
         this.sceneEntity.position.copy(position)
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
         this.sceneEntity.visible = surface.discovered
-        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(PositionComponent)
         if (positionComponent) {
             positionComponent.position.copy(position)
             positionComponent.surface = surface

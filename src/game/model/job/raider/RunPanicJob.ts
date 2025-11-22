@@ -13,15 +13,15 @@ export class RunPanicJob extends RaiderJob {
         this.runTarget = PathTarget.fromLocation(runTarget)
     }
 
-    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
+    getWorkplace(_entity: JobFulfiller): PathTarget | undefined {
         return this.runTarget
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleFlee'
     }
 
-    unAssign(raider: Raider) {
+    override unAssign(raider: Raider) {
         super.unAssign(raider)
         if (this.raider) this.raider.scared = false
     }

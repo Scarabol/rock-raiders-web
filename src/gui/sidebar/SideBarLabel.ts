@@ -18,12 +18,12 @@ export class SideBarLabel extends BaseElement {
         this.updatePosition()
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.label = '0'
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         context.textAlign = 'center'
         context.font = 'bold 10px sans-serif'

@@ -17,7 +17,7 @@ export class RadarPanel extends Panel {
     readonly btnTagged: Button
     readonly btnZoomIn: Button
     readonly btnZoomOut: Button
-    lastView?: BaseElement
+    lastView: BaseElement | undefined
 
     constructor(panelCfg: PanelCfg, panelFillCfg: PanelCfg, panelOverlayCfg: PanelCfg, buttonsCfg: ButtonRadarCfg) {
         super(panelCfg)
@@ -50,7 +50,7 @@ export class RadarPanel extends Panel {
         this.btnZoomOut.hidden = this.map.hidden
     }
 
-    toggleState(onDone?: () => void) {
+    override toggleState(onDone?: () => void) {
         super.toggleState(() => {
             if (!this.movedIn && this.lastView) {
                 this.lastView.hidden = false
@@ -67,7 +67,7 @@ export class RadarPanel extends Panel {
         }
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.map.hide()
         this.follower.hide()
@@ -76,7 +76,7 @@ export class RadarPanel extends Panel {
         this.btnZoomOut.hidden = this.map.hidden
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         if (this.fill) context.drawImage(this.fill, this.x, this.y)
         this.map.onRedraw(context)

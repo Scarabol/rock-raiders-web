@@ -30,7 +30,7 @@ export class TrainRaiderPanel extends IconSubPanel {
         trainingItem.onClick = () => this.publishEvent(new TrainRaider(training))
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.canDoTraining = new Map()
     }

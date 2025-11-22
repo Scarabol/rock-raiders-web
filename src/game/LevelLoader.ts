@@ -24,14 +24,14 @@ export interface LevelConfData {
     mapWidth: number
     mapHeight: number
     terrainMap: number[][]
-    pathMap?: number[][]
-    surfaceMap?: number[][]
+    pathMap: number[][] | undefined
+    surfaceMap: number[][] | undefined
     predugMap: number[][]
-    cryOreMap?: number[][]
-    fallinMap?: number[][]
-    erodeMap?: number[][]
-    blockPointersMap?: number[][]
-    emergeMap?: number[][]
+    cryOreMap: number[][] | undefined
+    fallinMap: number[][] | undefined
+    erodeMap: number[][] | undefined
+    blockPointersMap: number[][] | undefined
+    emergeMap: number[][] | undefined
     nerpScript: NerpScript
     nerpMessages: NerpMessage[]
     objectiveTextCfg: LevelObjectiveTextEntry
@@ -40,7 +40,7 @@ export interface LevelConfData {
     disableStartTeleport: boolean
     disableEndTeleport: boolean
     objectList: Map<string, ObjectListEntryCfg>
-    reward?: LevelRewardConfig
+    reward: LevelRewardConfig | undefined
     oxygenRate: number
     erodeTriggerTimeMs: number
     erodeErodeTimeMs: number

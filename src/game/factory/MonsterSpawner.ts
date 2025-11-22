@@ -45,7 +45,7 @@ export class MonsterSpawner {
         worldMgr.ecs.addComponent(entity, new AnimatedSceneEntityComponent(sceneEntity))
         switch (entityType) {
             case EntityType.SMALL_SPIDER:
-                positionComponent.floorOffset = 1
+                positionComponent.floorOffset = TILESIZE / 40
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/SpiderSB'))
                 sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                 const spiderStats = GameConfig.instance.stats.smallSpider
@@ -95,12 +95,10 @@ export class MonsterSpawner {
                     sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                     EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.monster, entity, MAP_MARKER_CHANGE.remove))
                 }))
+                worldMgr.ecs.addComponent(entity, new SceneSelectionComponent(sceneEntity, {gameEntity: entity, entityType: entityType}, GameConfig.instance.stats.slug))
                 const objectKey = entityType.toLowerCase()
                 const objectName = GameConfig.instance.objectNames[objectKey] || ''
-                if (objectName) {
-                    const sfxKey = GameConfig.instance.objTtSFXs[objectKey] || ''
-                    worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, sfxKey))
-                }
+                if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, GameConfig.instance.objTtSFXs[objectKey] || ''))
                 break
             case EntityType.ICE_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster', entityType, GameConfig.instance.stats.iceMonster)
@@ -127,7 +125,7 @@ export class MonsterSpawner {
         worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
             const components = worldMgr.ecs.getComponents(entity)
-            const numCrystalsEaten = components.get(RockMonsterBehaviorComponent)?.numCrystalsEaten || 0
+            const numCrystalsEaten = components.getOptional(RockMonsterBehaviorComponent)?.numCrystalsEaten || 0
             worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
             worldMgr.ecs.removeComponent(entity, HeadingComponent)
             worldMgr.ecs.removeComponent(entity, EntityPushedComponent)

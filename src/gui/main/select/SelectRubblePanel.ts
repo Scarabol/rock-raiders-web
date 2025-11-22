@@ -26,7 +26,7 @@ export class SelectRubblePanel extends IconSubPanel {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.hasRubble = false
         this.canPlaceFence = false

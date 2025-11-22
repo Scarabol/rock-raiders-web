@@ -6,7 +6,7 @@ import { SurfaceMesh } from '../../terrain/SurfaceMesh'
 
 export class BuildPlacementMarkerMesh extends Mesh<BufferGeometry, MeshPhongMaterial> {
     sceneMgr: SceneManager
-    lastSurfaceMesh?: SurfaceMesh
+    lastSurfaceMesh: SurfaceMesh | undefined
 
     constructor(sceneMgr: SceneManager) {
         super(new BufferGeometry(), new MeshPhongMaterial({

@@ -8,7 +8,7 @@ import { EntityManager } from '../../../EntityManager'
 import { BuildingEntity } from '../../building/BuildingEntity'
 
 export class EatBarracksJob extends RaiderJob {
-    building?: BuildingEntity
+    building: BuildingEntity | undefined
     workplaces: PathTarget[]
 
     constructor(readonly entityMgr: EntityManager, building: BuildingEntity) {
@@ -24,7 +24,7 @@ export class EatBarracksJob extends RaiderJob {
         return target
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         if (!this.raider) return
         this.raider.foodLevel += 0.25
@@ -32,11 +32,11 @@ export class EatBarracksJob extends RaiderJob {
         if (this.raider.foodLevel < 1 && this.building) this.raider.setJob(new EatBarracksJob(this.entityMgr, this.building))
     }
 
-    getWorkActivity(): AnimationActivity {
+    override getWorkActivity(): AnimationActivity {
         return RAIDER_ACTIVITY.eat
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleEat'
     }
 }

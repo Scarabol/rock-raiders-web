@@ -11,9 +11,9 @@ import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 
 export class MainMenuIconButton extends MainMenuBaseItem {
-    imgNormal?: SpriteImage
-    imgHover?: SpriteImage
-    imgPressed?: SpriteImage
+    imgNormal: SpriteImage | undefined
+    imgHover: SpriteImage | undefined
+    imgPressed: SpriteImage | undefined
 
     constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {
         super()
@@ -31,14 +31,14 @@ export class MainMenuIconButton extends MainMenuBaseItem {
         if (this.actionName?.equalsIgnoreCase('Next')) this.targetIndex = Number(cfg.target.slice('menu'.length)) - 1
     }
 
-    set onPressed(callback: UiElementCallback) {
+    override set onPressed(callback: UiElementCallback) {
         super.onPressed = () => {
             SoundManager.playSfxSound('SFX_ButtonPressed')
             callback()
         }
     }
 
-    draw(context: SpriteContext) {
+    override draw(context: SpriteContext) {
         super.draw(context)
         let img = this.imgNormal
         if (this.state.hover) img = this.imgHover

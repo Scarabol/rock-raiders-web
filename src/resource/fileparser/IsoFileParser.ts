@@ -34,10 +34,10 @@ export class IsoFileParser {
         }
         console.timeEnd('Parsing ISO file directory entries')
         console.time('Extracting CAB files from ISO file listing')
-        const fileNames = this.files.map((f) => f.fileName)
-        const cabHeaderFile = this.files.find((f) => f.fileName === 'data1.hdr')
+        const fileNames = this.files.map((f) => f.lFileName)
+        const cabHeaderFile = this.files.find((f) => f.lFileName === 'data1.hdr')
         if (!cabHeaderFile) throw new Error(`Invalid ISO file without data1.hdr file given in ${fileNames.join(', ')}`)
-        const cabVolumeFile = this.files.find((f) => f.fileName === 'data1.cab')
+        const cabVolumeFile = this.files.find((f) => f.lFileName === 'data1.cab')
         if (!cabVolumeFile) throw new Error(`Invalid ISO file without data1.cab file given in ${fileNames.join(', ')}`)
         console.timeEnd('Extracting CAB files from ISO file listing')
         console.time('Parsing CAB header and volume files')

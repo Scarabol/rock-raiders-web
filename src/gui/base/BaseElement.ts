@@ -6,7 +6,7 @@ import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 import { EventBroker } from '../../event/EventBroker'
 
 export class BaseElement {
-    parent?: BaseElement
+    parent: BaseElement | undefined
     x: number = 0
     y: number = 0
     relX: number = 0
@@ -18,8 +18,8 @@ export class BaseElement {
     disabled: boolean = false
     hover: boolean = false
     pressed: boolean = false
-    pointerDown?: { x: number, y: number }
-    onClick?: (cx: number, cy: number) => void
+    pointerDown: { x: number, y: number } | undefined
+    onClick: ((cx: number, cy: number) => void) | undefined
 
     reset() {
         this.hidden = false
@@ -42,7 +42,7 @@ export class BaseElement {
         this.children.forEach((child) => child.drawHover(context))
     }
 
-    drawHover(context: SpriteContext) {
+    drawHover(_context: SpriteContext) {
     }
 
     isInactive(): boolean {
@@ -93,7 +93,7 @@ export class BaseElement {
     onHoverEnd(): void {
     }
 
-    onDrag(x: number, y: number): void {
+    onDrag(_x: number, _y: number): void {
     }
 
     onPointerDown(event: GuiPointerDownEvent): boolean {

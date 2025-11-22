@@ -13,8 +13,8 @@ import { SaveGameManager } from '../../resource/SaveGameManager'
 export class AdvisorLayer extends ScreenLayer {
     readonly renderer: BaseRenderer
     readonly scene: Scene
-    readonly group?: AnimationLoopGroup
-    groupUpdateInterval?: NodeJS.Timeout
+    readonly group: AnimationLoopGroup | undefined
+    groupUpdateInterval: NodeJS.Timeout | undefined
 
     constructor() {
         super()
@@ -71,12 +71,12 @@ export class AdvisorLayer extends ScreenLayer {
         }, NATIVE_UPDATE_INTERVAL)
     }
 
-    resize(width: number, height: number) {
+    override resize(width: number, height: number) {
         super.resize(width, height)
         this.renderer.setSize(width, height)
     }
 
-    hide() {
+    override hide() {
         super.hide()
         this.groupUpdateInterval = clearIntervalSafe(this.groupUpdateInterval)
         this.group?.resetAnimation()

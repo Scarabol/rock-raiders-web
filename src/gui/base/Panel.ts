@@ -6,12 +6,12 @@ import { BaseElement } from './BaseElement'
 import { ResourceManager } from '../../resource/ResourceManager'
 
 export class Panel extends BaseElement {
-    img?: SpriteImage
+    img: SpriteImage | undefined
     xOut: number = 0
     yOut: number = 0
     xIn: number = 0
     yIn: number = 0
-    animationTimeout?: NodeJS.Timeout
+    animationTimeout: NodeJS.Timeout | undefined
     movedIn: boolean = true // xIn, yIn is the collapsed position out of screen
 
     constructor(panelCfg?: PanelCfg) {
@@ -29,7 +29,7 @@ export class Panel extends BaseElement {
         }
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
         this.relX = this.xIn
@@ -38,7 +38,7 @@ export class Panel extends BaseElement {
         this.updatePosition()
     }
 
-    isInactive(): boolean {
+    override isInactive(): boolean {
         return !!this.animationTimeout || super.isInactive()
     }
 
@@ -80,7 +80,7 @@ export class Panel extends BaseElement {
         this.notifyRedraw()
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         if (this.img) context.drawImage(this.img, this.x, this.y)
         super.onRedraw(context)

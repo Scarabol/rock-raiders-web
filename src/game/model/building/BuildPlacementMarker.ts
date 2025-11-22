@@ -27,7 +27,7 @@ export class BuildPlacementMarker {
     readonly waterPathMarker: BuildPlacementMarkerMesh
     heading: number = 0
     lastCheck: boolean = false
-    buildingType?: BuildingType
+    buildingType: BuildingType | undefined
     buildingMarkerColor: number = BuildPlacementMarker.goodBuildingMarkerColor
     pathMarkerColor: number = BuildPlacementMarker.goodPathMarkerColor
     waterMarkerColor: number = BuildPlacementMarker.goodWaterMarkerColor

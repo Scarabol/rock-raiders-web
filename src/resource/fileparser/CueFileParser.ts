@@ -160,7 +160,7 @@ export interface CueEntry {
 export interface CueTrack {
     number: number
     type: 'MODE1' | 'AUDIO'
-    bitrate?: number
+    bitrate: number | undefined
 }
 
 export interface CuePosition {

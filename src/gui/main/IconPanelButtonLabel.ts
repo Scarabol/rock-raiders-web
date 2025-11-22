@@ -14,12 +14,12 @@ export class IconPanelButtonLabel extends BaseElement {
         this.label = (label || '').toString()
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.label = ''
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         context.textAlign = 'left'
         context.font = 'bold 10px sans-serif'

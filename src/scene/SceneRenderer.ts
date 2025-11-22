@@ -7,7 +7,7 @@ import { SpriteImage } from '../core/Sprite'
 export class SceneRenderer extends BaseRenderer {
     static readonly MAX_FPS = 30 // animations and videos have 25 fps (PAL)
     readonly debugHelper: DebugHelper
-    screenshotCallback?: (canvas: SpriteImage | undefined) => void
+    screenshotCallback: ((canvas: SpriteImage | undefined) => void) | undefined
 
     constructor(canvas: SpriteImage) {
         super(1000 / SceneRenderer.MAX_FPS, canvas, {antialias: true, powerPreference: 'high-performance'})
@@ -16,12 +16,12 @@ export class SceneRenderer extends BaseRenderer {
         this.debugHelper = new DebugHelper()
     }
 
-    async startRendering(scene: Scene): Promise<void> {
+    override async startRendering(scene: Scene): Promise<void> {
         this.debugHelper.show()
         return super.startRendering(scene)
     }
 
-    render() {
+    override render() {
         this.debugHelper.onRenderStart()
         super.render()
         this.debugHelper.onRenderDone()
@@ -53,7 +53,7 @@ export class SceneRenderer extends BaseRenderer {
         })
     }
 
-    stopRendering() {
+    override stopRendering() {
         this.debugHelper.hide()
         super.stopRendering()
     }

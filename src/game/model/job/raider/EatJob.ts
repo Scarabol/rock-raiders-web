@@ -6,25 +6,25 @@ import { JobFulfiller } from '../Job'
 import { RaiderInfoComponent } from '../../../component/RaiderInfoComponent'
 
 export class EatJob extends RaiderJob {
-    target?: PathTarget
+    target: PathTarget | undefined
 
-    getWorkplace(entity: JobFulfiller): PathTarget | undefined {
+    getWorkplace(_entity: JobFulfiller): PathTarget | undefined {
         if (!this.target && this.raider) this.target = PathTarget.fromLocation(this.raider.getPosition2D())
         return this.target
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         if (!this.raider) return
         this.raider.foodLevel = 1
         this.raider.worldMgr.ecs.getComponents(this.raider.entity).get(RaiderInfoComponent).setHungerIndicator(this.raider.foodLevel)
     }
 
-    getWorkActivity(): AnimationActivity {
+    override getWorkActivity(): AnimationActivity {
         return RAIDER_ACTIVITY.eat
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         return 'bubbleEat'
     }
 }

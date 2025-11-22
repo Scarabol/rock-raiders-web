@@ -29,7 +29,7 @@ export class InfoDockPanel extends Panel {
         this.addInfoDockButton(infoMessagesConfig.infoFoundMiniFigure, EventKey.LOCATION_RAIDER_DISCOVERED)
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.stackButtons.length = 0
     }

@@ -11,10 +11,10 @@ import { HTML_GAME_CANVAS_CONTAINER } from '../../core'
 
 export class TooltipLayer extends ScreenLayer {
     readonly lastCursorPos: { x: number, y: number } = {x: 0, y: 0}
-    tooltipTimeoutText?: NodeJS.Timeout
-    tooltipTimeoutSfx?: NodeJS.Timeout
+    tooltipTimeoutText: NodeJS.Timeout | undefined
+    tooltipTimeoutSfx: NodeJS.Timeout | undefined
     cursorLeft: boolean = false
-    tooltipCanvas?: HTMLCanvasElement
+    tooltipCanvas: HTMLCanvasElement | undefined
     lastTooltipKey: string = ''
 
     constructor() {
@@ -111,12 +111,12 @@ export class TooltipLayer extends ScreenLayer {
         this.tooltipCanvas.style.top = `${posY}px`
     }
 
-    show() {
+    override show() {
         this.reset()
         super.show()
     }
 
-    hide() {
+    override hide() {
         super.hide()
         this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
         this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)

@@ -18,8 +18,8 @@ export class DebugHelper {
     fpsIndex: number = 0
     fps: number = 0
     usage: number = 0
-    renderInterval?: NodeJS.Timeout
-    animationFrame?: number
+    renderInterval: NodeJS.Timeout | undefined
+    animationFrame: number | undefined
 
     constructor() {
         const context = DebugHelper.element.querySelector<HTMLCanvasElement>('canvas.game-debug-fps-canvas')?.getContext('2d')

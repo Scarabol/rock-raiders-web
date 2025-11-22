@@ -28,6 +28,7 @@ import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityCom
 import { Vector3 } from 'three'
 import { PRNG } from './factory/PRNG'
 import { GameState } from './model/GameState'
+import { BirdScarerComponent } from './component/BirdScarerComponent'
 
 export class GuiManager {
     constructor(worldMgr: WorldManager) {
@@ -64,7 +65,7 @@ export class GuiManager {
             const fence = entityMgr.selection.fence
             if (!fence) return
             EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_DEATH, fence.worldMgr.ecs.getComponents(fence.entity).get(PositionComponent)))
-            fence.worldMgr.ecs.getComponents(fence.entity).get(SelectionFrameComponent)?.deselect()
+            fence.worldMgr.ecs.getComponents(fence.entity).getOptional(SelectionFrameComponent)?.deselect()
             fence.worldMgr.ecs.removeComponent(fence.entity, SelectionFrameComponent)
             fence.worldMgr.entityMgr.removeEntity(fence.entity)
             if (fence.targetSurface) {
@@ -188,7 +189,7 @@ export class GuiManager {
             }
         })
         EventBroker.subscribe(EventKey.FOLLOWER_SET_LOOK_AT, (event: FollowerSetLookAtEvent) => {
-            const sceneEntity = worldMgr.ecs.getComponents(event.entity).get(AnimatedSceneEntityComponent)?.sceneEntity
+            const sceneEntity = worldMgr.ecs.getComponents(event.entity).getOptional(AnimatedSceneEntityComponent)?.sceneEntity
             if (sceneEntity) cameraControls.jumpTo(sceneEntity.getWorldPosition(new Vector3()))
         })
         EventBroker.subscribe(EventKey.COMMAND_REPAIR_LAVA, () => {
@@ -232,7 +233,7 @@ export class GuiManager {
                 sceneEntity.setAnimation(DYNAMITE_ACTIVITY.normal, () => {
                     sceneEntity.setAnimation(DYNAMITE_ACTIVITY.tickDown, () => {
                         const birdScarer = worldMgr.ecs.addEntity()
-                        worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
+                        worldMgr.ecs.addComponent(birdScarer, new BirdScarerComponent(r.getPosition2D(), r.getSurface()))
                         entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
                         sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.birdScarer, position, PRNG.animation.random() * 2 * Math.PI, false, () => {
                             sceneMgr.disposeSceneEntity(sceneEntity)

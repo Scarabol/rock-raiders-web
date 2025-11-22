@@ -10,17 +10,17 @@ import { EventBroker } from '../../event/EventBroker'
 
 export class BriefingPanel extends Panel {
     cfg: BriefingPanelCfg
-    imgTitle?: SpriteImage
+    imgTitle: SpriteImage | undefined
     titleRelX: number = 0
     titleRelY: number = 0
     btnNext: Button
     btnBack: Button
-    imgBack?: SpriteImage
+    imgBack: SpriteImage | undefined
     imgParagraphList: (SpriteImage | undefined)[] = []
     paragraph: number = 0
     objectiveParagraphs: string[] = []
     objectiveSfxName: string = ''
-    objectiveSfx?: AudioBufferSourceNode
+    objectiveSfx: AudioBufferSourceNode | undefined
     onContinueMission: () => void = () => console.log('Start mission')
 
     constructor() {
@@ -36,7 +36,7 @@ export class BriefingPanel extends Panel {
         this.hidden = true
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.hidden = true
         this.setParagraph(0)
@@ -89,7 +89,7 @@ export class BriefingPanel extends Panel {
         this.setParagraph(this.paragraph - 1)
     }
 
-    show() {
+    override show() {
         super.show()
         this.setParagraph(0)
         if (this.objectiveSfxName) {
@@ -103,7 +103,7 @@ export class BriefingPanel extends Panel {
         this.publishEvent(new ShowMissionBriefingEvent(true))
     }
 
-    hide() {
+    override hide() {
         super.hide()
         this.objectiveSfx?.stop()
         this.objectiveSfx = undefined
@@ -111,7 +111,7 @@ export class BriefingPanel extends Panel {
         this.publishEvent(new ShowMissionBriefingEvent(false))
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         if (this.imgBack) context.drawImage(this.imgBack, this.x, this.y)
         if (this.imgTitle) context.drawImage(this.imgTitle, Math.round(this.x + this.titleRelX - this.imgTitle.width / 2), this.y + this.titleRelY)

@@ -12,17 +12,17 @@ export class MenuBasePanel extends Panel {
         this.layersByKey.forEach((layer) => layer.itemsNext.forEach((item) => item.onClick = () => this.selectLayer(item.target)))
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.hidden = true
     }
 
-    show() {
+    override show() {
         this.hidden = false
         this.selectLayer('menu1')
     }
 
-    hide() {
+    override hide() {
         super.hide()
         this.notifyRedraw()
     }

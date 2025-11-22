@@ -10,7 +10,7 @@ export class AnimatedCursorData { // This gets serialized for caching
 }
 
 export class AnimatedCursor {
-    animationInterval?: NodeJS.Timeout
+    animationInterval: NodeJS.Timeout | undefined
     animationIndex: number = 0
 
     constructor(readonly cursorUrls: string[]) {

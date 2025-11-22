@@ -56,7 +56,7 @@ export class SelectRaiderPanel extends IconSubPanel {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.someCarries = false
         this.everyHasMaxLevel = false

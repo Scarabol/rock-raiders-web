@@ -4,16 +4,16 @@ import { Button } from './Button'
 export class ToggleButton extends Button {
     toggleState: boolean = false
 
-    reset() {
+    override reset() {
         super.reset()
         this.toggleState = false
     }
 
-    startBlinking() {
+    override startBlinking() {
         // Toggle buttons should not blink
     }
 
-    onPointerMove(event: GuiHoverEvent): void {
+    override onPointerMove(event: GuiHoverEvent): void {
         const inRect = this.isInRect(event.sx, event.sy)
         if (inRect && !this.hover) this.onHoverStart()
         else if (!inRect && this.hover) this.onHoverEnd()
@@ -25,7 +25,7 @@ export class ToggleButton extends Button {
         this.children.forEach((child) => child.onPointerMove(event))
     }
 
-    onPointerDown(event: GuiPointerDownEvent): boolean {
+    override onPointerDown(event: GuiPointerDownEvent): boolean {
         if (this.isInactive()) return false
         const oldState = this.pressed
         if (this.isInRect(event.sx, event.sy) || this.toggleState) {
@@ -41,7 +41,7 @@ export class ToggleButton extends Button {
         return updated
     }
 
-    onPointerUp(event: GuiPointerUpEvent): boolean {
+    override onPointerUp(event: GuiPointerUpEvent): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(event.sx, event.sy)
         let updated = inRect && this.pressed
@@ -55,12 +55,12 @@ export class ToggleButton extends Button {
         return updated
     }
 
-    clicked(event: GuiPointerDownEvent) {
+    override clicked(event: GuiPointerDownEvent) {
         this.toggleState = !this.toggleState
         super.clicked(event)
     }
 
-    onPointerLeave(): boolean {
+    override onPointerLeave(): boolean {
         return false
     }
 

@@ -9,8 +9,8 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class MenuSliderItem extends BaseElement {
-    imgTextNormal?: SpriteImage
-    imgTextHover?: SpriteImage
+    imgTextNormal: SpriteImage | undefined
+    imgTextHover: SpriteImage | undefined
     imgLeft: SpriteImage
     imgNormal: SpriteImage
     imgHover: SpriteImage
@@ -73,12 +73,12 @@ export class MenuSliderItem extends BaseElement {
         this.value = Math.max(0, Math.min(1, value)) * this.max
     }
 
-    onPointerMove(event: GuiHoverEvent): void {
+    override onPointerMove(event: GuiHoverEvent): void {
         super.onPointerMove(event)
         if (event.hoverStateChanged) this.notifyRedraw()
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         let img = this.imgTextNormal
         if (this.hover) {

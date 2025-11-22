@@ -210,7 +210,7 @@ export class CabFile {
         const file = this.lowerFilePathNameToFile.get(lName)
         if (!file) throw new Error(`File "${fileName}" not found`)
         if (this.verbose) console.log(file)
-        const cached = await cacheGetData(file.filePathName)
+        const cached = await cacheGetData<ArrayBuffer>(file.filePathName)
         if (cached) return cached
         const fileData = new Uint8Array(file.expandedSize)
         let offset = 0

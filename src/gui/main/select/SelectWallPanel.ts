@@ -45,7 +45,7 @@ export class SelectWallPanel extends IconSubPanel {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.isDrillable = false
         this.isReinforcable = false

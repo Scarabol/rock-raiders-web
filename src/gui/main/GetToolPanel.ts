@@ -40,7 +40,7 @@ export class GetToolPanel extends IconSubPanel {
         return menuItem
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.hasToolstation = false
         this.everyHasTool = new Map()

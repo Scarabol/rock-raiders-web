@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { PositionComponent } from '../component/PositionComponent'
@@ -8,12 +8,11 @@ import { HeadingComponent } from '../component/HeadingComponent'
 import { PRNG } from '../factory/PRNG'
 
 export class RandomMoveBehaviorSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([RandomMoveComponent, PositionComponent, MovableStatsComponent])
+    readonly randomMoveCandidates: FilteredEntities = this.addEntityFilter(RandomMoveComponent, PositionComponent, MovableStatsComponent)
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
-        for (const entity of entities) {
+    update(ecs: ECS, elapsedMs: number): void {
+        for (const [entity, components] of this.randomMoveCandidates) {
             try {
-                const components = this.ecs.getComponents(entity)
                 const randomMoveComponent = components.get(RandomMoveComponent)
                 if (randomMoveComponent.isOnIdleTimer(elapsedMs) || components.has(WorldTargetComponent)) continue
                 const positionComponent = components.get(PositionComponent)
@@ -26,8 +25,8 @@ export class RandomMoveBehaviorSystem extends AbstractGameSystem {
                     && (n.surfaceType !== SurfaceType.WATER || statsComponent.crossWater)
                 )])
                 const targetLocation = targetSurface.getRandomPosition()
-                this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, 1))
-                this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
+                ecs.addComponent(entity, new WorldTargetComponent(targetLocation, 1))
+                ecs.addComponent(entity, new HeadingComponent(targetLocation))
             } catch (e) {
                 console.error(e)
             }

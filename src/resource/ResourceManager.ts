@@ -75,7 +75,7 @@ export class ResourceManager {
                 loadingCursors.push(this.loadCursor(cursorFileName, cursor as Cursor))
                 return
             }
-            loadingCursors.push(cacheGetData(cursorFileName).then((animatedCursorData) => {
+            loadingCursors.push(cacheGetData<AnimatedCursorData>(cursorFileName).then((animatedCursorData) => {
                 if (!animatedCursorData) {
                     const cursorImages = (this.getResource(cursorFileName) as SpriteImage[]).map((cursorCanvas) => {
                         const blankCanvas = createCanvas(blankPointerImageData.width, blankPointerImageData.height)
@@ -97,7 +97,7 @@ export class ResourceManager {
     }
 
     static async loadCursor(cursorImageName: string, cursor: Cursor) {
-        let animatedCursorData = await cacheGetData(cursorImageName)
+        let animatedCursorData = await cacheGetData<AnimatedCursorData>(cursorImageName)
         if (!animatedCursorData) {
             const imgData = this.getImageData(cursorImageName)
             const cursorImage = createCanvas(imgData.width, imgData.height)
@@ -156,9 +156,9 @@ export class ResourceManager {
         return []
     }
 
-    static getSurfaceTexture(textureFilepath: string, rotation: number): Texture | undefined {
+    static getSurfaceTexture(textureFilepath: string, rotation: number): Texture | null {
         const texture = this.getTexture(textureFilepath)
-        if (!texture) return undefined
+        if (!texture) return null
         if (rotation === 0) return texture
         return this.textureCache.getOrUpdate(textureFilepath.toLowerCase(), () => new Map()).getOrUpdate(rotation, () => {
             const rotatedTexture = texture.clone()
@@ -168,14 +168,14 @@ export class ResourceManager {
         })
     }
 
-    static getTexture(textureFilepath: string): Texture | undefined {
+    static getTexture(textureFilepath: string): Texture | null {
         if (!textureFilepath) {
             throw new Error(`textureFilepath must not be undefined, null or empty - was ${textureFilepath}`)
         }
         const imgData = this.resourceByName.get(textureFilepath.toLowerCase())
         if (!imgData) {
             console.warn(`Could not find texture ${textureFilepath}`)
-            return undefined
+            return null
         }
         return this.createTexture(imgData, textureFilepath)
     }
@@ -244,7 +244,7 @@ class ResourceManagerTextureLoader extends LWOBTextureLoader {
         this.meshPath = meshPath
     }
 
-    load(textureFilename: string, onLoad: (textures: Texture[]) => void): void {
+    override load(textureFilename: string, onLoad: (textures: Texture[]) => void): void {
         onLoad(this.loadFromResourceManager(textureFilename))
     }
 

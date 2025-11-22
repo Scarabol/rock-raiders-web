@@ -1,14 +1,13 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { FallInComponent } from '../component/FallInComponent'
 import { PRNG } from '../factory/PRNG'
 
 export class FallInSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([FallInComponent])
+    readonly activeFallIns: FilteredEntities = this.addEntityFilter(FallInComponent)
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
-        for (const entity of entities) {
+    update(_ecs: ECS, elapsedMs: number): void {
+        for (const [_entity, components] of this.activeFallIns) {
             try {
-                const components = this.ecs.getComponents(entity)
                 const fallInComponent = components.get(FallInComponent)
                 if (!fallInComponent.target.discovered || !fallInComponent.target.surfaceType.floor) continue
                 if (fallInComponent.timer > 0) {

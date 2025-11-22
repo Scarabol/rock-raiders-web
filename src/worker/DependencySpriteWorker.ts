@@ -36,9 +36,9 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
     readonly interfaceImages: Map<string, [SpriteImage, SpriteImage]> = new Map()
     readonly interfaceBuildImages: Map<string, [SpriteImage, SpriteImage]> = new Map()
     upgradeNames?: string[]
-    tooltipFont?: BitmapFont
-    plusSignImg?: SpriteImage
-    equalsSignImg?: SpriteImage
+    tooltipFont: BitmapFont | undefined
+    plusSignImg: SpriteImage | undefined
+    equalsSignImg: SpriteImage | undefined
 
     onMessageFromFrontend(workerRequestHash: string, request: DependencySpriteWorkerRequest): void {
         switch (request.type) {

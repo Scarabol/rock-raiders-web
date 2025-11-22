@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { FluidSurfaceComponent } from '../component/FluidSurfaceComponent'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -6,7 +6,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 export class FluidSurfaceSystem extends AbstractGameSystem {
     private static readonly firstIndexGroup = [0, 2, 3, 4]
 
-    readonly componentsRequired: Set<Function> = new Set([FluidSurfaceComponent])
+    readonly fluidSurfaces: FilteredEntities = this.addEntityFilter(FluidSurfaceComponent)
     progress: number = 0
 
     constructor() {
@@ -16,12 +16,11 @@ export class FluidSurfaceSystem extends AbstractGameSystem {
         })
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(_ecs: ECS, elapsedMs: number): void {
         this.progress = (this.progress + Math.PI * elapsedMs / 2500) % (2 * Math.PI)
         const wave = Math.sin(this.progress) * 0.08
-        for (const entity of entities) {
+        for (const [_entity, components] of this.fluidSurfaces) {
             try {
-                const components = this.ecs.getComponents(entity)
                 const fluidComponent = components.get(FluidSurfaceComponent)
                 for (let index = 0; index < 6; index++) {
                     const indexToLoc = FluidSurfaceSystem.firstIndexGroup.includes(index) === fluidComponent.xToY

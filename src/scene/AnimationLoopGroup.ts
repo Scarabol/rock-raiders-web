@@ -16,7 +16,7 @@ export class AnimationLoopGroup extends AnimationGroup {
         return this
     }
 
-    protected addMixer(mesh: SceneMesh, clip: AnimationClip) {
+    protected override addMixer(mesh: SceneMesh, clip: AnimationClip) {
         const fps = 25 // TODO get FPS from LWS
         const startFrame = Math.round(fps * this.loopStart)
         const endFrame = Math.round(fps * this.loopEnd)
@@ -73,13 +73,13 @@ export class AnimationLoopGroup extends AnimationGroup {
         this.playing = false
     }
 
-    play(): this {
+    override play(): this {
         super.play()
         this.playing = true
         return this
     }
 
-    resetAnimation() {
+    override resetAnimation() {
         super.resetAnimation()
         this.looping = false
         this.playing = false

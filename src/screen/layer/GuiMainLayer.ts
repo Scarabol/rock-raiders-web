@@ -63,13 +63,13 @@ export class GuiBaseLayer extends ScaledLayer {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.rootElement.reset()
         this.panels.forEach((p) => p.reset())
     }
 
-    resize(width: number, height: number) {
+    override resize(width: number, height: number) {
         super.resize(width * this.layerScale, height * this.layerScale)
     }
 

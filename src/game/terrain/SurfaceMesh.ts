@@ -8,17 +8,17 @@ import { TILESIZE } from '../../params'
 import { SequenceTextureMaterial } from '../../scene/SequenceTextureMaterial'
 
 export interface SurfaceMeshUserData {
-    selectable?: Surface
-    surface?: Surface
+    selectable: Surface | undefined
+    surface: Surface | undefined
 }
 
 export class SurfaceMesh extends Group {
     proMeshEnabled: boolean = false
     lowMesh: SurfaceMeshLow
-    objectPointer?: ObjectPointer // Only available for surfaces with tuto block id
-    proMesh?: SurfaceMeshPro
+    objectPointer: ObjectPointer | undefined // Only available for surfaces with tuto block id
+    proMesh: SurfaceMeshPro | undefined
 
-    constructor(readonly x: number, readonly y: number, readonly userData: SurfaceMeshUserData) {
+    constructor(readonly x: number, readonly y: number, override readonly userData: SurfaceMeshUserData) {
         super()
         this.position.set(x, 0, y).multiplyScalar(TILESIZE)
         this.lowMesh = new SurfaceMeshLow(x, y, userData)
@@ -40,8 +40,11 @@ export class SurfaceMesh extends Group {
         this.lowMesh.setTexture(textureFilepath, textureRotation)
     }
 
-    updateProMesh(proMeshFilepath: string) {
-        const surface = this.userData.surface!
+    updateProMesh(meshBasename: string, textureSuffix: string, textureBasename: string) {
+        const surface = this.userData.surface
+        if (!surface) return
+        const proMeshSuffix = SurfaceMesh.getProMeshSuffix(textureSuffix)
+        const proMeshFilepath = (meshBasename + proMeshSuffix).toLowerCase()
         // TODO Keep the shape of the surface separately
         const adjacent = surface.terrain.getAdjacent(this.x, this.y)
         const topLeftVertex = surface.getVertex(this.x, this.y, adjacent.left, adjacent.topLeft, adjacent.top)
@@ -68,9 +71,27 @@ export class SurfaceMesh extends Group {
             // Tear pro mesh to fit surface map offsets and close gaps in terrain
             const rotationIndex = (Math.round(wallAngle / (Math.PI / 2)) + 8) % 4
             SurfaceMesh.tearGeometryPositionsByVertexOffsets(this.proMesh.geometry, topLeftVertex.offset, bottomLeftVertex.offset, bottomRightVertex.offset, topRightVertex.offset, rotationIndex)
+            if (textureSuffix !== proMeshSuffix) {
+                this.proMesh.material.forEach((m) => m.textures.forEach((t) => {
+                    if (!t.name.toLowerCase().startsWith(textureBasename.toLowerCase())) console.warn(`Unexpected texture name (${t.name}); expected start with ${textureBasename}`)
+                    const overwriteName = t.name.replace(new RegExp(`${textureBasename}\\d\\d`, 'gi'), textureBasename + textureSuffix)
+                    const overwrite = ResourceManager.getSurfaceTexture(overwriteName, t.rotation)
+                    if (overwrite) m.map = overwrite
+                }))
+            }
         }
         if (this.proMesh) this.proMesh.visible = this.proMeshEnabled
         this.lowMesh.visible = !this.proMesh?.visible
+    }
+
+    private static getProMeshSuffix(textureSuffix: string): string {
+        if (textureSuffix.startsWith('1')) { // rubble
+            return '10'
+        } else if (textureSuffix.startsWith('6')) { // recharge seam
+            return '05'
+        } else {
+            return textureSuffix
+        }
     }
 
     private static getWallAngle(wallType: WallType, topLeftHigh: boolean, topRightHigh: boolean, bottomRightHigh: boolean, bottomLeftHigh: boolean): number {
@@ -194,7 +215,7 @@ export class SurfaceMesh extends Group {
 class SurfaceMeshLow extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
     declare userData: SurfaceMeshUserData
 
-    constructor(x: number, y: number, userData: SurfaceMeshUserData) {
+    constructor(_x: number, _y: number, userData: SurfaceMeshUserData) {
         super(new SurfaceGeometry(), new MeshPhongMaterial({shininess: 0}))
         this.userData = userData
     }
@@ -205,7 +226,7 @@ class SurfaceMeshLow extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
 
     setTexture(textureFilepath: string, textureRotation: number) {
         this.material.map?.dispose()
-        this.material.map = ResourceManager.getSurfaceTexture(textureFilepath, textureRotation) ?? null
+        this.material.map = ResourceManager.getSurfaceTexture(textureFilepath, textureRotation)
         this.material.needsUpdate = true
     }
 
@@ -221,7 +242,7 @@ class SurfaceMeshLow extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
 }
 
 export class SurfaceMeshPro extends Mesh<BufferGeometry, SequenceTextureMaterial[]> {
-    clone(recursive?: boolean): this {
+    override clone(recursive?: boolean): this {
         const clone = super.clone(recursive)
         clone.geometry = this.geometry.clone()
         clone.material = clone.material.map((m) => m.clone())

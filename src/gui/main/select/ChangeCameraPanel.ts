@@ -3,7 +3,7 @@ import { CAMERA_VIEW_MODE, CameraViewMode, ChangeCameraEvent } from '../../../ev
 import { GameConfig } from '../../../cfg/GameConfig'
 
 export class ChangeCameraPanel extends IconSubPanel {
-    cameraViewMode?: CameraViewMode
+    cameraViewMode: CameraViewMode | undefined
 
     constructor() {
         super(3, undefined, false)
@@ -18,7 +18,7 @@ export class ChangeCameraPanel extends IconSubPanel {
         fpvViewItem.onClick = () => this.publishEvent(new ChangeCameraEvent(CAMERA_VIEW_MODE.fpv))
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.cameraViewMode = undefined
     }

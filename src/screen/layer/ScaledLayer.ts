@@ -20,19 +20,19 @@ export class ScaledLayer extends ScreenLayer {
         this.scaleY = this.canvas.height / this.fixedHeight
     }
 
-    transformCoords(clientX: number, clientY: number) {
+    override transformCoords(clientX: number, clientY: number) {
         const [cx, cy] = super.transformCoords(clientX, clientY)
         return [cx / this.scaleX, cy / this.scaleY].map((c) => Math.round(c))
     }
 
-    resize(width: number, height: number) {
+    override resize(width: number, height: number) {
         super.resize(width, height)
         this.updateScale()
         this.animationFrame.scale(this.scaleX, this.scaleY)
         this.animationFrame.notifyRedraw()
     }
 
-    show() {
+    override show() {
         super.show()
         this.animationFrame.notifyRedraw()
     }

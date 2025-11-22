@@ -28,7 +28,7 @@ export class UpgradeVehiclePanel extends IconSubPanel {
         upgradeItem.onClick = () => this.publishEvent(new UpgradeVehicle(upgrade))
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.canInstallUpgrade = new Map()
     }

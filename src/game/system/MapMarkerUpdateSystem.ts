@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { PositionComponent } from '../component/PositionComponent'
 import { MAP_MARKER_CHANGE, MapMarkerComponent } from '../component/MapMarkerComponent'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
@@ -6,13 +6,12 @@ import { EventBroker } from '../../event/EventBroker'
 import { MAP_MAX_UPDATE_INTERVAL, TILESIZE } from '../../params'
 
 export class MapMarkerUpdateSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([PositionComponent, MapMarkerComponent])
-    readonly dirtyComponents: Set<Function> = new Set([PositionComponent])
+    readonly trackedEntities: FilteredEntities = this.addEntityFilter(PositionComponent, MapMarkerComponent)
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
-        for (const entity of dirty) {
+    update(_ecs: ECS, elapsedMs: number): void {
+        // TODO Only update if position changed
+        for (const [entity, components] of this.trackedEntities) {
             try {
-                const components = this.ecs.getComponents(entity)
                 const mapMarkerComponent = components.get(MapMarkerComponent)
                 const mapMarkerType = mapMarkerComponent.mapMarkerType
                 mapMarkerComponent.lastUpdateMs += elapsedMs

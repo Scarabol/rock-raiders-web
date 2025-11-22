@@ -17,7 +17,7 @@ import { EventBroker } from '../../../event/EventBroker'
 
 export class MaterialEntity {
     entity: GameEntity
-    carryJob?: CarryJob
+    carryJob: CarryJob | undefined
     sceneEntity: AnimatedSceneEntity
     priorityIdentifier: PriorityIdentifier = PRIORITY_IDENTIFIER.none
     requiredTraining: RaiderTraining = RAIDER_TRAINING.none
@@ -62,7 +62,7 @@ export class MaterialEntity {
         this.sceneEntity.position.copy(position)
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
         this.sceneEntity.visible = surface.discovered
-        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(PositionComponent)
         if (positionComponent) {
             positionComponent.position.copy(position)
             positionComponent.surface = surface

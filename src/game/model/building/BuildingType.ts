@@ -4,10 +4,10 @@ import { EntityType } from '../EntityType'
 import { GameConfig } from '../../../cfg/GameConfig'
 
 export class BuildingType {
-    secondaryBuildingPart?: Vector2
-    primaryPowerPath?: Vector2 = new Vector2(0, 1)
-    secondaryPowerPath?: Vector2
-    waterPathSurface?: Vector2
+    secondaryBuildingPart: Vector2 | undefined
+    primaryPowerPath: Vector2 | undefined = new Vector2(0, 1)
+    secondaryPowerPath: Vector2 | undefined
+    waterPathSurface: Vector2 | undefined
     teleportedEntityTypes: EntityType[] = []
 
     constructor(

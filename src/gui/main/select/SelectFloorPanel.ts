@@ -37,7 +37,7 @@ export class SelectFloorPanel extends IconSubPanel {
         })
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.isGround = false
         this.isPowerPath = false

@@ -29,7 +29,7 @@ import { SaveGameManager } from '../../resource/SaveGameManager'
 import { SpriteImage } from '../../core/Sprite'
 
 export class GameLayer extends ScreenLayer {
-    private pointerDown?: { x: number, y: number }
+    private pointerDown: { x: number, y: number } | undefined
     private readonly beforeUnloadListener = (event: BeforeUnloadEvent): string | undefined => {
         if (DEV_MODE) return undefined
         // XXX save complete game state in local storage and allow page reload
@@ -81,18 +81,18 @@ export class GameLayer extends ScreenLayer {
         this.addEventListener('wheel', (): boolean => true) // signal to screen master for camera controls listening on canvas for events
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.pointerDown = undefined
         EventBroker.publish(new SelectionFrameChangeEvent(undefined))
     }
 
-    show() {
+    override show() {
         super.show()
         window.addEventListener('beforeunload', this.beforeUnloadListener)
     }
 
-    hide() {
+    override hide() {
         super.hide()
         window.removeEventListener('beforeunload', this.beforeUnloadListener)
     }
@@ -124,12 +124,13 @@ export class GameLayer extends ScreenLayer {
             cursorTarget.vehicle?.entity,
             cursorTarget.monster?.entity,
             cursorTarget.fence?.entity,
+            cursorTarget.slug?.entity,
             cursorTarget.building?.entity,
             cursorTarget.surface?.site?.entity,
             cursorTarget.surface?.entity,
         ].map((e) => {
             if (!e) return null
-            return this.worldMgr.ecs.getComponents(e).get(TooltipComponent)
+            return this.worldMgr.ecs.getComponents(e).getOptional(TooltipComponent)
         }).find((c) => !!c)
         if (!tooltipComponent) return
         EventBroker.publish(tooltipComponent.createEvent())
@@ -331,18 +332,21 @@ export class GameLayer extends ScreenLayer {
             if (event.key === 'h') {
                 GameState.numCrystal += 50
                 EventBroker.publish(new MaterialAmountChanged())
+            } else if (event.key === 'j') {
+                GameState.numOre += 50
+                EventBroker.publish(new MaterialAmountChanged())
             }
         }
         return false
     }
 
-    takeScreenshotFromLayer(): Promise<SpriteImage | undefined> {
+    override takeScreenshotFromLayer(): Promise<SpriteImage | undefined> {
         return new Promise<SpriteImage | undefined>((resolve) => {
             this.worldMgr.sceneMgr.renderer.screenshotCallback = resolve
         })
     }
 
-    resize(width: number, height: number) {
+    override resize(width: number, height: number) {
         super.resize(width, height)
         this.worldMgr.sceneMgr?.resize(width, height)
     }
@@ -360,6 +364,7 @@ export class GameLayer extends ScreenLayer {
         }
         if (cursorTarget.monster) return 'selected'
         if (cursorTarget.fence) return 'selected'
+        if (cursorTarget.slug) return 'selected'
         if (cursorTarget.building) return 'selected'
         if (cursorTarget.material) return this.determineMaterialCursor(cursorTarget.material)
         if (cursorTarget.surface) return this.determineSurfaceCursor(cursorTarget.surface)

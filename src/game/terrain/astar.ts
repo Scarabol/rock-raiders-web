@@ -48,6 +48,7 @@ export const astar = {
         while (openHeap.size() > 0) {
             // Grab the lowest f(x) to process next.  Heap keeps this sorted for us.
             const currentNode = openHeap.pop()
+            if (!currentNode) continue
 
             // End case -- result has been found, return the traced path.
             if (currentNode === end) {
@@ -65,7 +66,7 @@ export const astar = {
             for (; i < il; ++i) {
                 const neighbor = neighbors[i]
 
-                if (neighbor.closed || neighbor.isWall()) {
+                if (!neighbor || neighbor.closed || neighbor.isWall()) {
                     // Not a valid node to process, skip to next neighbor.
                     continue
                 }
@@ -127,7 +128,8 @@ export const astar = {
         },
     },
 
-    cleanNode(node: GridNode) {
+    cleanNode(node: GridNode | undefined) {
+        if (!node) return
         node.f = 0
         node.g = 0
         node.h = 0
@@ -270,7 +272,7 @@ class GridNode {
     closed: boolean = false
     visited: boolean = false
     g: number = 0
-    parent?: GridNode
+    parent: GridNode | undefined
     f: number = 0
 
     constructor(x: number, y: number, weight: number) {

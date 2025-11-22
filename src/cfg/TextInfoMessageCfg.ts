@@ -1,5 +1,5 @@
-import {ConfigSetFromEntryValue, ConfigSetFromRecord} from './Configurable'
-import {CfgEntry, CfgEntryValue} from './CfgEntry'
+import { ConfigSetFromEntryValue, ConfigSetFromRecord } from './Configurable'
+import { CfgEntry, CfgEntryValue } from './CfgEntry'
 
 export class TextInfoMessageCfg implements ConfigSetFromRecord {
     textCrystalFound: TextInfoMessageEntryCfg = new TextInfoMessageEntryCfg()

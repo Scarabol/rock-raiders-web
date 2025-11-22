@@ -7,10 +7,10 @@ export class UiElementState {
     protected down: boolean = false
     stateChanged: boolean = false
 
-    onPressed?: UiElementCallback
-    onHoverChanged?: UiElementCallback
-    onShowTooltip?: UiElementCallback
-    onHideTooltip?: UiElementCallback
+    onPressed: UiElementCallback | undefined
+    onHoverChanged: UiElementCallback | undefined
+    onShowTooltip: UiElementCallback | undefined
+    onHideTooltip: UiElementCallback | undefined
 
     reset() {
         this.stateChanged = this.hovered || this.down || this.hidden || this.disabled

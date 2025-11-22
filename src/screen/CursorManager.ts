@@ -6,8 +6,8 @@ import { HTML_GAME_CANVAS_CONTAINER } from '../core'
 export class CursorManager {
     static readonly cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
     static currentCursor: Cursor
-    static cursorTimeout?: NodeJS.Timeout
-    static activeCursor?: AnimatedCursor
+    static cursorTimeout: NodeJS.Timeout | undefined
+    static activeCursor: AnimatedCursor | undefined
 
     static addCursor(cursor: Cursor, dataUrls: string[]) {
         this.cursorToUrl.set(cursor, new AnimatedCursor(dataUrls))

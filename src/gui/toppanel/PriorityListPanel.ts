@@ -72,11 +72,11 @@ export class PriorityListPanel extends Panel {
         if (updated) this.notifyRedraw()
     }
 
-    isInactive(): boolean {
+    override isInactive(): boolean {
         return this.movedIn || super.isInactive()
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.movedIn) return
         super.onRedraw(context)
     }

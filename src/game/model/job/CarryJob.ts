@@ -20,10 +20,10 @@ import { PRIORITY_IDENTIFIER } from './PriorityIdentifier'
 import { GameState } from '../GameState'
 
 export class CarryJob extends Job {
-    fulfiller?: JobFulfiller
-    target?: PathTarget
+    fulfiller: JobFulfiller | undefined
+    target: PathTarget | undefined
 
-    constructor(readonly carryItem: MaterialEntity) {
+    constructor(override readonly carryItem: MaterialEntity) {
         super()
         this.requiredTraining = this.carryItem.requiredTraining
         this.priorityIdentifier = this.carryItem.priorityIdentifier
@@ -100,7 +100,7 @@ export class CarryJob extends Job {
                 }
             case EntityType.DYNAMITE:
                 if (carryItem.targetSurface?.isDigable() && carryItem.targetSurface?.dynamiteJob === this) {
-                    const pickupRadius = carryItem.worldMgr.ecs.getComponents(carryItem.entity).get(SceneSelectionComponent)?.stats.pickSphere || 1
+                    const pickupRadius = carryItem.worldMgr.ecs.getComponents(carryItem.entity).getOptional(SceneSelectionComponent)?.stats.pickSphere || 1
                     return carryItem.targetSurface.getDigPositions()
                         .map((p) => PathTarget.fromLocation(p, pickupRadius * pickupRadius))
                         .filter((p) => !!entity.findShortestPath(p))
@@ -127,7 +127,7 @@ export class CarryJob extends Job {
         return entityMgr.getBuildingCarryPathTargets(buildingType).filter((p) => !!entity.findShortestPath(p))
     }
 
-    getWorkActivity(): AnimationActivity {
+    override getWorkActivity(): AnimationActivity {
         if (this.fulfiller?.entityType === EntityType.PILOT) {
             if (this.carryItem.entityType === EntityType.DEPLETED_CRYSTAL) return RAIDER_ACTIVITY.recharge
             const building = this.target?.building?.entityType
@@ -136,7 +136,7 @@ export class CarryJob extends Job {
         return ANIM_ENTITY_ACTIVITY.stand
     }
 
-    isReadyToComplete(): boolean {
+    override isReadyToComplete(): boolean {
         if (!this.target) return false
         if (this.target.building?.entityType === EntityType.POWER_STATION || this.target.building?.entityType === EntityType.ORE_REFINERY) {
             return this.target.building.sceneEntity.currentAnimation === (this.target.building.isPowered() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
@@ -144,7 +144,7 @@ export class CarryJob extends Job {
         return true
     }
 
-    onJobComplete(fulfiller: JobFulfiller): void {
+    override onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         const dropped = this.fulfiller?.dropCarried(false) || []
         dropped.forEach((droppedItem) => {
@@ -230,7 +230,7 @@ export class CarryJob extends Job {
         return !!this.fulfiller
     }
 
-    getJobBubble(): keyof BubblesCfg {
+    override getJobBubble(): keyof BubblesCfg {
         switch (this.carryItem.entityType) {
             case EntityType.ORE:
             case EntityType.BRICK:

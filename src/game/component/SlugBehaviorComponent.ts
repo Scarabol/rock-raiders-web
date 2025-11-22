@@ -13,7 +13,7 @@ type SlugBehaviorState = typeof SLUG_BEHAVIOR_STATE[keyof typeof SLUG_BEHAVIOR_S
 export class SlugBehaviorComponent extends AbstractGameComponent {
     state: SlugBehaviorState = SLUG_BEHAVIOR_STATE.emerge
     energyLeeched: boolean = false
-    targetBuilding?: BuildingEntity
-    targetEnter?: PathTarget
+    targetBuilding: BuildingEntity | undefined
+    targetEnter: PathTarget | undefined
     idleTimer: number = 0
 }

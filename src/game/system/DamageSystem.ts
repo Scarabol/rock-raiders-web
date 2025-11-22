@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { HealthComponent } from '../component/HealthComponent'
 import { EventKey } from '../../event/EventKeyEnum'
 import { DynamiteExplosionEvent, WorldLocationEvent } from '../../event/WorldEvents'
@@ -10,7 +10,7 @@ import { EventBroker } from '../../event/EventBroker'
 import { PRNG } from '../factory/PRNG'
 
 export class DamageSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
+    readonly damageable: FilteredEntities = this.addEntityFilter(PositionComponent, HealthComponent)
     readonly landslides: PositionComponent[] = []
     readonly dynamiteExplosions: DynamiteExplosionEvent[] = []
     readonly dynamiteRadiusSq: number = 0
@@ -28,10 +28,9 @@ export class DamageSystem extends AbstractGameSystem {
         })
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
-        for (const entity of entities) {
+    update(_ecs: ECS, elapsedMs: number): void {
+        for (const [_entity, components] of this.damageable) {
             try {
-                const components = this.ecs.getComponents(entity)
                 const positionComponent = components.get(PositionComponent)
                 const healthComponent = components.get(HealthComponent)
                 const position = positionComponent.getPosition2D()
@@ -45,7 +44,7 @@ export class DamageSystem extends AbstractGameSystem {
                 if (healthComponent.hitByLavaTimeoutMs > 0) {
                     healthComponent.hitByLavaTimeoutMs -= elapsedMs
                 } else {
-                    const movableComponent = components.get(MovableStatsComponent)
+                    const movableComponent = components.getOptional(MovableStatsComponent)
                     if (!movableComponent?.crossLava && positionComponent.surface.surfaceType === SurfaceType.LAVA5) {
                         healthComponent.changeHealth(-(20 + PRNG.damage.randInt(20)))
                         healthComponent.hitByLavaTimeoutMs = 2000

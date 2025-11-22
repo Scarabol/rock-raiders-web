@@ -6,16 +6,16 @@ import { TILESIZE } from '../params'
 import { GameState } from '../game/model/GameState'
 
 export interface SceneAudioMeshUserData {
-    sfxNameAnimation?: string
+    sfxNameAnimation: string | undefined
 }
 
 export class SceneAudioMesh extends SceneMesh {
     declare userData: SceneAudioMeshUserData
     readonly audioId: number = SoundManager.nextAudioId
-    audioNode?: PositionalAudio
+    audioNode: PositionalAudio | undefined
     lastSfxName: string = ''
 
-    update(elapsedMs: number) {
+    override update(_elapsedMs: number) {
         const sfxVolume = SaveGameManager.getSfxVolume()
         if (sfxVolume <= 0 || !this.isVisible()) return
         const sfxName = this.userData.sfxNameAnimation || ''
@@ -47,7 +47,7 @@ export class SceneAudioMesh extends SceneMesh {
         return !hiddenObj
     }
 
-    dispose() {
+    override dispose() {
         SoundManager.stopAudio(this.audioId)
         this.lastSfxName = ''
     }

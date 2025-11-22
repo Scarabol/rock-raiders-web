@@ -6,10 +6,10 @@ import { InterfaceImageEntryCfg } from '../../cfg/InterfaceImageCfg'
 
 export class IconPanelToggleButton extends IconPanelButton {
     toggleState: boolean = false
-    imgOnNormal?: SpriteImage
-    imgOnHover?: SpriteImage
-    imgOnPressed?: SpriteImage
-    imgOnDisabled?: SpriteImage
+    imgOnNormal: SpriteImage | undefined
+    imgOnHover: SpriteImage | undefined
+    imgOnPressed: SpriteImage | undefined
+    imgOnDisabled: SpriteImage | undefined
     isToggled: () => boolean = () => false
 
     constructor(menuItemOffCfg: InterfaceImageEntryCfg, menuItemOnCfg: InterfaceImageEntryCfg, parentWidth: number, menuIndex: number) {
@@ -20,12 +20,12 @@ export class IconPanelToggleButton extends IconPanelButton {
         if (menuItemOnCfg.disabledFile) this.imgOnDisabled = ResourceManager.getImage(menuItemOnCfg.disabledFile)
     }
 
-    clicked(event: GuiPointerDownEvent) {
+    override clicked(event: GuiPointerDownEvent) {
         this.toggleState = !this.toggleState
         super.clicked(event)
     }
 
-    updateState(autoRedraw: boolean = true): boolean {
+    override updateState(autoRedraw: boolean = true): boolean {
         const stateChanged = super.updateState(false)
         const targetToggleState = this.isToggled()
         const toggleStateChanged = this.toggleState = targetToggleState
@@ -34,7 +34,7 @@ export class IconPanelToggleButton extends IconPanelButton {
         return stateChanged || toggleStateChanged
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         let img = this.toggleState ? this.imgOnNormal : this.imgNormal
         if (this.disabled) {

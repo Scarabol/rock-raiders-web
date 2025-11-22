@@ -9,14 +9,14 @@ import { GameConfig } from '../cfg/GameConfig'
 import { SoundManager } from '../audio/SoundManager'
 
 export class MainMenuLoadSaveButton extends MainMenuBaseItem {
-    labelImgLo?: SpriteImage
-    labelImgHi?: SpriteImage
-    saveGameImg?: SpriteImage
+    labelImgLo: SpriteImage | undefined
+    labelImgHi: SpriteImage | undefined
+    saveGameImg: SpriteImage | undefined
     saveGameImgWidthLo: number = 0
     saveGameImgHeightLo: number = 0
     saveGameImgWidthHi: number = 0
     saveGameImgHeightHi: number = 0
-    overlay?: FlicAnimOverlay
+    overlay: FlicAnimOverlay | undefined
 
     constructor(readonly layer: MainMenuLayer, index: number, x: number, y: number, loading: boolean) {
         super(x, y)
@@ -44,14 +44,14 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
         this.saveGameImgHeightHi = menuCfg.saveImage.bigHeight
     }
 
-    set onPressed(callback: UiElementCallback) {
+    override set onPressed(callback: UiElementCallback) {
         super.onPressed = async () => {
             SoundManager.playSfxSound('SFX_ButtonPressed')
             callback()
         }
     }
 
-    draw(context: SpriteContext) {
+    override draw(context: SpriteContext) {
         super.draw(context)
         if (this.saveGameImg) {
             if (this.state.hover) {

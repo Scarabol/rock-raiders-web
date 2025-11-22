@@ -12,7 +12,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
     imgActive: SpriteImage
     imgInactive: SpriteImage
     imgCross: SpriteImage
-    tooltipTimeout?: NodeJS.Timeout
+    tooltipTimeout: NodeJS.Timeout | undefined
     onShowTooltip?: () => void
 
     constructor(
@@ -33,14 +33,14 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
         this.disabled = this.onlyTutorials && this.levelConf.isLocked()
     }
 
-    set onPressed(callback: UiElementCallback) {
+    override set onPressed(callback: UiElementCallback) {
         super.onPressed = () => {
             SoundManager.playSfxSound('SFX_ButtonPressed')
             callback()
         }
     }
 
-    set onHoverChange(callback: UiElementCallback) {
+    override set onHoverChange(callback: UiElementCallback) {
         super.onHoverChange = () => {
             const onShowTooltipCallback = this.onShowTooltip
             if (onShowTooltipCallback) {
@@ -56,13 +56,13 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
         }
     }
 
-    reset() {
+    override reset() {
         super.reset()
         this.disabled = this.onlyTutorials && this.levelConf.isLocked()
         this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
     }
 
-    draw(context: SpriteContext) {
+    override draw(context: SpriteContext) {
         super.draw(context)
         let img = this.imgCross
         if (!this.state.disabled) img = this.state.hover ? this.imgActive : this.imgInactive

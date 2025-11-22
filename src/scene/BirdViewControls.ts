@@ -21,9 +21,9 @@ export type CameraRotation = typeof CAMERA_ROTATION[keyof typeof CAMERA_ROTATION
 export class BirdViewControls extends MapControls {
     private readonly dummyPointerId: number
     private lockBuild: boolean = false
-    moveTarget?: Vector3
+    moveTarget: Vector3 | undefined
     lastPanKey: string = ''
-    lockedObject?: Object3D
+    lockedObject: Object3D | undefined
     disabled: boolean = false
     gamePaused: boolean = false
     shakeOffset: Vector3 = new Vector3()
@@ -32,7 +32,7 @@ export class BirdViewControls extends MapControls {
     bumpTimeout: number = 0
     buildingCycleIndex: number = 0
 
-    constructor(camera: Camera, readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
+    constructor(camera: Camera, override readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
         this.dummyPointerId = this.verifyPointerId()
         this.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
@@ -70,7 +70,7 @@ export class BirdViewControls extends MapControls {
         })
     }
 
-    reset() {
+    setupControls() { // reset already used by base class with different meaning
         this.enabled = true
         this.moveTarget = undefined
         this.lockedObject = undefined

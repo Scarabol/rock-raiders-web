@@ -28,14 +28,14 @@ export class RewardScreenButton extends MainMenuBaseItem {
         this.state.onHideTooltip = () => EventBroker.publish(new HideTooltip(tooltipText))
     }
 
-    set onPressed(callback: UiElementCallback) {
+    override set onPressed(callback: UiElementCallback) {
         super.onPressed = () => {
             SoundManager.playSfxSound('SFX_ButtonPressed')
             callback()
         }
     }
 
-    draw(context: SpriteContext) {
+    override draw(context: SpriteContext) {
         super.draw(context)
         if (!this.state.visible) return
         let img = this.imgNormal

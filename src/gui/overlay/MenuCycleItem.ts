@@ -6,12 +6,12 @@ import { MenuEntryCfg } from '../../cfg/MenuEntryCfg'
 import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class MenuCycleItem extends BaseElement {
-    imgTextNormal?: SpriteImage
-    imgTextHover?: SpriteImage
-    imgLabelOnNormal?: SpriteImage
-    imgLabelOffNormal?: SpriteImage
-    imgLabelOnHover?: SpriteImage
-    imgLabelOffHover?: SpriteImage
+    imgTextNormal: SpriteImage | undefined
+    imgTextHover: SpriteImage | undefined
+    imgLabelOnNormal: SpriteImage | undefined
+    imgLabelOffNormal: SpriteImage | undefined
+    imgLabelOnHover: SpriteImage | undefined
+    imgLabelOffHover: SpriteImage | undefined
 
     labelX: number = 0
     state: boolean = false
@@ -44,30 +44,30 @@ export class MenuCycleItem extends BaseElement {
         this.state = state
     }
 
-    onPointerMove(event: GuiHoverEvent): void {
+    override onPointerMove(event: GuiHoverEvent): void {
         super.onPointerMove(event)
         if (event.hoverStateChanged) this.notifyRedraw()
     }
 
-    onPointerDown(event: GuiPointerDownEvent): boolean {
+    override onPointerDown(event: GuiPointerDownEvent): boolean {
         const stateChanged = super.onPointerDown(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    onPointerUp(event: GuiPointerUpEvent): boolean {
+    override onPointerUp(event: GuiPointerUpEvent): boolean {
         const stateChanged = super.onPointerUp(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    onPointerLeave(): boolean {
+    override onPointerLeave(): boolean {
         const stateChanged = super.onPointerLeave()
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    onRedraw(context: SpriteContext) {
+    override onRedraw(context: SpriteContext) {
         if (this.hidden) return
         let img = this.imgTextNormal
         let imgLabel = this.state ? this.imgLabelOnNormal : this.imgLabelOffNormal

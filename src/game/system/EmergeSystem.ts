@@ -1,4 +1,4 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { EmergeComponent } from '../component/EmergeComponent'
 import { EventBroker } from '../../event/EventBroker'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -8,15 +8,19 @@ import { PositionComponent } from '../component/PositionComponent'
 import { Surface } from '../terrain/Surface'
 import { MonsterSpawner } from '../factory/MonsterSpawner'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
-import { ANIM_ENTITY_ACTIVITY, ROCK_MONSTER_ACTIVITY } from '../model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY, ROCK_MONSTER_ACTIVITY, SLUG_ACTIVITY } from '../model/anim/AnimationActivity'
 import { RAIDER_SCARE_RANGE, RaiderScareComponent } from '../component/RaiderScareComponent'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { WorldManager } from '../WorldManager'
 import { WALL_TYPE } from '../terrain/WallType'
 import { SurfaceType } from '../terrain/SurfaceType'
+import { SlugHoleComponent } from '../component/SlugHoleComponent'
+import { PRNG } from '../factory/PRNG'
+import { SLUG_BEHAVIOR_STATE, SlugBehaviorComponent } from '../component/SlugBehaviorComponent'
 
 export class EmergeSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([EmergeComponent])
+    readonly activeEmerges: FilteredEntities = this.addEntityFilter(EmergeComponent)
+    readonly slugHoles: FilteredEntities = this.addEntityFilter(SlugHoleComponent)
 
     emergeCreature: MonsterEntityType = EntityType.NONE
     emergeTimeoutMs: number = 0
@@ -30,18 +34,20 @@ export class EmergeSystem extends AbstractGameSystem {
         EventBroker.subscribe(EventKey.MONSTER_EMERGE, (event: MonsterEmergeEvent) => {
             this.emergeFromSurface(event.surface)
         })
+        EventBroker.subscribe(EventKey.SLUG_EMERGE, () => {
+            this.emergeSlug()
+        })
     }
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
+    update(ecs: ECS, elapsedMs: number): void {
         if (!this.emergeCreature) return
         const busySurfaces = new Set<Surface>()
-        ;[...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles]
-            .forEach((e) => busySurfaces.add(this.ecs.getComponents(e.entity).get(PositionComponent).surface))
+        ;[...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles] // TODO Replace with entity filter
+            .forEach((e) => busySurfaces.add(ecs.getComponents(e.entity).get(PositionComponent).surface))
         const emergeSpawns: Map<number, Surface[]> = new Map()
         const triggeredEmerges: Set<EmergeComponent> = new Set()
-        for (const entity of entities) {
+        for (const [_entity, components] of this.activeEmerges) {
             try {
-                const components = this.ecs.getComponents(entity)
                 const emergeComponent = components.get(EmergeComponent)
                 if (emergeComponent.emergeDelayMs > 0) {
                     emergeComponent.emergeDelayMs -= elapsedMs
@@ -73,14 +79,28 @@ export class EmergeSystem extends AbstractGameSystem {
         const targetCenter = target.getCenterWorld2D()
         const angle = Math.atan2(targetCenter.x - spawnCenter.x, targetCenter.y - spawnCenter.y)
         const monster = MonsterSpawner.spawnMonster(this.worldMgr, this.emergeCreature, spawnCenter.clone().add(targetCenter).divideScalar(2), angle)
-        const components = this.ecs.getComponents(monster)
+        const components = this.worldMgr.ecs.getComponents(monster)
         const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
         const positionComponent = components.get(PositionComponent)
         sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.emerge, () => {
             sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
-            this.ecs.addComponent(monster, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
-            this.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
+            this.worldMgr.ecs.addComponent(monster, new RaiderScareComponent(RAIDER_SCARE_RANGE.rocky))
+            this.worldMgr.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
         })
         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
+    }
+
+    emergeSlug() {
+        const slugHole = PRNG.nerp.sample(this.slugHoles.values().map((c) => c.get(SlugHoleComponent)).toArray())
+        if (!slugHole) return
+        const slug = MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SLUG, slugHole.getRandomPosition(), PRNG.animation.random() * 2 * Math.PI)
+        const behaviorComponent = this.worldMgr.ecs.addComponent(slug, new SlugBehaviorComponent())
+        const components = this.worldMgr.ecs.getComponents(slug)
+        const sceneEntity = components.get(AnimatedSceneEntityComponent)
+        sceneEntity.sceneEntity.setAnimation(SLUG_ACTIVITY.emerge, () => {
+            sceneEntity.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
+            behaviorComponent.state = SLUG_BEHAVIOR_STATE.idle
+        })
+        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_SLUG_EMERGE, components.get(PositionComponent)))
     }
 }
