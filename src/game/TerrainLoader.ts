@@ -84,7 +84,8 @@ export class TerrainLoader {
                                 switch (surface.surfaceType) {
                                     case SurfaceType.LAVA5:
                                         LavaSmoke.addToSurface(surface, true)
-                                    // fallthrough
+                                        worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.lowMesh.geometry.attributes['uv']))
+                                        break
                                     case SurfaceType.WATER:
                                         worldMgr.ecs.addComponent(surface.entity, new FluidSurfaceComponent(surface.x, surface.y, surface.mesh.lowMesh.geometry.attributes['uv']))
                                         break

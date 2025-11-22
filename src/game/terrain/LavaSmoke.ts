@@ -1,7 +1,7 @@
 import { Object3D, SpriteMaterial, Vector3, Vector3Like } from 'three'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { PRNG } from '../factory/PRNG'
-import { Surface } from '../terrain/Surface'
+import { Surface } from './Surface'
 import { SceneManager } from '../SceneManager'
 import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { BaseSpriteParticle, ParticleEmitterComponent } from '../component/ParticleEmitterComponent'

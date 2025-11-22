@@ -142,7 +142,8 @@ export class Surface {
             switch (this.surfaceType) {
                 case SurfaceType.LAVA5:
                     LavaSmoke.addToSurface(this, true)
-                // fallthrough
+                    this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes['uv']))
+                    break
                 case SurfaceType.WATER:
                     this.worldMgr.ecs.addComponent(this.entity, new FluidSurfaceComponent(this.x, this.y, this.mesh.lowMesh.geometry.attributes['uv']))
                     break

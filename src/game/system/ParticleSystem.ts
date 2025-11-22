@@ -1,16 +1,15 @@
-import { AbstractGameSystem, GameEntity } from '../ECS'
+import { AbstractGameSystem, ECS, FilteredEntities } from '../ECS'
 import { PositionComponent } from '../component/PositionComponent'
 import { ParticleEmitterComponent } from '../component/ParticleEmitterComponent'
 
 export class ParticleSystem extends AbstractGameSystem {
-    readonly componentsRequired: Set<Function> = new Set([ParticleEmitterComponent])
+    readonly emitters: FilteredEntities = this.addEntityFilter(ParticleEmitterComponent)
 
-    update(elapsedMs: number, entities: Set<GameEntity>, dirty: Set<GameEntity>): void {
-        for (const entity of entities) {
+    update(_ecs: ECS, elapsedMs: number): void {
+        for (const [_entity, components] of this.emitters) {
             try {
-                const components = this.ecs.getComponents(entity)
-                const positionComponent = components.get(PositionComponent)
-                if (positionComponent && !positionComponent.isDiscovered) continue
+                const positionComponent = components.getOptional(PositionComponent)
+                if (positionComponent && !positionComponent.isDiscovered) return
                 const emitterComponent = components.get(ParticleEmitterComponent)
                 emitterComponent.update(elapsedMs, positionComponent)
             } catch (e) {
