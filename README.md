@@ -66,7 +66,6 @@ using modern web technologies.
 - Add tiny rockies running around after crumbling
 - Two buttons in priority list can be hovered/pressed/released at the same time
 - Middle wheel meshes of small digger do not rotate after engine upgrade
-- Wheels jump back and forth when starting or stopping movement
 
 ### Authentic
 

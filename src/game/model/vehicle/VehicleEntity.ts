@@ -239,8 +239,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.setPosition(step.position)
         this.sceneEntity.headTowards(step.focusPoint)
         this.sceneEntity.setAnimation(this.getRouteActivity())
-        const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
-        this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
+        this.sceneEntity.turnWheels(elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI)
         return MOVE_STATE.moved
     }
 

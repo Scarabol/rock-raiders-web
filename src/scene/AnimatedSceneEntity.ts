@@ -34,6 +34,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     camShoulderJoint: Object3D | undefined
     camFPVChildren: Object3D[] = []
     camShoulderChildren: Object3D[] = []
+    wheelAngle: number = 0
 
     constructor() {
         super()
@@ -104,6 +105,7 @@ export class AnimatedSceneEntity extends SceneEntity {
                         this.wheelJoints.add({mesh: wheelMesh, radius: animEntityData.wheelRadius})
                     }
                 })
+                this.rotateWheelJoints()
             }
         })
         this.finalizeMeshSetup()
@@ -320,5 +322,19 @@ export class AnimatedSceneEntity extends SceneEntity {
 
     restartAnimation() {
         this.animationGroups.forEach((a) => a.resetAnimation())
+    }
+
+    turnWheels(angle: number): void {
+        this.wheelAngle += angle
+        const wheelRadius = this.wheelJoints[0]?.radius // XXX Add support for vehicle with different wheel sizes
+        if (wheelRadius) this.wheelAngle = this.wheelAngle % (2 * Math.PI * wheelRadius)
+        this.rotateWheelJoints()
+    }
+
+    private rotateWheelJoints() {
+        this.wheelJoints.forEach((w) => {
+            if (!w.radius) return
+            w.mesh.rotation.x = this.wheelAngle / w.radius
+        })
     }
 }
