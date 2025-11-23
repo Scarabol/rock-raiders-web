@@ -18,7 +18,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     readonly animationParent: Group = new Group()
     readonly carryJoints: SceneMesh[] = []
     readonly carriedByIndex: Map<number, Object3D> = new Map()
-    readonly wheelJoints: { mesh: SceneMesh, radius: number }[] = []
+    readonly wheelMeshes: { mesh: Object3D & { dispose?: () => void }, radius: number }[] = []
     upgradeLevel: string = '0000'
     currentAnimation: string = ''
     driverParent: Object3D | undefined
@@ -102,8 +102,13 @@ export class AnimatedSceneEntity extends SceneEntity {
                         console.warn(`Could not find wheel mesh "${animEntityData.wheelMesh}"`)
                     } else {
                         p.add(wheelMesh)
-                        this.wheelJoints.add({mesh: wheelMesh, radius: animEntityData.wheelRadius})
+                        this.wheelMeshes.add({mesh: wheelMesh, radius: animEntityData.wheelRadius})
                     }
+                })
+                this.meshesByLName.getOrUpdate(`not${animEntityData.wheelNullName}`, () => []).forEach((p) => {
+                    p.children.forEach((wheel) => {
+                        this.wheelMeshes.add({mesh: wheel, radius: animEntityData.wheelRadius})
+                    })
                 })
                 this.rotateWheelJoints()
             }
@@ -132,8 +137,8 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.meshesByLName.clear()
         this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
         this.installedUpgrades.length = 0
-        this.wheelJoints.forEach((w) => w.mesh.dispose())
-        this.wheelJoints.length = 0
+        this.wheelMeshes.forEach((w) => w.mesh.dispose?.())
+        this.wheelMeshes.length = 0
         this.carryJoints.length = 0
         if (this.driverParent && this.driver) this.driverParent.remove(this.driver)
         this.driverParent = undefined
@@ -199,6 +204,11 @@ export class AnimatedSceneEntity extends SceneEntity {
                 upgradeMesh.meshesByLName.forEach((mesh, lName) => this.meshesByLName.getOrUpdate(lName, () => []).push(...mesh))
                 parent.add(upgradeMesh)
                 this.installedUpgrades.add({parent: parent, child: upgradeMesh})
+            })
+            this.meshesByLName.getOrUpdate(`not${animEntityData.wheelNullName}`, () => []).forEach((p) => {
+                p.children.forEach((wheel) => {
+                    this.wheelMeshes.add({mesh: wheel, radius: animEntityData.wheelRadius})
+                })
             })
         })
     }
@@ -326,13 +336,13 @@ export class AnimatedSceneEntity extends SceneEntity {
 
     turnWheels(angle: number): void {
         this.wheelAngle += angle
-        const wheelRadius = this.wheelJoints[0]?.radius // XXX Add support for vehicle with different wheel sizes
+        const wheelRadius = this.wheelMeshes[0]?.radius // XXX Add support for vehicle with different wheel sizes
         if (wheelRadius) this.wheelAngle = this.wheelAngle % (2 * Math.PI * wheelRadius)
         this.rotateWheelJoints()
     }
 
     private rotateWheelJoints() {
-        this.wheelJoints.forEach((w) => {
+        this.wheelMeshes.forEach((w) => {
             if (!w.radius) return
             w.mesh.rotation.x = this.wheelAngle / w.radius
         })

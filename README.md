@@ -65,7 +65,6 @@ using modern web technologies.
 - Advisor not shown in tutorials near icon panel
 - Add tiny rockies running around after crumbling
 - Two buttons in priority list can be hovered/pressed/released at the same time
-- Middle wheel meshes of small digger do not rotate after engine upgrade
 
 ### Authentic
 
