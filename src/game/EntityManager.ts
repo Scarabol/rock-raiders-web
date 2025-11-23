@@ -197,7 +197,7 @@ export class EntityManager {
                 return e.components.get(HealthComponent).health > 0 &&
                     e.components.get(MonsterStatsComponent).stats.canBeShotAt &&
                     e.components.get(AnimatedSceneEntityComponent).sceneEntity.currentAnimation !== ROCK_MONSTER_ACTIVITY.unpowered &&
-                    e.components.get(SlugBehaviorComponent)?.state !== SLUG_BEHAVIOR_STATE.emerge
+                    e.components.getOptional(SlugBehaviorComponent)?.state !== SLUG_BEHAVIOR_STATE.emerge
             })
             .map((e) => {
                 const pos = e.components.get(PositionComponent).surface.getCenterWorld2D()
