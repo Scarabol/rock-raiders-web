@@ -70,7 +70,7 @@ export class SurfaceMesh extends Group {
             this.add(this.proMesh)
             // Tear pro mesh to fit surface map offsets and close gaps in terrain
             const rotationIndex = (Math.round(wallAngle / (Math.PI / 2)) + 8) % 4
-            SurfaceMesh.tearGeometryPositionsByVertexOffsets(this.proMesh.geometry, topLeftVertex.offset, bottomLeftVertex.offset, bottomRightVertex.offset, topRightVertex.offset, rotationIndex)
+            SurfaceMesh.tearGeometryPositionsByVertexOffsets(this.proMesh.geometry, topLeftVertex, bottomLeftVertex, bottomRightVertex, topRightVertex, rotationIndex)
             if (textureSuffix !== proMeshSuffix) {
                 this.proMesh.material.forEach((m) => m.textures.forEach((t) => {
                     if (!t.name.toLowerCase().startsWith(textureBasename.toLowerCase())) console.warn(`Unexpected texture name (${t.name}); expected start with ${textureBasename}`)
@@ -117,7 +117,7 @@ export class SurfaceMesh extends Group {
         return 0
     }
 
-    private static tearGeometryPositionsByVertexOffsets(geo: BufferGeometry, topLeftOffset: number, bottomLeftOffset: number, bottomRightOffset: number, topRightOffset: number, rotationIndex: number) {
+    private static tearGeometryPositionsByVertexOffsets(geo: BufferGeometry, topLeftOffset: SurfaceVertex, bottomLeftOffset: SurfaceVertex, bottomRightOffset: SurfaceVertex, topRightOffset: SurfaceVertex, rotationIndex: number) {
         const geoPos = geo.getAttribute('position')
         if (geoPos.itemSize !== 3) console.warn(`Unexpected item size (${geoPos.itemSize}) given; expected 3 instead`)
         const frontLeft = new Vector3(100, 0, 100)
@@ -163,19 +163,24 @@ export class SurfaceMesh extends Group {
                 nearOthers.push({x, y, z, index: c})
             }
         }
-        const offset = [topLeftOffset, bottomLeftOffset, bottomRightOffset, topRightOffset]
-        const posY = offset.reduce((p, c) => p + c, 0) / offset.length
+        const offset = [topLeftOffset.offset, bottomLeftOffset.offset, bottomRightOffset.offset, topRightOffset.offset]
+        const seamProgress = [topLeftOffset.seamProgress, bottomLeftOffset.seamProgress, bottomRightOffset.seamProgress, topRightOffset.seamProgress]
+        const avgOffset = offset.reduce((p, c) => p + c, 0) / offset.length
         nearTopLeft.forEach((e) => {
-            geoPos.array[e.index] += (offset[rotationIndex] - posY) * TILESIZE
+            geoPos.array[e.index] += (offset[rotationIndex] - avgOffset) * TILESIZE
+            geoPos.array[e.index] *= seamProgress[rotationIndex]
         })
         nearBottomLeft.forEach((e) => {
-            geoPos.array[e.index] += (offset[(rotationIndex + 1) % 4] - posY) * TILESIZE
+            geoPos.array[e.index] += (offset[(rotationIndex + 1) % 4] - avgOffset) * TILESIZE
+            geoPos.array[e.index] *= seamProgress[(rotationIndex + 1) % 4]
         })
         nearBottomRight.forEach((e) => {
-            geoPos.array[e.index] += (offset[(rotationIndex + 2) % 4] - posY) * TILESIZE
+            geoPos.array[e.index] += (offset[(rotationIndex + 2) % 4] - avgOffset) * TILESIZE
+            geoPos.array[e.index] *= seamProgress[(rotationIndex + 2) % 4]
         })
         nearTopRight.forEach((e) => {
-            geoPos.array[e.index] += (offset[(rotationIndex + 3) % 4] - posY) * TILESIZE
+            geoPos.array[e.index] += (offset[(rotationIndex + 3) % 4] - avgOffset) * TILESIZE
+            geoPos.array[e.index] *= seamProgress[(rotationIndex + 3) % 4]
         })
         const avgFrontLeft = this.avgVec(nearTopLeft)
         const avgBackLeft = this.avgVec(nearBottomLeft)
@@ -186,11 +191,16 @@ export class SurfaceMesh extends Group {
             if (dx === 0 || dz === 0) return
             const t1 = (point.x - avgFrontLeft.x) / dx
             const t2 = (point.z - avgFrontLeft.z) / dz
-            const yOffset = (1 - t1) * (1 - t2) * offset[rotationIndex] +
+            const offsetInt = (1 - t1) * (1 - t2) * offset[rotationIndex] +
                 t1 * (1 - t2) * offset[(rotationIndex + 3) % 4] +
                 (1 - t1) * t2 * offset[(rotationIndex + 1) % 4] +
                 t1 * t2 * offset[(rotationIndex + 2) % 4]
-            geoPos.array[point.index] += (yOffset - posY) * TILESIZE
+            const seamProgressInt = (1 - t1) * (1 - t2) * seamProgress[rotationIndex] +
+                t1 * (1 - t2) * seamProgress[(rotationIndex + 3) % 4] +
+                (1 - t1) * t2 * seamProgress[(rotationIndex + 1) % 4] +
+                t1 * t2 * seamProgress[(rotationIndex + 2) % 4]
+            geoPos.array[point.index] += (offsetInt - avgOffset) * TILESIZE
+            geoPos.array[point.index] *= seamProgressInt
         })
         geo.setAttribute('position', geoPos)
     }
