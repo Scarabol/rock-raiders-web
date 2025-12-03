@@ -88,6 +88,11 @@ export const ROCK_MONSTER_ACTIVITY = {
     hitHard: 'Activity_HitHard',
 }
 
+export const TINY_ROCK_MONSTER_ACTIVITY = {
+    route: 'Activity_Route',
+    enter: 'Activity_Enter',
+}
+
 export const SLUG_ACTIVITY = {
     emerge: 'Activity_Emerge',
     enter: 'Activity_Enter',

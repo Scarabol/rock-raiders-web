@@ -10,7 +10,7 @@ import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Vector2 } from 'three'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
-import { ANIM_ENTITY_ACTIVITY, ROCK_MONSTER_ACTIVITY } from '../model/anim/AnimationActivity'
+import { ANIM_ENTITY_ACTIVITY, ROCK_MONSTER_ACTIVITY, TINY_ROCK_MONSTER_ACTIVITY } from '../model/anim/AnimationActivity'
 import { GameEntity } from '../ECS'
 import { RandomMoveComponent } from '../component/RandomMoveComponent'
 import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
@@ -30,6 +30,7 @@ import { EventBroker } from '../../event/EventBroker'
 import { TooltipComponent } from '../component/TooltipComponent'
 import { SceneSelectionComponent } from '../component/SceneSelectionComponent'
 import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
+import { TinyRockMonsterBehaviorComponent } from '../component/TinyRockMonsterBehaviorComponent'
 
 export class MonsterSpawner {
     static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {
@@ -51,6 +52,18 @@ export class MonsterSpawner {
                 const spiderStats = GameConfig.instance.stats.smallSpider
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(spiderStats))
                 if (spiderStats.randomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - spiderStats.randomMoveTime) * 1000))
+                break
+            case EntityType.TINY_ROCK_MONSTER:
+                sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/TinyRM'))
+                sceneEntity.setAnimation(TINY_ROCK_MONSTER_ACTIVITY.route)
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(GameConfig.instance.stats.tinyRM))
+                worldMgr.ecs.addComponent(entity, new TinyRockMonsterBehaviorComponent())
+                break
+            case EntityType.TINY_ICE_MONSTER:
+                sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/TinyIM'))
+                sceneEntity.setAnimation(TINY_ROCK_MONSTER_ACTIVITY.route)
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(GameConfig.instance.stats.tinyIM))
+                worldMgr.ecs.addComponent(entity, new TinyRockMonsterBehaviorComponent())
                 break
             case EntityType.BAT:
                 positionComponent.floorOffset = TILESIZE / 4
@@ -101,13 +114,13 @@ export class MonsterSpawner {
                 if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, GameConfig.instance.objTtSFXs[objectKey] || ''))
                 break
             case EntityType.ICE_MONSTER:
-                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster', entityType, GameConfig.instance.stats.iceMonster)
+                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster', entityType, GameConfig.instance.stats.iceMonster, EntityType.TINY_ICE_MONSTER)
                 break
             case EntityType.LAVA_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/LavaMonster', entityType, GameConfig.instance.stats.lavaMonster)
                 break
             case EntityType.ROCK_MONSTER:
-                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/RMonster', entityType, GameConfig.instance.stats.rockMonster)
+                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/RMonster', entityType, GameConfig.instance.stats.rockMonster, EntityType.TINY_ROCK_MONSTER)
                 break
             default:
                 throw new Error(`Unexpected entity type: ${entityType}`)
@@ -117,7 +130,8 @@ export class MonsterSpawner {
         return entity
     }
 
-    private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string, entityType: EntityType, stats: MonsterEntityStats) {
+    private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string, entityType: EntityType, stats: MonsterEntityStats,
+                                            tinyEntityType: EntityType.TINY_ROCK_MONSTER | EntityType.TINY_ICE_MONSTER | null = null) {
         sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
         sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.unpowered)
         const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, GameConfig.instance.getRockFallDamage(entityType, 0)))
@@ -130,6 +144,11 @@ export class MonsterSpawner {
             worldMgr.ecs.removeComponent(entity, HeadingComponent)
             worldMgr.ecs.removeComponent(entity, EntityPushedComponent)
             worldMgr.ecs.removeComponent(entity, RockMonsterBehaviorComponent)
+            if (tinyEntityType) {
+                for (let c = 0; c < 3; c += 1) {
+                    this.spawnMonster(worldMgr, tinyEntityType, sceneEntity.position2D, sceneEntity.heading)
+                }
+            }
             sceneEntity.removeAllCarried()
             sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.crumble, () => {
                 const positionComponent = components.get(PositionComponent)

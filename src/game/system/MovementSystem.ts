@@ -22,18 +22,18 @@ export class MovementSystem extends AbstractGameSystem {
                 const positionComponent = components.get(PositionComponent)
                 if (!positionComponent.isDiscovered()) continue
                 const worldTargetComponent = components.get(WorldTargetComponent)
-                const statsComponent = components.get(MovableStatsComponent)
+                const movableComponent = components.get(MovableStatsComponent)
                 const terrain = this.worldMgr.sceneMgr.terrain
                 const targetWorld = terrain.getFloorPosition(worldTargetComponent.position)
                 targetWorld.y += positionComponent.floorOffset
                 const step = targetWorld.clone().sub(positionComponent.position)
-                const entitySpeed = statsComponent.getSpeed(positionComponent.surface.isPath(), positionComponent.surface.hasRubble()) * elapsedMs / NATIVE_UPDATE_INTERVAL
+                const entitySpeed = movableComponent.getSpeed(positionComponent.surface.isPath(), positionComponent.surface.hasRubble()) * elapsedMs / NATIVE_UPDATE_INTERVAL
                 const sceneEntityComponent = components.getOptional(AnimatedSceneEntityComponent)
                 if (targetWorld.distanceToSquared(positionComponent.position) <= worldTargetComponent.radiusSq) {
                     ecs.removeComponent(entity, WorldTargetComponent)
                     ecs.removeComponent(entity, HeadingComponent)
                     ecs.removeComponent(entity, EntityPushedComponent)
-                    if (positionComponent.surface.wallType && statsComponent.enterWall) {
+                    if (positionComponent.surface.wallType && movableComponent.stats.randomEnterWall) {
                         this.worldMgr.entityMgr.removeEntity(entity)
                         ecs.removeEntity(entity)
                         if (sceneEntityComponent) this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntityComponent.sceneEntity)
@@ -44,7 +44,7 @@ export class MovementSystem extends AbstractGameSystem {
                     step.clampLength(0, entitySpeed)
                     const targetPos = positionComponent.position.clone().add(step)
                     const targetSurface = terrain.getSurfaceFromWorld(targetPos)
-                    if (!targetSurface.wallType || statsComponent.enterWall) {
+                    if (!targetSurface.wallType || movableComponent.stats.randomEnterWall) {
                         positionComponent.position.copy(targetPos)
                         positionComponent.surface = targetSurface
                         positionComponent.markDirty()

@@ -24,6 +24,8 @@ export const enum EntityType {
     ROCK_MONSTER = 'RockMonster',
     ICE_MONSTER = 'IceMonster',
     LAVA_MONSTER = 'LavaMonster',
+    TINY_ICE_MONSTER = 'TinyIM',
+    TINY_ROCK_MONSTER = 'TinyRM',
 
     // MATERIAL
     DYNAMITE = 'Dynamite',
@@ -62,7 +64,7 @@ export type MaterialEntityType = EntityType.ORE | EntityType.CRYSTAL | EntityTyp
 
 export type VehicleEntityType = EntityType.HOVERBOARD | EntityType.SMALL_DIGGER | EntityType.SMALL_TRUCK | EntityType.SMALL_CAT | EntityType.SMALL_MLP | EntityType.SMALL_HELI | EntityType.BULLDOZER | EntityType.WALKER_DIGGER | EntityType.LARGE_MLP | EntityType.LARGE_DIGGER | EntityType.LARGE_CAT | EntityType.LARGE_HELI
 
-export type MonsterEntityType = EntityType.NONE | EntityType.SMALL_SPIDER | EntityType.BAT | EntityType.SLUG | EntityType.ICE_MONSTER | EntityType.LAVA_MONSTER | EntityType.ROCK_MONSTER
+export type MonsterEntityType = EntityType.NONE | EntityType.SMALL_SPIDER | EntityType.BAT | EntityType.SLUG | EntityType.ICE_MONSTER | EntityType.LAVA_MONSTER | EntityType.ROCK_MONSTER | EntityType.TINY_ICE_MONSTER | EntityType.TINY_ROCK_MONSTER
 
 export function getEntityTypeByName(type: string): EntityType {
     if ('TVCamera'.equalsIgnoreCase(type)) {
