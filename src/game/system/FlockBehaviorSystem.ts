@@ -3,10 +3,7 @@ import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { PositionComponent } from '../component/PositionComponent'
 import { FlockComponent } from '../component/FlockComponent'
 import { Quaternion, Vector3 } from 'three'
-
-function clamp(value: number, min: number, max: number): number {
-    return Math.max(min, Math.min(max, value))
-}
+import { clamp } from '../../core/Util'
 
 export class FlockBehaviorSystem extends AbstractGameSystem {
     readonly flocks: FilteredEntities = this.addEntityFilter(PositionComponent, FlockComponent)

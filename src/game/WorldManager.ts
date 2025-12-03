@@ -21,6 +21,7 @@ import { BeamUpSystem } from './system/BeamUpSystem'
 import { OxygenSystem } from './system/OxygenSystem'
 import { MapMarkerUpdateSystem } from './system/MapMarkerUpdateSystem'
 import { RockMonsterBehaviorSystem } from './system/RockMonsterBehaviorSystem'
+import { TinyRockMonsterBehaviorSystem } from './system/TinyRockMonsterBehaviorSystem'
 import { ElectricFenceSystem } from './system/ElectricFenceSystem'
 import { DeathSystem } from './system/DeathSystem'
 import { RaiderScareSystem } from './system/RaiderScareSystem'
@@ -67,6 +68,7 @@ export class WorldManager {
         this.ecs.addSystem(new BeamUpSystem(this))
         this.ecs.addSystem(new MapMarkerUpdateSystem())
         this.ecs.addSystem(new RockMonsterBehaviorSystem(this))
+        this.ecs.addSystem(new TinyRockMonsterBehaviorSystem(this))
         this.ecs.addSystem(new ElectricFenceSystem(this))
         this.ecs.addSystem(new DeathSystem(this))
         if (!DEV_MODE) this.ecs.addSystem(new OxygenSystem())

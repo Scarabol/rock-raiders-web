@@ -48,3 +48,7 @@ export function yieldToMainThread(): Promise<void> {
 export function isNum(value: any): value is number {
     return value !== undefined && value !== null && !isNaN(value)
 }
+
+export function clamp(value: number, min: number, max: number): number {
+    return Math.max(min, Math.min(max, value))
+}

@@ -17,12 +17,12 @@ export class RandomMoveBehaviorSystem extends AbstractGameSystem {
                 if (randomMoveComponent.isOnIdleTimer(elapsedMs) || components.has(WorldTargetComponent)) continue
                 const positionComponent = components.get(PositionComponent)
                 if (!positionComponent.isDiscovered()) continue
-                const statsComponent = components.get(MovableStatsComponent)
+                const movableComponent = components.get(MovableStatsComponent)
                 const targetSurface = PRNG.movement.sample([positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) =>
-                    (!n.wallType || statsComponent.enterWall)
-                    && (!n.surfaceType.floor || statsComponent.crossLand)
-                    && (n.surfaceType !== SurfaceType.LAVA5 || statsComponent.crossLava)
-                    && (n.surfaceType !== SurfaceType.WATER || statsComponent.crossWater)
+                    (!n.wallType || movableComponent.stats.randomEnterWall)
+                    && (!n.surfaceType.floor || movableComponent.stats.crossLand)
+                    && (n.surfaceType !== SurfaceType.LAVA5 || movableComponent.stats.crossLava)
+                    && (n.surfaceType !== SurfaceType.WATER || movableComponent.stats.crossWater)
                 )])
                 const targetLocation = targetSurface.getRandomPosition()
                 ecs.addComponent(entity, new WorldTargetComponent(targetLocation, 1))

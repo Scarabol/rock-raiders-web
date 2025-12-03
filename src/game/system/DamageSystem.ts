@@ -45,7 +45,7 @@ export class DamageSystem extends AbstractGameSystem {
                     healthComponent.hitByLavaTimeoutMs -= elapsedMs
                 } else {
                     const movableComponent = components.getOptional(MovableStatsComponent)
-                    if (!movableComponent?.crossLava && positionComponent.surface.surfaceType === SurfaceType.LAVA5) {
+                    if (!movableComponent?.stats.crossLava && positionComponent.surface.surfaceType === SurfaceType.LAVA5) {
                         healthComponent.changeHealth(-(20 + PRNG.damage.randInt(20)))
                         healthComponent.hitByLavaTimeoutMs = 2000
                     }
