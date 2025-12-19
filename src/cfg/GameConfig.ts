@@ -81,7 +81,7 @@ export class GameConfig implements ConfigSetFromRecord {
         cfgValue.getRecord('ToolTipInfo').forEachCfgEntryValue((value, cfgKey) => this.toolTipInfo[cfgKey.toLowerCase()] = value.toLabel())
         cfgValue.getRecord('SurfaceTypeDescriptions').forEachCfgEntryValue((value, cfgKey) => {
             const array = value.toArray(',', 2)
-            this.surfaceTypeDescriptions[this.stripSurfaceTypeKey(cfgKey)] = {objectName: array[0].toLabel(), sfxKey: array[1].toString()}
+            this.surfaceTypeDescriptions[this.stripSurfaceTypeKey(cfgKey)] = { objectName: array[0].toLabel(), sfxKey: array[1].toString() }
         })
         this.objInfo.setFromRecord(cfgValue.getRecord('ObjInfo'))
         this.pointers.setFromRecord(cfgValue.getRecord('Pointers'))

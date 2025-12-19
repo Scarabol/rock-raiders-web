@@ -35,7 +35,7 @@ export class BirdViewControls extends MapControls {
     constructor(camera: Camera, override readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
         this.dummyPointerId = this.verifyPointerId()
-        this.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
+        this.mouseButtons = { LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN }
         this.listenToKeyEvents(domElement)
         this.keyPanSpeed = this.keyPanSpeed * KEY_PAN_SPEED
         if (!SaveGameManager.preferences.cameraUnlimited) {
@@ -62,8 +62,8 @@ export class BirdViewControls extends MapControls {
     }
 
     private useWASDToPanAndArrowKeysToRotate() {
-        this.keys = {LEFT: 'KeyA', UP: 'KeyW', RIGHT: 'KeyD', BOTTOM: 'KeyS'}
-        ;[{code: 'ArrowUp', rot: CAMERA_ROTATION.up}, {code: 'ArrowLeft', rot: CAMERA_ROTATION.left}, {code: 'ArrowDown', rot: CAMERA_ROTATION.down}, {code: 'ArrowRight', rot: CAMERA_ROTATION.right}].forEach((pair) => {
+        this.keys = { LEFT: 'KeyA', UP: 'KeyW', RIGHT: 'KeyD', BOTTOM: 'KeyS' };
+        [{ code: 'ArrowUp', rot: CAMERA_ROTATION.up }, { code: 'ArrowLeft', rot: CAMERA_ROTATION.left }, { code: 'ArrowDown', rot: CAMERA_ROTATION.down }, { code: 'ArrowRight', rot: CAMERA_ROTATION.right }].forEach((pair) => {
             this.domElement.addEventListener('keydown', (event: KeyboardEvent) => {
                 if (event.code === pair.code) this.rotate(pair.rot)
             })
@@ -81,7 +81,7 @@ export class BirdViewControls extends MapControls {
 
     zoom(zoom: number) {
         if (!this.enabled) return
-        this.domElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 120 * zoom, deltaMode: 0}))
+        this.domElement.dispatchEvent(new WheelEvent('wheel', { deltaY: 120 * zoom, deltaMode: 0 }))
     }
 
     setZoom(distance: number) {
@@ -101,9 +101,9 @@ export class BirdViewControls extends MapControls {
         const px = (this.domElement as HTMLElement).clientWidth / 2
         const py = (this.domElement as HTMLElement).clientHeight / 2
         const step = py / 8 // => 16 clicks for a 360 no-scope
-        this.domElement.dispatchEvent(new PointerEvent('pointerdown', {pointerId: this.dummyPointerId, button: MOUSE_BUTTON.middle, clientX: px, clientY: py}))
-        this.domElement.dispatchEvent(new PointerEvent('pointermove', {pointerId: this.dummyPointerId, clientX: px + dx * step, clientY: py + dy * step}))
-        this.domElement.dispatchEvent(new PointerEvent('pointerup', {pointerId: this.dummyPointerId, button: MOUSE_BUTTON.middle, clientX: px + dx * step, clientY: py + dy * step}))
+        this.domElement.dispatchEvent(new PointerEvent('pointerdown', { pointerId: this.dummyPointerId, button: MOUSE_BUTTON.middle, clientX: px, clientY: py }))
+        this.domElement.dispatchEvent(new PointerEvent('pointermove', { pointerId: this.dummyPointerId, clientX: px + dx * step, clientY: py + dy * step }))
+        this.domElement.dispatchEvent(new PointerEvent('pointerup', { pointerId: this.dummyPointerId, button: MOUSE_BUTTON.middle, clientX: px + dx * step, clientY: py + dy * step }))
     }
 
     private verifyPointerId(): number {
@@ -202,7 +202,7 @@ export class BirdViewControls extends MapControls {
         if (!this.lastPanKey) return
         const panSpeed = this.keyPanSpeed
         this.keyPanSpeed = 24
-        this.domElement.dispatchEvent(new KeyboardEvent('keydown', {code: this.lastPanKey, key: this.lastPanKey}))
+        this.domElement.dispatchEvent(new KeyboardEvent('keydown', { code: this.lastPanKey, key: this.lastPanKey }))
         this.keyPanSpeed = panSpeed
     }
 

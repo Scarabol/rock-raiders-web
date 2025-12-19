@@ -41,8 +41,8 @@ export class EmergeSystem extends AbstractGameSystem {
 
     update(ecs: ECS, elapsedMs: number): void {
         if (!this.emergeCreature) return
-        const busySurfaces = new Set<Surface>()
-        ;[...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles] // TODO Replace with entity filter
+        const busySurfaces = new Set<Surface>();
+        [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles] // TODO Replace with entity filter
             .forEach((e) => busySurfaces.add(ecs.getComponents(e.entity).get(PositionComponent).surface))
         const emergeSpawns: Map<number, Surface[]> = new Map()
         const triggeredEmerges: Set<EmergeComponent> = new Set()

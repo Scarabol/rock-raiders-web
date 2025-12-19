@@ -41,32 +41,32 @@ interface IconClickedEntry {
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
     static readonly iconClickedConfig: IconClickedEntry[] = [
-        {iconName: 'dig', buttonType: 'Interface_MenuItem_Dig', eventKey: EventKey.COMMAND_CREATE_DRILL_JOB},
-        {iconName: 'dynamite', buttonType: 'Interface_MenuItem_Dynamite', eventKey: EventKey.COMMAND_CREATE_DYNAMITE_JOB},
-        {iconName: 'goBack', buttonType: 'InterfaceBackButton', eventKey: EventKey.GUI_GO_BACK_BUTTON_CLICKED},
-        {iconName: 'teleport', buttonType: 'Interface_MenuItem_TeleportMan'},
-        {iconName: 'layPath', buttonType: 'Interface_MenuItem_LayPath', eventKey: EventKey.COMMAND_CREATE_POWER_PATH},
-        {iconName: 'placeFence', buttonType: 'Interface_MenuItem_PlaceFence', eventKey: EventKey.COMMAND_PLACE_FENCE},
-        {iconName: 'mount', buttonType: 'Interface_MenuItem_GetIn', eventKey: EventKey.COMMAND_VEHICLE_GET_MAN},
-        {iconName: 'dismount', buttonType: 'Interface_MenuItem_GetOut', eventKey: EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT},
-        {iconName: 'upgradeBuilding', buttonType: 'Interface_MenuItem_UpgradeBuilding', eventKey: EventKey.COMMAND_UPGRADE_BUILDING},
-        {iconName: 'build', buttonType: 'Interface_MenuItem_BuildBuilding', eventKey: EventKey.GUI_BUILD_BUILDING_BUTTON_CLICKED},
-        {iconName: 'teleportPad', buttonType: EntityType.TELEPORT_PAD},
-        {iconName: 'powerStation', buttonType: EntityType.POWER_STATION},
-        {iconName: 'barracks', buttonType: EntityType.BARRACKS},
-        {iconName: 'geodome', buttonType: EntityType.GEODOME},
-        {iconName: 'gunStation', buttonType: EntityType.GUNSTATION},
-        {iconName: 'vehicleTransport', buttonType: EntityType.TELEPORT_BIG},
-        {iconName: 'dynamite', buttonType: 'Interface_MenuItem_Dynamite'},
-        {iconName: 'getTool', buttonType: 'Interface_MenuItem_GetTool', eventKey: EventKey.GUI_GET_TOOL_BUTTON_CLICKED},
-        {iconName: 'getPusher', buttonType: 'Interface_MenuItem_GetPusherGun'}, // XXX Complete list and track all tool types here
-        {iconName: 'getSonicBlaster', buttonType: 'Interface_MenuItem_GetBirdScarer'},
-        {iconName: 'dropSonicBlaster', buttonType: 'Interface_MenuItem_DropBirdScarer'},
-        {iconName: 'train', buttonType: 'Interface_MenuItem_TrainSkill', eventKey: EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED},
-        {iconName: 'trainDriver', buttonType: 'Interface_MenuItem_TrainDriver'}, // XXX Complete list and track all raider trainings here
-        {iconName: 'trainSailor', buttonType: 'Interface_MenuItem_TrainSailor'},
-        {iconName: 'trainPilot', buttonType: 'Interface_MenuItem_TrainPilot'},
-        {iconName: 'callToArms', buttonType: 'PanelButton_TopPanel_CallToArms'},
+        { iconName: 'dig', buttonType: 'Interface_MenuItem_Dig', eventKey: EventKey.COMMAND_CREATE_DRILL_JOB },
+        { iconName: 'dynamite', buttonType: 'Interface_MenuItem_Dynamite', eventKey: EventKey.COMMAND_CREATE_DYNAMITE_JOB },
+        { iconName: 'goBack', buttonType: 'InterfaceBackButton', eventKey: EventKey.GUI_GO_BACK_BUTTON_CLICKED },
+        { iconName: 'teleport', buttonType: 'Interface_MenuItem_TeleportMan' },
+        { iconName: 'layPath', buttonType: 'Interface_MenuItem_LayPath', eventKey: EventKey.COMMAND_CREATE_POWER_PATH },
+        { iconName: 'placeFence', buttonType: 'Interface_MenuItem_PlaceFence', eventKey: EventKey.COMMAND_PLACE_FENCE },
+        { iconName: 'mount', buttonType: 'Interface_MenuItem_GetIn', eventKey: EventKey.COMMAND_VEHICLE_GET_MAN },
+        { iconName: 'dismount', buttonType: 'Interface_MenuItem_GetOut', eventKey: EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT },
+        { iconName: 'upgradeBuilding', buttonType: 'Interface_MenuItem_UpgradeBuilding', eventKey: EventKey.COMMAND_UPGRADE_BUILDING },
+        { iconName: 'build', buttonType: 'Interface_MenuItem_BuildBuilding', eventKey: EventKey.GUI_BUILD_BUILDING_BUTTON_CLICKED },
+        { iconName: 'teleportPad', buttonType: EntityType.TELEPORT_PAD },
+        { iconName: 'powerStation', buttonType: EntityType.POWER_STATION },
+        { iconName: 'barracks', buttonType: EntityType.BARRACKS },
+        { iconName: 'geodome', buttonType: EntityType.GEODOME },
+        { iconName: 'gunStation', buttonType: EntityType.GUNSTATION },
+        { iconName: 'vehicleTransport', buttonType: EntityType.TELEPORT_BIG },
+        { iconName: 'dynamite', buttonType: 'Interface_MenuItem_Dynamite' },
+        { iconName: 'getTool', buttonType: 'Interface_MenuItem_GetTool', eventKey: EventKey.GUI_GET_TOOL_BUTTON_CLICKED },
+        { iconName: 'getPusher', buttonType: 'Interface_MenuItem_GetPusherGun' }, // XXX Complete list and track all tool types here
+        { iconName: 'getSonicBlaster', buttonType: 'Interface_MenuItem_GetBirdScarer' },
+        { iconName: 'dropSonicBlaster', buttonType: 'Interface_MenuItem_DropBirdScarer' },
+        { iconName: 'train', buttonType: 'Interface_MenuItem_TrainSkill', eventKey: EventKey.GUI_TRAIN_RAIDER_BUTTON_CLICKED },
+        { iconName: 'trainDriver', buttonType: 'Interface_MenuItem_TrainDriver' }, // XXX Complete list and track all raider trainings here
+        { iconName: 'trainSailor', buttonType: 'Interface_MenuItem_TrainSailor' },
+        { iconName: 'trainPilot', buttonType: 'Interface_MenuItem_TrainPilot' },
+        { iconName: 'callToArms', buttonType: 'PanelButton_TopPanel_CallToArms' },
     ]
 
     static debug = false

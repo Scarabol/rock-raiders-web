@@ -157,6 +157,7 @@ export class ResourceManager {
     }
 
     static getSurfaceTexture(textureFilepath: string, rotation: number): Texture | null {
+        if (!textureFilepath) return null
         const texture = this.getTexture(textureFilepath)
         if (!texture) return null
         if (rotation === 0) return texture
@@ -169,9 +170,7 @@ export class ResourceManager {
     }
 
     static getTexture(textureFilepath: string): Texture | null {
-        if (!textureFilepath) {
-            throw new Error(`textureFilepath must not be undefined, null or empty - was ${textureFilepath}`)
-        }
+        if (!textureFilepath) throw new Error(`textureFilepath must not be undefined, null or empty - was ${textureFilepath}`)
         const imgData = this.resourceByName.get(textureFilepath.toLowerCase())
         if (!imgData) {
             console.warn(`Could not find texture ${textureFilepath}`)

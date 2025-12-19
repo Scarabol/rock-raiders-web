@@ -76,7 +76,7 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
                     const depImg = dep.isOk ? depImages[0] : depImages[1]
                     totalWidth += depImg.width
                     totalHeight = Math.max(totalHeight, depImg.height)
-                    return {img: depImg, level: dep.minLevel}
+                    return { img: depImg, level: dep.minLevel }
                 })
                 totalWidth += plusSignImg.width * (deps.length - 1)
                 totalWidth += equalsSignImg.width * 2
@@ -96,7 +96,7 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
                     dependencySprite.drawImage(signImg, posX, (totalHeight - signImg.height) / 2)
                     posX += signImg.width
                 })
-                this.sendResponse(workerRequestHash, {dependencyImage: dependencySprite.getImageData(0, 0, dependencySprite.canvas.width, dependencySprite.canvas.height)})
+                this.sendResponse(workerRequestHash, { dependencyImage: dependencySprite.getImageData(0, 0, dependencySprite.canvas.width, dependencySprite.canvas.height) })
                 break
         }
     }

@@ -13,8 +13,8 @@ export class MusicManager {
     static playNext: boolean = true
 
     static init() {
-        this.musicTracks.length = 0
-        ;(async () => {
+        this.musicTracks.length = 0;
+        (async () => {
             for (let c = 0; c < 10; c++) {
                 try {
                     const musicData = await cacheGetData<ArrayBuffer>(`musictrack${c}`)

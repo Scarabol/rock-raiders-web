@@ -23,7 +23,7 @@ export class MapView extends BaseElement {
     readonly materialSprite: SpriteImage
     readonly geoScanSprite: SpriteImage
     readonly cameraSprite: SpriteImage
-    readonly offset: { x: number, y: number } = {x: 0, y: 0}
+    readonly offset: { x: number, y: number } = { x: 0, y: 0 }
     readonly surfaceMap: MapSurfaceRect[][] = []
     readonly entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number, r: number }>> = new Map()
     surfaceRectSizeMin: number = DEV_MODE ? 3 : 10
@@ -89,7 +89,7 @@ export class MapView extends BaseElement {
             const entities = this.entitiesByOrder.getOrUpdate(event.mapMarkerType, () => new Map())
             switch (event.change) {
                 case MAP_MARKER_CHANGE.update:
-                    if (event.position) entities.set(event.entity, {x: event.position.x, z: event.position.z, r: event.radius ?? 0})
+                    if (event.position) entities.set(event.entity, { x: event.position.x, z: event.position.z, r: event.radius ?? 0 })
                     break
                 case MAP_MARKER_CHANGE.remove:
                     entities.delete(event.entity)
@@ -189,7 +189,7 @@ export class MapView extends BaseElement {
         const tx = (x - this.x + this.offset.x)
         const ty = (y - this.y + this.offset.y)
         const worldPos = new Vector2(tx, ty).multiplyScalar(TILESIZE / this.surfaceRectSize)
-        EventBroker.publish(new CameraControl({jumpToWorld: worldPos}))
+        EventBroker.publish(new CameraControl({ jumpToWorld: worldPos }))
     }
 
     override notifyRedraw() {

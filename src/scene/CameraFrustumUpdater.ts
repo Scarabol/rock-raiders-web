@@ -25,10 +25,10 @@ export class CameraFrustumUpdater {
         if (this.timer > 0) return
         this.timer = MAP_MAX_UPDATE_INTERVAL
         const rect: MapRendererCameraRect = {
-            topLeft: {x: 0, z: 0},
-            topRight: {x: 0, z: 0},
-            bottomRight: {x: 0, z: 0},
-            bottomLeft: {x: 0, z: 0},
+            topLeft: { x: 0, z: 0 },
+            topRight: { x: 0, z: 0 },
+            bottomRight: { x: 0, z: 0 },
+            bottomLeft: { x: 0, z: 0 },
         }
         this.raycaster.setFromCamera(this.topLeft, this.camera)
         if (!this.raycaster.ray.intersectPlane(this.groundPlane, this.tmpVec)) return

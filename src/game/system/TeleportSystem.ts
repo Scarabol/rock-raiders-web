@@ -108,7 +108,7 @@ export class TeleportSystem extends AbstractGameSystem {
                         }
                         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
                         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
-                        const sceneSelectionComponent = ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
+                        const sceneSelectionComponent = ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, { gameEntity: raider.entity, entityType: raider.entityType }, raider.stats))
                         ecs.addComponent(raider.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, raider.stats))
                         if (walkOutPos) raider.setJob(new MoveJob(walkOutPos))
                         this.worldMgr.entityMgr.raidersInBeam.remove(raider)
@@ -150,7 +150,7 @@ export class TeleportSystem extends AbstractGameSystem {
                             const healthComponent: HealthComponent = vehicle.worldMgr.ecs.addComponent(vehicle.entity, new HealthComponent(false, 24, 14, vehicle.sceneEntity, false, GameConfig.instance.getRockFallDamage(vehicle.entityType, vehicle.level)))
                             vehicle.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
                             vehicle.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
-                            const sceneSelectionComponent = vehicle.worldMgr.ecs.addComponent(vehicle.entity, new SceneSelectionComponent(vehicle.sceneEntity, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats))
+                            const sceneSelectionComponent = vehicle.worldMgr.ecs.addComponent(vehicle.entity, new SceneSelectionComponent(vehicle.sceneEntity, { gameEntity: vehicle.entity, entityType: vehicle.entityType }, vehicle.stats))
                             vehicle.worldMgr.ecs.addComponent(vehicle.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, vehicle.stats))
                             this.worldMgr.entityMgr.vehiclesInBeam.remove(vehicle)
                             this.worldMgr.entityMgr.vehicles.push(vehicle)

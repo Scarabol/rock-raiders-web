@@ -161,7 +161,7 @@ export class AnimEntityParser {
         const trigger = iGet(act, 'TRIGGER') ?? 0
         if (isLws) {
             if (lActivityName.startsWith('!')) lActivityName = lActivityName.slice(1) // XXX What's the meaning of leading ! for activities???
-            this.animEntityData.animations.push({name: lActivityName, file: this.path + file.toLowerCase(), transcoef, looping, trigger})
+            this.animEntityData.animations.push({ name: lActivityName, file: this.path + file.toLowerCase(), transcoef, looping, trigger })
         } else {
             console.error('Found activity which is not an LWS file')
         }

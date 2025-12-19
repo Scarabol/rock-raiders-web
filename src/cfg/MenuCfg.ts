@@ -82,11 +82,11 @@ export class SaveImageCfg implements ConfigSetFromRecord {
     bigHeight: number = 0
     width: number = 0
     height: number = 0
-    pos1: { x: number, y: number } = {x: 0, y: 0}
-    pos2: { x: number, y: number } = {x: 0, y: 0}
-    pos3: { x: number, y: number } = {x: 0, y: 0}
-    pos4: { x: number, y: number } = {x: 0, y: 0}
-    pos5: { x: number, y: number } = {x: 0, y: 0}
+    pos1: { x: number, y: number } = { x: 0, y: 0 }
+    pos2: { x: number, y: number } = { x: 0, y: 0 }
+    pos3: { x: number, y: number } = { x: 0, y: 0 }
+    pos4: { x: number, y: number } = { x: 0, y: 0 }
+    pos5: { x: number, y: number } = { x: 0, y: 0 }
 
     setFromRecord(cfgValue: CfgEntry): this {
         this.bigWidth = cfgValue.getValue('BigWidth').toNumber()

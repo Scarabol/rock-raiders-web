@@ -17,7 +17,7 @@ export interface BitmapWorkerRequest {
 }
 
 export interface BitmapWorkerResponse {
-    decoded: BitmapWithPalette
+    decoded: ImageData // This gets serialized and member functions are striped!
 }
 
 export class BitmapSystem extends AbstractWorkerSystem<BitmapWorkerRequest, BitmapWorkerResponse> {
@@ -25,20 +25,20 @@ export class BitmapSystem extends AbstractWorkerSystem<BitmapWorkerRequest, Bitm
         const decoded = BitmapWithPalette.decode(new DataView(request.bitmapData))
         switch (request.type) {
             case BITMAP_WORKER_REQUEST_TYPE.decodeBitmap:
-                this.sendResponse(workerRequestHash, {decoded: decoded})
+                this.sendResponse(workerRequestHash, { decoded: decoded })
                 break
             case BITMAP_WORKER_REQUEST_TYPE.decodeBitmapAlpha:
-                this.sendResponse(workerRequestHash, {decoded: decoded.applyAlpha()})
+                this.sendResponse(workerRequestHash, { decoded: decoded.applyAlpha() })
                 break
             case BITMAP_WORKER_REQUEST_TYPE.decodeBitmapAlphaIndex:
                 if (request.alphaIndex === undefined || request.alphaIndex === null) {
                     console.error(`No alpha index given for bitmap decode request`)
                     return
                 }
-                this.sendResponse(workerRequestHash, {decoded: decoded.applyAlphaByIndex(request.alphaIndex)})
+                this.sendResponse(workerRequestHash, { decoded: decoded.applyAlphaByIndex(request.alphaIndex) })
                 break
             case BITMAP_WORKER_REQUEST_TYPE.decodeBitmapAlphaTranslucent:
-                this.sendResponse(workerRequestHash, {decoded: decoded.applyAlphaTranslucent()})
+                this.sendResponse(workerRequestHash, { decoded: decoded.applyAlphaTranslucent() })
                 break
         }
     }

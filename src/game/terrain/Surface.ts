@@ -88,7 +88,7 @@ export class Surface {
                 this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
                 break
         }
-        this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
+        this.mesh = new SurfaceMesh(x, y, { selectable: this, surface: this })
         this.mesh.setProMeshEnabled(SaveGameManager.preferences.wallDetails)
         const roofTexture = ResourceManager.getSurfaceTexture(this.terrain.levelConf.roofTexture, 0) // TODO Move to config handling
         this.roofMesh = new RoofMesh(x, y, roofTexture)
@@ -460,7 +460,7 @@ export class Surface {
         } else {
             suffix = this.energized ? '71' : '60'
         }
-        return {rotation, suffix}
+        return { rotation, suffix }
     }
 
     setEnergized(energized: boolean) {

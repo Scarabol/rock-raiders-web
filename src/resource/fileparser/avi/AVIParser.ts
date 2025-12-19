@@ -50,7 +50,7 @@ export class AVIParser {
             if (!chunks) throw new Error(`No chunks for stream ${stream.streamIndex} provided`)
             stream.setFrameChunks(chunks)
         })
-        return {videoStreams: this.videoStreams, audioStreams: this.audioStreams}
+        return { videoStreams: this.videoStreams, audioStreams: this.audioStreams }
     }
 
     private parseHeaderList() {

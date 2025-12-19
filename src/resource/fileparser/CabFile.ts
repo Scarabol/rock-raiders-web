@@ -99,7 +99,7 @@ export class CabFile {
         const fileGroups: CabFileGroup[] = []
         for (let c = 0; c < CabFile.MAX_FILE_GROUP_COUNT; c++) {
             if (!fileGroupOffsets[c]) continue
-            const list = {nameOffset: 0, descriptorOffset: 0, nextOffset: fileGroupOffsets[c]}
+            const list = { nameOffset: 0, descriptorOffset: 0, nextOffset: fileGroupOffsets[c] }
             while (list.nextOffset) {
                 reader.seek(cabDescriptorOffset + list.nextOffset)
                 list.nameOffset = reader.read32()
@@ -114,7 +114,7 @@ export class CabFile {
                 reader.seek(cabDescriptorOffset + list.descriptorOffset + 4 + 0x48)
                 const firstFile = reader.read32()
                 const lastFile = reader.read32()
-                fileGroups.push({name, firstFile, lastFile})
+                fileGroups.push({ name, firstFile, lastFile })
             }
         }
         if (this.verbose) console.log('fileGroups', fileGroups)
@@ -224,7 +224,7 @@ export class CabFile {
             const chunkBuffer = this.volumeReader.readBytes(chunkSize)
             if (this.verbose) console.log('chunkBuffer', chunkBuffer)
             if (file.compressed) {
-                const inflated = Pako.inflate(chunkBuffer, {raw: true})
+                const inflated = Pako.inflate(chunkBuffer, { raw: true })
                 if (this.verbose) console.log(`Inflated chunk from ${chunkBuffer.byteLength} to ${inflated.byteLength}`)
                 fileData.set(inflated, offset)
                 offset += inflated.byteLength

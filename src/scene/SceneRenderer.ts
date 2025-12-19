@@ -10,7 +10,7 @@ export class SceneRenderer extends BaseRenderer {
     screenshotCallback: ((canvas: SpriteImage | undefined) => void) | undefined
 
     constructor(canvas: SpriteImage) {
-        super(1000 / SceneRenderer.MAX_FPS, canvas, {antialias: true, powerPreference: 'high-performance'})
+        super(1000 / SceneRenderer.MAX_FPS, canvas, { antialias: true, powerPreference: 'high-performance' })
         // this.shadowMap.enabled = true // XXX enable shadows here
         // this.shadowMap.type = PCFSoftShadowMap // XXX set shadow quality here
         this.debugHelper = new DebugHelper()

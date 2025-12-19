@@ -9,7 +9,7 @@ export class HealthFontSprite extends Sprite {
     state: number = 0
 
     constructor(readonly yOffset: number, readonly startScale: number) {
-        super(new SpriteMaterial({depthTest: false}))
+        super(new SpriteMaterial({ depthTest: false }))
         this.position.set(0, yOffset, 0)
         this.scale.setScalar(startScale)
         this.textureContext = createContext(HealthFontSprite.textureSize, HealthFontSprite.textureSize)

@@ -13,7 +13,7 @@ export class AnimationFrame {
 
     constructor(canvas: SpriteImage, readbackCanvas: SpriteImage) {
         this.context = getSpriteContext(canvas)
-        this.readbackContext = getSpriteContext(readbackCanvas, {willReadFrequently: true})
+        this.readbackContext = getSpriteContext(readbackCanvas, { willReadFrequently: true })
     }
 
     set onRedraw(callback: AnimationFrameRedrawCallback) {

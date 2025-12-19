@@ -18,7 +18,7 @@ export class NamingLayer extends ScaledLayer {
     showBackdrop: boolean = false
     raiderName: string = ''
     firstKey: boolean = true
-    raiderOnScreen = {x: 0, y: 0}
+    raiderOnScreen = { x: 0, y: 0 }
 
     constructor(readonly gameScreen: GameScreen) {
         super()
@@ -116,6 +116,6 @@ export class NamingLayer extends ScaledLayer {
         this.showBackdrop = false
         this.raiderName = ''
         this.firstKey = true
-        this.raiderOnScreen = {x: 0, y: 0}
+        this.raiderOnScreen = { x: 0, y: 0 }
     }
 }

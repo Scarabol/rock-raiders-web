@@ -23,7 +23,7 @@ export class RewardCfg implements ConfigSetFromRecord {
     completeText: string = ''
     failedText: string = ''
     quitText: string = ''
-    textPos: { x: number, y: number } = {x: 0, y: 0}
+    textPos: { x: number, y: number } = { x: 0, y: 0 }
 
     setFromRecord(cfgValue: CfgEntry): this {
         this.display = cfgValue.getValue('Display').toBoolean()
@@ -41,7 +41,7 @@ export class RewardCfg implements ConfigSetFromRecord {
         cfgValue.getRecord('Flics').forEachCfgEntryValue((value, cfgKey) => {
             const array = value.toArray('|', 5)
             const nums = array.slice(1).map((v) => v.toNumber())
-            this.flics[cfgKey.toLowerCase()] = {flhFilepath: array[0].toFileName(), rect: Rect.fromArray(nums)}
+            this.flics[cfgKey.toLowerCase()] = { flhFilepath: array[0].toFileName(), rect: Rect.fromArray(nums) }
         })
         this.scrollSpeed = cfgValue.getValue('ScrollSpeed').toNumber()
         this.centerText = cfgValue.getValue('CenterText').toBoolean() // typo "centre" in original config with value false

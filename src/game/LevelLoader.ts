@@ -1,7 +1,7 @@
 import { LevelPrioritiesEntryConfig, LevelRewardConfig } from '../cfg/LevelsCfg'
 import { GameConfig } from '../cfg/GameConfig'
 import { ResourceManager } from '../resource/ResourceManager'
-import { NerpParser } from '../nerp/NerpParser'
+import { NerpParser, NerpScriptProvider } from '../nerp/NerpParser'
 import { NerpScript } from '../nerp/NerpScript'
 import { LevelObjectiveTextEntry, LevelObjectiveTexts } from '../resource/fileparser/ObjectiveTextParser'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
@@ -88,7 +88,11 @@ export class LevelLoader {
             erodeMap: this.checkMap(levelConf.erodeMap, terrainMap.width, terrainMap.height),
             blockPointersMap: this.checkMap(levelConf.blockPointersMap, terrainMap.width, terrainMap.height),
             emergeMap: this.checkMap(levelConf.emergeMap, terrainMap.width, terrainMap.height),
-            nerpScript: NerpParser.parse(levelConf.nerpFile),
+            nerpScript: NerpParser.parse(levelConf.nerpFile, new class implements NerpScriptProvider {
+                getScriptContent(nerpScriptFile: string): string {
+                    return ResourceManager.getResource(nerpScriptFile)
+                }
+            }),
             nerpMessages: ResourceManager.getResource(levelConf.nerpMessageFile) ?? [],
             objectiveTextCfg: objectiveTextCfg,
             objectiveImage: levelConf.objectiveImage,

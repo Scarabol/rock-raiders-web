@@ -79,7 +79,7 @@ export class MonsterSpawner {
                     // Change the speed slightly to make the animation unsynchronized
                     const speedModifier = 0.9 + 0.2 * (c + 0.5) / batStats.flocksSize
                     flockSceneEntity.setAnimationSpeed(speedModifier)
-                    flockEntities.push({sceneEntity: flockSceneEntity, speed: batStats.flocksSpeed * speedModifier})
+                    flockEntities.push({ sceneEntity: flockSceneEntity, speed: batStats.flocksSpeed * speedModifier })
                     worldMgr.sceneMgr.addSceneEntity(flockSceneEntity)
                 }
                 worldMgr.ecs.addComponent(entity, new FlockComponent(flockEntities, {
@@ -108,7 +108,7 @@ export class MonsterSpawner {
                     sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
                     EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.monster, entity, MAP_MARKER_CHANGE.remove))
                 }))
-                worldMgr.ecs.addComponent(entity, new SceneSelectionComponent(sceneEntity, {gameEntity: entity, entityType: entityType}, GameConfig.instance.stats.slug))
+                worldMgr.ecs.addComponent(entity, new SceneSelectionComponent(sceneEntity, { gameEntity: entity, entityType: entityType }, GameConfig.instance.stats.slug))
                 const objectKey = entityType.toLowerCase()
                 const objectName = GameConfig.instance.objectNames[objectKey] || ''
                 if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, GameConfig.instance.objTtSFXs[objectKey] || ''))
@@ -165,7 +165,7 @@ export class MonsterSpawner {
         }))
         worldMgr.ecs.addComponent(entity, new MovableStatsComponent(stats))
         worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(stats))
-        worldMgr.ecs.addComponent(entity, new SceneSelectionComponent(sceneEntity, {gameEntity: entity, entityType: entityType}, stats))
+        worldMgr.ecs.addComponent(entity, new SceneSelectionComponent(sceneEntity, { gameEntity: entity, entityType: entityType }, stats))
         const objectName = GameConfig.instance.objectNames[entityType.toLowerCase()]
         if (objectName) worldMgr.ecs.addComponent(entity, new TooltipComponent(entity, objectName, GameConfig.instance.objTtSFXs[entityType.toLowerCase()] || ''))
     }

@@ -14,7 +14,7 @@ class ConfiguredGraph extends Graph {
         readonly precision: number,
         readonly stats: MovableEntityStats
     ) {
-        super(grid, {diagonal: true})
+        super(grid, { diagonal: true })
     }
 }
 
@@ -75,7 +75,7 @@ export class PathFinder {
                 const end = path[c + 1]
                 lengthSq += start.distanceToSquared(end)
             }
-            return {obj: obj, locations: path, lengthSq: lengthSq}
+            return { obj: obj, locations: path, lengthSq: lengthSq }
         }), precision)
     }
 
@@ -93,7 +93,7 @@ export class PathFinder {
                 const end = path[c + 1]
                 lengthSq += start.distanceToSquared(end)
             }
-            return {obj: b, locations: path, lengthSq: lengthSq}
+            return { obj: b, locations: path, lengthSq: lengthSq }
         })), precision)
     }
 

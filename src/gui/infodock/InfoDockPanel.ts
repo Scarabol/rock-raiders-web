@@ -39,7 +39,7 @@ export class InfoDockPanel extends Panel {
         const btn = this.stackButtons[0]
         if (btn.messages.length < 1) return
         const pos = btn.messages[0].location
-        if (pos) this.publishEvent(new CameraControl({jumpToWorld: pos.getPosition2D()}))
+        if (pos) this.publishEvent(new CameraControl({ jumpToWorld: pos.getPosition2D() }))
     }
 
     private dropLatestMessage() {

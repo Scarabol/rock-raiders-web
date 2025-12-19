@@ -25,7 +25,7 @@ export class MapRenderer {
             msgInit.entitySprite = entitySprite.transferControlToOffscreen()
             msgInit.geoScanSprite = geoScanSprite.transferControlToOffscreen()
             msgInit.cameraSprite = camSprite.transferControlToOffscreen()
-            const worker = new Worker(new URL('../../worker/MapRendererWorker', import.meta.url), {type: 'module'})
+            const worker = new Worker(new URL('../../worker/MapRendererWorker', import.meta.url), { type: 'module' })
             this.worker = new TypedWorkerFrontend(worker, (r: MapRendererResponse) => this.onResponseFromWorker(r))
             this.worker.sendMessage(msgInit, [msgInit.terrainSprite, msgInit.monsterSprite, msgInit.materialSprite, msgInit.entitySprite, msgInit.geoScanSprite, msgInit.cameraSprite])
         } catch (e) {
@@ -48,7 +48,7 @@ export class MapRenderer {
         return new Promise((resolve) => {
             const requestId = this.requestId++
             this.resolveCallbackById.set(requestId, resolve)
-            this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_TERRAIN, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, terrain: surfaceMap})
+            this.worker.sendMessage({ type: MapRendererWorkerRequestType.MAP_RENDER_TERRAIN, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, terrain: surfaceMap })
         })
     }
 
@@ -56,7 +56,7 @@ export class MapRenderer {
         return new Promise((resolve) => {
             const requestId = this.requestId++
             this.resolveCallbackById.set(requestId, resolve)
-            this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_SURFACE, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, surface: surface})
+            this.worker.sendMessage({ type: MapRendererWorkerRequestType.MAP_RENDER_SURFACE, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, surface: surface })
         })
     }
 
@@ -64,7 +64,7 @@ export class MapRenderer {
         return new Promise((resolve) => {
             const requestId = this.requestId++
             this.resolveCallbackById.set(requestId, resolve)
-            this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_ENTITIES, requestId: requestId, mapMarkerType: mapMarkerType, offset: offset, surfaceRectSize: surfaceRectSize, entities: entities})
+            this.worker.sendMessage({ type: MapRendererWorkerRequestType.MAP_RENDER_ENTITIES, requestId: requestId, mapMarkerType: mapMarkerType, offset: offset, surfaceRectSize: surfaceRectSize, entities: entities })
         })
     }
 
@@ -72,7 +72,7 @@ export class MapRenderer {
         return new Promise((resolve) => {
             const requestId = this.requestId++
             this.resolveCallbackById.set(requestId, resolve)
-            this.worker.sendMessage({type: MapRendererWorkerRequestType.MAP_RENDER_CAMERA, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, rect: rect})
+            this.worker.sendMessage({ type: MapRendererWorkerRequestType.MAP_RENDER_CAMERA, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, rect: rect })
         })
     }
 }

@@ -123,7 +123,7 @@ export class BitmapFont {
                     rowText += ` ${word}`
                     rowWidth += this.data.spaceWidth + wordWidth
                 } else {
-                    rows.push({text: rowText, width: rowWidth})
+                    rows.push({ text: rowText, width: rowWidth })
                     rowText = word
                     rowWidth = wordWidth
                 }
@@ -132,7 +132,7 @@ export class BitmapFont {
                 rowWidth += wordWidth
             }
         })
-        if (rowWidth > 0) rows.push({text: rowText, width: rowWidth})
+        if (rowWidth > 0) rows.push({ text: rowText, width: rowWidth })
         return rows
     }
 }

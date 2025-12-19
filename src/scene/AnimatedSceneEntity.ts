@@ -102,12 +102,12 @@ export class AnimatedSceneEntity extends SceneEntity {
                         console.warn(`Could not find wheel mesh "${animEntityData.wheelMesh}"`)
                     } else {
                         p.add(wheelMesh)
-                        this.wheelMeshes.add({mesh: wheelMesh, radius: animEntityData.wheelRadius})
+                        this.wheelMeshes.add({ mesh: wheelMesh, radius: animEntityData.wheelRadius })
                     }
                 })
                 this.meshesByLName.getOrUpdate(`not${animEntityData.wheelNullName}`, () => []).forEach((p) => {
                     p.children.forEach((wheel) => {
-                        this.wheelMeshes.add({mesh: wheel, radius: animEntityData.wheelRadius})
+                        this.wheelMeshes.add({ mesh: wheel, radius: animEntityData.wheelRadius })
                     })
                 })
                 this.rotateWheelJoints()
@@ -203,11 +203,11 @@ export class AnimatedSceneEntity extends SceneEntity {
                 upgradeMesh.setAnimation(this.currentAnimation)
                 upgradeMesh.meshesByLName.forEach((mesh, lName) => this.meshesByLName.getOrUpdate(lName, () => []).push(...mesh))
                 parent.add(upgradeMesh)
-                this.installedUpgrades.add({parent: parent, child: upgradeMesh})
+                this.installedUpgrades.add({ parent: parent, child: upgradeMesh })
             })
             this.meshesByLName.getOrUpdate(`not${animEntityData.wheelNullName}`, () => []).forEach((p) => {
                 p.children.forEach((wheel) => {
-                    this.wheelMeshes.add({mesh: wheel, radius: animEntityData.wheelRadius})
+                    this.wheelMeshes.add({ mesh: wheel, radius: animEntityData.wheelRadius })
                 })
             })
         })
@@ -326,7 +326,7 @@ export class AnimatedSceneEntity extends SceneEntity {
 
     getFireNullParents(): { worldPos: Vector3, worldDirection: Vector3 }[] {
         return this.animationData.flatMap((a) => this.meshesByLName.getOrUpdate(a.fireNullName, () => []).map((parent) => {
-            return {worldPos: parent.getWorldPosition(new Vector3()), worldDirection: parent.getWorldDirection(new Vector3())}
+            return { worldPos: parent.getWorldPosition(new Vector3()), worldDirection: parent.getWorldDirection(new Vector3()) }
         }))
     }
 

@@ -15,7 +15,7 @@ export class BubbleSprite extends Sprite implements Updatable {
 
     private static createBubbleSpriteMaterial(bubbleTextureName: string) {
         const texture = ResourceManager.getTexture(bubbleTextureName) ?? null
-        return new SpriteMaterial({map: texture, depthTest: false})
+        return new SpriteMaterial({ map: texture, depthTest: false })
     }
 
     update(elapsedMs: number) {

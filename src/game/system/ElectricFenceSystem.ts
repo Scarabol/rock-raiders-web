@@ -49,8 +49,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
                         }
                     }
                 })
-            } catch
-                (e) {
+            } catch (e) {
                 console.error(e)
             }
         }
@@ -115,8 +114,8 @@ export class ElectricFenceSystem extends AbstractGameSystem {
                     if (!possibleStud.stud) toAdd.add(possibleStud)
                 }
             })
-        })
-        ;[...this.worldMgr.entityMgr.surfacesWithStuds].forEach((s) => {
+        });
+        [...this.worldMgr.entityMgr.surfacesWithStuds].forEach((s) => {
             if (!studPositions.includes(s)) {
                 this.worldMgr.entityMgr.surfacesWithStuds.remove(s)
                 if (s.stud) this.worldMgr.sceneMgr.disposeSceneEntity(s.stud)
@@ -143,7 +142,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             } else {
                 beamPos.z -= TILESIZE
             }
-            return {lwsFilename, beamPos, beamHeading}
+            return { lwsFilename, beamPos, beamHeading }
         })
         const shortBeams: { lwsFilename: string, beamPos: Vector3, beamHeading: number }[] = []
         this.worldMgr.entityMgr.placedFences.forEach((fence) => {
@@ -152,7 +151,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             const neighbors = fenceSurface.neighbors.filter((n) => !!n.fence || n.building?.primarySurface === n || n.building?.secondarySurface === n)
             neighbors.forEach((n) => {
                 const beamHeading = new Vector2(n.y - fenceSurface.y, n.x - fenceSurface.x).angle() // y is actually z axis here
-                shortBeams.push({lwsFilename: GameConfig.instance.miscObjects.shortElectricFenceBeam, beamPos: fenceSurface.getCenterWorld(), beamHeading})
+                shortBeams.push({ lwsFilename: GameConfig.instance.miscObjects.shortElectricFenceBeam, beamPos: fenceSurface.getCenterWorld(), beamHeading })
             })
         })
         const nextBeam = PRNG.animation.sample([...longBeams, ...shortBeams])

@@ -32,8 +32,8 @@ class FullScreenShader extends ShaderMaterial {
 const TransparentBackgroundShader = {
     name: 'TransparentBackgroundShader',
     uniforms: {
-        'tDiffuse': {value: null as Texture | null},
-        'tDepth': {value: null as Texture | null},
+        'tDiffuse': { value: null as Texture | null },
+        'tDepth': { value: null as Texture | null },
     },
     vertexShader: `
         varying vec2 vUv;
@@ -60,13 +60,13 @@ class TransparentBackgroundRenderer extends BaseRenderer {
 
     override render() {
         if (!this.renderTarget) {
-            this.renderTarget = new WebGLRenderTarget(0, 0, {depthTexture: new DepthTexture(0, 0)})
+            this.renderTarget = new WebGLRenderTarget(0, 0, { depthTexture: new DepthTexture(0, 0) })
         }
         if (!this.fsShader) {
             const uniforms = UniformsUtils.clone(TransparentBackgroundShader.uniforms)
             uniforms.tDiffuse.value = this.renderTarget.texture
             uniforms.tDepth.value = this.renderTarget.depthTexture
-            this.fsShader = new FullScreenShader({...TransparentBackgroundShader, uniforms})
+            this.fsShader = new FullScreenShader({ ...TransparentBackgroundShader, uniforms })
         }
         if (!this.renderer) return
         const size = this.renderer.getSize(new Vector2())
@@ -97,7 +97,7 @@ export class RockWipeLayer extends ScreenLayer {
 
     constructor() {
         super()
-        this.renderer = new TransparentBackgroundRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, {alpha: true})
+        this.renderer = new TransparentBackgroundRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, { alpha: true })
         // Camera
         const aspect = this.canvas.width / this.canvas.height
         this.camera = new PerspectiveCamera(45, aspect, 1, 100)

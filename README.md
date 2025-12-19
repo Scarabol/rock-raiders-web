@@ -32,12 +32,14 @@ using modern web technologies.
 <a href="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2022-03-20%2002.png?raw=true">
 <img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2022-03-20%2002.png?raw=true" width="360" alt="Screenshot">
 </a>
+
 <a href="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2022-03-20%2003.png?raw=true">
 <img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2022-03-20%2003.png?raw=true" width="360" alt="Screenshot">
 </a>
 <a href="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2022-03-20%2004.png?raw=true">
 <img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2022-03-20%2004.png?raw=true" width="360" alt="Screenshot">
 </a>
+
 <a href="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2023-10-26%2001.png?raw=true">
 <img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2023-10-26%2001.png?raw=true" width="360" alt="Screenshot">
 </a>
@@ -45,13 +47,20 @@ using modern web technologies.
 <img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2023-10-31%2001.png?raw=true" width="360" alt="Screenshot">
 </a>
 
+<a href="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2024-12-23%2001.png?raw=true">
+<img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2024-12-23%2001.png?raw=true" width="360" alt="Screenshot">
+</a>
+<a href="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2025-02-03%2001.png?raw=true">
+<img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2025-02-03%2001.png?raw=true" width="360" alt="Screenshot">
+</a>
+
 ## Development Roadmap
 
 ### v0.9.x - Polishing
 
 - Implement clickOnly... methods for tutorials and disable all non-flashing UI elements in tutorial mode
-- Fix balancing for lava erosion, see #35
-- Fix clear rubble job priority not effective, see #43
+- Fix balancing for lava erosion, see [#35](https://github.com/Scarabol/rock-raiders-web/issues/35)
+- Fix clear rubble job priority not effective, see [#43](https://github.com/Scarabol/rock-raiders-web/issues/43)
 
 ### v1.0.0 - Final Release
 
@@ -63,7 +72,6 @@ using modern web technologies.
 
 - Adjust entities rotation speed and play turnLeft, turnRight animations
 - Advisor not shown in tutorials near icon panel
-- Add tiny rockies running around after crumbling
 - Two buttons in priority list can be hovered/pressed/released at the same time
 
 ### Authentic

@@ -7,7 +7,6 @@ import { AudioContext, BufferGeometry, NearestFilter, RepeatWrapping, SRGBColorS
 import { AVIFile, AVIParser } from './fileparser/avi/AVIParser'
 import { AssetRegistry } from './AssetRegistry'
 import { ResourceManager } from './ResourceManager'
-import { BitmapWithPalette } from './fileparser/BitmapWithPalette'
 import { FlhParser } from './fileparser/FlhParser'
 import { imgDataToCanvas } from '../core/ImageHelper'
 import { SoundManager } from '../audio/SoundManager'
@@ -42,53 +41,53 @@ export abstract class AssetLoader<T> {
     }
 }
 
-export class ImageAssetLoader extends AssetLoader<BitmapWithPalette> {
-    async exec(): Promise<BitmapWithPalette> {
+export class ImageAssetLoader extends AssetLoader<ImageData> {
+    async exec(): Promise<ImageData> {
         const data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
-        const bitmap = await BitmapWorkerPool.instance.decodeBitmap(data)
-        ResourceManager.resourceByName.set(this.lAssetName, bitmap) // TODO Add image to cache instead
-        return bitmap
+        const imgData = await BitmapWorkerPool.instance.decodeBitmap(data)
+        ResourceManager.resourceByName.set(this.lAssetName, imgData) // TODO Add image to cache instead
+        return imgData
     }
 }
 
-export class TextureAssetLoader extends AssetLoader<BitmapWithPalette> {
-    async exec(): Promise<BitmapWithPalette> {
+export class TextureAssetLoader extends AssetLoader<ImageData> {
+    async exec(): Promise<ImageData> {
         const data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
         const alphaIndexMatch = this.lAssetName.match(/(.*a)(\d+)(_.+)/i)
-        let assetName: string = this.lAssetName, bitmap: BitmapWithPalette
+        let assetName: string = this.lAssetName, imgData: ImageData
         if (alphaIndexMatch) {
             assetName = alphaIndexMatch[1] + alphaIndexMatch[3]
             const alphaIndex = Number(alphaIndexMatch[2])
-            bitmap = await BitmapWorkerPool.instance.decodeBitmapWithAlphaIndex(data, alphaIndex)
+            imgData = await BitmapWorkerPool.instance.decodeBitmapWithAlphaIndex(data, alphaIndex)
         } else if (this.lAssetName.match(/\/a.*\d.*/i)) {
-            bitmap = await BitmapWorkerPool.instance.decodeBitmapWithAlpha(data)
+            imgData = await BitmapWorkerPool.instance.decodeBitmapWithAlpha(data)
         } else {
-            bitmap = await BitmapWorkerPool.instance.decodeBitmap(data)
+            imgData = await BitmapWorkerPool.instance.decodeBitmap(data)
         }
-        ResourceManager.resourceByName.set(assetName, bitmap) // TODO Add texture to cache instead
-        return bitmap
+        ResourceManager.resourceByName.set(assetName, imgData) // TODO Add texture to cache instead
+        return imgData
     }
 }
 
-export class AlphaImageAssetLoader extends AssetLoader<BitmapWithPalette> {
-    async exec(): Promise<BitmapWithPalette> {
+export class AlphaImageAssetLoader extends AssetLoader<ImageData> {
+    async exec(): Promise<ImageData> {
         const data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
-        const bitmap = await BitmapWorkerPool.instance.decodeBitmapWithAlpha(data)
+        const imgData = await BitmapWorkerPool.instance.decodeBitmapWithAlpha(data)
         const alphaIndexMatch = this.lAssetName.match(/(.*a)(\d+)(_.+)/i)
         const assetName = alphaIndexMatch ? alphaIndexMatch[1] + alphaIndexMatch[3] : this.lAssetName
-        ResourceManager.resourceByName.set(assetName, bitmap) // TODO Add image to cache instead
-        return bitmap
+        ResourceManager.resourceByName.set(assetName, imgData) // TODO Add image to cache instead
+        return imgData
     }
 }
 
-export class AlphaTranslucentImageAssetLoader extends AssetLoader<BitmapWithPalette> {
-    async exec(): Promise<BitmapWithPalette> {
+export class AlphaTranslucentImageAssetLoader extends AssetLoader<ImageData> {
+    async exec(): Promise<ImageData> {
         const data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
-        const bitmap = await BitmapWorkerPool.instance.decodeBitmapWithAlphaTranslucent(data)
+        const imgData = await BitmapWorkerPool.instance.decodeBitmapWithAlphaTranslucent(data)
         const alphaIndexMatch = this.lAssetName.match(/(.*a)(\d+)(_.+)/i)
         const assetName = alphaIndexMatch ? alphaIndexMatch[1] + alphaIndexMatch[3] : this.lAssetName
-        ResourceManager.resourceByName.set(assetName, bitmap) // TODO Add image to cache instead
-        return bitmap
+        ResourceManager.resourceByName.set(assetName, imgData) // TODO Add image to cache instead
+        return imgData
     }
 }
 

@@ -18,6 +18,6 @@ export abstract class AbstractWorkerSystem<M, R> {
     abstract onMessageFromFrontend(workerRequestHash: string, request: M): void
 
     sendResponse(workerRequestHash: string, response: R, transfer?: Transferable[]) {
-        this.worker.sendResponse({workerRequestHash: workerRequestHash, response: response}, transfer)
+        this.worker.sendResponse({ workerRequestHash: workerRequestHash, response: response }, transfer)
     }
 }

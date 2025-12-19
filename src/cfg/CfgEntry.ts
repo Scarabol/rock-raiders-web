@@ -155,9 +155,9 @@ export class CfgEntryValue {
         return this.toArray(':', 3).map((n) => Math.max(0, Math.min(255, n.toNumber())) / 255) as [number, number, number]
     }
 
-    toPos(separator: string, fallback: { x: number, y: number } = {x: 0, y: 0}): { x: number, y: number } {
+    toPos(separator: string, fallback: { x: number, y: number } = { x: 0, y: 0 }): { x: number, y: number } {
         if (this.value === undefined) return fallback
         const [x, y] = this.toArray(separator, 2).map((v) => v.toNumber())
-        return {x: x, y: y}
+        return { x: x, y: y }
     }
 }

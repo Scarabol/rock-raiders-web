@@ -14,7 +14,7 @@ export class MainMenuPanel extends MainMenuBaseItem {
         const imgData = ResourceManager.getImageData(cfg.imgBackground)
         this.context = createContext(imgData.width, imgData.height)
         this.context.putImageData(imgData, 0, 0)
-        const readbackContext = createCanvas(imgData.width, imgData.height).getContext('2d', {willReadFrequently: true})
+        const readbackContext = createCanvas(imgData.width, imgData.height).getContext('2d', { willReadFrequently: true })
         if (!readbackContext) throw new Error('Could not get readback context')
         this.readbackContext = readbackContext
         this.readbackContext.putImageData(imgData, 0, 0)

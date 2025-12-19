@@ -158,7 +158,7 @@ export class InitRadarMap extends BaseEvent {
 
     constructor(mapFocus: Vector3, terrain: Terrain) {
         super(EventKey.INIT_RADAR_MAP)
-        this.focusTile = {x: Math.floor(mapFocus.x / TILESIZE), y: Math.floor(mapFocus.z / TILESIZE)}
+        this.focusTile = { x: Math.floor(mapFocus.x / TILESIZE), y: Math.floor(mapFocus.z / TILESIZE) }
         terrain.forEachSurface((s) => {
             if (s.discovered || s.scanned || DEV_MODE) this.surfaces.push(new MapSurfaceRect(s))
         })

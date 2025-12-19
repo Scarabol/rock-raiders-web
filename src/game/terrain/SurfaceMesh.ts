@@ -4,7 +4,7 @@ import { SurfaceGeometry, SurfaceVertex } from './SurfaceGeometry'
 import { WALL_TYPE, WallType } from './WallType'
 import { ObjectPointer } from '../../scene/ObjectPointer'
 import { Surface } from './Surface'
-import { TILESIZE } from '../../params'
+import { TILESIZE, VERBOSE } from '../../params'
 import { SequenceTextureMaterial } from '../../scene/SequenceTextureMaterial'
 
 export interface SurfaceMeshUserData {
@@ -59,7 +59,7 @@ export class SurfaceMesh extends Group {
         if (surface.wallType === WALL_TYPE.corner || surface.wallType === WALL_TYPE.wall || surface.wallType === WALL_TYPE.invertedCorner ||
             (surface.wallType === WALL_TYPE.floor && surface.hasRubble())) {
             this.proMesh = ResourceManager.proMeshes.get(proMeshFilepath)?.clone(true)
-            if (!this.proMesh) console.warn(`Could not find surface pro mesh for "${proMeshFilepath}"`)
+            if (!this.proMesh && VERBOSE) console.warn(`Could not find surface pro mesh for "${proMeshFilepath}"`)
         }
         if (this.proMesh) {
             this.proMesh.userData = this.userData
@@ -152,15 +152,15 @@ export class SurfaceMesh extends Group {
             const y = geoPos.array[c]
             const z = geoPos.array[c + 1]
             if (Math.abs(x - frontLeft.x) < nearThreshold && Math.abs(y - frontLeft.y) < nearThreshold && Math.abs(z - frontLeft.z) < nearThreshold) {
-                nearTopLeft.push({x, y, z, index: c})
+                nearTopLeft.push({ x, y, z, index: c })
             } else if (Math.abs(x - backLeft.x) < nearThreshold && Math.abs(y - backLeft.y) < nearThreshold && Math.abs(z - backLeft.z) < nearThreshold) {
-                nearBottomLeft.push({x, y, z, index: c})
+                nearBottomLeft.push({ x, y, z, index: c })
             } else if (Math.abs(x - backRight.x) < nearThreshold && Math.abs(y - backRight.y) < nearThreshold && Math.abs(z - backRight.z) < nearThreshold) {
-                nearBottomRight.push({x, y, z, index: c})
+                nearBottomRight.push({ x, y, z, index: c })
             } else if (Math.abs(x - frontRight.x) < nearThreshold && Math.abs(y - frontRight.y) < nearThreshold && Math.abs(z - frontRight.z) < nearThreshold) {
-                nearTopRight.push({x, y, z, index: c})
+                nearTopRight.push({ x, y, z, index: c })
             } else {
-                nearOthers.push({x, y, z, index: c})
+                nearOthers.push({ x, y, z, index: c })
             }
         }
         const offset = [topLeftOffset.offset, bottomLeftOffset.offset, bottomRightOffset.offset, topRightOffset.offset]
@@ -206,7 +206,7 @@ export class SurfaceMesh extends Group {
     }
 
     private static avgVec(vecList: { x: number, y: number, z: number }[]): { x: number, y: number, z: number } {
-        const avgVec = vecList.reduce((p, c) => ({x: p.x + c.x, y: p.y + c.y, z: p.z + c.z}), {x: 0, y: 0, z: 0})
+        const avgVec = vecList.reduce((p, c) => ({ x: p.x + c.x, y: p.y + c.y, z: p.z + c.z }), { x: 0, y: 0, z: 0 })
         avgVec.x /= vecList.length
         avgVec.y /= vecList.length
         avgVec.z /= vecList.length
@@ -228,7 +228,7 @@ class SurfaceMeshLow extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
     declare userData: SurfaceMeshUserData
 
     constructor(_x: number, _y: number, userData: SurfaceMeshUserData) {
-        super(new SurfaceGeometry(), new MeshPhongMaterial({shininess: 0}))
+        super(new SurfaceGeometry(), new MeshPhongMaterial({ shininess: 0 }))
         this.userData = userData
     }
 
@@ -270,7 +270,7 @@ export class SurfaceMeshPro extends Mesh<BufferGeometry, SequenceTextureMaterial
 
 export class RoofMesh extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
     constructor(x: number, y: number, texture: Texture | null) { // three.js uses null instead of undefined
-        super(new SurfaceGeometry(), new MeshPhongMaterial({shininess: 0, side: BackSide, map: texture}))
+        super(new SurfaceGeometry(), new MeshPhongMaterial({ shininess: 0, side: BackSide, map: texture }))
         this.position.set(x, 3, y).multiplyScalar(TILESIZE)
     }
 

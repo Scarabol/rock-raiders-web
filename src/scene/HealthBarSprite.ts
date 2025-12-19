@@ -8,13 +8,13 @@ import { GameConfig } from '../cfg/GameConfig'
 export class HealthBarSprite extends Sprite implements Updatable {
     static readonly textureSize = 128
     readonly textureContext: SpriteContext
-    readonly activeArea: { x: number, y: number, w: number, h: number } = {x: 0, y: 0, w: 0, h: 0}
+    readonly activeArea: { x: number, y: number, w: number, h: number } = { x: 0, y: 0, w: 0, h: 0 }
     actualStatus: number = 1
     targetStatus: number = 1
     visibleTimeout: number = 0
 
     constructor(yOffset: number, scale: number, readonly canBeShownPermanently: boolean) {
-        super(new SpriteMaterial({depthTest: false}))
+        super(new SpriteMaterial({ depthTest: false }))
         this.position.set(0, yOffset, 0)
         this.scale.setScalar(scale)
         this.textureContext = createContext(HealthBarSprite.textureSize, HealthBarSprite.textureSize)

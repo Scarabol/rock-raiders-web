@@ -1,10 +1,13 @@
-import { ResourceManager } from '../resource/ResourceManager'
 import { NerpComparator, NerpConditional, NerpInvocation, NerpJump, NerpLabel, NerpNumber, NerpScript, NerpStatement } from './NerpScript'
 import { isNum } from '../core/Util'
 
+export interface NerpScriptProvider {
+    getScriptContent(nerpScriptFile: string): string
+}
+
 export class NerpParser {
-    static parse(nerpScriptFile: string): NerpScript {
-        const nerpScriptContent = ResourceManager.getResource(nerpScriptFile)
+    static parse(nerpScriptFile: string, scriptProvider: NerpScriptProvider): NerpScript {
+        const nerpScriptContent = scriptProvider.getScriptContent(nerpScriptFile)
         if (!nerpScriptContent) {
             throw new Error(`Can't parse unknown nerp script: ${nerpScriptFile}`)
         }
@@ -29,7 +32,7 @@ export class NerpParser {
                     // see https://github.com/jgrip/legorr/blob/master/nerpdef.h
                     continue
                 }
-                const includedScript = NerpParser.parse(`Levels/${includeName}`)
+                const includedScript = NerpParser.parse(`Levels/${includeName}`, scriptProvider)
                 if (!includedScript || !includedScript.lines || includedScript.lines.length < 1) {
                     throw new Error(`Can't include unknown nerp script: ${line}`)
                 }

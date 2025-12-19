@@ -90,7 +90,7 @@ export class ObjectListLoader {
             case EntityType.ORE_REFINERY:
             case EntityType.GUNSTATION:
             case EntityType.TELEPORT_BIG:
-                worldPos.divideScalar(TILESIZE).roundToZero().add({x: 0.5, y: 0.5}).multiplyScalar(TILESIZE) // Always snap building position to the center of the given tile
+                worldPos.divideScalar(TILESIZE).roundToZero().add({ x: 0.5, y: 0.5 }).multiplyScalar(TILESIZE) // Always snap building position to the center of the given tile
                 const building = new BuildingEntity(this.worldMgr, entityType, worldPos, -headingRad - Math.PI, this.disableStartTeleport)
                 if (entityType === EntityType.TOOLSTATION) {
                     if (!this.trackEntity && building.sceneEntity.visible) this.trackEntity = building.entity
@@ -160,7 +160,7 @@ export class ObjectListLoader {
         const infoComp = this.worldMgr.ecs.addComponent(raider.entity, new RaiderInfoComponent(raider.sceneEntity))
         this.worldMgr.sceneMgr.addSprite(infoComp.bubbleSprite)
         infoComp.setHungerIndicator(raider.foodLevel)
-        const sceneSelectionComponent = new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats)
+        const sceneSelectionComponent = new SceneSelectionComponent(raider.sceneEntity, { gameEntity: raider.entity, entityType: raider.entityType }, raider.stats)
         const raiderSceneSelection = this.worldMgr.ecs.addComponent(raider.entity, sceneSelectionComponent)
         this.worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(raiderSceneSelection.pickSphere, raider.stats))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPos)
@@ -188,7 +188,7 @@ export class ObjectListLoader {
         const healthComponent = this.worldMgr.ecs.addComponent(vehicle.entity, new HealthComponent(false, 24, 14, vehicle.sceneEntity, false, GameConfig.instance.getRockFallDamage(vehicle.entityType, vehicle.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
-        const sceneSelectionComponent = new SceneSelectionComponent(vehicle.sceneEntity, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats)
+        const sceneSelectionComponent = new SceneSelectionComponent(vehicle.sceneEntity, { gameEntity: vehicle.entity, entityType: vehicle.entityType }, vehicle.stats)
         const vehicleSceneSelection = this.worldMgr.ecs.addComponent(vehicle.entity, sceneSelectionComponent)
         this.worldMgr.ecs.addComponent(vehicle.entity, new SelectionFrameComponent(vehicleSceneSelection.pickSphere, vehicle.stats))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPos)

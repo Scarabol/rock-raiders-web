@@ -137,7 +137,7 @@ export class AssetRegistry {
             this.addMeshObjects(mType)
         })
         Object.values(gameConfig.rockFallStyles).forEach((entry) => {
-            ;[entry.threeSides, entry.outsideCorner, entry.tunnel].forEach((shape) => {
+            [entry.threeSides, entry.outsideCorner, entry.tunnel].forEach((shape) => {
                 const textureFolder = shape.split('/').slice(0, -1).join('/')
                 this.addTextureFolder(textureFolder)
                 this.addLWSFile(shape)

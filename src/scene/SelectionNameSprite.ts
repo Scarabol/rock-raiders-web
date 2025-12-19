@@ -17,6 +17,6 @@ export class SelectionNameSprite extends Sprite {
         context.fillStyle = '#fff'
         context.fillText(label, this.textureSize / 2, this.textureSize / 2)
         const spriteTexture = new CanvasTexture(ctx.canvas)
-        return new SpriteMaterial({map: spriteTexture, depthTest: false})
+        return new SpriteMaterial({ map: spriteTexture, depthTest: false })
     }
 }

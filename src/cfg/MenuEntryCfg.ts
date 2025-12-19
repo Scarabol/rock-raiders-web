@@ -7,7 +7,7 @@ import { CfgEntry, CfgEntryValue } from './CfgEntry'
 export class MenuEntryCfg implements ConfigSetFromRecord {
     fullName: string = ''
     title: string = ''
-    position: { x: number, y: number } = {x: 0, y: 0}
+    position: { x: number, y: number } = { x: 0, y: 0 }
     menuFont: string = ''
     loFont: string = ''
     hiFont: string = ''
@@ -20,7 +20,7 @@ export class MenuEntryCfg implements ConfigSetFromRecord {
     itemsLabel: MenuLabelItemCfg[] = []
     itemsSlider: MenuSliderItemCfg[] = []
     itemsCycle: MenuCycleItemCfg[] = []
-    anchored: { x: number, y: number } = {x: 0, y: 0}
+    anchored: { x: number, y: number } = { x: 0, y: 0 }
     canScroll: boolean = false
 
     setFromRecord(cfgValue: CfgEntry): this {

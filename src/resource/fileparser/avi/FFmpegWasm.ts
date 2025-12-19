@@ -27,7 +27,7 @@ export class FFmpegWasm {
         const ffmpeg = await this.loadFFmpeg()
         try {
             await ffmpeg.createDir('/input')
-            await ffmpeg.mount(FFFSType.WORKERFS, {files: [new File([videoFileData], videoFileName)]}, '/input')
+            await ffmpeg.mount(FFFSType.WORKERFS, { files: [new File([videoFileData], videoFileName)] }, '/input')
             const returnCode = await ffmpeg.exec([
                 '-i', `/input/${videoFileName}`,
                 '-vn',
@@ -53,9 +53,9 @@ export class FFmpegWasm {
         const ffmpeg = await this.loadFFmpeg()
         try {
             await ffmpeg.createDir('/input')
-            await ffmpeg.mount(FFFSType.WORKERFS, {files: [new File([videoFileData], videoFileName)]}, '/input')
+            await ffmpeg.mount(FFFSType.WORKERFS, { files: [new File([videoFileData], videoFileName)] }, '/input')
             let isEmpty = false
-            ffmpeg.on('log', ({type, message}) => {
+            ffmpeg.on('log', ({ type, message }) => {
                 if (type === 'stderr' && message.match(/^video:0kB audio:0kB /)) {
                     isEmpty = true
                 }

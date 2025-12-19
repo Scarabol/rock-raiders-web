@@ -42,7 +42,7 @@ export class MaterialSpawner {
                 const oreMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.ore)
                 if (!oreMesh) throw new Error(`Cannot spawn ore missing mesh "${GameConfig.instance.miscObjects.ore}"`)
                 material.sceneEntity.add(oreMesh)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.ore))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, { gameEntity: material.entity, entityType: material.entityType }, GameConfig.instance.stats.ore))
                 // Do not set priority identifier before workplace
                 this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
@@ -50,7 +50,7 @@ export class MaterialSpawner {
                 const brickMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.processedOre)
                 if (!brickMesh) throw new Error(`Cannot spawn brick missing mesh "${GameConfig.instance.miscObjects.processedOre}"`)
                 material.sceneEntity.add(brickMesh)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.processedOre))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, { gameEntity: material.entity, entityType: material.entityType }, GameConfig.instance.stats.processedOre))
                 // Do not set priority identifier before workplace
                 this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
@@ -62,7 +62,7 @@ export class MaterialSpawner {
                     m.emissive.fromArray(GameConfig.instance.main.powerCrystalRGB)
                 })
                 material.sceneEntity.add(energyCrystalMesh)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.powerCrystal))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, { gameEntity: material.entity, entityType: material.entityType }, GameConfig.instance.stats.powerCrystal))
                 // Do not set priority identifier before workplace
                 this.addTooltip(worldMgr, material.entity, material.entityType, () => 0)
                 break
@@ -74,20 +74,20 @@ export class MaterialSpawner {
                     m.emissive.fromArray(GameConfig.instance.main.unpoweredCrystalRGB)
                 })
                 material.sceneEntity.add(depletedCrystalMesh)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.powerCrystal))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, { gameEntity: material.entity, entityType: material.entityType }, GameConfig.instance.stats.powerCrystal))
                 material.priorityIdentifier = PRIORITY_IDENTIFIER.recharge
                 this.addTooltip(worldMgr, material.entity, EntityType.CRYSTAL, () => 0)
                 break
             case EntityType.BARRIER:
                 material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.barrier))
                 material.sceneEntity.setAnimation(BARRIER_ACTIVITY.short)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {pickSphere: 10, collRadius: 10, collHeight: 0})) // XXX find any constant for pick sphere?
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, { gameEntity: material.entity, entityType: material.entityType }, { pickSphere: 10, collRadius: 10, collHeight: 0 })) // XXX find any constant for pick sphere?
                 material.priorityIdentifier = PRIORITY_IDENTIFIER.construction
                 break
             case EntityType.DYNAMITE:
                 material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.dynamite))
                 material.sceneEntity.setAnimation(DYNAMITE_ACTIVITY.normal)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {pickSphere: 8, collRadius: 8, collHeight: 0})) // XXX find any constant for pick sphere?
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, { gameEntity: material.entity, entityType: material.entityType }, { pickSphere: 8, collRadius: 8, collHeight: 0 })) // XXX find any constant for pick sphere?
                 material.priorityIdentifier = PRIORITY_IDENTIFIER.destruction
                 material.requiredTraining = RAIDER_TRAINING.demolition
                 break
@@ -96,7 +96,7 @@ export class MaterialSpawner {
                 if (!electricFenceMesh) throw new Error(`Cannot spawn electric fence missing mesh "${GameConfig.instance.miscObjects.electricFence}"`)
                 material.sceneEntity.add(electricFenceMesh)
                 const statsFence = GameConfig.instance.stats.electricFence
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, statsFence))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, { gameEntity: material.entity, entityType: material.entityType }, statsFence))
                 material.priorityIdentifier = PRIORITY_IDENTIFIER.construction
                 const healthComponent = material.worldMgr.ecs.addComponent(material.entity, new HealthComponent(statsFence.damageCausesCallToArms, statsFence.collHeight, 10, material.sceneEntity, false, GameConfig.instance.getRockFallDamage(material.entityType, 0)))
                 material.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)

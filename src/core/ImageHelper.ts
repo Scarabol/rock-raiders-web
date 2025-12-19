@@ -66,7 +66,7 @@ export function setPixel(imgData: ImageData, x: number, y: number, r: number, g:
 
 export function getPixel(imgData: ImageData, x: number, y: number): { r: number; g: number; b: number; a: number } {
     const n = (y * imgData.width + x) * 4
-    return {r: imgData.data[n], g: imgData.data[n + 1], b: imgData.data[n + 2], a: imgData.data[n + 3]}
+    return { r: imgData.data[n], g: imgData.data[n + 1], b: imgData.data[n + 2], a: imgData.data[n + 3] }
 }
 
 export function imgDataToCanvas(imgData: ImageData): SpriteImage {

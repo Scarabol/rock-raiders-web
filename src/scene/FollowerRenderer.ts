@@ -54,7 +54,7 @@ export class FollowerRenderer {
                 return
             }
             if (!this.renderer) {
-                this.renderer = new WebGLRenderer({antialias: true, canvas: this.canvas, powerPreference: 'high-performance'})
+                this.renderer = new WebGLRenderer({ antialias: true, canvas: this.canvas, powerPreference: 'high-performance' })
                 this.composer = new EffectComposer(this.renderer)
                 this.composer.addPass(new RenderPass(this.scene, this.camera))
                 this.composer.addPass(new ShaderPass(GreenScaleShader))

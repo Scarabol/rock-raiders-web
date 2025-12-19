@@ -15,7 +15,7 @@ export class RaiderInfoComponent extends AbstractGameComponent {
         this.bubbleSprite = new BubbleSprite()
         this.setBubbleTexture('bubbleIdle')
         parent.add(this.bubbleSprite)
-        this.hungerSprite = new Sprite(new SpriteMaterial({depthTest: false}))
+        this.hungerSprite = new Sprite(new SpriteMaterial({ depthTest: false }))
         this.setHungerIndicator(1)
         this.hungerSprite.center.set(0, 0.75)
         this.hungerSprite.position.y = 16 - GameConfig.instance.objInfo.hungerImagesPosition.y / 4
@@ -48,7 +48,7 @@ class BubbleSprite extends Sprite implements Updatable {
     showDelayMs: number = 0
 
     constructor() {
-        super(new SpriteMaterial({depthTest: false}))
+        super(new SpriteMaterial({ depthTest: false }))
         this.center.set(1, 0.5)
         this.position.y = 19 - GameConfig.instance.objInfo.bubbleImagesPosition.y / 9
         this.scale.set(9, 9, 0)

@@ -47,28 +47,28 @@ export class SelectionRaycaster {
     getFirstCursorTarget(origin: Vector2): CursorTarget {
         const raycaster = new SceneRaycaster(this.worldMgr, origin)
         const raider = raycaster.getFirstEntity(this.worldMgr.entityMgr.raiders.filter((r) => !r.vehicle))
-        if (raider) return {raider: raider, entityType: raider.entityType}
+        if (raider) return { raider: raider, entityType: raider.entityType }
         const material = raycaster.getFirstEntity(this.worldMgr.entityMgr.materials)
-        if (material) return {material: material, entityType: material.entityType}
+        if (material) return { material: material, entityType: material.entityType }
         const vehicle = raycaster.getFirstEntity(this.worldMgr.entityMgr.vehicles)
-        if (vehicle) return {vehicle: vehicle, entityType: vehicle.entityType}
-        const monster = raycaster.getFirstEntity(this.worldMgr.entityMgr.rockMonsters.map((m) => ({entity: m})))
-        if (monster) return {monster: monster, entityType: EntityType.ROCK_MONSTER}
+        if (vehicle) return { vehicle: vehicle, entityType: vehicle.entityType }
+        const monster = raycaster.getFirstEntity(this.worldMgr.entityMgr.rockMonsters.map((m) => ({ entity: m })))
+        if (monster) return { monster: monster, entityType: EntityType.ROCK_MONSTER }
         const fence = raycaster.getFirstEntity(this.worldMgr.entityMgr.placedFences)
-        if (fence) return {fence: fence, entityType: EntityType.ELECTRIC_FENCE}
-        const slug = raycaster.getFirstEntity(this.worldMgr.entityMgr.slugs.map((m) => ({entity: m})))
-        if (slug) return {slug: slug, entityType: EntityType.SLUG}
+        if (fence) return { fence: fence, entityType: EntityType.ELECTRIC_FENCE }
+        const slug = raycaster.getFirstEntity(this.worldMgr.entityMgr.slugs.map((m) => ({ entity: m })))
+        if (slug) return { slug: slug, entityType: EntityType.SLUG }
         const building = raycaster.getFirstEntity(this.worldMgr.entityMgr.buildings)
-        if (building) return {building: building, entityType: building.entityType}
+        if (building) return { building: building, entityType: building.entityType }
         if (this.terrain) {
             const intersection = raycaster.raycaster.intersectObjects<SurfaceMesh>(this.worldMgr.sceneMgr.floorGroup.children, true)[0]
             if (intersection) {
                 const surface = intersection.object.userData.selectable
                 if (surface?.discovered) {
                     if (surface.building && surface.pathBlockedByBuilding) {
-                        return {building: surface.building, entityType: surface.building.entityType}
+                        return { building: surface.building, entityType: surface.building.entityType }
                     }
-                    return {surface: surface, intersectionPoint: intersection.point}
+                    return { surface: surface, intersectionPoint: intersection.point }
                 }
             }
         }

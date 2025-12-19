@@ -10,9 +10,9 @@ export class MainCfg implements ConfigSetFromRecord {
     progressWindow: Rect = new Rect()
     loadingText: string = ''
     nextButton: string = ''
-    nextButtonPos: { x: number, y: number } = {x: 0, y: 0}
+    nextButtonPos: { x: number, y: number } = { x: 0, y: 0 }
     backButton: string = ''
-    backButtonPos: { x: number, y: number } = {x: 0, y: 0}
+    backButtonPos: { x: number, y: number } = { x: 0, y: 0 }
     backArrow: string = ''
     buildingUpgradeCostOre: number = 0
     buildingUpgradeCostStuds: number = 0

@@ -46,28 +46,28 @@ export class GameLayer extends ScreenLayer {
             CursorManager.changeCursor(this.determineCursor(cursorTarget))
         })
         this.addEventListener('pointermove', (event): boolean => {
-            const gameEvent = new GamePointerEvent(POINTER_EVENT.move, event)
-            ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
+            const gameEvent = new GamePointerEvent(POINTER_EVENT.move, event);
+            [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             return this.handlePointerMoveEvent(gameEvent)
         })
         this.addEventListener('pointerdown', (event): boolean => {
             if (event.button !== MOUSE_BUTTON.main) return false
-            const gameEvent = new GamePointerEvent(POINTER_EVENT.down, event)
-            ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
+            const gameEvent = new GamePointerEvent(POINTER_EVENT.down, event);
+            [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             if (!this.worldMgr.sceneMgr.buildMarker?.buildingType && !this.worldMgr.entityMgr.selection.doubleSelect && GameState.isBirdView) {
-                this.pointerDown = {x: gameEvent.canvasX, y: gameEvent.canvasY}
+                this.pointerDown = { x: gameEvent.canvasX, y: gameEvent.canvasY }
             }
             return false
         })
         this.addEventListener('pointerup', (event): boolean => {
             if (event.button !== MOUSE_BUTTON.main) return false
-            const gameEvent = new GamePointerEvent(POINTER_EVENT.up, event)
-            ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
+            const gameEvent = new GamePointerEvent(POINTER_EVENT.up, event);
+            [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             this.handlePointerUpEvent(gameEvent)
             return false
-        })
+        });
         // signal to screen master for camera controls listening on canvas for events
-        ;(['pointerleave', 'mousemove', 'mouseleave'] as (keyof HTMLElementEventMap)[]).forEach((eventType) => {
+        (['pointerleave', 'mousemove', 'mouseleave'] as (keyof HTMLElementEventMap)[]).forEach((eventType) => {
             this.addEventListener(eventType, (): boolean => false)
         })
         this.addEventListener('keydown', (event): boolean => {
@@ -399,14 +399,14 @@ export class GameLayer extends ScreenLayer {
     }
 
     onGlobalMouseMoveEvent(e: PointerEvent) {
-        const event = new GamePointerEvent(POINTER_EVENT.move, e)
-        ;[event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
+        const event = new GamePointerEvent(POINTER_EVENT.move, e);
+        [event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
         this.onGlobalMouseEvent(event)
     }
 
     onGlobalMouseLeaveEvent(e: PointerEvent) {
-        const event = new GamePointerEvent(POINTER_EVENT.move, e)
-        ;[event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
+        const event = new GamePointerEvent(POINTER_EVENT.move, e);
+        [event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
         this.onGlobalMouseEvent(event)
     }
 

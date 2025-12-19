@@ -14,7 +14,7 @@ export class ObjectPointer extends Sprite implements Updatable {
     surface: Surface | undefined
 
     constructor() {
-        super(new SpriteMaterial(({map: ResourceManager.getTexture(GameConfig.instance.main.tutorialIcon) ?? null, depthTest: false})))
+        super(new SpriteMaterial(({ map: ResourceManager.getTexture(GameConfig.instance.main.tutorialIcon) ?? null, depthTest: false })))
         this.scale.setScalar(15)
         this.visible = false
     }

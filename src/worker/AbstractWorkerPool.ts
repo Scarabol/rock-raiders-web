@@ -22,7 +22,7 @@ export abstract class AbstractWorkerPool<M, R> {
             this.allWorkers.add(worker)
             if (setupMessage) {
                 this.lastRequestId++
-                const message: WorkerRequestMessage<M> = {workerRequestHash: `message-${this.lastRequestId}`, request: setupMessage}
+                const message: WorkerRequestMessage<M> = { workerRequestHash: `message-${this.lastRequestId}`, request: setupMessage }
                 this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(() => this.sendBroadcasts(worker))
                 // response handler must be registered before sending, because send message is synchron with fallback worker
                 worker.sendMessage(message)
@@ -37,7 +37,7 @@ export abstract class AbstractWorkerPool<M, R> {
         if (this.allWorkers.size < 1) throw new Error('No workers, has pool been started?')
         this.broadcastHistory.forEach((broadcast) => {
             this.lastRequestId++
-            const message: WorkerRequestMessage<M> = {workerRequestHash: `broadcast-${this.lastRequestId}`, request: broadcast}
+            const message: WorkerRequestMessage<M> = { workerRequestHash: `broadcast-${this.lastRequestId}`, request: broadcast }
             worker.sendMessage(message)
         })
         this.processNextMessage(worker)
@@ -69,7 +69,7 @@ export abstract class AbstractWorkerPool<M, R> {
             this.lastRequestId++
             workerRequestHash = `message-${this.lastRequestId}`
         }
-        const message = {workerRequestHash: workerRequestHash, request: request}
+        const message = { workerRequestHash: workerRequestHash, request: request }
         const openRequests = this.openRequests.getOrUpdate(message.workerRequestHash, () => [])
         const idleWorker = this.idleWorkers.shift()
         if (!idleWorker && openRequests.length < 1) this.messageBacklog.push(message)
@@ -85,7 +85,7 @@ export abstract class AbstractWorkerPool<M, R> {
         const result: Promise<R>[] = []
         this.allWorkers.forEach((worker) => {
             this.lastRequestId++
-            const message = {workerRequestHash: `broadcast-${this.lastRequestId}`, request: broadcast}
+            const message = { workerRequestHash: `broadcast-${this.lastRequestId}`, request: broadcast }
             result.push(new Promise<R>((resolve) => this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(resolve)))
             // response handler must be registered before sending, because send message is synchron with fallback worker
             worker.sendMessage(message)

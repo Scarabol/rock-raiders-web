@@ -4,7 +4,7 @@ import { MovableEntityStats } from '../../cfg/GameStatsCfg'
 export class MovableStatsComponent extends AbstractGameComponent {
     level: number = 0
 
-    constructor(public stats: MovableEntityStats) {
+    constructor(readonly stats: MovableEntityStats) {
         super()
     }
 

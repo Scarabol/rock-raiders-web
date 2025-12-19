@@ -1,7 +1,8 @@
-node_modules/
-*.log
+node_modules
+dist
+
+.idea
+
+.vitest-attachments
 
 /wad
-
-/.idea
-/dist

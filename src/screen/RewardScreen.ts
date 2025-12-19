@@ -49,10 +49,10 @@ export class RewardScreen {
         this.backgroundLayer = screenMaster.addLayer(new ScaledLayer('RewardBackgroundLayer'), 600)
         this.backgroundLayer.animationFrame.onRedraw = (context) => context.drawImage(backgroundImg, 0, 0)
         this.cfg.images.forEach((img) => {
-            this.images.push({img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y})
+            this.images.push({ img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y })
         })
         this.cfg.boxImages.forEach((img) => {
-            this.boxes.push({img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y})
+            this.boxes.push({ img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y })
         })
         Promise.all(Object.entries(this.cfg.fonts).map(([fontKey, fontValue], index) => {
             this.fontNames.set(fontKey.toLowerCase(), fontValue)

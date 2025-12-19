@@ -13,7 +13,7 @@ export class OverwriteLayer extends MainMenuLayer {
 
     constructor() {
         const dialogCfg = GameConfig.instance.dialog
-        const layerCfg = {...(new MenuEntryCfg()), menuImage: dialogCfg.contrastOverlay, loFont: 'Interface/Fonts/MbriefFont.bmp', hiFont: 'Interface/Fonts/MbriefFont2.bmp'} as MenuEntryCfg
+        const layerCfg = { ...(new MenuEntryCfg()), menuImage: dialogCfg.contrastOverlay, loFont: 'Interface/Fonts/MbriefFont.bmp', hiFont: 'Interface/Fonts/MbriefFont2.bmp' } as MenuEntryCfg
         super(layerCfg)
         this.overwritePanel = new MainMenuOverwritePanel(this.fixedWidth, this.fixedHeight)
         this.items.push(this.overwritePanel)

@@ -54,7 +54,7 @@ export class CueFileParser {
             }
         }
         if (!isoFile) throw new Error('Invalid CUE/BIN files given; no iso image contained')
-        return {isoFile: isoFile, audioTracks: audioTracks}
+        return { isoFile: isoFile, audioTracks: audioTracks }
     }
 
     private readAudioEntry(binFileBuffer: ArrayBuffer, startOffset: number, endOffset: number): ArrayBuffer {

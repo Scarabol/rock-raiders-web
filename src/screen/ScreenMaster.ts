@@ -24,15 +24,15 @@ export class ScreenMaster {
         this.onWindowResize()
         HTML_GAME_CANVAS_CONTAINER.addEventListener('pointerdown', () => {
             this.getActiveLayersSorted()?.[0]?.element?.focus() // always focus topmost
-        })
+        });
         // in case topmost layer does not listen for event, it reaches game-canvas-container as fallback dispatch from here
-        ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'keypress', 'wheel', 'mousemove', 'mouseleave'].forEach((eventType) => {
+        ['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'keypress', 'wheel', 'mousemove', 'mouseleave'].forEach((eventType) => {
             HTML_GAME_CANVAS_CONTAINER.addEventListener(eventType, (event) => {
                 event.stopPropagation()
                 this.dispatchEvent(event)
             })
-        })
-        ;['touchstart', 'touchmove', 'touchend'].forEach((eventType) => {
+        });
+        ['touchstart', 'touchmove', 'touchend'].forEach((eventType) => {
             HTML_GAME_CANVAS_CONTAINER.addEventListener(eventType, (event) => {
                 event.preventDefault()
                 event.stopPropagation()
@@ -54,12 +54,12 @@ export class ScreenMaster {
 
     private setupToolbarButtons() {
         this.setupButton('button-escape', () => {
-            this.dispatchEvent(new KeyboardEvent('keydown', {code: 'Escape', key: 'Escape'}))
-            setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: 'Escape', key: 'Escape'})), 69)
+            this.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape' }))
+            setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', { code: 'Escape', key: 'Escape' })), 69)
         })
         this.setupButton('button-space', () => {
-            this.dispatchEvent(new KeyboardEvent('keydown', {code: ' ', key: ' '}))
-            setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: ' ', key: ' '})), 69)
+            this.dispatchEvent(new KeyboardEvent('keydown', { code: ' ', key: ' ' }))
+            setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', { code: ' ', key: ' ' })), 69)
         })
         this.setupButton('button-debug', () => DebugHelper.toggleDisplay())
         this.setupButton('button-screenshot', () => {

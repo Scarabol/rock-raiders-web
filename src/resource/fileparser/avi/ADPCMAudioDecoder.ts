@@ -50,8 +50,8 @@ export class ADPCMAudioDecoder implements AVIAudioDecoder {
         }
         let channel = 0
         while (buf.hasMoreData()) {
-            const byte = buf.read8()
-            ;[byte >> 4, byte & 0xf].forEach((nibble) => {
+            const byte = buf.read8();
+            [byte >> 4, byte & 0xf].forEach((nibble) => {
                 // Expand nibble
                 const signed = 8 <= nibble ? nibble - 16 : nibble
                 let expanded = ((

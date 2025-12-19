@@ -178,7 +178,7 @@ class BmpDecoder implements IBitmapImage {
 
     constructor(
         readonly bufferView: DataView,
-        {toRGBA}: IDecoderOptions = {toRGBA: false},
+        { toRGBA }: IDecoderOptions = { toRGBA: false },
     ) {
         this.toRGBA = !!toRGBA
         this.bottomUp = true
@@ -611,7 +611,7 @@ class BmpDecoder implements IBitmapImage {
     }
 
     private setPixelData(location: number, rgbIndex: number) {
-        const {blue, green, red} = this.palette[rgbIndex]
+        const { blue, green, red } = this.palette[rgbIndex]
 
         this.data[location + this.locAlpha] = 0xff
         this.data[location + this.locBlue] = blue
@@ -626,7 +626,7 @@ export class BitmapWithPalette extends ImageData {
     readonly palette: IColor[]
 
     static decode(bitmapData: DataView): BitmapWithPalette {
-        return new BitmapWithPalette(new BmpDecoder(bitmapData, {toRGBA: true}))
+        return new BitmapWithPalette(new BmpDecoder(bitmapData, { toRGBA: true }))
     }
 
     constructor(decoder: BmpDecoder) {
@@ -636,7 +636,7 @@ export class BitmapWithPalette extends ImageData {
 
     applyAlphaByIndex(alphaIndex: number): BitmapWithPalette {
         if (alphaIndex || alphaIndex === 0) {
-            const fallbackColor = {red: this.data[0], green: this.data[1], blue: this.data[2]} // XXX color not in palette for a102_bigtyre.bmp or a277_head_stud.bmp
+            const fallbackColor = { red: this.data[0], green: this.data[1], blue: this.data[2] } // XXX color not in palette for a102_bigtyre.bmp or a277_head_stud.bmp
             const alphaColor = this.palette?.[alphaIndex] ?? fallbackColor
             if (alphaColor) {
                 const data = this.data

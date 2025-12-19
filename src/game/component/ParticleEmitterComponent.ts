@@ -6,7 +6,7 @@ import { SceneManager } from '../SceneManager'
 
 export abstract class BaseSpriteParticle extends Sprite implements Updatable {
     totalElapsedMs: number = 0
- 
+
     constructor(
         public sceneMgr: SceneManager,
         parent: Object3D,

@@ -121,7 +121,7 @@ export class MapRendererWorker {
                     this.redrawCamera(msg.offset, msg.surfaceRectSize, msg.rect)
                     break
             }
-            this.worker.sendResponse({type: MapRendererWorkerRequestType.RESPONSE_MAP_RENDERER, requestId: msg.requestId})
+            this.worker.sendResponse({ type: MapRendererWorkerRequestType.RESPONSE_MAP_RENDERER, requestId: msg.requestId })
         }
     }
 

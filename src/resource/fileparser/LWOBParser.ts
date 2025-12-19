@@ -126,7 +126,7 @@ export class LWOBParser {
         this.geometry.setIndex(new BufferAttribute(this.indices, 1))
         this.geometry.computeVertexNormals()
 
-        return {geometry: this.geometry, material: this.materials}
+        return { geometry: this.geometry, material: this.materials }
     }
 
     parsePoints(chunkSize: number): void {

@@ -26,7 +26,7 @@ export class NerpMsgParser {
                 } else {
                     const txtMatch = line.match(NerpMsgParser.txtMatcher)
                     if (!txtMatch) return
-                    result[index] = result[index] || {txt: '', sndNum: '', snd: ''}
+                    result[index] = result[index] || { txt: '', sndNum: '', snd: '' }
                     result[index].txt = txtMatch[2].replace(/_/g, ' ').trim()
                     result[index].sndNum = txtMatch[5]
                 }

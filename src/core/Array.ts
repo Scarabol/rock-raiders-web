@@ -1,5 +1,3 @@
-export {}
-
 declare global {
     interface Array<T> {
         add(...element: T[]): void
@@ -66,3 +64,5 @@ Array.prototype.partition = function <T>(filter: (element: T) => boolean): [T[],
 Array.ensure = function <T>(value: T | T[]): T[] {
     return (!value) ? [] : Array.isArray(value) ? value : [value]
 }
+
+export {}

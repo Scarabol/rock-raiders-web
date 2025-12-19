@@ -66,7 +66,7 @@ export class RonFileParser {
                 multiProperties.push(key)
                 obj[key] = [obj[key]]
             }
-            ;(obj[key] as unknown[]).push(value)
+            (obj[key] as unknown[]).push(value)
         } else {
             obj[key] = value
         }

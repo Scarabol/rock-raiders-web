@@ -2,16 +2,16 @@ import { ConfigSetFromRecord } from './Configurable'
 import { CfgEntry } from './CfgEntry'
 
 export class ObjInfoCfg implements ConfigSetFromRecord {
-    healthBarPosition: { x: number, y: number } = {x: 0, y: 0}
-    healthBarWidthHeight: { x: number, y: number } = {x: 0, y: 0}
+    healthBarPosition: { x: number, y: number } = { x: 0, y: 0 }
+    healthBarWidthHeight: { x: number, y: number } = { x: 0, y: 0 }
     healthBarBorderSize: number = 0
     healthBarBorderRGB: number[] = [0, 0, 0]
     healthBarBackgroundRGB: number[] = [0, 0, 0]
     healthBarRGB: number[] = [0, 0, 0]
-    hungerImagesPosition: { x: number, y: number } = {x: 0, y: 0}
+    hungerImagesPosition: { x: number, y: number } = { x: 0, y: 0 }
     hungerImages: HungerImageCfg = new HungerImageCfg()
-    upgradeImagePosition: { x: number, y: number } = {x: 0, y: 0}
-    bubbleImagesPosition: { x: number, y: number } = {x: 0, y: 0}
+    upgradeImagePosition: { x: number, y: number } = { x: 0, y: 0 }
+    bubbleImagesPosition: { x: number, y: number } = { x: 0, y: 0 }
 
     setFromRecord(cfgValue: CfgEntry): this {
         this.healthBarPosition = cfgValue.getValue('HealthBarPosition').toPos(':')

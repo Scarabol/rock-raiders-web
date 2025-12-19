@@ -192,7 +192,7 @@ export class EntityManager {
 
     getRaiderFightTargets(): PathTarget[] {
         return [...this.rockMonsters, ...this.slugs]
-            .map((m) => ({entity: m, components: this.worldMgr.ecs.getComponents(m)}))
+            .map((m) => ({ entity: m, components: this.worldMgr.ecs.getComponents(m) }))
             .filter((e) => {
                 return e.components.get(HealthComponent).health > 0 &&
                     e.components.get(MonsterStatsComponent).stats.canBeShotAt &&
@@ -375,7 +375,7 @@ export class EntityManager {
         this.worldMgr.entityMgr.vehicles.some((v) => {
             const vPos = this.worldMgr.ecs.getComponents(v.entity).get(PositionComponent)
             if (vPos.getPosition2D().distanceToSquared(position2d) < rangeSq) {
-                result = {entity: v.entity, position: vPos}
+                result = { entity: v.entity, position: vPos }
                 return true
             }
             return false
@@ -390,8 +390,8 @@ export class EntityManager {
             SaveGameManager.currentTeam.push(unassigned)
         }
         GameState.raiderSaveGameMap.set(raider.entity, unassigned)
-        raider.level = unassigned.level || 0
-        ;(unassigned.trainings ?? []).map((t) => {
+        raider.level = unassigned.level || 0;
+        (unassigned.trainings ?? []).map((t) => {
             switch (t.toLowerCase()) {
                 case 'TrainDriver'.toLowerCase():
                     raider.addTraining(RAIDER_TRAINING.driver)

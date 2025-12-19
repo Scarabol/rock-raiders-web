@@ -63,15 +63,15 @@ export class MainMenuLayer extends ScaledLayer {
             ['pointerup', POINTER_EVENT.up],
         ]).forEach((eventEnum, eventType) => {
             this.addEventListener(eventType, (event): boolean => {
-                const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent)
-                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
+                const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent);
+                [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
                 return this.handlePointerEvent(gameEvent)
             })
         })
         this.addEventListener('wheel', (event: WheelEvent): boolean => {
             if (!this.cfg.canScroll) return false
-            const gameEvent = new GameWheelEvent(event)
-            ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
+            const gameEvent = new GameWheelEvent(event);
+            [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             this.setScrollY(gameEvent.deltaY)
             this.updateItemsHoveredState(gameEvent.canvasX, gameEvent.canvasY, false)
             return true

@@ -25,26 +25,26 @@ interface WadFilesConf {
 
 export class SelectFilesModal {
     static readonly zipPacks: ZipPackConf[] = [
-        {flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 / 🇺🇸', name: 'English', encoding: 'default'},
-        {flag: '🇩🇪', name: 'German', encoding: 'default'},
-        {flag: '🇩🇰', name: 'Danish', encoding: 'default'},
-        {flag: '🇳🇱', name: 'Dutch', encoding: 'default'},
-        {flag: '🇮🇱', name: 'Hebrew', encoding: 'windows-1255'},
-        {flag: '🇮🇹', name: 'Italian', encoding: 'default'},
-        {flag: '🇳🇴', name: 'Norwegian', encoding: 'default'},
-        {flag: '🇵🇱', name: 'Polish', encoding: 'windows-1250'},
-        {flag: '🇷🇺', name: 'Russian', encoding: 'windows-1251'},
-        {flag: '🇪🇸', name: 'Spanish', encoding: 'default'},
-        {flag: '🇸🇪', name: 'Swedish', encoding: 'default'},
-        {flag: '🇫🇷', name: 'French', encoding: 'default'},
+        { flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 / 🇺🇸', name: 'English', encoding: 'default' },
+        { flag: '🇩🇪', name: 'German', encoding: 'default' },
+        { flag: '🇩🇰', name: 'Danish', encoding: 'default' },
+        { flag: '🇳🇱', name: 'Dutch', encoding: 'default' },
+        { flag: '🇮🇱', name: 'Hebrew', encoding: 'windows-1255' },
+        { flag: '🇮🇹', name: 'Italian', encoding: 'default' },
+        { flag: '🇳🇴', name: 'Norwegian', encoding: 'default' },
+        { flag: '🇵🇱', name: 'Polish', encoding: 'windows-1250' },
+        { flag: '🇷🇺', name: 'Russian', encoding: 'windows-1251' },
+        { flag: '🇪🇸', name: 'Spanish', encoding: 'default' },
+        { flag: '🇸🇪', name: 'Swedish', encoding: 'default' },
+        { flag: '🇫🇷', name: 'French', encoding: 'default' },
     ]
 
     static readonly wadFiles: WadFilesConf[] = [
-        {flag: '🇨🇿', code: 'CZ', name: 'Czech', encoding: 'windows-1250'},
-        {flag: '🇭🇺', code: 'HR', name: 'Hungarian', encoding: 'windows-1250'},
-        {flag: '🇵🇹', code: 'PT', name: 'Portuguese', encoding: 'windows-1252'}, // TODO letter not found issue with ü (252) while bitmap font image has only 190 chars
-        {flag: '🇷🇸', code: 'RS', name: 'Serbian', encoding: 'windows-1251'},
-        {flag: '🇸🇮', code: 'SL', name: 'Slovenian', encoding: 'windows-1250'},
+        { flag: '🇨🇿', code: 'CZ', name: 'Czech', encoding: 'windows-1250' },
+        { flag: '🇭🇺', code: 'HR', name: 'Hungarian', encoding: 'windows-1250' },
+        { flag: '🇵🇹', code: 'PT', name: 'Portuguese', encoding: 'windows-1252' }, // TODO letter not found issue with ü (252) while bitmap font image has only 190 chars
+        { flag: '🇷🇸', code: 'RS', name: 'Serbian', encoding: 'windows-1251' },
+        { flag: '🇸🇮', code: 'SL', name: 'Slovenian', encoding: 'windows-1250' },
     ]
 
     // TODO Add OS font rendering and colors for Japanese and Korean

@@ -114,9 +114,9 @@ export class LWSCParser {
         for (; this.lineIndex < this.lines.length; this.lineIndex++) {
             let line = this.lines[this.lineIndex]
             if (!line) {
-                const positionTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name === '.position')
-                const rotationTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name == '.quaternion')
-                const scaleTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({name}) => name === '.scale')
+                const positionTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({ name }) => name === '.position')
+                const rotationTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({ name }) => name == '.quaternion')
+                const scaleTrack: KeyframeTrack | undefined = currentObject.keyframeTracks.find(({ name }) => name === '.scale')
                 const invPivotMat = new Matrix4().makeTranslation(currentObject.pivot).invert()
                 const positionMat = new Matrix4()
                 const rotation = new Quaternion()

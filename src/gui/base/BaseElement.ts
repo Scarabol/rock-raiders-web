@@ -99,7 +99,7 @@ export class BaseElement {
     onPointerDown(event: GuiPointerDownEvent): boolean {
         this.pointerDown = undefined
         if (this.isInactive()) return false
-        this.pointerDown = {x: event.sy, y: event.sy}
+        this.pointerDown = { x: event.sy, y: event.sy }
         const oldState = this.pressed
         if (this.isInRect(event.sx, event.sy)) {
             if (!this.pressed && this.onClick) {

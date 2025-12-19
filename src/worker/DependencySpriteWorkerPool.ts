@@ -32,7 +32,7 @@ export class DependencySpriteWorkerPool extends AbstractWorkerPool<DependencySpr
         const depHash = dependencies.map((d) => `${d.itemKey}:${d.minLevel}=${d.isOk}`).join(';')
         const fromCache = DependencySpriteWorkerPool.dependencySpriteCache.get(depHash)
         if (fromCache) return fromCache
-        const message: DependencySpriteWorkerCreateSpriteRequest & { hash: string } = {type: DependencySpriteWorkerRequestType.CREATE_SPRITE, dependencies: dependencies, hash: depHash}
+        const message: DependencySpriteWorkerCreateSpriteRequest & { hash: string } = { type: DependencySpriteWorkerRequestType.CREATE_SPRITE, dependencies: dependencies, hash: depHash }
         const response = await this.processMessage(message)
         const imgData = response.dependencyImage
         if (!imgData) return undefined
@@ -42,7 +42,7 @@ export class DependencySpriteWorkerPool extends AbstractWorkerPool<DependencySpr
     }
 
     protected createWorker() {
-        return new Worker(new URL('./DependencySpriteWorker', import.meta.url), {type: 'module'}) // do not change this line otherwise no worker.js is exported for production
+        return new Worker(new URL('./DependencySpriteWorker', import.meta.url), { type: 'module' }) // do not change this line otherwise no worker.js is exported for production
     }
 
     protected attachFallbackSystem(worker: TypedWorkerFallback<WorkerRequestMessage<DependencySpriteWorkerRequest>, WorkerResponseMessage<DependencySpriteWorkerResponse>>) {

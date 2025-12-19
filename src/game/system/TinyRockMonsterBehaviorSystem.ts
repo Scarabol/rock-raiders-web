@@ -1,7 +1,7 @@
 import { AbstractGameSystem, ECS, FilteredEntities, GameEntity } from '../ECS'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { NATIVE_UPDATE_INTERVAL, TILESIZE } from '../../params'
-import { TinyRockMonsterBehaviorState, TinyRockMonsterBehaviorComponent } from '../component/TinyRockMonsterBehaviorComponent'
+import { TinyRockMonsterBehaviorComponent, TinyRockMonsterBehaviorState } from '../component/TinyRockMonsterBehaviorComponent'
 import { Vector2, Vector3 } from 'three'
 import { WorldManager } from '../WorldManager'
 import { PositionComponent } from '../component/PositionComponent'
@@ -11,7 +11,7 @@ import { PathFinder } from '../terrain/PathFinder'
 import { PRNG } from '../factory/PRNG'
 import { PathTarget } from '../model/PathTarget'
 import { EntityStep } from '../model/EntityStep'
-import { MoveState, MOVE_STATE } from '../model/MoveState'
+import { MOVE_STATE, MoveState } from '../model/MoveState'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { TerrainPath } from '../terrain/TerrainPath'
 import { Surface } from '../terrain/Surface'
@@ -28,7 +28,8 @@ class StateUpdater {
         public positionComponent: PositionComponent,
         public behaviorComponent: TinyRockMonsterBehaviorComponent,
         public stats: MovableEntityStats,
-    ) {}
+    ) {
+    }
 
     findShortestPath(target: PathTarget) {
         return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), target, this.stats, PATH_PRECISION, this.behaviorComponent.currentPath?.target.targetLocation)
@@ -110,7 +111,7 @@ class StateUpdater {
         return this.positionComponent.surface
     }
 
-    findEnterWall(): {target: PathTarget, wall: Surface} | undefined {
+    findEnterWall(): { target: PathTarget, wall: Surface } | undefined {
         const toCheck = [this.getSurface()]
         const checked = new Set(toCheck)
         while (toCheck.length > 0) {

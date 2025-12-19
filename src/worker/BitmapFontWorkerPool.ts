@@ -24,13 +24,13 @@ export class BitmapFontWorkerPool extends AbstractWorkerPool<BitmapFontWorkerReq
             return
         }
         this.knownFonts.set(fontName.toLowerCase(), fontData)
-        const message = {type: BITMAP_FONT_WORKER_REQUEST_TYPE.addFont, fontName: fontName, fontData: fontData}
+        const message = { type: BITMAP_FONT_WORKER_REQUEST_TYPE.addFont, fontName: fontName, fontData: fontData }
         await Promise.all(this.broadcast(message))
     }
 
     async createTextImage(fontName: string | undefined, text: string | undefined, maxWidth?: number, autoCenter: boolean = true): Promise<SpriteImage | undefined> {
         if (!fontName || !text) return undefined
-        const message = {type: BITMAP_FONT_WORKER_REQUEST_TYPE.createTextImage, fontName: fontName, text: text, maxWidth: maxWidth, autoCenter: autoCenter}
+        const message = { type: BITMAP_FONT_WORKER_REQUEST_TYPE.createTextImage, fontName: fontName, text: text, maxWidth: maxWidth, autoCenter: autoCenter }
         const response = await this.processMessage(message)
         if (!response.textImageData) return undefined
         return imgDataToCanvas(response.textImageData)
@@ -41,7 +41,7 @@ export class BitmapFontWorkerPool extends AbstractWorkerPool<BitmapFontWorkerReq
     }
 
     protected createWorker() {
-        return new Worker(new URL('./BitmapFontWorker', import.meta.url), {type: 'module'}) // do not change this line otherwise no worker.js is exported for production
+        return new Worker(new URL('./BitmapFontWorker', import.meta.url), { type: 'module' }) // do not change this line otherwise no worker.js is exported for production
     }
 
     protected attachFallbackSystem(worker: TypedWorkerFallback<WorkerRequestMessage<BitmapFontWorkerRequest>, WorkerResponseMessage<BitmapFontWorkerResponse>>) {

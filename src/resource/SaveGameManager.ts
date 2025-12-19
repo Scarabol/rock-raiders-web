@@ -38,7 +38,7 @@ export class SaveGameManager {
             if (VERBOSE) console.log('Loading preferences...')
             const preferences = localStorage.getItem('preferences')
             if (preferences) {
-                this.preferences = {...this.preferences, ...JSON.parse(preferences)}
+                this.preferences = { ...this.preferences, ...JSON.parse(preferences) }
                 if (window?.rr) window.rr.preferences = this.preferences
                 console.log(`Preferences loaded`, this.preferences)
             }

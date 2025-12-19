@@ -158,7 +158,7 @@ export class TerrainLoader {
                     const emergeValue = levelConf.emergeMap[y][x]
                     if (!emergeValue) continue
                     const surface = terrain.surfaces[x][y]
-                    if (emergeValue % 2 === 1) {
+                    if (emergeValue % 2 === 1) { // trigger uses odd id
                         worldMgr.ecs.addComponent(surface.entity, new EmergeComponent(emergeValue + 1, surface, undefined))
                     } else {
                         if (surface.surfaceType === SurfaceType.SOLID_ROCK || surface.reinforced || surface.wallType < WALL_TYPE.wall) continue // Not a valid emerge surface
