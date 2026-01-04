@@ -8,7 +8,7 @@ import { Terrain } from '../game/terrain/Terrain'
 import { RAIDER_TOOL, RaiderTool, RaiderTools } from '../game/model/raider/RaiderTool'
 import { RAIDER_TRAINING, RaiderTraining, RaiderTrainings } from '../game/model/raider/RaiderTraining'
 import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
-import { DEV_MODE, TILESIZE } from '../params'
+import { TILESIZE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { VehicleUpgrade, VehicleUpgrades } from '../game/model/vehicle/VehicleUpgrade'
 import { GameResult } from '../game/model/GameResult'
@@ -160,7 +160,7 @@ export class InitRadarMap extends BaseEvent {
         super(EventKey.INIT_RADAR_MAP)
         this.focusTile = { x: Math.floor(mapFocus.x / TILESIZE), y: Math.floor(mapFocus.z / TILESIZE) }
         terrain.forEachSurface((s) => {
-            if (s.discovered || s.scanned || DEV_MODE) this.surfaces.push(new MapSurfaceRect(s))
+            if (s.discovered || s.scanned) this.surfaces.push(new MapSurfaceRect(s))
         })
         this.terrainWidth = terrain.width
         this.terrainHeight = terrain.height
@@ -175,7 +175,7 @@ export class UpdateRadarTerrain extends BaseEvent {
     constructor(terrain: Terrain) {
         super(EventKey.UPDATE_RADAR_TERRAIN)
         terrain.forEachSurface((s) => {
-            if (s.discovered || s.scanned || DEV_MODE) this.surfaces.push(new MapSurfaceRect(s))
+            if (s.discovered || s.scanned) this.surfaces.push(new MapSurfaceRect(s))
         })
         this.terrainWidth = terrain.width
         this.terrainHeight = terrain.height

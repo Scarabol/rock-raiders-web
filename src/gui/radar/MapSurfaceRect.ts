@@ -11,7 +11,7 @@ export class MapSurfaceRect {
     constructor(surface: Surface) {
         this.x = surface.x
         this.y = surface.y
-        this.surfaceColor = surface.surfaceType.mapSurfaceColor
+        this.surfaceColor = surface.discovered ? surface.surfaceType.mapSurfaceColor : surface.surfaceType.mapHiddenColor
         this.borderColor = surface.reinforced ? '#FFFF00' : ''
         this.objectName = surface.surfaceType.getObjectName()
         this.sfxKey = surface.surfaceType.getSfxKey()

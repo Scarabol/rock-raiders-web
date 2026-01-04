@@ -16,6 +16,7 @@ export class SurfaceType {
     canHaveFence: boolean = false
     connectsPath: boolean = false
     mapSurfaceColor: string = '#00FFFF'
+    mapHiddenColor: string = '#FF00FF'
     fallInAffected: boolean = false
     hasErosion: boolean = false
 
@@ -29,15 +30,18 @@ export class SurfaceType {
         selectable: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
+        mapHiddenColor: '#6A0000',
         fallInAffected: true,
     })
     static readonly HIDDEN_CAVERN = new SurfaceType({
-        name: 'surfaceTypeUndiscovered',
+        name: 'surfaceTypeTunnel',
         mapSurfaceColor: '#6A0000',
+        mapHiddenColor: '#6A0000',
     })
     static readonly HIDDEN_SLUG_HOLE = new SurfaceType({
-        name: 'surfaceTypeUndiscovered',
+        name: 'surfaceTypeTunnel',
         mapSurfaceColor: '#6A0000',
+        mapHiddenColor: '#6A0000',
     })
     static readonly SOLID_ROCK = new SurfaceType({
         name: 'surfaceTypeImmovable',
@@ -45,6 +49,7 @@ export class SurfaceType {
         matIndex: '5',
         cursor: 'surfaceTypeImmovable',
         mapSurfaceColor: '#500090',
+        mapHiddenColor: '#002D00',
     })
     static readonly HARD_ROCK = new SurfaceType({
         name: 'surfaceTypeHard',
@@ -57,6 +62,7 @@ export class SurfaceType {
         statsDrillName: 'hardDrillTime',
         statsLaserName: 'wallDestroyTimeHard',
         mapSurfaceColor: '#7000B0',
+        mapHiddenColor: '#005b00',
     })
     static readonly LOOSE_ROCK = new SurfaceType({
         name: 'surfaceTypeMedium',
@@ -69,6 +75,7 @@ export class SurfaceType {
         statsDrillName: 'looseDrillTime',
         statsLaserName: 'wallDestroyTimeMedium',
         mapSurfaceColor: '#9000D0',
+        mapHiddenColor: '#00ac00',
     })
     static readonly DIRT = new SurfaceType({
         name: 'surfaceTypeLoose',
@@ -81,24 +88,25 @@ export class SurfaceType {
         statsDrillName: 'soilDrillTime',
         statsLaserName: 'wallDestroyTimeLoose',
         mapSurfaceColor: '#B000F0',
+        mapHiddenColor: '#5bc850',
     })
     static readonly SLUG_HOLE = new SurfaceType({
-        name: 'surfaceTypeSlugHole', floor: true, matIndex: '30', mapSurfaceColor: '#280048',
+        name: 'surfaceTypeSlugHole', floor: true, matIndex: '30', mapSurfaceColor: '#280048', mapHiddenColor: '#6A0000',
     })
     static readonly LAVA1 = new SurfaceType({
-        name: 'lava 1', floor: true, matIndex: '06', selectable: true, mapSurfaceColor: '#280048', hasErosion: true,
+        name: 'lava 1', floor: true, matIndex: '06', selectable: true, mapSurfaceColor: '#280048', mapHiddenColor: '#6A0000', hasErosion: true,
     })
     static readonly LAVA2 = new SurfaceType({
-        name: 'lava 2', floor: true, matIndex: '16', selectable: true, mapSurfaceColor: '#280048', hasErosion: true,
+        name: 'lava 2', floor: true, matIndex: '16', selectable: true, mapSurfaceColor: '#280048', mapHiddenColor: '#6A0000', hasErosion: true,
     })
     static readonly LAVA3 = new SurfaceType({
-        name: 'lava 3', floor: true, matIndex: '26', selectable: true, mapSurfaceColor: '#280048', hasErosion: true,
+        name: 'lava 3', floor: true, matIndex: '26', selectable: true, mapSurfaceColor: '#280048', mapHiddenColor: '#6A0000', hasErosion: true,
     })
     static readonly LAVA4 = new SurfaceType({
-        name: 'lava 4', floor: true, matIndex: '36', selectable: true, mapSurfaceColor: '#280048', hasErosion: true,
+        name: 'lava 4', floor: true, matIndex: '36', selectable: true, mapSurfaceColor: '#280048', mapHiddenColor: '#6A0000', hasErosion: true,
     })
     static readonly LAVA5 = new SurfaceType({
-        name: 'surfaceTypeLava', floor: true, matIndex: '46', mapSurfaceColor: '#fa5700',
+        name: 'surfaceTypeLava', floor: true, matIndex: '46', mapSurfaceColor: '#fa5700', mapHiddenColor: '#6A0000',
     })
     static readonly ORE_SEAM = new SurfaceType({
         name: 'surfaceTypeOreSeam',
@@ -109,9 +117,10 @@ export class SurfaceType {
         cursor: 'surfaceTypeOreSeam',
         statsDrillName: 'seamDrillTime',
         mapSurfaceColor: '#963c00',
+        mapHiddenColor: '#963c00',
     })
     static readonly WATER = new SurfaceType({
-        name: 'surfaceTypeLake', floor: true, matIndex: '45', mapSurfaceColor: '#000080',
+        name: 'surfaceTypeLake', floor: true, matIndex: '45', mapSurfaceColor: '#000080', mapHiddenColor: '#6A0000',
     })
     static readonly CRYSTAL_SEAM = new SurfaceType({
         name: 'surfaceTypeCrystalSeam',
@@ -122,12 +131,14 @@ export class SurfaceType {
         cursor: 'surfaceTypeCrystalSeam',
         statsDrillName: 'seamDrillTime',
         mapSurfaceColor: '#aafa00',
+        mapHiddenColor: '#aafa00',
     })
     static readonly RECHARGE_SEAM = new SurfaceType({
         name: 'surfaceTypeRechargeSeam',
         matIndex: '67',
         cursor: 'surfaceTypeRechargeSeam',
         mapSurfaceColor: '#ffff00',
+        mapHiddenColor: '#ffff00',
     })
     static readonly POWER_PATH = new SurfaceType({
         name: 'surfaceTypePath',
@@ -137,6 +148,7 @@ export class SurfaceType {
         canHaveFence: true,
         connectsPath: true,
         mapSurfaceColor: '#ffff00',
+        mapHiddenColor: '#6A0000',
         fallInAffected: true,
     })
     static readonly POWER_PATH_BUILDING_SITE = new SurfaceType({
@@ -146,6 +158,7 @@ export class SurfaceType {
         selectable: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
+        mapHiddenColor: '#6A0000',
     })
     static readonly POWER_PATH_BUILDING = new SurfaceType({
         name: 'surfaceTypePath',
@@ -153,6 +166,7 @@ export class SurfaceType {
         matIndex: '76',
         connectsPath: true,
         mapSurfaceColor: '#B8BBB8',
+        mapHiddenColor: '#6A0000',
     })
     static readonly RUBBLE1 = new SurfaceType({
         name: 'surfaceTypeRubble',
@@ -162,6 +176,7 @@ export class SurfaceType {
         hasRubble: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
+        mapHiddenColor: '#6A0000',
         fallInAffected: true,
     })
     static readonly RUBBLE2 = new SurfaceType({
@@ -172,6 +187,7 @@ export class SurfaceType {
         hasRubble: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
+        mapHiddenColor: '#6A0000',
         fallInAffected: true,
     })
     static readonly RUBBLE3 = new SurfaceType({
@@ -182,6 +198,7 @@ export class SurfaceType {
         hasRubble: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
+        mapHiddenColor: '#6A0000',
         fallInAffected: true,
     })
     static readonly RUBBLE4 = new SurfaceType({
@@ -192,6 +209,7 @@ export class SurfaceType {
         hasRubble: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
+        mapHiddenColor: '#6A0000',
     })
 
     static getByNum(typeNum: number) {
