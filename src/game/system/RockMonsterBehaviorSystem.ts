@@ -443,11 +443,10 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         ecs.removeComponent(entity, HeadingComponent)
         behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.throwMan
         const prevScale = raider.sceneEntity.getWorldScale(new Vector3())
+        const raiderPositionComponent = ecs.getComponents(raider.entity).get(PositionComponent)
         sceneEntity.setAnimation(ROCK_MONSTER_ACTIVITY.throwMan, () => {
-            raider.sceneEntity.getWorldPosition(raider.sceneEntity.position)
+            raider.sceneEntity.getWorldPosition(raiderPositionComponent.position)
             raider.sceneEntity.rotation.copy(sceneEntity.rotation)
-            const raiderPositionComponent = ecs.getComponents(raider.entity).get(PositionComponent)
-            raiderPositionComponent.position.copy(raider.sceneEntity.position)
             raiderPositionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(raiderPositionComponent.position)
             raiderPositionComponent.markDirty()
             sceneEntity.depositParent?.remove(raider.sceneEntity)
@@ -470,6 +469,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             })
         })
         raider.sceneEntity.position.copy(new Vector3(0, 0, 4)) // XXX Why is this offset needed?
+        raiderPositionComponent.position.copy(raider.sceneEntity.position)
         raider.sceneEntity.rotation.copy(new Euler(0, Math.PI, 0)) // XXX Why is this rotation needed?
         sceneEntity.depositParent?.add(raider.sceneEntity)
         const parentScale = new Vector3(1, 1, 1)
