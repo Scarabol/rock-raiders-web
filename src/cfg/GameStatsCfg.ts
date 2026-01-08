@@ -179,6 +179,7 @@ export class MonsterEntityStats implements MovableEntityStats, ConfigSetFromReco
     repairValue: number = 0
     attackRadiusSq: number = 0
     alertRadiusSq: number = 0
+    removeReinforcement: boolean = false
 
     setFromRecord(cfgValue: CfgEntry): this {
         this.pickSphere = cfgValue.getValue('PickSphere').toNumber()
@@ -330,7 +331,7 @@ export class RockMonsterStats extends MonsterEntityStats {
     override pusherDamage: number = 2.0 // Damage that the pusher gun causes
     override wakeRadius: number = 25.0
     scaredByBigBangs: boolean = true
-    removeReinforcement: boolean = true
+    override removeReinforcement: boolean = true
     showHealthBar: boolean = true
 }
 
@@ -461,7 +462,7 @@ export class LavaMonsterStats extends MonsterEntityStats {
     override pusherDamage: number = 5.0 // Damage that the pusher gun causes
     override wakeRadius: number = 25.0
     scaredByBigBangs: boolean = true
-    removeReinforcement: boolean = true
+    override removeReinforcement: boolean = true
     showHealthBar: boolean = true
 }
 
@@ -501,7 +502,7 @@ export class IceMonsterStats extends MonsterEntityStats {
     override pusherDamage: number = 2.0 // Damage that the pusher gun causes
     override wakeRadius: number = 25.0
     scaredByBigBangs: boolean = true
-    removeReinforcement: boolean = true
+    override removeReinforcement: boolean = true
     showHealthBar: boolean = true
 }
 

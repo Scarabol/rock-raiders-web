@@ -539,14 +539,6 @@ export class Surface {
         return digPosition
     }
 
-    reinforce() {
-        this.reinforced = true
-        this.cancelReinforceJobs()
-        this.worldMgr.ecs.removeComponent(this.entity, EmergeComponent)
-        this.updateTexture()
-        EventBroker.publish(new UpdateRadarSurface(this))
-    }
-
     getCenterWorld2D(): Vector2 {
         return new Vector2(this.x, this.y).addScalar(0.5).multiplyScalar(TILESIZE)
     }

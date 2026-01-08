@@ -66,7 +66,7 @@ export class EmergeSystem extends AbstractGameSystem {
         triggeredEmerges.forEach((emergeComponent) => {
             emergeSpawns.getOrUpdate(emergeComponent.emergeSpawnId, () => []).forEach((surface) => {
                 emergeComponent.emergeDelayMs = this.emergeTimeoutMs
-                if (surface.wallType !== WALL_TYPE.wall) return // walls might change from undiscovered or inverted corner to actual wall
+                if (surface.wallType !== WALL_TYPE.wall || surface.reinforced) return // walls might change from undiscovered or inverted corner to actual wall or rocky removes reinforcement
                 EventBroker.publish(new MonsterEmergeEvent(surface))
             })
         })

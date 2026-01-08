@@ -32,7 +32,7 @@ import { BeamUpComponent } from '../component/BeamUpComponent'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { PRNG } from '../factory/PRNG'
-import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
+import { SelectionChanged, UpdateRadarEntityEvent, UpdateRadarSurface } from '../../event/LocalEvents'
 import { MAP_MARKER_CHANGE, MAP_MARKER_TYPE } from '../component/MapMarkerComponent'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
@@ -367,6 +367,12 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.monster, entity, MAP_MARKER_CHANGE.remove))
                                     this.worldMgr.sceneMgr.disposeSceneEntity(sceneEntity)
                                     ecs.removeEntity(entity)
+                                    if (stats.removeReinforcement) {
+                                        targetWall.reinforced = false
+                                        targetWall.updateTexture()
+                                        EventBroker.publish(new UpdateRadarSurface(targetWall))
+                                        if (targetWall.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
+                                    }
                                 })
                             } else {
                                 const wallPathTargets = targetWall.getDigPositions().map((p) => PathTarget.fromLocation(p, ROCKY_GATHER_DISTANCE_SQ))

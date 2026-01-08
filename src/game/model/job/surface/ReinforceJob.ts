@@ -5,6 +5,8 @@ import { RAIDER_TOOL } from '../../raider/RaiderTool'
 import { PRIORITY_IDENTIFIER } from '../PriorityIdentifier'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { Job, JobFulfiller } from '../Job'
+import { EventBroker } from '../../../../event/EventBroker'
+import { UpdateRadarSurface } from '../../../../event/LocalEvents'
 
 export class ReinforceJob extends Job {
     readonly fulfiller: JobFulfiller[] = []
@@ -29,7 +31,10 @@ export class ReinforceJob extends Job {
 
     override onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
-        this.surface.reinforce()
+        this.surface.reinforced = true
+        this.surface.cancelReinforceJobs()
+        this.surface.updateTexture()
+        EventBroker.publish(new UpdateRadarSurface(this.surface))
     }
 
     override getWorkActivity(): AnimationActivity {
