@@ -28,7 +28,7 @@ export class MapView extends BaseElement {
     readonly entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number, r: number }>> = new Map()
     surfaceRectSizeMin: number = DEV_MODE ? 3 : 10
     surfaceRectSizeMax: number = 15
-    surfaceRectSize: number = 10
+    surfaceRectSize: number = this.surfaceRectSizeMin
     terrainWidth: number = 0
     terrainHeight: number = 0
     lastSurface: MapSurfaceRect | undefined
@@ -107,6 +107,7 @@ export class MapView extends BaseElement {
         super.reset()
         this.surfaceMap.length = 0
         this.entitiesByOrder.clear()
+        this.surfaceRectSize = this.surfaceRectSizeMin
         this.cameraRect = undefined
     }
 
