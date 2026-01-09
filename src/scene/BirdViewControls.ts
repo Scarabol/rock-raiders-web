@@ -1,5 +1,5 @@
-import { MapControls } from 'three/examples/jsm/controls/MapControls'
-import { Camera, MOUSE, Object3D, Vector3 } from 'three'
+import { OrbitControls } from './OrbitControls'
+import { Camera, MOUSE, Object3D, TOUCH, Vector3 } from 'three'
 import { CAMERA_MAX_SHAKE_BUMP, CAMERA_MAX_SHAKE_TILES, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE, USE_KEYBOARD_SHORTCUTS } from '../params'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { degToRad } from 'three/src/math/MathUtils.js'
@@ -18,7 +18,7 @@ export const CAMERA_ROTATION = {
 } as const
 export type CameraRotation = typeof CAMERA_ROTATION[keyof typeof CAMERA_ROTATION]
 
-export class BirdViewControls extends MapControls {
+export class BirdViewControls extends OrbitControls {
     private readonly dummyPointerId: number
     private lockBuild: boolean = false
     moveTarget: Vector3 | undefined
@@ -35,7 +35,9 @@ export class BirdViewControls extends MapControls {
     constructor(camera: Camera, override readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
         this.dummyPointerId = this.verifyPointerId()
+        this.screenSpacePanning = false
         this.mouseButtons = { LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN }
+        this.touches = { ONE: TOUCH.PAN, TWO: TOUCH.DOLLY_ROTATE }
         this.listenToKeyEvents(domElement)
         this.keyPanSpeed = this.keyPanSpeed * KEY_PAN_SPEED
         if (!SaveGameManager.preferences.cameraUnlimited) {
