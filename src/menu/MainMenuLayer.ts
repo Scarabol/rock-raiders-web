@@ -47,7 +47,7 @@ export class MainMenuLayer extends ScaledLayer {
             }
         })
         this.cfg.overlays.forEach((flic) => {
-            const flicImages = ResourceManager.getResource(flic.flhFilepath) ?? []
+            const flicImages = ResourceManager.flhFrames.get(flic.flhFilepath) ?? []
             this.overlays.push(new FlicAnimOverlay(this.animationFrame, flicImages, flic.x, flic.y, flic.sfxName))
         })
         if (this.cfg.playRandom) PRNG.unsafe.shuffle(this.cfg.overlays)

@@ -101,7 +101,7 @@ export class GameConfig implements ConfigSetFromRecord {
         })
         this.priorityImages.setFromRecord(cfgValue.getRecord('PriorityImages'))
         this.prioritiesImagePositions.setFromRecord(cfgValue.getRecord('PrioritiesImagePositions'))
-        this.miscObjects.setFromRecord(cfgValue.getRecord('MiscObjects'))
+        MiscObjectsCfg.setFromList(this.miscObjects, cfgValue.getRecord('MiscObjects'))
         cfgValue.getRecord('Bubbles').forEachCfgEntryValue((value, cfgKey) => {
             const bubblesKey = Object.keys(this.bubbles).find((k) => k.equalsIgnoreCase(cfgKey?.replace('_', '')))
             if (bubblesKey) {

@@ -5,11 +5,7 @@
     "useDefineForClassFields": true,
     "module": "ESNext",
     "strict": true,
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,

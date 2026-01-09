@@ -22,7 +22,7 @@ import { RaiderInfoComponent } from './component/RaiderInfoComponent'
 import { GameConfig } from '../cfg/GameConfig'
 import { GameEntity } from './ECS'
 import { EventBroker } from '../event/EventBroker'
-import { degToRad } from 'three/src/math/MathUtils'
+import { degToRad } from 'three/src/math/MathUtils.js'
 
 export class ObjectListLoader {
     static numRaider: number = 0

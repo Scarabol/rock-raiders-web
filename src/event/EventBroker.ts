@@ -24,7 +24,7 @@ export class EventBroker {
     } = {}
     private readonly blockedEvents: Set<keyof EventTypeMap> = new Set<keyof EventTypeMap>()
 
-    public static publish<Type extends keyof EventTypeMap>(event: EventTypeMap[Type]): void {
+    static publish<Type extends keyof EventTypeMap>(event: EventTypeMap[Type]): void {
         if (!this.instance.observers[event.type]) {
             this.instance.observers = {
                 ...this.instance.observers,
@@ -38,7 +38,7 @@ export class EventBroker {
         this.instance.blockedEvents.delete(event.type)
     }
 
-    public static subscribe<Type extends keyof EventTypeMap>(
+    static subscribe<Type extends keyof EventTypeMap>(
         type: Type,
         listener: (e: EventTypeMap[Type]) => void
     ): void {
@@ -51,7 +51,7 @@ export class EventBroker {
         this.instance.observers[type]?.subscribe(listener)
     }
 
-    public static init() {
+    static init() {
         this.instance = new EventBroker()
     }
 }

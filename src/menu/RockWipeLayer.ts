@@ -1,7 +1,7 @@
 import { ScreenLayer } from '../screen/layer/ScreenLayer'
 import { SoundManager } from '../audio/SoundManager'
 import { AmbientLight, BufferGeometry, DepthTexture, DirectionalLight, Float32BufferAttribute, Mesh, OrthographicCamera, PerspectiveCamera, Scene, ShaderMaterial, ShaderMaterialParameters, Texture, UniformsUtils, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget } from 'three'
-import { degToRad } from 'three/src/math/MathUtils'
+import { degToRad } from 'three/src/math/MathUtils.js'
 import { clearIntervalSafe } from '../core/Util'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
 import { AnimationGroup } from '../scene/AnimationGroup'
@@ -72,7 +72,6 @@ class TransparentBackgroundRenderer extends BaseRenderer {
         const size = this.renderer.getSize(new Vector2())
         this.renderTarget.setSize(size.width, size.height)
         this.renderer.setRenderTarget(this.renderTarget)
-        this.renderer.outputColorSpace
         try {
             super.render()
         } finally {

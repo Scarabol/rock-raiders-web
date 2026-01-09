@@ -1,7 +1,8 @@
-import { ConfigSetFromRecord } from './Configurable'
 import { CfgEntry } from './CfgEntry'
 
-export class MiscObjectsCfg implements ConfigSetFromRecord {
+export class MiscObjectsCfg {
+    [s: string]: string
+
     boulder: string = ''
     pusher: string = ''
     freezer: string = ''
@@ -36,40 +37,39 @@ export class MiscObjectsCfg implements ConfigSetFromRecord {
     birdScarer: string = ''
     upgradeEffect: string = ''
 
-    setFromRecord(cfgValue: CfgEntry): this {
-        this.boulder = cfgValue.getValue('Boulder').toFileName()
-        this.pusher = cfgValue.getValue('Pusher').toFileName()
-        this.freezer = cfgValue.getValue('Freezer').toFileName()
-        this.boulderExplode = cfgValue.getValue('BoulderExplode').toFileName()
-        this.boulderExplodeIce = cfgValue.getValue('BoulderExplodeIce').toFileName()
-        this.laserShot = cfgValue.getValue('LaserShot').toFileName()
-        this.smashPath = cfgValue.getValue('SmashPath').toFileName()
-        this.crystal = cfgValue.getValue('Crystal').toFileName()
-        this.dynamite = cfgValue.getValue('Dynamite').toFileName()
-        this.ore = cfgValue.getValue('Ore').toFileName()
-        this.processedOre = cfgValue.getValue('ProcessedOre').toFileName()
-        this.barrier = cfgValue.getValue('Barrier').toFileName()
-        this.explosion = cfgValue.getValue('Explosion').toFileName()
-        this.electricFence = cfgValue.getValue('ElectricFence').toFileName()
-        this.electricFenceStud = cfgValue.getValue('ElectricFenceStud').toFileName()
-        this.shortElectricFenceBeam = cfgValue.getValue('ShortElectricFenceBeam').toFileName()
-        this.longElectricFenceBeam = cfgValue.getValue('LongElectricFenceBeam').toFileName()
-        this.spiderWeb = cfgValue.getValue('SpiderWeb').toFileName()
-        this.pillar = cfgValue.getValue('Pillar').toFileName()
-        this.rechargeSparkle = cfgValue.getValue('RechargeSparkle').toFileName()
-        this.miniTeleportUp = cfgValue.getValue('MiniTeleportUp').toFileName()
-        this.oohScary = cfgValue.getValue('OohScary').toFileName()
-        this.lazerHit = cfgValue.getValue('LazerHit').toFileName()
-        this.pusherHit = cfgValue.getValue('PusherHit').toFileName()
-        this.freezerHit = cfgValue.getValue('FreezerHit').toFileName()
-        this.iceCube = cfgValue.getValue('IceCube').toFileName()
-        this.pathDust = cfgValue.getValue('PathDust').toFileName()
-        this.lavaErosionSmoke1 = cfgValue.getValue('LavaErosionSmoke1').toFileName()
-        this.lavaErosionSmoke2 = cfgValue.getValue('LavaErosionSmoke2').toFileName()
-        this.lavaErosionSmoke3 = cfgValue.getValue('LavaErosionSmoke3').toFileName()
-        this.lavaErosionSmoke4 = cfgValue.getValue('LavaErosionSmoke4').toFileName()
-        this.birdScarer = cfgValue.getValue('BirdScarer').toFileName()
-        this.upgradeEffect = cfgValue.getValue('UpgradeEffect').toFileName()
-        return this
+    static setFromList(cfg: MiscObjectsCfg, cfgValue: CfgEntry): void {
+        cfg.boulder = cfgValue.getValue('Boulder').toFileName()
+        cfg.pusher = cfgValue.getValue('Pusher').toFileName()
+        cfg.freezer = cfgValue.getValue('Freezer').toFileName()
+        cfg.boulderExplode = cfgValue.getValue('BoulderExplode').toFileName()
+        cfg.boulderExplodeIce = cfgValue.getValue('BoulderExplodeIce').toFileName()
+        cfg.laserShot = cfgValue.getValue('LaserShot').toFileName()
+        cfg.smashPath = cfgValue.getValue('SmashPath').toFileName()
+        cfg.crystal = cfgValue.getValue('Crystal').toFileName()
+        cfg.dynamite = cfgValue.getValue('Dynamite').toFileName()
+        cfg.ore = cfgValue.getValue('Ore').toFileName()
+        cfg.processedOre = cfgValue.getValue('ProcessedOre').toFileName()
+        cfg.barrier = cfgValue.getValue('Barrier').toFileName()
+        cfg.explosion = cfgValue.getValue('Explosion').toFileName()
+        cfg.electricFence = cfgValue.getValue('ElectricFence').toFileName()
+        cfg.electricFenceStud = cfgValue.getValue('ElectricFenceStud').toFileName()
+        cfg.shortElectricFenceBeam = cfgValue.getValue('ShortElectricFenceBeam').toFileName()
+        cfg.longElectricFenceBeam = cfgValue.getValue('LongElectricFenceBeam').toFileName()
+        cfg.spiderWeb = cfgValue.getValue('SpiderWeb').toFileName()
+        cfg.pillar = cfgValue.getValue('Pillar').toFileName()
+        cfg.rechargeSparkle = cfgValue.getValue('RechargeSparkle').toFileName()
+        cfg.miniTeleportUp = cfgValue.getValue('MiniTeleportUp').toFileName()
+        cfg.oohScary = cfgValue.getValue('OohScary').toFileName()
+        cfg.lazerHit = cfgValue.getValue('LazerHit').toFileName()
+        cfg.pusherHit = cfgValue.getValue('PusherHit').toFileName()
+        cfg.freezerHit = cfgValue.getValue('FreezerHit').toFileName()
+        cfg.iceCube = cfgValue.getValue('IceCube').toFileName()
+        cfg.pathDust = cfgValue.getValue('PathDust').toFileName()
+        cfg.lavaErosionSmoke1 = cfgValue.getValue('LavaErosionSmoke1').toFileName()
+        cfg.lavaErosionSmoke2 = cfgValue.getValue('LavaErosionSmoke2').toFileName()
+        cfg.lavaErosionSmoke3 = cfgValue.getValue('LavaErosionSmoke3').toFileName()
+        cfg.lavaErosionSmoke4 = cfgValue.getValue('LavaErosionSmoke4').toFileName()
+        cfg.birdScarer = cfgValue.getValue('BirdScarer').toFileName()
+        cfg.upgradeEffect = cfgValue.getValue('UpgradeEffect').toFileName()
     }
 }

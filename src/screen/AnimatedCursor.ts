@@ -4,8 +4,8 @@ import { NATIVE_UPDATE_INTERVAL } from '../params'
 export class AnimatedCursorData { // This gets serialized for caching
     readonly dataUrls: string[] = []
 
-    constructor(cursorImages: HTMLCanvasElement[]) {
-        this.dataUrls = cursorImages.map((c) => `url(${c.toDataURL()}), auto`)
+    constructor(cursorDataURLs: string[]) {
+        this.dataUrls = cursorDataURLs.map((url) => `url(${url}), auto`)
     }
 }
 

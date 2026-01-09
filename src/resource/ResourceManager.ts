@@ -22,6 +22,7 @@ export class ResourceManager {
     static readonly lwoCache: Map<string, { geometry: BufferGeometry, material: SequenceTextureMaterial[] } | undefined> = new Map()
     static readonly textureCache: Map<string, Map<number, Texture>> = new Map() // TODO Remove three.js dependency here and put texture cache into scene manager
     static readonly proMeshes: Map<string, SurfaceMeshPro> = new Map()
+    static readonly flhFrames: Map<string, ImageData[]> = new Map()
 
     static getResource(resourceName: string): any { // TODO Replace with more type-safe approach
         const lName = resourceName?.toString()?.toLowerCase() || undefined
@@ -68,27 +69,29 @@ export class ResourceManager {
 
     static async loadAllCursor() {
         const blankPointerImageData = this.getImageData(GameConfig.instance.pointers.blank.fileName)
+        const cursorCanvas = createCanvas(blankPointerImageData.width, blankPointerImageData.height)
+        const cursorContext = cursorCanvas.getContext('2d')
+        if (!cursorContext) throw new Error('Could not init context for cursor canvas')
+        const animContext = createContext(blankPointerImageData.width, blankPointerImageData.height)
         const loadingCursors: Promise<void>[] = []
         Object.entries(GameConfig.instance.pointers).forEach(([cursor, cursorEntry]: [string, PointersEntryCfg]) => {
-            const cursorFileName = cursorEntry.fileName
-            if (cursorFileName.toLowerCase().endsWith('.bmp')) {
-                loadingCursors.push(this.loadCursor(cursorFileName, cursor as Cursor))
+            const lCursorFileName = cursorEntry.fileName.toLowerCase()
+            if (lCursorFileName.endsWith('.bmp')) {
+                loadingCursors.push(this.loadCursor(lCursorFileName, cursor as Cursor))
                 return
             }
-            loadingCursors.push(cacheGetData<AnimatedCursorData>(cursorFileName).then((animatedCursorData) => {
+            loadingCursors.push(cacheGetData<AnimatedCursorData>(`cursorDataUrls-${cursor}`).then((animatedCursorData) => {
                 if (!animatedCursorData) {
-                    const cursorImages = (this.getResource(cursorFileName) as SpriteImage[]).map((cursorCanvas) => {
-                        const blankCanvas = createCanvas(blankPointerImageData.width, blankPointerImageData.height)
-                        const context = blankCanvas.getContext('2d')
-                        if (!context) throw new Error('Could not init context for cursor canvas')
-                        context.putImageData(blankPointerImageData, 0, 0)
-                        const x = Math.round((blankPointerImageData.width - cursorCanvas.width) / 2)
-                        const y = Math.round((blankPointerImageData.height - cursorCanvas.height) / 2)
-                        context.drawImage(cursorCanvas, x, y)
-                        return context.canvas
+                    const cursorDataURLs = (this.flhFrames.get(lCursorFileName) ?? []).map((cursorImage) => {
+                        cursorContext.putImageData(blankPointerImageData, 0, 0)
+                        const x = Math.round((blankPointerImageData.width - cursorImage.width) / 2)
+                        const y = Math.round((blankPointerImageData.height - cursorImage.height) / 2)
+                        animContext.putImageData(cursorImage, x, y)
+                        cursorContext.drawImage(animContext.canvas, 0, 0)
+                        return cursorContext.canvas.toDataURL()
                     })
-                    animatedCursorData = new AnimatedCursorData(cursorImages)
-                    cachePutData(cursorFileName, animatedCursorData).then()
+                    animatedCursorData = new AnimatedCursorData(cursorDataURLs)
+                    cachePutData(`cursorDataUrls-${cursor}`, animatedCursorData).then()
                 }
                 CursorManager.addCursor(cursor as Cursor, animatedCursorData.dataUrls)
             }))
@@ -97,7 +100,7 @@ export class ResourceManager {
     }
 
     static async loadCursor(cursorImageName: string, cursor: Cursor) {
-        let animatedCursorData = await cacheGetData<AnimatedCursorData>(cursorImageName)
+        let animatedCursorData = await cacheGetData<AnimatedCursorData>(`cursorDataUrls-${cursor}`)
         if (!animatedCursorData) {
             const imgData = this.getImageData(cursorImageName)
             const cursorImage = createCanvas(imgData.width, imgData.height)
@@ -107,8 +110,8 @@ export class ResourceManager {
             } else {
                 context.putImageData(imgData, 0, 0)
             }
-            animatedCursorData = new AnimatedCursorData([cursorImage])
-            cachePutData(cursorImageName, animatedCursorData).then()
+            animatedCursorData = new AnimatedCursorData([cursorImage.toDataURL()])
+            cachePutData(`cursorDataUrls-${cursor}`, animatedCursorData).then()
         }
         CursorManager.addCursor(cursor, animatedCursorData.dataUrls)
     }

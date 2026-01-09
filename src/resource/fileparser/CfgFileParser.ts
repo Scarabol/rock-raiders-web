@@ -40,7 +40,7 @@ export class CfgFileParser {
                             activeObject = lastElement
                         } else {
                             key = String.fromCharCode(charCode)
-                            if (key === '!') key = '' // XXX no clue what "!" at start of keys means...
+                            if (key === '!') key = '' // ! corresponds to -reduce... arguments
                             parsingState = PARSING_STATE.INSIDE_KEY
                         }
                     } else if (parsingState === PARSING_STATE.INSIDE_KEY) {

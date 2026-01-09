@@ -38,6 +38,7 @@ export class ComponentContainer {
     private map = new Map<Function, AbstractGameComponent>()
 
     add(component: AbstractGameComponent): void {
+        if (this.map.has(component.constructor)) console.warn(`Overwriting component ${component.constructor.name}`)
         this.map.set(component.constructor, component)
     }
 
@@ -135,7 +136,11 @@ export class ECS {
     private destroyEntity(entity: GameEntity | undefined): void {
         if (entity === undefined) return
         this.entities.delete(entity)
-        this.systems.values().forEach((filters) => filters.forEach((f) => f.entities.delete(entity)))
+        for (const [, filters] of this.systems) {
+            for (const f of filters) {
+                f.entities.delete(entity)
+            }
+        }
     }
 
     private checkEntity(entity: GameEntity): void {

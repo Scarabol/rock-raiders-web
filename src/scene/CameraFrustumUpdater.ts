@@ -19,7 +19,7 @@ export class CameraFrustumUpdater {
     }
 
     onCameraMoved() {
-        const now = window.performance.now()
+        const now = performance.now()
         if (this.timer > 0 && this.lastTime) this.timer -= (now - this.lastTime)
         this.lastTime = now
         if (this.timer > 0) return

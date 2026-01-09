@@ -91,7 +91,7 @@ export class EmergeSystem extends AbstractGameSystem {
     }
 
     emergeSlug() {
-        const slugHole = PRNG.nerp.sample(this.slugHoles.values().map((c) => c.get(SlugHoleComponent)).toArray())
+        const slugHole = PRNG.nerp.sample(Array.from(this.slugHoles, ([, c]) => c.get(SlugHoleComponent)))
         if (!slugHole) return
         const slug = MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SLUG, slugHole.getRandomPosition(), PRNG.animation.random() * 2 * Math.PI)
         const behaviorComponent = this.worldMgr.ecs.addComponent(slug, new SlugBehaviorComponent())

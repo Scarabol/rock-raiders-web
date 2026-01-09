@@ -34,7 +34,7 @@ export class TooltipLayer extends ScreenLayer {
             }, event.timeoutText)
             const tooltipSfx = event.tooltipSfx
             if (!SaveGameManager.preferences.muteDevSounds && tooltipSfx) {
-                this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playVoice(tooltipSfx), event.timeoutSfx)
+                this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSfxSound(tooltipSfx), event.timeoutSfx)
             }
         })
         EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_FORCE_REDRAW, async (event: ForceRedrawTooltip) => {

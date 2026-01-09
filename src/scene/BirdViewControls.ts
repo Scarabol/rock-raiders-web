@@ -2,7 +2,7 @@ import { MapControls } from 'three/examples/jsm/controls/MapControls'
 import { Camera, MOUSE, Object3D, Vector3 } from 'three'
 import { CAMERA_MAX_SHAKE_BUMP, CAMERA_MAX_SHAKE_TILES, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE, USE_KEYBOARD_SHORTCUTS } from '../params'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
-import { degToRad } from 'three/src/math/MathUtils'
+import { degToRad } from 'three/src/math/MathUtils.js'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { EventKey } from '../event/EventKeyEnum'
@@ -70,7 +70,7 @@ export class BirdViewControls extends MapControls {
         })
     }
 
-    setupControls() { // reset already used by base class with different meaning
+    setupControls() { // method name "reset" already used by base class with different meaning
         this.enabled = true
         this.moveTarget = undefined
         this.lockedObject = undefined

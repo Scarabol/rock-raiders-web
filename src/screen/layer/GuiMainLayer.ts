@@ -22,14 +22,18 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 import { EventKey } from '../../event/EventKeyEnum'
+import { AnimationFrameReadback } from '../AnimationFrameReadback'
 
 export class GuiBaseLayer extends ScaledLayer {
+    readonly readbackCanvas: HTMLCanvasElement
+    override readonly animationFrame: AnimationFrameReadback
     readonly rootElement: BaseElement
     readonly panels: Panel[] = []
-    layerScale = 1 // XXX Scaled panel crystal sidebar does not fit
 
     constructor() {
         super()
+        this.readbackCanvas = this.createCanvas(`${this.constructor.name}-fastread`)
+        this.animationFrame = new AnimationFrameReadback(this.canvas, this.readbackCanvas)
         this.rootElement = new BaseElement()
         this.rootElement.notifyRedraw = () => this.animationFrame.notifyRedraw()
         this.rootElement.publishEvent = (event: BaseEvent) => {
@@ -69,8 +73,10 @@ export class GuiBaseLayer extends ScaledLayer {
         this.panels.forEach((p) => p.reset())
     }
 
-    override resize(width: number, height: number) {
-        super.resize(width * this.layerScale, height * this.layerScale)
+    override setCanvasSize(width: number, height: number) {
+        super.setCanvasSize(width, height)
+        this.readbackCanvas.width = this.canvas.width
+        this.readbackCanvas.height = this.canvas.height
     }
 
     addPanel<T extends Panel>(panel: T): T {

@@ -5,15 +5,13 @@ type AnimationFrameRedrawCallback = (context: SpriteContext) => void
 
 export class AnimationFrame {
     readonly context: SpriteContext
-    readonly readbackContext: SpriteContext
-    private lastAnimationRequest: number | undefined
-    private onRedrawCallback?: AnimationFrameRedrawCallback
+    protected lastAnimationRequest: number | undefined
+    protected onRedrawCallback?: AnimationFrameRedrawCallback
     scaleX: number = 1
     scaleY: number = 1
 
-    constructor(canvas: SpriteImage, readbackCanvas: SpriteImage) {
+    constructor(canvas: SpriteImage) {
         this.context = getSpriteContext(canvas)
-        this.readbackContext = getSpriteContext(readbackCanvas, { willReadFrequently: true })
     }
 
     set onRedraw(callback: AnimationFrameRedrawCallback) {
@@ -26,11 +24,10 @@ export class AnimationFrame {
         this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
         this.lastAnimationRequest = requestAnimationFrame(() => {
             AnimationFrame.clearAndRedrawContext(onRedraw, this.context)
-            AnimationFrame.clearAndRedrawContext(onRedraw, this.readbackContext)
         })
     }
 
-    private static clearAndRedrawContext(onRedraw: AnimationFrameRedrawCallback, context: SpriteContext): void {
+    protected static clearAndRedrawContext(onRedraw: AnimationFrameRedrawCallback, context: SpriteContext): void {
         context.save()
         context.setTransform(1, 0, 0, 1, 0, 0)
         context.clearRect(0, 0, context.canvas.width, context.canvas.height)
@@ -42,10 +39,5 @@ export class AnimationFrame {
         this.scaleX = scaleX
         this.scaleY = scaleY
         this.context.scale(this.scaleX, this.scaleY)
-        this.readbackContext.scale(this.scaleX, this.scaleY)
-    }
-
-    isOpaque(canvasX: number, canvasY: number): boolean {
-        return this.readbackContext.getImageData(canvasX * this.scaleX, canvasY * this.scaleY, 1, 1).data[3] > 0
     }
 }

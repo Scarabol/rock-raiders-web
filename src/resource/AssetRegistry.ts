@@ -1,6 +1,6 @@
 import { GameConfig } from '../cfg/GameConfig'
 import { MenuCfg } from '../cfg/MenuCfg'
-import { getPath, iGet, yieldToMainThread } from '../core/Util'
+import { getPath, yieldToMainThread } from '../core/Util'
 import { RonFileParser } from './fileparser/RonFileParser'
 import { AlphaImageAssetLoader, AlphaTranslucentImageAssetLoader, AssetLoader, AVIAssetLoader, CreditsAssetLoader, FlhAssetLoader, FontAssetLoader, ImageAssetLoader, LWOAssetLoader, MapAssetLoader, NerpScriptAssetLoader, ObjectiveTextsAssetLoader, ObjectListAssetLoader, ProMeshLoader, SoundAssetLoader, TextureAssetLoader, UVAssetLoader } from './AssetLoader'
 import { TOOLTIP_FONT_NAME } from '../params'
@@ -11,14 +11,14 @@ import { NerpMsgParser } from './fileparser/NerpMsgParser'
 import { VirtualFileSystem } from './fileparser/VirtualFileSystem'
 
 export class AssetRegistry {
-    readonly assetLoaders: Map<string, AssetLoader<any>> = new Map()
+    readonly assetLoaders: Map<string, AssetLoader<unknown>> = new Map()
     readonly inProgress: Promise<void>[] = []
     tooltipFontLoader: FontAssetLoader = new FontAssetLoader(TOOLTIP_FONT_NAME, 11)
 
     constructor(readonly vfs: VirtualFileSystem) {
     }
 
-    async registerAllAssets(gameConfig: GameConfig): Promise<AssetLoader<any>[]> {
+    async registerAllAssets(gameConfig: GameConfig): Promise<AssetLoader<unknown>[]> {
         // add fonts and cursors
         this.getImagesInFolder('Interface/Pointers/').forEach((assetPath) => {
             this.addLoader(new AlphaImageAssetLoader(assetPath))
@@ -132,8 +132,7 @@ export class AssetRegistry {
         this.addLoader(new TextureAssetLoader('MiscAnims/Effects/rd_laserbolt.bmp'))
         this.addLoader(new TextureAssetLoader('MiscAnims/Effects/rd_laserbolt_x.bmp'))
         this.addLoader(new TextureAssetLoader('MiscAnims/Effects/rd_newstargreen.bmp'))
-        const miscObjects = iGet(gameConfig, 'MiscObjects')
-        Object.values<string>(miscObjects).forEach((mType) => {
+        Object.values(gameConfig.miscObjects).forEach((mType) => {
             this.addMeshObjects(mType)
         })
         Object.values(gameConfig.rockFallStyles).forEach((entry) => {
@@ -177,7 +176,7 @@ export class AssetRegistry {
             this.addLoader(new SoundAssetLoader(sndPath, sndKeys))
         })
         await Promise.all(this.inProgress)
-        return this.assetLoaders.values().toArray()
+        return Array.from(this.assetLoaders.values())
     }
 
     addMeshObjects(basePath: string) {

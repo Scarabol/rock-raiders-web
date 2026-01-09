@@ -42,7 +42,7 @@ export async function start() {
     if (SaveGameManager.preferences.playVideos) await screenMaster.videoLayer.playVideo(`data/${GameConfig.instance.main.rrAvi}`)
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')
     const cursorImageName = GameConfig.instance.pointers.standard.fileName
-    await cacheGetData<AnimatedCursorData>(cursorImageName).then((animatedCursorData) => {
+    await cacheGetData<AnimatedCursorData>(`cursorDataUrls-standard`).then((animatedCursorData) => {
         if (!animatedCursorData) {
             const fileData = vfs.getFile(cursorImageName).toDataView()
             const imgData = BitmapWithPalette.decode(fileData).applyAlpha()
@@ -53,8 +53,8 @@ export async function start() {
             } else {
                 context.putImageData(imgData, 0, 0)
             }
-            animatedCursorData = new AnimatedCursorData([cursorImage])
-            cachePutData(cursorImageName, animatedCursorData).then()
+            animatedCursorData = new AnimatedCursorData([cursorImage.toDataURL()])
+            cachePutData(`cursorDataUrls-standard`, animatedCursorData).then()
         }
         CursorManager.addCursor('standard', animatedCursorData.dataUrls)
         CursorManager.changeCursor('standard')

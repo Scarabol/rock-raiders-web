@@ -1,5 +1,5 @@
 import { BufferGeometry, Vector2, Vector3 } from 'three'
-import { BufferAttribute } from 'three/src/core/BufferAttribute'
+import { BufferAttribute } from 'three/src/core/BufferAttribute.js'
 import { WALL_TYPE, WallType } from './WallType'
 import { TILESIZE } from '../../params'
 

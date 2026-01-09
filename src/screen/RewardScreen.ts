@@ -74,7 +74,7 @@ export class RewardScreen {
         const keyToIndex = ['crystals', 'ore', 'diggable', 'constructions', 'caverns', 'figures', 'rockmonsters', 'oxygen', 'timer', 'score']
         Object.entries(this.cfg.flics).forEach(([key, flic]) => {
             const flicIndex = keyToIndex.indexOf(key)
-            const flicImages = ResourceManager.getResource(flic.flhFilepath) ?? []
+            const flicImages = ResourceManager.flhFrames.get(flic.flhFilepath) ?? []
             this.flics[flicIndex] = new FlicAnimOverlay(this.resultsLayer.animationFrame, flicImages, flic.rect.x, flic.rect.y, '') // XXX Consider width/height of rect to scale/clip?
         })
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer('RewardDescriptionLayer'), 620)

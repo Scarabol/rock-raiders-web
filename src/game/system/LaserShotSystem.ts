@@ -17,7 +17,7 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { PRNG } from '../factory/PRNG'
 
 class LaserShot {
-    timeout: number = 250
+    renderShotTimeout: number = 250
 
     constructor(readonly group: Group) {
     }
@@ -125,8 +125,8 @@ export class LaserShotSystem extends AbstractGameSystem {
         const currentShots = [...this.laserShots]
         this.laserShots.length = 0
         currentShots.forEach((s) => {
-            if (s.timeout > 0) {
-                s.timeout -= elapsedMs
+            if (s.renderShotTimeout > 0) {
+                s.renderShotTimeout -= elapsedMs
                 this.laserShots.add(s)
             } else {
                 this.worldMgr.sceneMgr.scene.remove(s.group)
