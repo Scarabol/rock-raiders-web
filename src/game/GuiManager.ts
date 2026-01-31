@@ -208,7 +208,7 @@ export class GuiManager {
             SaveGameManager.savePreferences()
             SoundManager.setupSfxAudioTarget()
             const gameSpeedIndex = Math.round(SaveGameManager.preferences.gameSpeed * 5)
-            GameState.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
+            GameState.gameSpeedMultiplier = [0.33333333, 0.66666667, 1, 1.33333333, 1.66666667, 2][gameSpeedIndex]
             const sfxVolume = SaveGameManager.getSfxVolume()
             SoundManager.playingAudio.forEach((a) => {
                 a.setVolume(sfxVolume)
