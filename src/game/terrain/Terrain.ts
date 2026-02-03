@@ -79,7 +79,11 @@ export class Terrain {
     }
 
     forEachSurface(each: (surface: Surface) => void) {
-        this.surfaces?.forEach((r) => r.forEach((s) => each(s)))
+        for (const r of this.surfaces) {
+            for (const s of r) {
+                each(s)
+            }
+        }
     }
 
     countDiggables(): number {

@@ -68,12 +68,12 @@ export class AnimatedSceneEntity extends SceneEntity {
         if (this.animationData.length > 0) this.removeAll()
         this.camFPVChildren = this.camFPVJoint?.children || this.camFPVChildren
         this.camShoulderChildren = this.camShoulderJoint?.children || this.camShoulderChildren
-        this.animationData.forEach((animEntityData) => {
+        for (const animEntityData of this.animationData) {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(ANIM_ENTITY_ACTIVITY.stand))
             if (!animData) {
                 console.error(`Animation data neither have "${animationName}" nor stand animation`)
-                return
+                continue
             }
             const animatedGroup = this.cacheAnimationGroups.getOrUpdate(animData.file, () => {
                 return new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs, onAnimationTrigger).setup()
@@ -84,7 +84,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             animatedGroup.onAnimationDone = onAnimationDone
             animatedGroup.durationTimeoutMs = durationTimeoutMs
             animatedGroup.onAnimationTrigger = onAnimationTrigger
-            animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
+            for (const m of animatedGroup.meshList) this.meshesByLName.getOrUpdate(m.name, () => []).add(m)
             this.pivotMaxZ = animEntityData.pivotMaxZ ?? this.pivotMaxZ
             this.pivotMinZ = animEntityData.pivotMinZ ?? this.pivotMinZ
             // add wheels
@@ -94,9 +94,9 @@ export class AnimatedSceneEntity extends SceneEntity {
                     if (this.currentAnimation !== ANIM_ENTITY_ACTIVITY.teleportIn) {
                         console.warn(`Could not find wheel parent ${animEntityData.wheelNullName} in ${Array.from(this.meshesByLName.keys())}`)
                     }
-                    return
+                    continue
                 }
-                wheelParentMesh.forEach((p) => {
+                for (const p of wheelParentMesh) {
                     const wheelMesh = ResourceManager.getLwoModel(animEntityData.wheelMesh)
                     if (!wheelMesh) {
                         console.warn(`Could not find wheel mesh "${animEntityData.wheelMesh}"`)
@@ -104,40 +104,40 @@ export class AnimatedSceneEntity extends SceneEntity {
                         p.add(wheelMesh)
                         this.wheelMeshes.add({ mesh: wheelMesh, radius: animEntityData.wheelRadius })
                     }
-                })
-                this.meshesByLName.getOrUpdate(`not${animEntityData.wheelNullName}`, () => []).forEach((p) => {
-                    p.children.forEach((wheel) => {
+                }
+                for (const p of this.meshesByLName.getOrUpdate(`not${animEntityData.wheelNullName}`, () => [])) {
+                    for (const wheel of p.children) {
                         this.wheelMeshes.add({ mesh: wheel, radius: animEntityData.wheelRadius })
-                    })
-                })
+                    }
+                }
                 this.rotateWheelJoints()
             }
-        })
+        }
         this.finalizeMeshSetup()
         const camJoints = this.animationGroups.flatMap((a) => a.meshList.filter((m) => m.name.equalsIgnoreCase(a.animEntityData.cameraNullName)))
         this.camFPVJoint = camJoints[0]
         if (this.camFPVJoint) {
             this.camFPVJoint.rotation.y = this.flipCamera ? Math.PI : 0 // XXX Why is this needed for vehicles and not pilot?
-            this.camFPVChildren.forEach((c) => this.camFPVJoint?.add(c))
+            for (const c of this.camFPVChildren) this.camFPVJoint?.add(c)
         }
         this.camShoulderJoint = camJoints[1]
         if (this.camShoulderJoint) {
             this.camShoulderJoint.rotation.y = this.flipCamera ? Math.PI : 0 // XXX Why is this needed for vehicles and not pilot?
-            this.camShoulderChildren.forEach((c) => this.camShoulderJoint?.add(c))
+            for (const c of this.camShoulderChildren) this.camShoulderJoint?.add(c)
         }
     }
 
     setAnimationSpeed(multiplier: number) {
-        this.animationGroups.forEach((a) => a.animationMixers.forEach((m) => m.timeScale = multiplier))
+        for (const a of this.animationGroups) for (const m of a.animationMixers) m.timeScale = multiplier
     }
 
     private removeAll() {
         this.animationParent.clear()
         this.animationGroups.length = 0
         this.meshesByLName.clear()
-        this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
+        for (const e of this.installedUpgrades) e.parent.remove(e.child)
         this.installedUpgrades.length = 0
-        this.wheelMeshes.forEach((w) => w.mesh.dispose?.())
+        for (const w of this.wheelMeshes) w.mesh.dispose?.()
         this.wheelMeshes.length = 0
         this.carryJoints.length = 0
         if (this.driverParent && this.driver) this.driverParent.remove(this.driver)
@@ -151,7 +151,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     setUpgradeLevel(upgradeLevel: string) {
         if (this.upgradeLevel === upgradeLevel) return
         this.upgradeLevel = upgradeLevel
-        this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
+        for (const e of this.installedUpgrades) e.parent.remove(e.child)
         this.installedUpgrades.length = 0
         this.finalizeMeshSetup()
     }
@@ -159,29 +159,29 @@ export class AnimatedSceneEntity extends SceneEntity {
     private finalizeMeshSetup() {
         this.reinstallAllUpgrades()
         this.driverParent = this.animationParent
-        this.animationData.forEach((animEntityData) => {
+        for (const animEntityData of this.animationData) {
             if (animEntityData.carryNullName) this.carryJoints.push(...this.meshesByLName.getOrUpdate(animEntityData.carryNullName, () => []))
             if (animEntityData.driverNullName) this.driverParent = this.meshesByLName.get(animEntityData.driverNullName)?.last() || this.driverParent
             if (animEntityData.toolNullName) this.toolParent = this.meshesByLName.get(animEntityData.toolNullName)?.last() || this.toolParent
             if (animEntityData.depositNullName) this.depositParent = this.meshesByLName.get(animEntityData.depositNullName)?.last() || this.depositParent
             if (animEntityData.xPivotName) this.xPivotObj = this.meshesByLName.get(animEntityData.xPivotName)?.last() || this.xPivotObj
             if (animEntityData.yPivotName) this.yPivotObj = this.meshesByLName.get(animEntityData.yPivotName)?.last() || this.yPivotObj
-        })
+        }
         this.addCarriedToJoints()
         if (this.driver) this.driverParent.add(this.driver)
     }
 
     reinstallAllUpgrades() {
-        this.animationData.forEach((animEntityData) => {
+        for (const animEntityData of this.animationData) {
             // XXX what if an upgrade level is not defined for an upgrade, but a compatible one is, like 0110 and 0100
             const upgrades = animEntityData.upgradesByLevel.get(this.upgradeLevel) ?? animEntityData.upgradesByLevel.get('0000') ?? []
-            upgrades.forEach((upgrade) => {
+            for (const upgrade of upgrades) {
                 const parent = this.meshesByLName.get(upgrade.parentNullName.toLowerCase())?.[upgrade.parentNullIndex]
                 if (!parent) {
                     if (this.currentAnimation !== ANIM_ENTITY_ACTIVITY.teleportIn) {
                         console.warn(`Could not find upgrade parent for '${upgrade.lNameType}' with name '${upgrade.parentNullName}' in animation '${this.currentAnimation}'`)
                     }
-                    return
+                    continue
                 }
                 const upgradeMesh = new AnimatedSceneEntity()
                 upgradeMesh.name = upgrade.lNameType
@@ -201,32 +201,34 @@ export class AnimatedSceneEntity extends SceneEntity {
                 }
                 upgradeMesh.upgradeLevel = this.upgradeLevel
                 upgradeMesh.setAnimation(this.currentAnimation)
-                upgradeMesh.meshesByLName.forEach((mesh, lName) => this.meshesByLName.getOrUpdate(lName, () => []).push(...mesh))
+                for (const [lName, mesh] of upgradeMesh.meshesByLName) {
+                    this.meshesByLName.getOrUpdate(lName, () => []).push(...mesh)
+                }
                 parent.add(upgradeMesh)
                 this.installedUpgrades.add({ parent: parent, child: upgradeMesh })
-            })
-            this.meshesByLName.getOrUpdate(`not${animEntityData.wheelNullName}`, () => []).forEach((p) => {
-                p.children.forEach((wheel) => {
+            }
+            for (const p of this.meshesByLName.getOrUpdate(`not${animEntityData.wheelNullName}`, () => [])) {
+                for (const wheel of p.children) {
                     this.wheelMeshes.add({ mesh: wheel, radius: animEntityData.wheelRadius })
-                })
-            })
-        })
+                }
+            }
+        }
     }
 
     update(elapsedMs: number) {
-        this.animationGroups.forEach((a) => a.update(elapsedMs))
-        this.installedUpgrades.forEach((c) => c.child.update(elapsedMs))
+        for (const a of this.animationGroups) a.update(elapsedMs)
+        for (const c of this.installedUpgrades) c.child.update(elapsedMs)
     }
 
     private addCarriedToJoints() {
-        this.carriedByIndex.forEach((item, index) => {
+        for (const [index, item] of this.carriedByIndex) {
             const carryJoint = this.carryJoints[index]
             if (carryJoint) {
                 carryJoint.add(item)
             } else {
                 console.warn(`Could not find carry joint with index ${index} in ${this.carryJoints}`)
             }
-        })
+        }
     }
 
     pickupEntity(entity: Object3D) {
@@ -246,7 +248,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     }
 
     removeAllCarried(): void {
-        this.carriedByIndex.forEach((item, index) => {
+        for (const [index, item] of this.carriedByIndex) {
             const carryJoint = this.carryJoints[index]
             const position = this.position.clone()
             if (carryJoint) {
@@ -255,12 +257,12 @@ export class AnimatedSceneEntity extends SceneEntity {
             }
             item.position.copy(position)
             item.rotation.copy(this.rotation)
-        })
+        }
         this.carriedByIndex.clear()
     }
 
     dispose() {
-        this.animationGroups.forEach((a) => a.dispose())
+        for (const a of this.animationGroups) a.dispose()
         this.animationGroups.length = 0
     }
 
@@ -331,7 +333,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     }
 
     restartAnimation() {
-        this.animationGroups.forEach((a) => a.resetAnimation())
+        for (const a of this.animationGroups) a.resetAnimation()
     }
 
     turnWheels(angle: number): void {
@@ -342,9 +344,9 @@ export class AnimatedSceneEntity extends SceneEntity {
     }
 
     private rotateWheelJoints() {
-        this.wheelMeshes.forEach((w) => {
-            if (!w.radius) return
+        for (const w of this.wheelMeshes) {
+            if (!w.radius) continue
             w.mesh.rotation.x = this.wheelAngle / w.radius
-        })
+        }
     }
 }

@@ -45,9 +45,9 @@ export class MainMenuCreditsLayer extends ScaledLayer {
             this.currentLines.push(...this.renderedBitmapLines.slice(0, this.counter))
             this.animationFrame.onRedraw = (context) => {
                 if (this.backImg) context.drawImage(this.backImg, 0, 0, this.fixedWidth, this.fixedHeight)
-                this.currentLines.forEach((lineImage, index) => {
+                for (const [index, lineImage] of this.currentLines.entries()) {
                     if (lineImage) context.drawImage(lineImage, (this.fixedWidth - lineImage.width) / 2, Math.round(index * fontHeight - this.offsetY))
-                })
+                }
             }
         })
         this.addEventListener('pointerup', (): boolean => {

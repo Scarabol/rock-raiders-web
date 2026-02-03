@@ -45,18 +45,19 @@ export class GuiBaseLayer extends ScaledLayer {
         this.animationFrame.onRedraw = (context) => {
             this.rootElement.onRedraw(context)
         }
-        new Map<keyof HTMLElementEventMap, PointerEventType>([
+        const eventToType: [keyof HTMLElementEventMap, PointerEventType][] = [
             ['pointermove', POINTER_EVENT.move],
             ['pointerdown', POINTER_EVENT.down],
             ['pointerup', POINTER_EVENT.up],
             ['pointerleave', POINTER_EVENT.leave],
-        ]).forEach((eventEnum, eventType) => {
+        ]
+        for (const [eventType, eventEnum] of eventToType) {
             this.addEventListener(eventType, (event): boolean => {
                 const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent);
                 [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
                 return this.handlePointerEvent(gameEvent)
             })
-        })
+        }
         this.addEventListener('wheel', (event: WheelEvent): boolean => {
             const gameEvent = new GameWheelEvent(event);
             [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
@@ -70,7 +71,7 @@ export class GuiBaseLayer extends ScaledLayer {
     override reset() {
         super.reset()
         this.rootElement.reset()
-        this.panels.forEach((p) => p.reset())
+        for (const p of this.panels) p.reset()
     }
 
     override setCanvasSize(width: number, height: number) {
@@ -144,15 +145,16 @@ export class GuiTopRightLayer extends GuiBaseLayer {
                 this.panelPriorityList.setMovedIn(true, () => this.panelMain.setMovedIn(false))
             }
         }
-        new Map<keyof HTMLElementEventMap, KeyEventType>([
+        const eventToType: [keyof HTMLElementEventMap, KeyEventType][] = [
             ['keydown', KEY_EVENT.down],
             ['keyup', KEY_EVENT.up],
-        ]).forEach((eventEnum, eventType) => {
+        ]
+        for (const [eventType, eventEnum] of eventToType) {
             this.addEventListener(eventType, (event): boolean => {
                 const gameEvent = new GameKeyboardEvent(eventEnum, event as KeyboardEvent)
                 return this.handleKeyEvent(gameEvent)
             })
-        })
+        }
     }
 
     handleKeyEvent(event: GameKeyboardEvent): boolean {

@@ -9,7 +9,7 @@ import { UVData } from './fileparser/LWOUVParser'
 import { SpriteImage } from '../core/Sprite'
 import { createCanvas, createContext, createDummyImgData } from '../core/ImageHelper'
 import { GameConfig } from '../cfg/GameConfig'
-import { Cursor, PointersEntryCfg } from '../cfg/PointersCfg'
+import { Cursor } from '../cfg/PointersCfg'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { CursorManager } from '../screen/CursorManager'
 import { AnimatedCursorData } from '../screen/AnimatedCursor'
@@ -74,11 +74,11 @@ export class ResourceManager {
         if (!cursorContext) throw new Error('Could not init context for cursor canvas')
         const animContext = createContext(blankPointerImageData.width, blankPointerImageData.height)
         const loadingCursors: Promise<void>[] = []
-        Object.entries(GameConfig.instance.pointers).forEach(([cursor, cursorEntry]: [string, PointersEntryCfg]) => {
+        for (const [cursor, cursorEntry] of Object.entries(GameConfig.instance.pointers)) {
             const lCursorFileName = cursorEntry.fileName.toLowerCase()
             if (lCursorFileName.endsWith('.bmp')) {
                 loadingCursors.push(this.loadCursor(lCursorFileName, cursor as Cursor))
-                return
+                continue
             }
             loadingCursors.push(cacheGetData<AnimatedCursorData>(`cursorDataUrls-${cursor}`).then((animatedCursorData) => {
                 if (!animatedCursorData) {
@@ -95,7 +95,7 @@ export class ResourceManager {
                 }
                 CursorManager.addCursor(cursor as Cursor, animatedCursorData.dataUrls)
             }))
-        })
+        }
         await Promise.all(loadingCursors)
     }
 
@@ -119,9 +119,9 @@ export class ResourceManager {
     static getTexturesBySequenceName(basename: string): Texture[] {
         const lBasename = basename?.toLowerCase()
         const result: string[] = []
-        this.resourceByName.forEach((_, name) => {
+        for (const [name] of this.resourceByName) {
             if (name.match(`${lBasename}\\d+`)) result.push(name)
-        })
+        }
         result.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
         if (result.length > 0) {
             return result.map((textureFilepath) => this.getTexture(textureFilepath)).filter((t) => !!t)

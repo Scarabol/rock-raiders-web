@@ -21,7 +21,7 @@ export class CompleteSurfaceJob extends Job {
 
     override onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
-        this.placedItems.forEach((placed) => placed.disposeFromWorld())
+        for (const placed of this.placedItems) placed.disposeFromWorld()
         this.surface.site = undefined
         this.surface.completeSurfaceJob = undefined
         const targetSurfaceType = this.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE ? SurfaceType.POWER_PATH : SurfaceType.GROUND

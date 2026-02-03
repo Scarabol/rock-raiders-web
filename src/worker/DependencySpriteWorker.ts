@@ -47,10 +47,12 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
                 this.tooltipFont = new BitmapFont(request.tooltipFontData)
                 this.plusSignImg = imgDataToCanvas(request.plusSignImgData)
                 this.equalsSignImg = imgDataToCanvas(request.equalSignImgData)
-                request.interfaceImageData.forEach((imgData, key) => this.interfaceImages
-                    .set(key.toLowerCase(), [imgDataToCanvas(imgData[0]), imgDataToCanvas(imgData[1])]))
-                request.interfaceBuildImageData.forEach((imgData, key) => this.interfaceBuildImages
-                    .set(key.toLowerCase(), [imgDataToCanvas(imgData[0]), imgDataToCanvas(imgData[1])]))
+                for (const [key, imgData] of request.interfaceImageData) {
+                    this.interfaceImages.set(key.toLowerCase(), [imgDataToCanvas(imgData[0]), imgDataToCanvas(imgData[1])])
+                }
+                for (const [key, imgData] of request.interfaceBuildImageData) {
+                    this.interfaceBuildImages.set(key.toLowerCase(), [imgDataToCanvas(imgData[0]), imgDataToCanvas(imgData[1])])
+                }
                 this.sendResponse(workerRequestHash, {})
                 break
             case DependencySpriteWorkerRequestType.CREATE_SPRITE:
@@ -82,7 +84,8 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
                 totalWidth += equalsSignImg.width * 2
                 const dependencySprite = createContext(totalWidth, totalHeight)
                 let posX = 0
-                deps.forEach((s, index) => {
+                for (const s of deps) {
+                    const index = deps.indexOf(s)
                     dependencySprite.drawImage(s.img, posX, (totalHeight - s.img.height) / 2)
                     if (s.level) {
                         const upgradeName = upgradeNames[s.level - 1]
@@ -95,7 +98,7 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
                     const signImg = index === deps.length - 1 ? equalsSignImg : plusSignImg
                     dependencySprite.drawImage(signImg, posX, (totalHeight - signImg.height) / 2)
                     posX += signImg.width
-                })
+                }
                 this.sendResponse(workerRequestHash, { dependencyImage: dependencySprite.getImageData(0, 0, dependencySprite.canvas.width, dependencySprite.canvas.height) })
                 break
         }

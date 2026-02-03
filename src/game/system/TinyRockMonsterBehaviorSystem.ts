@@ -42,9 +42,9 @@ class StateUpdater {
             const path = this.findShortestPath(target)
             this.behaviorComponent.currentPath = path && path.locations.length > 0 ? path : undefined
             if (!path) return MOVE_STATE.targetUnreachable
-            path.locations.forEach((l, index) => {
+            for (const [index, l] of path.locations.entries()) {
                 if (index < path.locations.length - 1) l.add(new Vector2().random().subScalar(0.5).multiplyScalar(TILESIZE / PATH_PRECISION))
-            })
+            }
             pathUpdated = true
         }
         const step = this.determineStep(elapsedMs, this.behaviorComponent.currentPath!)

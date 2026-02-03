@@ -33,7 +33,11 @@ export class SurfaceMesh extends Group {
 
     setHighlightColor(hex: number) {
         this.lowMesh.setHighlightColor(hex)
-        this.proMesh?.material.forEach((m) => m.color.setHex(hex))
+        if (this.proMesh) {
+            for (const m of this.proMesh.material) {
+                m.color.setHex(hex)
+            }
+        }
     }
 
     setTexture(textureFilepath: string, textureRotation: number) {
@@ -72,12 +76,14 @@ export class SurfaceMesh extends Group {
             const rotationIndex = (Math.round(wallAngle / (Math.PI / 2)) + 8) % 4
             SurfaceMesh.tearGeometryPositionsByVertexOffsets(this.proMesh.geometry, topLeftVertex, bottomLeftVertex, bottomRightVertex, topRightVertex, rotationIndex)
             if (textureSuffix !== proMeshSuffix) {
-                this.proMesh.material.forEach((m) => m.textures.forEach((t) => {
-                    if (!t.name.toLowerCase().startsWith(textureBasename.toLowerCase())) console.warn(`Unexpected texture name (${t.name}); expected start with ${textureBasename}`)
-                    const overwriteName = t.name.replace(new RegExp(`${textureBasename}\\d\\d`, 'gi'), textureBasename + textureSuffix)
-                    const overwrite = ResourceManager.getSurfaceTexture(overwriteName, t.rotation)
-                    if (overwrite) m.map = overwrite
-                }))
+                for (const m of this.proMesh.material) {
+                    for (const t of m.textures) {
+                        if (!t.name.toLowerCase().startsWith(textureBasename.toLowerCase())) console.warn(`Unexpected texture name (${t.name}); expected start with ${textureBasename}`)
+                        const overwriteName = t.name.replace(new RegExp(`${textureBasename}\\d\\d`, 'gi'), textureBasename + textureSuffix)
+                        const overwrite = ResourceManager.getSurfaceTexture(overwriteName, t.rotation)
+                        if (overwrite) m.map = overwrite
+                    }
+                }
             }
         }
         if (this.proMesh) this.proMesh.visible = this.proMeshEnabled
@@ -166,29 +172,29 @@ export class SurfaceMesh extends Group {
         const offset = [topLeftOffset.offset, bottomLeftOffset.offset, bottomRightOffset.offset, topRightOffset.offset]
         const seamProgress = [topLeftOffset.seamProgress, bottomLeftOffset.seamProgress, bottomRightOffset.seamProgress, topRightOffset.seamProgress]
         const avgOffset = offset.reduce((p, c) => p + c, 0) / offset.length
-        nearTopLeft.forEach((e) => {
+        for (const e of nearTopLeft) {
             geoPos.array[e.index] += (offset[rotationIndex] - avgOffset) * TILESIZE
             geoPos.array[e.index] *= seamProgress[rotationIndex]
-        })
-        nearBottomLeft.forEach((e) => {
+        }
+        for (const e of nearBottomLeft) {
             geoPos.array[e.index] += (offset[(rotationIndex + 1) % 4] - avgOffset) * TILESIZE
             geoPos.array[e.index] *= seamProgress[(rotationIndex + 1) % 4]
-        })
-        nearBottomRight.forEach((e) => {
+        }
+        for (const e of nearBottomRight) {
             geoPos.array[e.index] += (offset[(rotationIndex + 2) % 4] - avgOffset) * TILESIZE
             geoPos.array[e.index] *= seamProgress[(rotationIndex + 2) % 4]
-        })
-        nearTopRight.forEach((e) => {
+        }
+        for (const e of nearTopRight) {
             geoPos.array[e.index] += (offset[(rotationIndex + 3) % 4] - avgOffset) * TILESIZE
             geoPos.array[e.index] *= seamProgress[(rotationIndex + 3) % 4]
-        })
+        }
         const avgFrontLeft = this.avgVec(nearTopLeft)
         const avgBackLeft = this.avgVec(nearBottomLeft)
         const avgFrontRight = this.avgVec(nearTopRight)
-        nearOthers.forEach((point) => {
+        for (const point of nearOthers) {
             const dx = avgFrontRight.x - avgFrontLeft.x
             const dz = avgBackLeft.z - avgFrontLeft.z
-            if (dx === 0 || dz === 0) return
+            if (dx === 0 || dz === 0) continue
             const t1 = (point.x - avgFrontLeft.x) / dx
             const t2 = (point.z - avgFrontLeft.z) / dz
             const offsetInt = (1 - t1) * (1 - t2) * offset[rotationIndex] +
@@ -201,7 +207,7 @@ export class SurfaceMesh extends Group {
                 t1 * t2 * seamProgress[(rotationIndex + 2) % 4]
             geoPos.array[point.index] += (offsetInt - avgOffset) * TILESIZE
             geoPos.array[point.index] *= seamProgressInt
-        })
+        }
         geo.setAttribute('position', geoPos)
     }
 
@@ -264,7 +270,7 @@ export class SurfaceMeshPro extends Mesh<BufferGeometry, SequenceTextureMaterial
     dispose() {
         this.removeFromParent()
         this.geometry?.dispose()
-        this.material?.forEach((m) => m.dispose())
+        for (const m of this.material) m.dispose()
     }
 }
 

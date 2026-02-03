@@ -106,13 +106,13 @@ export class NerpRunner {
             this.objectiveShowing = event.isShowing
             this.objectiveSwitch = this.objectiveSwitch && event.isShowing
         })
-        NerpRunner.iconClickedConfig.forEach((iconCLickedEntry: IconClickedEntry) => {
-            if (!iconCLickedEntry.eventKey) return
+        for (const iconCLickedEntry of NerpRunner.iconClickedConfig) {
+            if (!iconCLickedEntry.eventKey) continue
             EventBroker.subscribe(iconCLickedEntry.eventKey, () => {
                 const iconName = iconCLickedEntry.iconName.toLowerCase()
                 this.iconClicked.upsert(iconName, (current) => (current || 0) + 1)
             })
-        })
+        }
         EventBroker.subscribe(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
             const increased = event.numRequested > this.numRequestedRaiders
             this.numRequestedRaiders = event.numRequested
@@ -263,13 +263,13 @@ export class NerpRunner {
 
     setTutorialPointer(tutoBlockId: number, enabled: number): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        tutoBlocks.forEach((t) => {
+        for (const t of tutoBlocks) {
             if (enabled) {
                 t.mesh.objectPointer?.setTargetPosition(t.getCenterWorld(), t)
             } else {
                 t.mesh.objectPointer?.hide()
             }
-        })
+        }
     }
 
     setMessagePermit(allowMessages: number): void {
@@ -277,9 +277,9 @@ export class NerpRunner {
     }
 
     setBuildingsUpgradeLevel(typeName: EntityType, level: number): void {
-        this.worldMgr.entityMgr.buildings.forEach(b => {
+        for (const b of this.worldMgr.entityMgr.buildings) {
             if (b.entityType === typeName) b.setLevel(level)
-        })
+        }
     }
 
     setToolStoreLevel(level: number): void {
@@ -421,9 +421,7 @@ export class NerpRunner {
 
     setRockMonsterAtTutorial(tutoBlockId: number): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        tutoBlocks.forEach((t) => {
-            EventBroker.publish(new MonsterEmergeEvent(t))
-        })
+        for (const t of tutoBlocks) EventBroker.publish(new MonsterEmergeEvent(t))
     }
 
     setCongregationAtTutorial(tutoBlockId: number): void {
@@ -454,11 +452,11 @@ export class NerpRunner {
 
     private setTutorialBlock(tutoBlockId: number, surfaceType: SurfaceType): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        tutoBlocks.forEach((s) => {
+        for (const s of tutoBlocks) {
             s.setSurfaceType(surfaceType)
             s.needsMeshUpdate = true
             s.discover()
-        })
+        }
         this.worldMgr.sceneMgr.terrain.updateSurfaceMeshes()
     }
 
@@ -653,12 +651,12 @@ export class NerpRunner {
 
     setTutorialCrystals(tutoBlockId: number, numOfCrystals: number): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        tutoBlocks.forEach((t) => {
+        for (const t of tutoBlocks) {
             for (let c = 0; c < numOfCrystals; c++) {
                 const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, t.getRandomPosition(), PRNG.animation.random() * 2 * Math.PI)
                 if (crystal.carryJob) crystal.carryJob.jobState = JOB_STATE.canceled
             }
-        })
+        }
     }
 
     setCrystalPriority(_targetIndex: number): void {
@@ -685,13 +683,13 @@ export class NerpRunner {
 
     makeSomeoneOnThisBlockPickUpSomethingOnThisBlock(tutoBlockId: number): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        tutoBlocks.forEach((t) => {
+        for (const t of tutoBlocks) {
             const raider = PRNG.nerp.sample(this.worldMgr.entityMgr.raiders.filter((r) => r.getSurface() === t && r.isReadyToTakeAJob()))
-            if (!raider) return
+            if (!raider) continue
             const material = PRNG.nerp.sample(this.worldMgr.entityMgr.materials.filter((m) => m.getSurface() === t && !m.carryJob?.hasFulfiller()))
-            if (!material) return
+            if (!material) continue
             raider.setJob(material.setupCarryJob())
-        })
+        }
     }
 
     setBuildingsTeleported(numBuildings: number): void {

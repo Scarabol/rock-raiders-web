@@ -64,12 +64,18 @@ export class BirdViewControls extends OrbitControls {
     }
 
     private useWASDToPanAndArrowKeysToRotate() {
-        this.keys = { LEFT: 'KeyA', UP: 'KeyW', RIGHT: 'KeyD', BOTTOM: 'KeyS' };
-        [{ code: 'ArrowUp', rot: CAMERA_ROTATION.up }, { code: 'ArrowLeft', rot: CAMERA_ROTATION.left }, { code: 'ArrowDown', rot: CAMERA_ROTATION.down }, { code: 'ArrowRight', rot: CAMERA_ROTATION.right }].forEach((pair) => {
+        this.keys = { LEFT: 'KeyA', UP: 'KeyW', RIGHT: 'KeyD', BOTTOM: 'KeyS' }
+        const codeToRotation: { code: string, rotation: CameraRotation }[] = [
+            { code: 'ArrowUp', rotation: CAMERA_ROTATION.up },
+            { code: 'ArrowLeft', rotation: CAMERA_ROTATION.left },
+            { code: 'ArrowDown', rotation: CAMERA_ROTATION.down },
+            { code: 'ArrowRight', rotation: CAMERA_ROTATION.right }
+        ]
+        for (const pair of codeToRotation) {
             this.domElement.addEventListener('keydown', (event: KeyboardEvent) => {
-                if (event.code === pair.code) this.rotate(pair.rot)
+                if (event.code === pair.code) this.rotate(pair.rotation)
             })
-        })
+        }
     }
 
     setupControls() { // method name "reset" already used by base class with different meaning

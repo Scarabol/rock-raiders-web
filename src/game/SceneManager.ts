@@ -108,14 +108,16 @@ export class SceneManager implements Updatable {
             this.scene.fog = new FogExp2(this.fogColor, 0.0025)
         }
         // TODO Refactor raider info component updates with ECS
-        this.worldMgr.entityMgr?.selection.raiders.forEach((r) => this.worldMgr.ecs.getComponents(r.entity).getOptional(SelectionNameComponent)?.setVisible(GameState.isBirdView))
-        this.worldMgr.entityMgr?.raiders.forEach((r) => {
+        for (const r of this.worldMgr.entityMgr.selection.raiders) {
+            this.worldMgr.ecs.getComponents(r.entity).getOptional(SelectionNameComponent)?.setVisible(GameState.isBirdView)
+        }
+        for (const r of this.worldMgr.entityMgr.raiders) {
             const infoComponent = r.worldMgr.ecs.getComponents(r.entity).getOptional(RaiderInfoComponent)
             if (infoComponent) {
                 infoComponent.bubbleSprite.updateVisibleState()
                 infoComponent.hungerSprite.visible = GameState.showObjInfo && GameState.isBirdView
             }
-        })
+        }
         this.cameraActive = camera
         this.cameraActive.add(SoundManager.sceneAudioListener)
         this.renderer.camera = camera
@@ -176,14 +178,16 @@ export class SceneManager implements Updatable {
     }
 
     update(elapsedMs: number) {
-        this.sceneObjects.forEach((e) => updateSafe(e, elapsedMs))
-        this.sprites.forEach((s) => updateSafe(s, elapsedMs))
+        for (const e of this.sceneObjects) updateSafe(e, elapsedMs)
+        for (const s of this.sprites) updateSafe(s, elapsedMs)
         updateSafe(this.torchLightCursor, elapsedMs)
         this.birdViewControls?.updateControlsSafe(elapsedMs)
         this.objectPointer.update(elapsedMs)
-        Array.from(this.worldMgr.nerpRunner.tutoBlocksById.values()).forEach((s) => s.forEach((t) => {
-            t.mesh.objectPointer?.update(elapsedMs)
-        }))
+        for (const [, s] of this.worldMgr.nerpRunner.tutoBlocksById) {
+            for (const t of s) {
+                t.mesh.objectPointer?.update(elapsedMs)
+            }
+        }
         const selectedEntity = this.worldMgr.entityMgr.selection.getPrimarySelected()
         if (selectedEntity && (this.cameraActive === this.cameraShoulder || this.cameraActive === this.cameraFPV)) {
             this.updateEgoMovement(selectedEntity, elapsedMs)
@@ -226,7 +230,7 @@ export class SceneManager implements Updatable {
         this.followerRenderer?.dispose()
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
-        this.sceneObjects.forEach((e) => e.dispose())
+        for (const e of this.sceneObjects) e.dispose()
         this.sceneObjects.length = 0
     }
 

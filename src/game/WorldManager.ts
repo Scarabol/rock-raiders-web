@@ -141,8 +141,10 @@ export class WorldManager {
     }
 
     async teleportEnd(): Promise<void> {
-        PRNG.animation.shuffle([...this.entityMgr.raiders.filter((r) => !r.vehicle), ...this.entityMgr.vehicles, ...this.entityMgr.buildings])
-            .forEach((e, i) => setTimeout(() => e.beamUp(), i * 200))
+        const entities = [...this.entityMgr.raiders.filter((r) => !r.vehicle), ...this.entityMgr.vehicles, ...this.entityMgr.buildings]
+        for (const [i, e] of PRNG.animation.shuffle(entities).entries()) {
+            setTimeout(() => e.beamUp(), i * 200)
+        }
         return new Promise((resolve) => setTimeout(() => resolve(), 10000))
     }
 

@@ -10,27 +10,27 @@ export class NerpMsgParser {
 
     static parseNerpMessages(wadData: string): NerpMessage[] {
         const result: NerpMessage[] = []
-        wadData.split(/[\r\n]/).map((l) => l?.trim()).filter((l) => !!l && l !== '-')
-            .forEach((line, index) => {
-                if (line.startsWith('$')) {
-                    const sndMatch = line.match(/\$(\S+)\s+(\S+)/)
-                    if (!sndMatch) return
-                    result.some((e) => {
-                        if (e.sndNum === sndMatch[1]) {
-                            e.snd = sndMatch[2].replace(/\\/g, '/').toLowerCase()
-                            if (!e.snd.endsWith('.wav')) e.snd += '.wav'
-                            return true
-                        }
-                        return false
-                    })
-                } else {
-                    const txtMatch = line.match(NerpMsgParser.txtMatcher)
-                    if (!txtMatch) return
-                    result[index] = result[index] || { txt: '', sndNum: '', snd: '' }
-                    result[index].txt = txtMatch[2].replace(/_/g, ' ').trim()
-                    result[index].sndNum = txtMatch[5]
-                }
-            })
+        for (const line of wadData.split(/[\r\n]/).map((l) => l?.trim()).filter((l) => !!l && l !== '-')) {
+            const index = wadData.split(/[\r\n]/).map((l) => l?.trim()).filter((l) => !!l && l !== '-').indexOf(line)
+            if (line.startsWith('$')) {
+                const sndMatch = line.match(/\$(\S+)\s+(\S+)/)
+                if (!sndMatch) continue
+                result.some((e) => {
+                    if (e.sndNum === sndMatch[1]) {
+                        e.snd = sndMatch[2].replace(/\\/g, '/').toLowerCase()
+                        if (!e.snd.endsWith('.wav')) e.snd += '.wav'
+                        return true
+                    }
+                    return false
+                })
+            } else {
+                const txtMatch = line.match(NerpMsgParser.txtMatcher)
+                if (!txtMatch) continue
+                result[index] = result[index] || { txt: '', sndNum: '', snd: '' }
+                result[index].txt = txtMatch[2].replace(/_/g, ' ').trim()
+                result[index].sndNum = txtMatch[5]
+            }
+        }
         return result
     }
 }

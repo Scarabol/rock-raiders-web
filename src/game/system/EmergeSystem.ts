@@ -41,9 +41,10 @@ export class EmergeSystem extends AbstractGameSystem {
 
     update(ecs: ECS, elapsedMs: number): void {
         if (!this.emergeCreature) return
-        const busySurfaces = new Set<Surface>();
-        [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles] // TODO Replace with entity filter
-            .forEach((e) => busySurfaces.add(ecs.getComponents(e.entity).get(PositionComponent).surface))
+        const busySurfaces = new Set<Surface>()
+        for (const e of [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles]) {
+            busySurfaces.add(ecs.getComponents(e.entity).get(PositionComponent).surface)
+        }
         const emergeSpawns: Map<number, Surface[]> = new Map()
         const triggeredEmerges: Set<EmergeComponent> = new Set()
         for (const [_entity, components] of this.activeEmerges) {
@@ -63,13 +64,13 @@ export class EmergeSystem extends AbstractGameSystem {
                 console.error(e)
             }
         }
-        triggeredEmerges.forEach((emergeComponent) => {
-            emergeSpawns.getOrUpdate(emergeComponent.emergeSpawnId, () => []).forEach((surface) => {
+        for (const emergeComponent of triggeredEmerges) {
+            for (const surface of emergeSpawns.getOrUpdate(emergeComponent.emergeSpawnId, () => [])) {
                 emergeComponent.emergeDelayMs = this.emergeTimeoutMs
-                if (surface.wallType !== WALL_TYPE.wall || surface.reinforced) return // walls might change from undiscovered or inverted corner to actual wall or rocky removes reinforcement
+                if (surface.wallType !== WALL_TYPE.wall || surface.reinforced) continue // walls might change from undiscovered or inverted corner to actual wall or rocky removes reinforcement
                 EventBroker.publish(new MonsterEmergeEvent(surface))
-            })
-        })
+            }
+        }
     }
 
     emergeFromSurface(spawn: Surface) {

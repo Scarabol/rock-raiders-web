@@ -6,36 +6,36 @@ export class CfgEntry {
 
     forEachEntry(callback: (key: string, entry: CfgEntry) => void): void {
         const visitedKeys = new Set<string>()
-        Object.entries(this.root).forEach(([key, value]) => {
+        for (const [key, value] of Object.entries(this.root)) {
             const unifiedKey = CfgEntry.unifyKey(key)
             if (visitedKeys.has(unifiedKey)) {
-                return // When multiple values given for the same key, we only consider the FIRST one
+                continue // When multiple values given for the same key, we only consider the FIRST one
             }
             visitedKeys.add(unifiedKey)
             if (Array.isArray(value)) {
                 // No warning here, because some like "PausedMenu" has mixture of MenuCount value and records
-                return
+                continue
             }
             callback(key, new CfgEntry(value))
-        })
+        }
     }
 
     forEachCfgEntryValue(callback: (value: CfgEntryValue, key: string) => void): void {
         const visitedKeys = new Set<string>()
-        Object.entries(this.root).forEach(([key, value]) => {
+        for (const [key, value] of Object.entries(this.root)) {
             const unifiedKey = CfgEntry.unifyKey(key)
             if (visitedKeys.has(unifiedKey)) {
-                return // When multiple values given for the same key, we only consider the FIRST one
+                continue // When multiple values given for the same key, we only consider the FIRST one
             }
             visitedKeys.add(unifiedKey)
             if (!Array.isArray(value)) {
                 console.warn(`Unexpected object (${value}) given; expected config values`)
-                return
+                continue
             }
-            value.forEach((v) => {
+            for (const v of value) {
                 callback(new CfgEntryValue(String.fromCharCode(...(v))), key)
-            })
-        })
+            }
+        }
     }
 
     getRecordOptional(searchKey: string): CfgEntry | undefined {

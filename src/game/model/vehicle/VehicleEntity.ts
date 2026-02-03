@@ -79,7 +79,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.entity = this.worldMgr.ecs.addEntity()
         this.sceneEntity = new AnimatedSceneEntity()
         this.sceneEntity.flipCamera = true // XXX Why is this needed for vehicles and not pilot?
-        aeNames.forEach((aeName) => this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName)))
+        for (const aeName of aeNames) this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
         this.worldMgr.ecs.addComponent(this.entity, new MovableStatsComponent(stats))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
@@ -193,7 +193,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     onEntityMoved() {
         const vehiclePosition2D = this.sceneEntity.position2D
-        this.worldMgr.entityMgr.rockMonsters.forEach((rocky) => {
+        for (const rocky of this.worldMgr.entityMgr.rockMonsters) {
             const components = this.worldMgr.ecs.getComponents(rocky)
             const rockySceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
             if (rockySceneEntity.currentAnimation === ROCK_MONSTER_ACTIVITY.unpowered) {
@@ -208,7 +208,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
                     })
                 }
             }
-        })
+        }
     }
 
     private moveToClosestTargetInternal(target: PathTarget | undefined, elapsedMs: number): MoveState {
@@ -392,15 +392,15 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     dropCarried(unAssignFromSite: boolean): MaterialEntity[] {
         if (this.carriedItems.size < 1) return []
-        if (unAssignFromSite) this.carriedItems.forEach((i) => i.carryJob?.target?.site?.unAssign(i))
+        if (unAssignFromSite) for (const i of this.carriedItems) i.carryJob?.target?.site?.unAssign(i)
         this.sceneEntity.removeAllCarried()
         const carriedEntities: MaterialEntity[] = []
-        this.carriedItems.forEach((carried) => {
+        for (const carried of this.carriedItems) {
             const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.getPosition2D())
             carried.setPosition(floorPosition)
             carried.worldMgr.sceneMgr.addSceneEntity(carried.sceneEntity)
             carriedEntities.push(carried)
-        })
+        }
         this.carriedItems.clear()
         return carriedEntities
     }
@@ -551,14 +551,14 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             positionComponent.surface = surface
             positionComponent.markDirty()
         }
-        this.carriedItems.forEach((carriedItem) => {
+        for (const carriedItem of this.carriedItems) {
             const carriedPositionComponent = this.worldMgr.ecs.getComponents(carriedItem.entity).getOptional(PositionComponent)
             if (carriedPositionComponent) {
                 carriedItem.sceneEntity.getWorldPosition(carriedPositionComponent.position)
                 carriedPositionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(carriedPositionComponent.position)
                 carriedPositionComponent.markDirty()
             }
-        })
+        }
     }
 
     getSurface(): Surface {

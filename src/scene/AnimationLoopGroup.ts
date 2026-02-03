@@ -55,7 +55,7 @@ export class AnimationLoopGroup extends AnimationGroup {
             if (this.animationActions.every((a) => !a.isRunning())) {
                 if (!this.looping) {
                     this.looping = true
-                    this.loopActions.forEach((a) => a.play())
+                    for (const a of this.loopActions) a.play()
                 }
             }
         })
@@ -63,11 +63,11 @@ export class AnimationLoopGroup extends AnimationGroup {
 
     interruptLoop() {
         if (this.looping) {
-            this.loopActions.forEach((a) => a.stop())
-            this.endActions.forEach((a) => a.play())
+            for (const a of this.loopActions) a.stop()
+            for (const a of this.endActions) a.play()
         } else if (this.playing) {
-            this.animationMixers.forEach((m) => m.stopAllAction())
-            this.endActions.forEach((a) => a.play())
+            for (const m of this.animationMixers) m.stopAllAction()
+            for (const a of this.endActions) a.play()
         }
         this.looping = false
         this.playing = false

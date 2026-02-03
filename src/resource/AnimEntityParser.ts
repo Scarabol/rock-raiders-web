@@ -54,7 +54,7 @@ export class AnimEntityParser {
     }
 
     parse(): AnimEntityData {
-        Object.entries<any>(this.cfgRoot).forEach(([rootKey, value]) => {
+        for (const [rootKey, value] of Object.entries(this.cfgRoot)) {
             if (rootKey.equalsIgnoreCase('Scale')) {
                 this.animEntityData.scale = Number(value)
             } else if (rootKey.equalsIgnoreCase('CarryNullName')) {
@@ -90,10 +90,10 @@ export class AnimEntityParser {
             } else if (rootKey.equalsIgnoreCase('LowPoly')) {
                 this.parsePolyBodies(value, this.animEntityData.lowPolyBodies)
             } else if (rootKey.equalsIgnoreCase('FPPoly')) {
-                ['camera1', 'camera2'].forEach((cameraName) => {
+                for (const cameraName of ['camera1', 'camera2']) {
                     this.animEntityData.fPPolyBodies[cameraName] = this.animEntityData.fPPolyBodies[cameraName] ?? {}
                     this.parsePolyBodies(iGet(value, cameraName), this.animEntityData.fPPolyBodies[cameraName])
-                })
+                }
             } else if (rootKey.equalsIgnoreCase('Activities')) {
                 this.parseActivities(value)
             } else if (rootKey.equalsIgnoreCase('Upgrades')) {
@@ -126,20 +126,20 @@ export class AnimEntityParser {
             } else if (this.verbose) {
                 console.warn(`Unhandled animated entity key found: ${rootKey}`, value)
             }
-        })
+        }
 
         return this.animEntityData
     }
 
     private parsePolyBodies(value: object, polyBodies: Record<string, string>) {
-        Object.entries(value).forEach(([key, fileName]) => {
+        for (const [key, fileName] of Object.entries(value)) {
             const polyKey = key.startsWith('!') ? key.slice(1) : key
             polyBodies[polyKey.toLowerCase()] = 'NULL'.equalsIgnoreCase(fileName) ? 'hidden' : `${fileName}.lwo`
-        })
+        }
     }
 
     private parseActivities(value: any) {
-        Object.entries<string>(value).forEach(([activityName, keyName]) => {
+        for (const [activityName, keyName] of Object.entries<string>(value)) {
             try {
                 this.knownAnimations.push(keyName.toLowerCase())
                 const act = iGet(this.cfgRoot, keyName)
@@ -150,7 +150,7 @@ export class AnimEntityParser {
                 console.log(value)
                 console.log(activityName)
             }
-        })
+        }
     }
 
     private parseActivityEntry(act: any, lActivityName: string) {
@@ -168,24 +168,24 @@ export class AnimEntityParser {
     }
 
     private parseUpgrades(value: object) {
-        Object.entries(value).forEach(([levelKey, upgradesCfg]) => {
+        for (const [levelKey, upgradesCfg] of Object.entries(value)) {
             if (!this.parseUpgradeEntry(levelKey, upgradesCfg)) {
                 console.warn(`Unexpected upgrade level key: ${levelKey}`)
             }
-        })
+        }
     }
 
     private parseUpgradeEntry(levelKey: string, upgradesCfg: any): boolean {
         const match = levelKey.match(/level(\d\d\d\d)/i) // [carry] [scan] [speed] [drill]
         if (!match) return false
         const upgradesByLevel: AnimEntityUpgradeData[] = []
-        Object.entries<[string, number][] | [string, number]>(upgradesCfg).forEach(([upgradeTypeName, upgradeEntry]) => {
+        for (const [upgradeTypeName, upgradeEntry] of Object.entries<[string, number][] | [string, number]>(upgradesCfg)) {
             const upgradeEntries: [string, number][] = Array.isArray(upgradeEntry[0]) ? upgradeEntry as [string, number][] : [upgradeEntry as [string, number]]
-            upgradeEntries.forEach((upgradeTypeEntry) => {
+            for (const upgradeTypeEntry of upgradeEntries) {
                 const lNameType = upgradeTypeName.toLowerCase()
                 upgradesByLevel.push(new AnimEntityUpgradeData(lNameType, this.path + lNameType, upgradeTypeEntry[0], upgradeTypeEntry[1] - 1))
-            })
-        })
+            }
+        }
         this.animEntityData.upgradesByLevel.set(match[1], upgradesByLevel)
         return true
     }

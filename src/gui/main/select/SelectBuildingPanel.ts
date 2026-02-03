@@ -52,11 +52,11 @@ export class SelectBuildingPanel extends IconSubPanel {
             this.buildingMissingOreForUpgrade = event.buildingMissingOreForUpgrade
             this.updateAllButtonStates()
             if (this.buildingMissingOreForUpgrade) {
-                this.iconPanelButtons.forEach((b) => {
+                for (const b of this.iconPanelButtons) {
                     b.publishEvent(new ForceRedrawTooltip(upgradeItem.tooltipDisabled, () => {
                         return TooltipSpriteBuilder.getBuildingMissingOreForUpgradeTooltipSprite(this.buildingMissingOreForUpgrade)
                     }))
-                })
+                }
             }
         })
         this.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {

@@ -17,12 +17,17 @@ export class SoundManager {
 
     static init() {
         this.sceneAudioListener = new AudioListener() // late init to be compatible with eventual test setup
-        this.playingAudio.forEach((audio) => {
+        for (const [, audio] of this.playingAudio) {
             if (audio?.isPlaying) audio.stop()
-        })
+        }
         this.playingAudio.clear()
-        EventBroker.subscribe(EventKey.PAUSE_GAME, () => this.playingAudio.forEach((a) => a.pause())) // XXX What if audio was paused for other reasons
-        EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => this.playingAudio.forEach((a) => !a.isPlaying && a.play()))
+        EventBroker.subscribe(EventKey.PAUSE_GAME, () => {
+            for (const [, a] of this.playingAudio) a.pause()
+        })
+        EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {
+            // XXX What if audio was paused for other reasons
+            for (const [, a] of this.playingAudio) if (!a.isPlaying) a.play()
+        })
     }
 
     static setupSfxAudioTarget(): GainNode {

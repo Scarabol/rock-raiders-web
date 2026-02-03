@@ -37,22 +37,22 @@ export class ObjectListLoader {
 
     loadObjectList(objectList: Map<string, ObjectListEntryCfg>) {
         try {
-            objectList.forEach((olEntry, olKey) => {
+            for (const [olKey, olEntry] of objectList) {
                 try {
                     this.loadObjectEntry(olEntry, olKey)
                 } catch (e) {
                     console.error(e)
                 }
-            })
-            this.vehicleKeyToDriver.forEach((driver, vehicleKey) => {
+            }
+            for (const [vehicleKey, driver] of this.vehicleKeyToDriver) {
                 const vehicle = this.vehicleByKey.get(vehicleKey)
                 if (!vehicle) {
                     console.error(`Could not find vehicle (${vehicleKey}) for driver`, this.vehicleByKey, driver)
-                    return
+                    continue
                 }
                 driver.addTraining(vehicle.getRequiredTraining())
                 vehicle.addDriver(driver)
-            })
+            }
             EventBroker.publish(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
             if (this.trackEntity) EventBroker.publish(new FollowerSetLookAtEvent(this.trackEntity))
         } catch (e) {
@@ -98,7 +98,7 @@ export class ObjectListLoader {
                         for (let c = 0; c < ObjectListLoader.numRaider; c++) {
                             const randomPosition = building.primaryPathSurface.getRandomPosition()
                             const raider = this.spawnRaider(randomPosition, headingRad - Math.PI)
-                            RaiderTrainings.values.forEach((t) => raider.addTraining(t))
+                            for (const t of RaiderTrainings.values) raider.addTraining(t)
                         }
                         if (ObjectListLoader.startVehicle) {
                             const startVehicleEntityType = getEntityTypeByName(ObjectListLoader.startVehicle) as VehicleEntityType
@@ -106,7 +106,7 @@ export class ObjectListLoader {
                                 const vehiclePos = building.primaryPathSurface.getCenterWorld2D()
                                 const vehicle = this.spawnVehicle(startVehicleEntityType, vehiclePos, headingRad - Math.PI)
                                 const driver = this.spawnRaider(vehiclePos, headingRad - Math.PI)
-                                RaiderTrainings.values.forEach((t) => driver.addTraining(t))
+                                for (const t of RaiderTrainings.values) driver.addTraining(t)
                                 vehicle.addDriver(driver)
                             } else {
                                 console.warn(`Could not determine entity type for '${ObjectListLoader.startVehicle}'`)

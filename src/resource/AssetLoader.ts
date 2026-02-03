@@ -163,7 +163,7 @@ export class SoundAssetLoader extends AssetLoader<AudioBuffer> {
         }
         const audioBuffer = await AudioContext.getContext().decodeAudioData(data)
         ResourceManager.resourceByName.set(this.lAssetName, audioBuffer) // TODO Add only to sound buffer
-        this.sndKeys.forEach((sndKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sndKey, () => []).push(audioBuffer))
+        for (const sndKey of this.sndKeys) SoundManager.sfxBuffersByKey.getOrUpdate(sndKey, () => []).push(audioBuffer)
         return audioBuffer
     }
 }

@@ -80,7 +80,7 @@ export class ECS {
         this.entities.clear()
         this.nextEntityID = 1
         this.entitiesToDestroy.length = 0
-        this.systems.forEach((filters) => filters.forEach((f) => f.entities.clear()))
+        for (const [, filters] of this.systems) for (const f of filters) f.entities.clear()
     }
 
     addEntity(): GameEntity {
@@ -152,12 +152,12 @@ export class ECS {
     private checkEntityWithSystem(entity: GameEntity, system: AbstractGameSystem): void {
         const components = this.entities.get(entity)
         if (!components) return
-        system.filters.forEach((filter) => {
+        for (const filter of system.filters) {
             if (components.hasAll(filter.componentsRequired)) {
                 filter.entities.set(entity, components)
             } else {
                 filter.entities.delete(entity)
             }
-        })
+        }
     }
 }

@@ -71,7 +71,7 @@ export class BitmapFont {
         const rows = this.determineRows(text, maxWidth)
         const width = Math.max(1, ...(rows.map(r => r.width)))
         const result = new ImageData(width, this.data.charHeight * (rows.length || 1))
-        rows.forEach((row, index) => {
+        for (const [index, row] of rows.entries()) {
             const rowX = autoCenter ? Math.round((width - row.width) / 2) : 0
             const rowY = index * this.data.charHeight
             let letterX = 0
@@ -87,7 +87,7 @@ export class BitmapFont {
                     letterX += letterImgData.width
                 } // missing letter issue already reported above
             }
-        })
+        }
         return result
     }
 
@@ -104,7 +104,8 @@ export class BitmapFont {
         const rows: { text: string, width: number }[] = []
         let rowText = ''
         let rowWidth = 0
-        text.replaceAll('\t', '    ').split(' ').forEach((word) => {
+        const words = text.replaceAll('\t', '    ').split(' ')
+        for (const word of words) {
             let wordWidth = 0
             for (let c = 0; c < word.length; c++) {
                 const charCode = word.charCodeAt(c)
@@ -131,7 +132,7 @@ export class BitmapFont {
                 rowText += word
                 rowWidth += wordWidth
             }
-        })
+        }
         if (rowWidth > 0) rows.push({ text: rowText, width: rowWidth })
         return rows
     }

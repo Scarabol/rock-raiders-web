@@ -65,11 +65,11 @@ export class GameLayer extends ScreenLayer {
             [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             this.handlePointerUpEvent(gameEvent)
             return false
-        });
-        // signal to screen master for camera controls listening on canvas for events
-        (['pointerleave', 'mousemove', 'mouseleave'] as (keyof HTMLElementEventMap)[]).forEach((eventType) => {
-            this.addEventListener(eventType, (): boolean => false)
         })
+        // signal to screen master for camera controls listening on canvas for events
+        for (const eventType of (['pointerleave', 'mousemove', 'mouseleave'] as (keyof HTMLElementEventMap)[])) {
+            this.addEventListener(eventType, (): boolean => false)
+        }
         this.addEventListener('keydown', (event): boolean => {
             const gameEvent = new GameKeyboardEvent(KEY_EVENT.down, event)
             return this.handleKeyDownEvent(gameEvent)
@@ -141,11 +141,11 @@ export class GameLayer extends ScreenLayer {
         const y = -event.canvasY / (this.canvas.height / 2) + 1
         const cursorTargetSurface = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y)).surface
         if (cursorTargetSurface) {
-            this.worldMgr.nerpRunner.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
+            for (const [tutoBlockId, surfaces] of this.worldMgr.nerpRunner.tutoBlocksById) {
                 if (surfaces.includes(cursorTargetSurface)) {
                     GameState.tutoBlockClicks.upsert(tutoBlockId, (current) => (current || 0) + 1)
                 }
-            })
+            }
         }
         if (this.worldMgr.sceneMgr.buildMarker?.buildingType && this.worldMgr.sceneMgr.buildMarker.lastCheck) {
             this.worldMgr.sceneMgr.buildMarker.createBuildingSite()
@@ -167,11 +167,11 @@ export class GameLayer extends ScreenLayer {
                 const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
                 const cursorTargetSurface = cursorTarget.surface
                 if (cursorTargetSurface) {
-                    this.worldMgr.nerpRunner.tutoBlocksById.forEach((surfaces, tutoBlockId) => {
+                    for (const [tutoBlockId, surfaces] of this.worldMgr.nerpRunner.tutoBlocksById) {
                         if (surfaces.includes(cursorTargetSurface)) {
                             GameState.tutoBlockClicks.upsert(tutoBlockId, (current) => (current || 0) + 1)
                         }
-                    })
+                    }
                 }
                 if (cursorTarget.vehicle) {
                     const selectedRaiders = this.worldMgr.entityMgr.selection.raiders
@@ -210,9 +210,9 @@ export class GameLayer extends ScreenLayer {
                         this.worldMgr.entityMgr.selection.assignCompleteSurfaceJob(cursorTargetSurface)
                     } else if (this.worldMgr.entityMgr.selection.canMove()) {
                         if (cursorTargetSurface.isWalkable()) {
-                            this.worldMgr.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(cursorTargetSurface.getRandomPosition())))
+                            for (const r of this.worldMgr.entityMgr.selection.raiders) r.setJob(new MoveJob(cursorTargetSurface.getRandomPosition()))
                         }
-                        this.worldMgr.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(cursorTargetSurface.getCenterWorld2D())))
+                        for (const v of this.worldMgr.entityMgr.selection.vehicles) v.setJob(new MoveJob(cursorTargetSurface.getCenterWorld2D()))
                     }
                     if (!this.worldMgr.entityMgr.selection.isEmpty()) EventBroker.publish(new DeselectAll())
                 } else if (cursorTarget.raider || cursorTarget.building) {
@@ -298,11 +298,11 @@ export class GameLayer extends ScreenLayer {
     handleKeyUpEvent(event: GameKeyboardEvent): boolean {
         if (event.key === ' ') {
             GameState.showObjInfo = !GameState.showObjInfo
-            this.worldMgr.entityMgr.raiders.forEach((r) => {
+            for (const r of this.worldMgr.entityMgr.raiders) {
                 const infoComponent = r.worldMgr.ecs.getComponents(r.entity).get(RaiderInfoComponent)
                 infoComponent.bubbleSprite.updateVisibleState()
                 infoComponent.hungerSprite.visible = GameState.showObjInfo && GameState.isBirdView
-            })
+            }
             return true
         } else if (['ArrowLeft', 'a', 'ArrowRight', 'd'].some((k) => event.key === k)) {
             this.worldMgr.sceneMgr.entityTurnSpeed = 0

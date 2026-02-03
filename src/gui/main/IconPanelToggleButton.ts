@@ -57,7 +57,7 @@ export class IconPanelToggleButton extends IconPanelButton {
             }
         }
         if (img) context.drawImage(img, this.x, this.y)
-        this.children.forEach((child) => child.onRedraw(context))
-        this.children.forEach((child) => child.drawHover(context))
+        for (const child of this.children) child.onRedraw(context)
+        for (const child of this.children) child.drawHover(context)
     }
 }

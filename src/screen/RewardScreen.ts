@@ -48,12 +48,12 @@ export class RewardScreen {
         const backgroundImg = ResourceManager.getImage(this.cfg.wallpaper)
         this.backgroundLayer = screenMaster.addLayer(new ScaledLayer('RewardBackgroundLayer'), 600)
         this.backgroundLayer.animationFrame.onRedraw = (context) => context.drawImage(backgroundImg, 0, 0)
-        this.cfg.images.forEach((img) => {
+        for (const img of this.cfg.images) {
             this.images.push({ img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y })
-        })
-        this.cfg.boxImages.forEach((img) => {
+        }
+        for (const img of this.cfg.boxImages) {
             this.boxes.push({ img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y })
-        })
+        }
         Promise.all(Object.entries(this.cfg.fonts).map(([fontKey, fontValue], index) => {
             this.fontNames.set(fontKey.toLowerCase(), fontValue)
             const labelFontName = index < 9 ? fontValue : this.cfg.backFont
@@ -72,11 +72,11 @@ export class RewardScreen {
         })
         // TODO Unify handling all images, boxes, texts and flics by keys
         const keyToIndex = ['crystals', 'ore', 'diggable', 'constructions', 'caverns', 'figures', 'rockmonsters', 'oxygen', 'timer', 'score']
-        Object.entries(this.cfg.flics).forEach(([key, flic]) => {
+        for (const [key, flic] of Object.entries(this.cfg.flics)) {
             const flicIndex = keyToIndex.indexOf(key)
             const flicImages = ResourceManager.flhFrames.get(flic.flhFilepath) ?? []
             this.flics[flicIndex] = new FlicAnimOverlay(this.resultsLayer.animationFrame, flicImages, flic.rect.x, flic.rect.y, '') // XXX Consider width/height of rect to scale/clip?
-        })
+        }
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer('RewardDescriptionLayer'), 620)
         this.btnLayer = screenMaster.addLayer(new ScaledLayer('RewardButtonLayer'), 650)
         this.btnSave = new RewardScreenButton(this.cfg.saveButton, 'ToolTip_Reward_Save')
@@ -187,7 +187,7 @@ export class RewardScreen {
         this.descriptionTextLayer.hide()
         this.btnLayer.hide()
         this.saveGameLayer.hide()
-        this.flics.forEach((f) => f.stop())
+        for (const f of this.flics) f?.stop()
         EventBroker.publish(new AdvanceAfterRewardsEvent())
     }
 

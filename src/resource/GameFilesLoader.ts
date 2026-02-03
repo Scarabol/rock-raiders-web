@@ -53,8 +53,9 @@ export class GameFilesLoader {
 
     async onGameFilesLoaded(vfs: VirtualFileSystem) {
         console.time('Total asset loading time')
-        vfs.filterEntryNames('.+\\.wad').sort()
-            .forEach((f) => WadParser.parseFileList(vfs.getFile(f).toDataView()).forEach((f) => vfs.registerFile(f)))
+        for (const f of vfs.filterEntryNames('.+\\.wad').sort()) {
+            for (const f1 of WadParser.parseFileList(vfs.getFile(f).toDataView())) vfs.registerFile(f1)
+        }
         EncodingHelper.setEncoding(vfs.encoding)
         this.modal.hide()
         this.onDoneCallback?.(vfs)

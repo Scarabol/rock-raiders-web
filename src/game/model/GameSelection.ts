@@ -28,9 +28,9 @@ export class GameSelection {
     }
 
     deselectAll() {
-        this.raiders.forEach((r) => r.deselect())
+        for (const r of this.raiders) r.deselect()
         this.raiders = []
-        this.vehicles.forEach((v) => v.deselect())
+        for (const v of this.vehicles) v.deselect()
         this.vehicles = []
         this.building?.deselect()
         this.building = undefined
@@ -94,15 +94,15 @@ export class GameSelection {
             return deselected
         })
         this.primarySelect = after[0]
-        after.forEach((r) => {
+        for (const r of after) {
             if (before.indexOf(r) === -1) {
                 if (r.select(this.primarySelect === r)) {
                     before.push(r)
                     added = true
                 }
             }
-        })
-        deselected.forEach((r) => before.remove(r))
+        }
+        for (const r of deselected) before.remove(r)
         return added
     }
 
@@ -114,7 +114,7 @@ export class GameSelection {
             return deselected
         })
         if (!this.primarySelect) this.primarySelect = after[0]
-        after.forEach((v) => {
+        for (const v of after) {
             if (before.indexOf(v) === -1) {
                 if (v.select(this.primarySelect === v)) {
                     before.push(v)
@@ -126,8 +126,8 @@ export class GameSelection {
                     added = true
                 }
             }
-        })
-        deselected.forEach((r) => before.remove(r))
+        }
+        for (const r of deselected) before.remove(r)
         return added
     }
 
@@ -148,32 +148,32 @@ export class GameSelection {
 
     assignDrillJob(job: DrillJob) {
         if (!job) return
-        this.raiders.forEach((r) => {
+        for (const r of this.raiders) {
             if (!r.hasTool(job.requiredTool)) {
                 const pathToToolstation = r.findShortestPath(r.worldMgr.entityMgr.getGetToolTargets())
                 if (pathToToolstation) r.setJob(new GetToolJob(r.worldMgr.entityMgr, job.requiredTool, pathToToolstation.target.building), job)
             } else if (r.canDrill(job.surface)) {
                 r.setJob(job)
             }
-        })
-        this.vehicles.forEach((v) => {
+        }
+        for (const v of this.vehicles) {
             if (v.isPrepared(job)) v.setJob(job)
-        })
+        }
     }
 
     assignClearRubbleJob(job: ClearRubbleJob) {
         if (!job) return
-        this.raiders.forEach((r) => {
+        for (const r of this.raiders) {
             if (!r.hasTool(job.requiredTool)) {
                 const pathToToolstation = r.findShortestPath(r.worldMgr.entityMgr.getGetToolTargets())
                 if (pathToToolstation) r.setJob(new GetToolJob(r.worldMgr.entityMgr, job.requiredTool, pathToToolstation.target.building), job)
             } else {
                 r.setJob(job)
             }
-        })
-        this.vehicles.forEach((v) => {
+        }
+        for (const v of this.vehicles) {
             if (v.isPrepared(job)) v.setJob(job)
-        })
+        }
     }
 
     assignCarryJob(material: MaterialEntity) {
@@ -186,7 +186,7 @@ export class GameSelection {
 
     assignUpgradeJob(upgrade: VehicleUpgrade) {
         if (!upgrade) return
-        this.vehicles.forEach((v) => v.canUpgrade(upgrade) && v.setJob(new UpgradeVehicleJob(v.worldMgr, v, upgrade)))
+        for (const v of this.vehicles) if (v.canUpgrade(upgrade)) v.setJob(new UpgradeVehicleJob(v.worldMgr, v, upgrade))
     }
 
     assignCompleteSurfaceJob(surface: Surface) {

@@ -87,6 +87,6 @@ export class RadarPanel extends Panel {
         this.btnTagged.onRedraw(context)
         this.btnZoomIn.onRedraw(context)
         this.btnZoomOut.onRedraw(context)
-        this.children.forEach((child) => child.drawHover(context))
+        for (const child of this.children) child.drawHover(context)
     }
 }

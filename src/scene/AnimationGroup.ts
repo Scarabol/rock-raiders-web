@@ -36,7 +36,7 @@ export class AnimationGroup extends SceneEntity {
 
     protected createMeshList(lwscData: LWSCData) {
         this.meshList.length = 0
-        lwscData.objects.forEach((obj) => {
+        for (const obj of lwscData.objects) {
             let mesh: SceneMesh | undefined
             if (obj.isNull) {
                 if (obj.lowerName === 'sfx' || obj.lowerName === 'snd') {
@@ -55,12 +55,13 @@ export class AnimationGroup extends SceneEntity {
             mesh.castShadow = obj.castShadow
             mesh.receiveShadow = obj.receiveShadow
             this.meshList.push(mesh)
-        })
+        }
     }
 
     protected createAnimationMixers(lwscData: LWSCData) {
         this.animationMixers.length = 0
-        lwscData.objects.forEach((obj, index) => {
+        for (const obj of lwscData.objects) {
+            const index = lwscData.objects.indexOf(obj)
             const mesh = this.meshList[index]
             // associate child meshes with parents
             if (obj.parentObjInd === 0) { // index is 1 based, 0 means no parent
@@ -74,7 +75,7 @@ export class AnimationGroup extends SceneEntity {
             const clip = new AnimationClip(lwscData.filePath, lwscData.durationSeconds, [...obj.keyframeTracks, ...opacityTracks])
             this.maxDurationMs = Math.max(this.maxDurationMs, clip.duration * 1000)
             this.addMixer(mesh, clip)
-        })
+        }
     }
 
     protected addMixer(mesh: SceneMesh, clip: AnimationClip) {
@@ -96,15 +97,15 @@ export class AnimationGroup extends SceneEntity {
 
     update(elapsedMs: number) {
         const deltaTimeInSeconds = elapsedMs / 1000 * this.animationTransCoef
-        this.animationMixers.forEach((m) => m.update(deltaTimeInSeconds))
-        this.meshList.forEach((m) => m.update(elapsedMs))
+        for (const m of this.animationMixers) m.update(deltaTimeInSeconds)
+        for (const m of this.meshList) m.update(elapsedMs)
         if (this.durationTimeoutMs || this.animationTriggerTimeMs) { // otherwise animationTime counter may become very high for loop
             if (this.onAnimationTrigger && this.animationTime < this.animationTriggerTimeMs && this.animationTime + elapsedMs >= this.animationTriggerTimeMs) {
                 this.onAnimationTrigger()
             }
             this.animationTime += elapsedMs
             if (this.durationTimeoutMs && this.animationTime >= this.durationTimeoutMs) {
-                this.animationMixers.forEach((a) => a.stopAllAction())
+                for (const a of this.animationMixers) a.stopAllAction()
                 if (this.onAnimationDone && !this.isDone) {
                     this.isDone = true
                     this.onAnimationDone()
@@ -114,11 +115,11 @@ export class AnimationGroup extends SceneEntity {
     }
 
     dispose() {
-        this.meshList.forEach((m) => m.dispose())
+        for (const m of this.meshList) m.dispose()
     }
 
     play(): this {
-        this.animationActions.forEach((a) => a.play())
+        for (const a of this.animationActions) a.play()
         this.update(0)
         return this
     }
@@ -126,7 +127,7 @@ export class AnimationGroup extends SceneEntity {
     resetAnimation() {
         this.isDone = false
         this.animationTime = 0
-        this.animationMixers.forEach((m) => m.stopAllAction())
+        for (const m of this.animationMixers) m.stopAllAction()
         // play needs to be called here to not have the animation stuck on last frame but first
         this.play()
     }

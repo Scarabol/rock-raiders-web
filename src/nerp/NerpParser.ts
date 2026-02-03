@@ -102,12 +102,12 @@ export class NerpParser {
                 throw new Error(`Invalid number of args provided for macro in line ${line}`)
             }
             const macroLines: string[] = []
-            macro.lines.forEach((line) => {
+            for (let line of macro.lines) {
                 for (let c = 0; c < argValues.length; c++) {
                     line = line.replace(new RegExp(`\\b${macro.args[c]}\\b`), argValues[c])
                 }
                 macroLines.push(...(this.replaceMacros(macrosByName, line)))
-            })
+            }
             return macroLines
         } else {
             return [line]

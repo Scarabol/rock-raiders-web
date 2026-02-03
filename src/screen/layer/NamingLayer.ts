@@ -65,12 +65,12 @@ export class NamingLayer extends ScaledLayer {
             this.raiderName = raiderSaveGame.name || GameConfig.instance.objectNames[EntityType.PILOT.toLowerCase()] || 'Rock Raider'
             this.firstKey = true
             this.visibleLayers.length = 0
-            this.gameScreen.screenMaster.layers.forEach((l) => {
+            for (const l of this.gameScreen.screenMaster.layers) {
                 if (l !== this && l.active) {
                     this.visibleLayers.push(l)
                     l.active = false
                 }
-            })
+            }
             this.gameScreen.worldMgr.ecs.getComponents(selectedRaider).getOptional(SelectionNameComponent)?.setVisible(false)
             this.raiderOnScreen = this.raiderToScreenPos(selectedRaider)
         } else {
@@ -78,7 +78,7 @@ export class NamingLayer extends ScaledLayer {
             const selectionNameComponent = this.gameScreen.worldMgr.ecs.getComponents(selectedRaider).getOptional(SelectionNameComponent)
             selectionNameComponent?.setName(raiderSaveGame.name)
             selectionNameComponent?.setVisible(true)
-            this.visibleLayers.forEach((l) => l.active = true)
+            for (const l of this.visibleLayers) l.active = true
         }
         this.animationFrame.notifyRedraw()
         EventBroker.publish(new HideTooltip())

@@ -34,14 +34,14 @@ export class PathFinder {
     }
 
     updateSurface(surface: PathFindingSurfaceData) {
-        this.graphByCacheKey.forEach((graph) => {
+        for (const [, graph] of this.graphByCacheKey) {
             const weight = PathFinder.getWeight(surface, graph.stats)
             for (let x = 0; x < graph.precision; x++) {
                 for (let y = 0; y < graph.precision; y++) {
                     graph.grid[surface.x * graph.precision + x][surface.y * graph.precision + y].weight = weight
                 }
             }
-        })
+        }
     }
 
     findShortestPath(start: Vector2, targets: PathTarget[] | PathTarget | undefined, stats: MovableEntityStats, precision: number, preferredTargetLocation?: Vector2): TerrainPath | undefined {
@@ -175,7 +175,7 @@ export class PathFinder {
     }
 
     resetGraphsAndCaches() {
-        this.graphByCacheKey.forEach((g) => g.init())
+        for (const [, g] of this.graphByCacheKey) g.init()
         this.cachedPathsByKey.clear()
     }
 }

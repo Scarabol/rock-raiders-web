@@ -424,10 +424,10 @@ export class LWOBParser {
                 case 'TWRP':
                     const horizontalWrappingMode = this.parseWrappingMode(this.lwoReader.readUint16())
                     const verticalWrappingMode = this.parseWrappingMode(this.lwoReader.readUint16())
-                    material.textures.forEach((t) => {
+                    for (const t of material.textures) {
                         t.wrapS = horizontalWrappingMode
                         t.wrapT = verticalWrappingMode
-                    })
+                    }
                     break
                 case 'TAAS':
                     const antialiasingStrength = this.lwoReader.readFloat32()

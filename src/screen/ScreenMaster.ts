@@ -24,21 +24,21 @@ export class ScreenMaster {
         this.onWindowResize()
         HTML_GAME_CANVAS_CONTAINER.addEventListener('pointerdown', () => {
             this.getActiveLayersSorted()?.[0]?.element?.focus() // always focus topmost
-        });
+        })
         // in case topmost layer does not listen for event, it reaches game-canvas-container as fallback dispatch from here
-        ['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'keypress', 'wheel', 'mousemove', 'mouseleave'].forEach((eventType) => {
+        for (const eventType of ['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'keypress', 'wheel', 'mousemove', 'mouseleave']) {
             HTML_GAME_CANVAS_CONTAINER.addEventListener(eventType, (event) => {
                 event.stopPropagation()
                 this.dispatchEvent(event)
             })
-        });
-        ['touchstart', 'touchmove', 'touchend'].forEach((eventType) => {
+        }
+        for (const eventType of ['touchstart', 'touchmove', 'touchend']) {
             HTML_GAME_CANVAS_CONTAINER.addEventListener(eventType, (event) => {
                 event.preventDefault()
                 event.stopPropagation()
                 this.dispatchEvent(event)
             })
-        })
+        }
         this.setupToolbarButtons()
         const closeButton = DebugHelper.element.querySelector<HTMLButtonElement>('button.game-debug-close-button')
         if (!closeButton) throw new Error('Debug layer close button not found')
@@ -73,13 +73,13 @@ export class ScreenMaster {
 
     private setupButton(clsName: string, onClickCallback: () => void): void {
         const buttons = Array.from(document.getElementsByClassName(clsName)) as HTMLButtonElement[]
-        buttons.forEach((btn) => {
+        for (const btn of buttons) {
             btn.style.removeProperty('visibility')
             btn.onclick = (event) => {
                 event.stopPropagation()
                 onClickCallback()
             }
-        })
+        }
     }
 
     dispatchEvent(event: Event, zIndexStart: number = Infinity) {
@@ -124,7 +124,7 @@ export class ScreenMaster {
                 this.height = idealHeight
             }
         }
-        this.layers.forEach((layer) => layer.resize(this.width, this.height))
+        for (const layer of this.layers) layer.resize(this.width, this.height)
     }
 
     getActiveLayersSorted(): AbstractLayer[] {
@@ -141,7 +141,7 @@ export class ScreenMaster {
         const canvas = createCanvas(maxLayerWidth, maxLayerHeight)
         const context = canvas.getContext('2d')
         if (!context) throw new Error('Could not get context for canvas')
-        layers.forEach((c) => context.drawImage(c, 0, 0))
+        for (const c of layers) context.drawImage(c, 0, 0)
         return canvas
     }
 

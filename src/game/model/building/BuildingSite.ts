@@ -122,9 +122,9 @@ export class BuildingSite {
     checkComplete() {
         if (this.complete || this.canceled) return
         this.complete = true
-        this.neededByType.forEach((needed, neededType) => {
+        for (const [neededType, needed] of this.neededByType) {
             this.complete = this.complete && this.onSiteByType.getOrUpdate(neededType, () => []).length >= needed
-        })
+        }
         if (!this.complete) return
         this.worldMgr.entityMgr.buildingSites.remove(this)
         if (!this.buildingType) {
@@ -149,14 +149,16 @@ export class BuildingSite {
 
     private teleportIn() {
         this.worldMgr.entityMgr.completedBuildingSites.remove(this)
-        this.surfaces.forEach((s) => s.site = undefined)
-        this.onSiteByType.forEach((byType: MaterialEntity[]) => byType.forEach((item: MaterialEntity) => {
-            if (item.entityType === EntityType.BARRIER) {
-                item.sceneEntity.setAnimation(BARRIER_ACTIVITY.teleport, () => item.disposeFromWorld())
-            } else {
-                item.disposeFromWorld()
+        for (const s of this.surfaces) s.site = undefined
+        for (const [, byType] of this.onSiteByType) {
+            for (const item of byType) {
+                if (item.entityType === EntityType.BARRIER) {
+                    item.sceneEntity.setAnimation(BARRIER_ACTIVITY.teleport, () => item.disposeFromWorld())
+                } else {
+                    item.disposeFromWorld()
+                }
             }
-        }))
+        }
         if (this.buildingType) { // TODO Refactor power path building site handling
             new BuildingEntity(this.worldMgr, this.buildingType.entityType, this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
         }
@@ -166,19 +168,21 @@ export class BuildingSite {
         this.worldMgr.entityMgr.buildingSites.remove(this)
         this.worldMgr.entityMgr.completedBuildingSites.remove(this)
         this.canceled = true
-        this.surfaces.forEach((s) => {
+        for (const s of this.surfaces) {
             s.site = undefined
             if (s.surfaceType === SurfaceType.POWER_PATH_BUILDING || s.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE) {
                 s.setSurfaceType(SurfaceType.GROUND)
             }
-        })
-        this.onSiteByType.forEach((materials, entityType) => materials.forEach((item) => {
-            if (entityType === EntityType.BARRIER) {
-                item.sceneEntity.setAnimation(BARRIER_ACTIVITY.teleport, () => item.disposeFromWorld())
-            } else {
-                this.worldMgr.entityMgr.placeMaterial(item, item.getPosition2D())
+        }
+        for (const [entityType, materials] of this.assignedByType) {
+            for (const item of materials) {
+                if (entityType === EntityType.BARRIER) {
+                    item.sceneEntity.setAnimation(BARRIER_ACTIVITY.teleport, () => item.disposeFromWorld())
+                } else {
+                    this.worldMgr.entityMgr.placeMaterial(item, item.getPosition2D())
+                }
             }
-        }))
+        }
         this.onSiteByType.clear()
         this.assignedByType.clear()
         EventBroker.publish(new DeselectAll())

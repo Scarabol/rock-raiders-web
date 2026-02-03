@@ -11,8 +11,8 @@ export type LevelObjectiveTexts = Record<string, LevelObjectiveTextEntry>
 export class ObjectiveTextParser {
     parseObjectiveTextFile(txtFileText: string): LevelObjectiveTexts {
         const result: LevelObjectiveTexts = {}
-        let currentLevel: LevelObjectiveTextEntry
-        txtFileText.split('\n').forEach((l) => {
+        let currentLevel = new LevelObjectiveTextEntry()
+        for (const l of txtFileText.split('\n')) {
             const line = l.trim()
             if (line.startsWith('[') && line.endsWith(']')) {
                 currentLevel = new LevelObjectiveTextEntry()
@@ -27,7 +27,7 @@ export class ObjectiveTextParser {
             } else if (line.toLowerCase().startsWith('CrystalFailure:'.toLowerCase())) {
                 currentLevel.crystalFailure = line.slice('CrystalFailure:'.length).trim()
             }
-        })
+        }
         return result
     }
 }

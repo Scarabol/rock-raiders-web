@@ -118,7 +118,7 @@ export class BuildPlacementMarker {
 
     hideAllMarker() {
         this.worldMgr.sceneMgr.birdViewControls.setBuildLock(false)
-        this.markers.forEach((m) => m.visible = false)
+        for (const m of this.markers) m.visible = false
         this.lastCheck = false
         this.buildingMarkerColor = BuildPlacementMarker.invalidMarkerColor
         this.pathMarkerColor = BuildPlacementMarker.invalidMarkerColor

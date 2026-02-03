@@ -67,9 +67,9 @@ export class LoadSaveLayer extends MainMenuLayer {
 
     override show() {
         Promise.all(SaveGameManager.screenshots).then((screenshots) => {
-            this.buttons.forEach((btn) => {
+            for (const btn of this.buttons) {
                 btn.saveGameImg = screenshots[btn.targetIndex]
-            })
+            }
             this.animationFrame.notifyRedraw()
         })
         super.show()

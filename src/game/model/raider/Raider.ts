@@ -182,7 +182,7 @@ export class Raider implements Updatable, JobFulfiller {
             }
             return false
         })
-        this.worldMgr.entityMgr.rockMonsters.forEach((rocky) => {
+        for (const rocky of this.worldMgr.entityMgr.rockMonsters) {
             const components = this.worldMgr.ecs.getComponents(rocky)
             const rockySceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
             if (rockySceneEntity.currentAnimation === ROCK_MONSTER_ACTIVITY.unpowered) {
@@ -197,7 +197,7 @@ export class Raider implements Updatable, JobFulfiller {
                     })
                 }
             }
-        })
+        }
     }
 
     private moveToClosestTargetInternal(target: PathTarget | undefined, elapsedMs: number): MoveState {
@@ -208,9 +208,9 @@ export class Raider implements Updatable, JobFulfiller {
             this.currentPath = path && path.locations.length > 0 ? path : undefined
             if (!this.currentPath) return MOVE_STATE.targetUnreachable
             const currentPath = this.currentPath
-            currentPath.locations.forEach((l, index) => {
+            for (const [index, l] of currentPath.locations.entries()) {
                 if (index < currentPath.locations.length - 1) l.add(new Vector2().random().subScalar(0.5).multiplyScalar(TILESIZE / RAIDER_PATH_PRECISION))
-            }) // XXX Externalize precision
+            } // XXX Externalize precision
             pathUpdated = true
         }
         const step = this.determineStep(elapsedMs, this.currentPath)

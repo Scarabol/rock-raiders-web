@@ -13,7 +13,7 @@ class Observer<EventType extends keyof EventTypeMap> {
     }
 
     publish(event: EventTypeMap[EventType]): void {
-        this.listeners.forEach((listener) => listener(event))
+        for (const listener of this.listeners) listener(event)
     }
 }
 

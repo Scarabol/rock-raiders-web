@@ -190,9 +190,9 @@ class SaveGame { // this gets serialized
 
     static copy(other: DeepPartial<SaveGame>): SaveGame {
         const result = new SaveGame()
-        other.levels?.forEach((l) => {
+        for (const l of other.levels ?? []) {
             if (l?.levelName && l?.levelScore) result.levels.push(new SaveGameLevel(l.levelName, l.levelScore))
-        })
+        }
         result.team = other.team?.map((t) => SaveGameRaider.copy(t)) || []
         return result
     }

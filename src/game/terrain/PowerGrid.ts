@@ -15,21 +15,21 @@ export class PowerGrid {
             for (let c = 0; c < energyConsumer.length && GameState.usedCrystals > GameState.numCrystal; c++) {
                 energyConsumer[c].setEnergized(false)
             }
-            if (GameState.numCrystal <= 0) worldMgr.entityMgr.buildings.forEach((b) => {
+            if (GameState.numCrystal <= 0) for (const b of worldMgr.entityMgr.buildings) {
                 if (b.entityType === EntityType.POWER_STATION) b.setEnergized(false)
-            })
+            }
         })
     }
 
     addEnergySource(energySources: Surface[]) {
-        energySources.forEach((s) => {
+        for (const s of energySources) {
             this.energySources.add(s)
             this.markEnergized(s)
-        })
+        }
     }
 
     removeEnergySource(energySources: Surface[]) {
-        energySources.forEach((s) => this.energySources.delete(s))
+        for (const s of energySources) this.energySources.delete(s)
         this.rebuild()
     }
 
@@ -46,23 +46,23 @@ export class PowerGrid {
     private rebuild() {
         const addedToGrid = new Set<Surface>()
         const removedFromGrid = new Set<Surface>(this.energizedSurfaces)
-        this.energySources.forEach((s) => PowerGrid.partitionPathGrid(s, addedToGrid, removedFromGrid))
-        addedToGrid.forEach((s) => this.markEnergized(s))
-        removedFromGrid.forEach((s) => this.unmarkEnergized(s))
+        for (const s of this.energySources) PowerGrid.partitionPathGrid(s, addedToGrid, removedFromGrid)
+        for (const s of addedToGrid) this.markEnergized(s)
+        for (const s of removedFromGrid) this.unmarkEnergized(s)
     }
 
     private static partitionPathGrid(surface: Surface, added: Set<Surface>, removed: Set<Surface>) {
         if (!surface.isPath() || added.has(surface)) return
         added.add(surface)
         removed.delete(surface)
-        surface.neighbors.forEach((n) => this.partitionPathGrid(n, added, removed))
+        for (const n of surface.neighbors) this.partitionPathGrid(n, added, removed)
     }
 
     private markEnergized(surface: Surface) {
         if (surface.energized || !surface.isPath()) return
         surface.setEnergized(true)
         this.energizedSurfaces.add(surface)
-        surface.neighbors.forEach((n) => this.markEnergized(n))
+        for (const n of surface.neighbors) this.markEnergized(n)
     }
 
     private unmarkEnergized(surface: Surface) {
