@@ -99,26 +99,36 @@ export class AssetRegistry {
         this.addTextureFolder('Vehicles/SharedUG/')
         // load all entity upgrades
         for (const uType of Object.values(gameConfig.upgradeTypes)) {
-            this.addMeshObjects(uType)
+            await this.addMeshObjects(uType)
         }
+        await yieldToMainThread()
         // load all building types
-        for (const bType of Object.values(GameConfig.instance.buildingTypes)) this.addMeshObjects(bType)
+        for (const bType of Object.values(GameConfig.instance.buildingTypes)) {
+            await this.addMeshObjects(bType)
+        }
+        await yieldToMainThread()
         this.addTextureFolder('Buildings/E-Fence')
-        this.addAnimatedEntity('mini-figures/pilot/pilot.ae')
+        await this.addAnimatedEntity('mini-figures/pilot/pilot.ae')
         for (const adv of Object.values(gameConfig.advisor)) {
             this.addLWSFile(adv.animFileName)
             this.addTextureFolder(getPath(adv.animFileName))
         }
+        await yieldToMainThread()
         // load monsters
-        for (const mType of Object.values(GameConfig.instance.rockMonsterTypes)) this.addMeshObjects(mType)
+        for (const mType of Object.values(GameConfig.instance.rockMonsterTypes)) {
+            await this.addMeshObjects(mType)
+        }
+        await yieldToMainThread()
         for (const assetPath of this.vfs.filterEntryNames(`Creatures/LavaMonster/.+\\.uv`)) {
             this.addLoader(new UVAssetLoader(assetPath))
         }
-        await yieldToMainThread()
         // load vehicles
         for (const v of Object.values(GameConfig.instance.vehicleTypes)) {
-            for (const vType of v) this.addMeshObjects(vType)
+            for (const vType of v) {
+                await this.addMeshObjects(vType)
+            }
         }
+        await yieldToMainThread()
         // load bubbles
         for (const b of Object.values(gameConfig.bubbles)) {
             this.addLoader(new AlphaImageAssetLoader(b))
@@ -133,8 +143,9 @@ export class AssetRegistry {
         this.addLoader(new TextureAssetLoader('MiscAnims/Effects/rd_laserbolt_x.bmp'))
         this.addLoader(new TextureAssetLoader('MiscAnims/Effects/rd_newstargreen.bmp'))
         for (const mType of Object.values(gameConfig.miscObjects)) {
-            this.addMeshObjects(mType)
+            await this.addMeshObjects(mType)
         }
+        await yieldToMainThread()
         for (const entry of Object.values(gameConfig.rockFallStyles)) {
             for (const shape of [entry.threeSides, entry.outsideCorner, entry.tunnel]) {
                 const textureFolder = shape.split('/').slice(0, -1).join('/')
@@ -142,6 +153,7 @@ export class AssetRegistry {
                 this.addLWSFile(shape)
             }
         }
+        await yieldToMainThread()
         this.addLoader(new AlphaImageAssetLoader('Interface/Dependencies/+.bmp'))
         this.addLoader(new AlphaImageAssetLoader('Interface/Dependencies/=.bmp'))
         this.addLoader(new AVIAssetLoader(gameConfig.main.creditsBackAVI, true))
@@ -179,11 +191,11 @@ export class AssetRegistry {
         return Array.from(this.assetLoaders.values())
     }
 
-    addMeshObjects(basePath: string) {
+    async addMeshObjects(basePath: string) {
         const aeFilepath = `${basePath}/${basePath.split('/').last()}.ae`
-        if (this.vfs.hasEntry(aeFilepath)) this.addAnimatedEntity(aeFilepath)
+        if (this.vfs.hasEntry(aeFilepath)) await this.addAnimatedEntity(aeFilepath)
         const aeSharedFilepath = `world/shared/${basePath.split('/').last()}.ae`
-        if (this.vfs.hasEntry(aeSharedFilepath)) this.addAnimatedEntity(aeSharedFilepath)
+        if (this.vfs.hasEntry(aeSharedFilepath)) await this.addAnimatedEntity(aeSharedFilepath)
         const lwsFilepath = `${basePath}.lws`
         if (this.vfs.hasEntry(lwsFilepath)) this.addLWSFile(lwsFilepath)
         const lwsSharedFilepath = `world/shared/${basePath.split('/').last()}.lws`
@@ -194,7 +206,7 @@ export class AssetRegistry {
         if (this.vfs.hasEntry(lwoSharedFilepath)) this.addLWOFile(lwoSharedFilepath)
     }
 
-    addAnimatedEntity(aeFile: string) {
+    async addAnimatedEntity(aeFile: string) {
         const content = this.vfs.getFile(aeFile).toText()
         const cfgRoot = RonFileParser.parse(aeFile, content)
         const path = getPath(aeFile)
@@ -215,6 +227,7 @@ export class AssetRegistry {
         for (const a of animData.animations) {
             this.addLWSFile(a.file)
         }
+        await yieldToMainThread()
     }
 
     addLWSFile(lwsFilepath: string) {
