@@ -18,7 +18,7 @@ class Observer<EventType extends keyof EventTypeMap> {
 }
 
 export class EventBroker {
-    private static instance: EventBroker
+    private static instance: EventBroker = new EventBroker()
     private observers: {
         [Type in keyof EventTypeMap]?: Observer<Type>;
     } = {}

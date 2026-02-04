@@ -42,7 +42,7 @@ export class ScreenLayer extends AbstractLayer {
         return [clientX - clientRect.left, clientY - clientRect.top]
     }
 
-    takeScreenshotFromLayer(): Promise<SpriteImage | undefined> {
-        return Promise.resolve(this.canvas)
+    async takeScreenshotFromLayer(): Promise<SpriteImage | undefined> {
+        return this.canvas
     }
 }

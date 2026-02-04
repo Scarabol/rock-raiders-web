@@ -27,7 +27,7 @@ export function setupOptionsLayer(optionsLayer: MenuLayer, onRepeatBriefing: () 
     const showHelpWindowCycle = optionsLayer.itemsCycle[0]
     showHelpWindowCycle.disabled = true // TODO Implement help window
     showHelpWindowCycle.onStateChanged = (state) => {
-        SaveGameManager.preferences.showHelpWindow = state
+        SaveGameManager.preferences.hideHelpWindow = state
         optionsLayer.publishEvent(new ChangePreferences())
     }
     optionsLayer.itemsTrigger[0].onClick = () => onRepeatBriefing()
@@ -37,7 +37,7 @@ export function setupOptionsLayer(optionsLayer: MenuLayer, onRepeatBriefing: () 
         volumeSfxSlider.setValue(SaveGameManager.preferences.volumeSfx)
         volumeMusicSlider.setValue(SaveGameManager.preferences.volumeMusic)
         gameBrightnessSlider.setValue(SaveGameManager.preferences.gameBrightness)
-        showHelpWindowCycle.setState(SaveGameManager.preferences.showHelpWindow)
+        showHelpWindowCycle.setState(SaveGameManager.preferences.hideHelpWindow)
     }
 
     updateAllValues()
