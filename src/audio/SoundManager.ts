@@ -1,34 +1,15 @@
-import { AudioContext, AudioListener, PositionalAudio } from 'three'
+import { AudioContext } from 'three'
 import { SaveGameManager } from '../resource/SaveGameManager'
-import { EventKey } from '../event/EventKeyEnum'
 import { NerpRunner } from '../nerp/NerpRunner'
-import { EventBroker } from '../event/EventBroker'
 import { VERBOSE } from '../params'
 import { PRNG } from '../game/factory/PRNG'
 
 export class SoundManager {
     private static readonly MISSING_SFX = ['SurfaceSFX_Tunnel'].map((n) => n.toLowerCase()) // ignore known sfx issues
-    static readonly playingAudio: Map<number, PositionalAudio> = new Map()
     static readonly sfxBuffersByKey: Map<string, AudioBuffer[]> = new Map()
-    static sceneAudioListener: AudioListener
+    private static audioId: number = 1 // start with 1 for truthiness safety
     static sfxAudioTarget: GainNode
     static skipVoiceLines: boolean = false
-    private static audioId: number = 1 // start with 1 for truthiness safety
-
-    static init() {
-        this.sceneAudioListener = new AudioListener() // late init to be compatible with eventual test setup
-        for (const [, audio] of this.playingAudio) {
-            if (audio?.isPlaying) audio.stop()
-        }
-        this.playingAudio.clear()
-        EventBroker.subscribe(EventKey.PAUSE_GAME, () => {
-            for (const [, a] of this.playingAudio) a.pause()
-        })
-        EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {
-            // XXX What if audio was paused for other reasons
-            for (const [, a] of this.playingAudio) if (!a.isPlaying) a.play()
-        })
-    }
 
     static setupSfxAudioTarget(): GainNode {
         this.sfxAudioTarget = this.sfxAudioTarget || AudioContext.getContext().createGain()
@@ -84,15 +65,6 @@ export class SoundManager {
             }
             return []
         }))
-    }
-
-    static stopAudio(audioId: number | undefined): undefined {
-        if (!audioId) return undefined
-        const audio = this.playingAudio.get(audioId)
-        if (!audio) return undefined
-        if (audio?.isPlaying) audio.stop()
-        this.playingAudio.delete(audioId)
-        return undefined
     }
 
     static get nextAudioId(): number {

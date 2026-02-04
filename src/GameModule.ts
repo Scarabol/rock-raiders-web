@@ -7,7 +7,6 @@ import { ObjectListLoader } from './game/ObjectListLoader'
 import { SaveGameManager } from './resource/SaveGameManager'
 import { GameResult } from './game/model/GameResult'
 import { EventBroker } from './event/EventBroker'
-import { SoundManager } from './audio/SoundManager'
 import { TooltipLayer } from './screen/layer/TooltipLayer'
 import { EventKey } from './event/EventKeyEnum'
 import { MusicManager } from './audio/MusicManager'
@@ -26,7 +25,6 @@ export class GameModule {
         SaveGameManager.loadSaveGames()
         SaveGameManager.loadSaveGameScreenshots()
         if (DEV_MODE) SaveGameManager.loadGame(0)
-        SoundManager.init()
         MusicManager.init()
         this.tooltipLayer = screenMaster.addLayer(new TooltipLayer(), 1000)
         this.mainMenuScreen = new MainMenuScreen(screenMaster)

@@ -182,6 +182,11 @@ export class SaveGameManager {
         }
         return DEFAULT_SCREEN_RATIO_FIXED
     }
+
+    static getGameSpeedMultiplier(): number {
+        const gameSpeedIndex = Math.round(SaveGameManager.preferences.gameSpeed * 5)
+        return [0.33333333, 0.66666667, 1, 1.33333333, 1.66666667, 2][gameSpeedIndex]
+    }
 }
 
 class SaveGame { // this gets serialized

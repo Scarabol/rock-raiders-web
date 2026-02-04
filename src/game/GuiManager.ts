@@ -207,13 +207,7 @@ export class GuiManager {
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             SaveGameManager.savePreferences()
             SoundManager.setupSfxAudioTarget()
-            const gameSpeedIndex = Math.round(SaveGameManager.preferences.gameSpeed * 5)
-            GameState.gameSpeedMultiplier = [0.33333333, 0.66666667, 1, 1.33333333, 1.66666667, 2][gameSpeedIndex]
-            const sfxVolume = SaveGameManager.getSfxVolume()
-            for (const [, a] of SoundManager.playingAudio) {
-                a.setVolume(sfxVolume)
-                a.setPlaybackRate(GameState.gameSpeedMultiplier)
-            }
+            GameState.gameSpeedMultiplier = SaveGameManager.getGameSpeedMultiplier()
         })
         EventBroker.subscribe(EventKey.COMMAND_UPGRADE_VEHICLE, (event: UpgradeVehicle) => {
             entityMgr.selection.assignUpgradeJob(event.upgrade)

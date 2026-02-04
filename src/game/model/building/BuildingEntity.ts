@@ -1,8 +1,7 @@
 import { Vector2, Vector3 } from 'three'
-import { SoundManager } from '../../../audio/SoundManager'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { BuildingsChangedEvent, DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
-import { MaterialAmountChanged, UsedCrystalsChanged } from '../../../event/WorldEvents'
+import { MaterialAmountChanged, SceneAudioRemoveEvent, UsedCrystalsChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BubbleSprite } from '../../../scene/BubbleSprite'
@@ -261,7 +260,8 @@ export class BuildingEntity {
     disposeFromWorld() {
         this.worldMgr.sceneMgr.disposeSceneEntity(this.sceneEntity)
         this.worldMgr.sceneMgr.removeSprite(this.powerOffSprite)
-        this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
+        if (this.engineSoundId) EventBroker.publish(new SceneAudioRemoveEvent(this.engineSoundId))
+        this.engineSoundId = undefined
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
@@ -336,7 +336,8 @@ export class BuildingEntity {
             } else {
                 this.changeUsedCrystals(-this.crystalDrain)
                 if (this.stats.powerBuilding) this.worldMgr.powerGrid.removeEnergySource(this.surfaces)
-                this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
+                if (this.engineSoundId) EventBroker.publish(new SceneAudioRemoveEvent(this.engineSoundId))
+                this.engineSoundId = undefined
                 this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
             }
         }

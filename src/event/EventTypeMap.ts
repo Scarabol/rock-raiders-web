@@ -1,5 +1,5 @@
 import { AdvanceAfterRewardsEvent, BuildingsChangedEvent, DeselectAll, FollowerSetCanvasEvent, FollowerSetLookAtEvent, GuiBackButtonClicked, GuiBuildButtonClicked, GuiButtonBlinkEvent, GuiGetToolButtonClicked, GuiTrainRaiderButtonClicked, InitRadarMap, RaidersAmountChangedEvent, RaiderTrainingCompleteEvent, SelectionChanged, SelectionFrameChangeEvent, SetSpaceToContinueEvent, ShowGameResultEvent, ShowMissionAdvisorEvent, ShowMissionBriefingEvent, ShowOptionsEvent, UpdateRadarCamera, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain, VehicleUpgradeCompleteEvent } from './LocalEvents'
-import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, MonsterEmergeEvent, MonsterLaserHitEvent, NerpMessageEvent, NerpSuppressArrowEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, ShootLaserEvent, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged, WorldLocationEvent } from './WorldEvents'
+import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, MonsterEmergeEvent, MonsterLaserHitEvent, NerpMessageEvent, NerpSuppressArrowEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, SceneAudioAddEvent, SceneAudioListenerEvent, SceneAudioMoveEvent, SceneAudioRemoveEvent, SceneAudioStateEvent, ShootLaserEvent, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged, WorldLocationEvent } from './WorldEvents'
 import { CameraControl, CancelBuilding, CancelSurfaceJobs, ChangeBuildingPowerState, ChangeCameraEvent, ChangePreferences, ChangeTooltip, CreateClearRubbleJob, CreateDrillJob, CreateDynamiteJob, CreatePowerPath, CreateReinforceJob, DropBirdScarer, ForceRedrawTooltip, HideTooltip, MakeRubble, PickTool, PlaceFence, PlaySoundEvent, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade, RepairBuilding, RepairLava, SelectBuildMode, TrainRaider, UpgradeBuilding, UpgradeVehicle, VehicleBeamUp, VehicleCallMan, VehicleDriverGetOut, VehicleLoad, VehicleUnload } from './GuiCommand'
 
 export class BaseEvent {
@@ -100,6 +100,12 @@ export interface DefaultEventMap {
     'restart-game': RestartGameEvent
     'shoot-laser': ShootLaserEvent
     'monster-laser-hit': MonsterLaserHitEvent
+
+    'scene-audio-listener': SceneAudioListenerEvent
+    'scene-audio-add': SceneAudioAddEvent
+    'scene-audio-remove': SceneAudioRemoveEvent
+    'scene-audio-state': SceneAudioStateEvent
+    'scene-audio-move': SceneAudioMoveEvent
 }
 
 export interface WorldLocationEventMap {

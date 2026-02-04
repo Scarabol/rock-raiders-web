@@ -20,6 +20,7 @@ import { EntityType } from '../game/model/EntityType'
 import { AdvisorLayer } from './layer/AdvisorLayer'
 import { EventBroker } from '../event/EventBroker'
 import { NamingLayer } from './layer/NamingLayer'
+import { SceneAudioManager } from '../scene/SceneAudioManager'
 import { PRNG } from '../game/factory/PRNG'
 import { EncodingHelper } from '../resource/fileparser/EncodingHelper'
 
@@ -35,6 +36,7 @@ export class GameScreen {
     readonly guiBottomLeftLayer: GuiBottomLeftLayer
     readonly overlayLayer: OverlayLayer
     readonly sceneMgr: SceneManager
+    readonly sceneAudioMgr: SceneAudioManager
     readonly entityMgr: EntityManager
     readonly guiMgr: GuiManager
     levelConf: LevelConfData | undefined
@@ -53,6 +55,7 @@ export class GameScreen {
         this.guiBottomLeftLayer = screenMaster.addLayer(new GuiBottomLeftLayer(), 523)
         this.overlayLayer = screenMaster.addLayer(new OverlayLayer(), 530)
         this.sceneMgr = new SceneManager(this.worldMgr, this.gameLayer.canvas)
+        this.sceneAudioMgr = new SceneAudioManager()
         this.entityMgr = new EntityManager(this.worldMgr)
         this.guiMgr = new GuiManager(this.worldMgr)
         EventBroker.subscribe(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
@@ -133,6 +136,7 @@ export class GameScreen {
         this.guiBottomRightLayer.show()
         this.guiBottomLeftLayer.show()
         this.overlayLayer.show()
+        this.sceneAudioMgr.startScene()
         this.sceneMgr.startScene().then(() => {
             this.worldMgr.start()
             this.overlayLayer.setActivePanel(SaveGameManager.preferences.skipBriefings ? undefined : this.overlayLayer.panelBriefing)
@@ -144,6 +148,7 @@ export class GameScreen {
     }
 
     hide() {
+        this.sceneAudioMgr.dispose()
         this.entityMgr.disposeAll()
         this.worldMgr.stop()
         this.sceneMgr.disposeScene()

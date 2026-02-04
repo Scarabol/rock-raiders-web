@@ -1,5 +1,4 @@
 import { Vector2, Vector3 } from 'three'
-import { SoundManager } from '../../../audio/SoundManager'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../../../params'
@@ -29,7 +28,7 @@ import { PositionComponent } from '../../component/PositionComponent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { VehicleUpgrade, VehicleUpgrades } from './VehicleUpgrade'
-import { WorldLocationEvent } from '../../../event/WorldEvents'
+import { SceneAudioRemoveEvent, WorldLocationEvent } from '../../../event/WorldEvents'
 import { PRIORITY_IDENTIFIER } from '../job/PriorityIdentifier'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
@@ -166,8 +165,10 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     disposeFromWorld() {
         this.worldMgr.sceneMgr.disposeSceneEntity(this.sceneEntity)
-        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
-        this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
+        if (this.workAudioId) EventBroker.publish(new SceneAudioRemoveEvent(this.workAudioId))
+        this.workAudioId = undefined
+        if (this.engineSoundId) EventBroker.publish(new SceneAudioRemoveEvent(this.engineSoundId))
+        this.engineSoundId = undefined
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
@@ -285,7 +286,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)
         primary ? selectionFrameComponent?.select() : selectionFrameComponent?.selectSecondary()
         this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
-        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
+        if (this.workAudioId) EventBroker.publish(new SceneAudioRemoveEvent(this.workAudioId))
+        this.workAudioId = undefined
         return true
     }
 
@@ -306,7 +308,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
      */
 
     stopJob() {
-        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
+        if (this.workAudioId) EventBroker.publish(new SceneAudioRemoveEvent(this.workAudioId))
+        this.workAudioId = undefined
         this.dropCarried(false)
         if (!this.job) return
         this.job.unAssign(this)
@@ -317,7 +320,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     private completeJob() {
-        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
+        if (this.workAudioId) EventBroker.publish(new SceneAudioRemoveEvent(this.workAudioId))
+        this.workAudioId = undefined
         this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(ANIM_ENTITY_ACTIVITY.stand)
         if (this.job?.jobState === JOB_STATE.incomplete) return
@@ -451,7 +455,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.scanner, this.entity, MAP_MARKER_CHANGE.update, this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position))
         }
         this.driver = undefined
-        this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
+        if (this.engineSoundId) EventBroker.publish(new SceneAudioRemoveEvent(this.engineSoundId))
+        this.engineSoundId = undefined
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
