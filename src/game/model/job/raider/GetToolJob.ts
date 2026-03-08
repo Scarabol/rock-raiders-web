@@ -21,7 +21,7 @@ export class GetToolJob extends RaiderJob {
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
-        if (this.workplaces.some((b) => !b.building?.isPowered())) {
+        if (this.workplaces.some((b) => !b.building?.isOperational())) {
             this.workplaces = this.entityMgr.getGetToolTargets()
         }
         return entity.findShortestPath(this.workplaces)?.target

@@ -21,7 +21,7 @@ export class UpgradeRaiderJob extends RaiderJob {
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
-        if (!this.building.isPowered()) return undefined
+        if (!this.building.isOperational()) return undefined
         return entity.findShortestPath(this.workplaces)?.target
     }
 

@@ -64,7 +64,7 @@ export class BuildingEntity {
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(this.buildingType.aeFilename))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.powerOffSprite = new BubbleSprite(GameConfig.instance.bubbles.bubblePowerOff)
-        this.powerOffSprite.visible = this.isPowered()
+        this.powerOffSprite.visible = this.isOperational()
         this.sceneEntity.add(this.powerOffSprite)
         this.worldMgr.sceneMgr.addSprite(this.powerOffSprite)
         const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.damageCausesCallToArms, 24, 14, this.sceneEntity, false, GameConfig.instance.getRockFallDamage(entityType, this.level)))
@@ -145,10 +145,10 @@ export class BuildingEntity {
         }
         if (this.surfaces.some((s) => s.selected)) EventBroker.publish(new DeselectAll())
         if (this.sceneEntity.visible && !disableTeleportIn) {
-            this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
+            this.powerOffSprite.setEnabled(!this.inBeam && !this.isOperational())
             this.sceneEntity.setAnimation(BUILDING_ACTIVITY.teleport, () => {
                 this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
-                this.powerOffSprite.setEnabled(!this.isPowered())
+                this.powerOffSprite.setEnabled(!this.isOperational())
                 this.onPlaceDown()
             })
         } else {
@@ -189,7 +189,7 @@ export class BuildingEntity {
     }
 
     doubleSelect(): boolean {
-        if (!this.selected || !this.isPowered()) return false
+        if (!this.selected || !this.isOperational()) return false
         this.worldMgr.ecs.getComponents(this.entity).getOptional(SelectionFrameComponent)?.doubleSelect()
         return true
     }
@@ -212,7 +212,7 @@ export class BuildingEntity {
         return !this.inBeam && this.sceneEntity.visible
     }
 
-    isPowered(): boolean {
+    isOperational(): boolean {
         return this.isReady() && this.powerSwitch && (this.stats.selfPowered || this.stats.powerBuilding || this.energized)
     }
 
@@ -342,9 +342,9 @@ export class BuildingEntity {
             }
         }
         if (this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.stand || this.sceneEntity.currentAnimation === BUILDING_ACTIVITY.unpowered) {
-            this.sceneEntity.setAnimation(this.isPowered() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
+            this.sceneEntity.setAnimation(this.isOperational() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
         }
-        this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
+        this.powerOffSprite.setEnabled(!this.inBeam && !this.isOperational())
         for (const s of this.surfaces) s.updateTexture()
         if (stateChanged) EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         if (this.selected || (this.entityType === EntityType.UPGRADE && this.worldMgr.entityMgr.selection.vehicles.length > 0)) {
@@ -394,7 +394,7 @@ export class BuildingEntity {
     isTrainingSite(training: RaiderTraining): boolean {
         const statsProperty = RaiderTrainings.toStatsProperty(training)
         const stat = this.stats[statsProperty]
-        return this.isPowered() && stat?.[this.level]
+        return this.isOperational() && stat?.[this.level]
     }
 
     getMaxCarry(): number {

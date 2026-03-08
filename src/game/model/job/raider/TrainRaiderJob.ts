@@ -23,7 +23,7 @@ export class TrainRaiderJob extends RaiderJob {
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
-        if (!this.building?.isPowered()) this.workplaces = this.entityMgr.getTrainingSiteTargets(this.training)
+        if (!this.building?.isOperational()) this.workplaces = this.entityMgr.getTrainingSiteTargets(this.training)
         const target = entity.findShortestPath(this.workplaces)?.target
         this.building = target?.building
         return target

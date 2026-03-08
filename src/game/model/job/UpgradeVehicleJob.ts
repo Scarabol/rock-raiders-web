@@ -18,7 +18,7 @@ export class UpgradeVehicleJob extends Job {
     }
 
     getWorkplace(_entity: JobFulfiller): PathTarget | undefined {
-        if (!this.workplace?.building?.isPowered()) {
+        if (!this.workplace?.building?.isOperational()) {
             this.vehicle.upgrading = false
             return undefined
         }

@@ -111,7 +111,7 @@ export class BuildingsChangedEvent extends BaseEvent {
                 this.placedVisibleBuildings.add(b.entity)
                 this.discoveredBuildingsMaxLevel.upsert(b.entityType, (current) => Math.max(current || 0, b.level))
             }
-            if (b.isPowered()) {
+            if (b.isOperational()) {
                 this.poweredBuildings.add(b.entity)
                 this.usableBuildingsMaxLevel.upsert(b.entityType, (current) => Math.max(current || 0, b.level))
             }
