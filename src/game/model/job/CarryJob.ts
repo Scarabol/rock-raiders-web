@@ -38,7 +38,7 @@ export class CarryJob extends Job {
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
         if (!this.target ||
-            (this.target.building && !this.target.building.isPowered()) ||
+            (this.target.building && !this.target.building.isOperational()) ||
             (this.target.site && (this.target.site.complete || this.target.site.canceled)) ||
             (this.carryItem.targetSurface && this.carryItem.targetSurface.dynamiteJob !== this) ||
             (!this.target.site && !this.carryItem.targetSurface && this.findReachableBuildingSiteWithNeed(this.carryItem.worldMgr.entityMgr, this.carryItem, entity).length > 0) ||
@@ -139,7 +139,7 @@ export class CarryJob extends Job {
     override isReadyToComplete(): boolean {
         if (!this.target) return false
         if (this.target.building?.entityType === EntityType.POWER_STATION || this.target.building?.entityType === EntityType.ORE_REFINERY) {
-            return this.target.building.sceneEntity.currentAnimation === (this.target.building.isPowered() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
+            return this.target.building.sceneEntity.currentAnimation === (this.target.building.isOperational() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
         }
         return true
     }
@@ -156,7 +156,7 @@ export class CarryJob extends Job {
                     targetBuilding.pickupItem(droppedItem)
                     if (targetBuilding.sceneEntity.carriedByIndex.size >= targetBuilding.getMaxCarry()) {
                         targetBuilding.sceneEntity.setAnimation(BUILDING_ACTIVITY.deposit, () => {
-                            targetBuilding.sceneEntity.setAnimation(targetBuilding.isPowered() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
+                            targetBuilding.sceneEntity.setAnimation(targetBuilding.isOperational() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
                             targetBuilding.sceneEntity.removeAllCarried()
                             targetBuilding.depositItems()
                         })

@@ -80,8 +80,8 @@ class StateUpdater {
 
     getSpeed(): number {
         const currentSurface = this.getSurface()
-        const pathMultiplier = currentSurface.isPath() ? this.stats.pathCoef : 1
-        const rubbleMultiplier = currentSurface.hasRubble() ? this.stats.rubbleCoef : 1
+        const pathMultiplier = currentSurface.surfaceType.isPath ? this.stats.pathCoef : 1
+        const rubbleMultiplier = currentSurface.surfaceType.hasRubble ? this.stats.rubbleCoef : 1
         return this.stats.routeSpeed[0] * pathMultiplier * rubbleMultiplier
     }
 

@@ -88,6 +88,8 @@ export class OrbitControls {
     zoom0: number
 
     _domElementKeyEvents: HTMLElement | Window | null
+    private _touchActionElement: HTMLElement | null = null
+    private _previousTouchAction: string | null = null
 
     _lastPosition: Vector3
     _lastQuaternion: Quaternion
@@ -125,6 +127,8 @@ export class OrbitControls {
     _onPointerMove: (e: any) => void
     _onPointerDown: (e: any) => void
     _onPointerUp: (e: any) => void
+    _onPointerCancel: (e: any) => void
+    _onLostPointerCapture: (e: any) => void
     _onContextMenu: (e: any) => void
     _onMouseWheel: (e: any) => void
     _onKeyDown: (e: any) => void
@@ -136,6 +140,7 @@ export class OrbitControls {
     _onMouseMove: (e: any) => void
     _interceptControlDown: (e: any) => void
     _interceptControlUp: (e: any) => void
+    _onWindowBlur: () => void
 
     constructor(object: Object3D, domElement: HTMLElement | null = null) {
         this.object = object
@@ -227,6 +232,8 @@ export class OrbitControls {
         this._onPointerMove = onPointerMove.bind(this)
         this._onPointerDown = onPointerDown.bind(this)
         this._onPointerUp = onPointerUp.bind(this)
+        this._onPointerCancel = onPointerCancel.bind(this)
+        this._onLostPointerCapture = onLostPointerCapture.bind(this)
         this._onContextMenu = onContextMenu.bind(this)
         this._onMouseWheel = onMouseWheel.bind(this)
         this._onKeyDown = onKeyDown.bind(this)
@@ -240,6 +247,7 @@ export class OrbitControls {
 
         this._interceptControlDown = interceptControlDown.bind(this)
         this._interceptControlUp = interceptControlUp.bind(this)
+        this._onWindowBlur = onWindowBlur.bind(this)
 
         if (this.domElement !== null) {
             this.connect(this.domElement)
@@ -258,35 +266,56 @@ export class OrbitControls {
 
         this.domElement = element
 
+        this._touchActionElement = this.domElement.parentElement ?? this.domElement
+        this._previousTouchAction = this._touchActionElement.style.touchAction
         this.domElement.addEventListener('pointerdown', this._onPointerDown)
-        this.domElement.addEventListener('pointercancel', this._onPointerUp)
+        this.domElement.addEventListener('pointercancel', this._onPointerCancel)
+        this.domElement.addEventListener('lostpointercapture', this._onLostPointerCapture)
 
         this.domElement.addEventListener('contextmenu', this._onContextMenu)
         this.domElement.addEventListener('wheel', this._onMouseWheel, { passive: false })
 
         const document = this.domElement.getRootNode()
         document.addEventListener('keydown', this._interceptControlDown, { passive: true, capture: true })
+        window.addEventListener('blur', this._onWindowBlur)
 
-        this.domElement.style.touchAction = 'none'
+        this._touchActionElement.style.touchAction = 'none'
     }
 
     disconnect() {
         if (!this.domElement) return
+        const domElement = this.domElement
+        const hadActiveInteraction = this.state !== _STATE.NONE
 
-        this.domElement.removeEventListener('pointerdown', this._onPointerDown)
-        this.domElement.removeEventListener('pointermove', this._onPointerMove)
-        this.domElement.removeEventListener('pointerup', this._onPointerUp)
-        this.domElement.removeEventListener('pointercancel', this._onPointerUp)
+        domElement.removeEventListener('pointerdown', this._onPointerDown)
+        domElement.removeEventListener('pointermove', this._onPointerMove)
+        domElement.removeEventListener('pointerup', this._onPointerUp)
+        domElement.removeEventListener('pointercancel', this._onPointerCancel)
+        domElement.removeEventListener('lostpointercapture', this._onLostPointerCapture)
 
-        this.domElement.removeEventListener('wheel', this._onMouseWheel)
-        this.domElement.removeEventListener('contextmenu', this._onContextMenu)
+        domElement.removeEventListener('wheel', this._onMouseWheel)
+        domElement.removeEventListener('contextmenu', this._onContextMenu)
 
         this.stopListenToKeyEvents()
 
-        const document = this.domElement.getRootNode()
+        const document = domElement.getRootNode()
         document.removeEventListener('keydown', this._interceptControlDown, { capture: true })
+        document.removeEventListener('keyup', this._interceptControlUp, { capture: true })
+        window.removeEventListener('blur', this._onWindowBlur)
 
-        this.domElement.style.touchAction = 'auto'
+        for (const pointerId of this._pointers) {
+            if (domElement.hasPointerCapture(pointerId)) domElement.releasePointerCapture(pointerId)
+        }
+        this._pointers = []
+        this._pointerPositions = {}
+        this._controlActive = false
+        this.state = _STATE.NONE
+        if (hadActiveInteraction) this.dispatchEvent(_endEvent)
+        if (this._touchActionElement) {
+            this._touchActionElement.style.touchAction = this._previousTouchAction ?? ''
+        }
+        this._touchActionElement = null
+        this._previousTouchAction = null
     }
 
     dispose() {
@@ -851,13 +880,28 @@ function onPointerMove(this: any, event: any) {
 }
 
 function onPointerUp(this: any, event: any) {
+    endPointer.call(this, event, true)
+}
+
+function onPointerCancel(this: any, event: any) {
+    endPointer.call(this, event, false)
+}
+
+function onLostPointerCapture(this: any, event: any) {
+    onPointerCancel.call(this, event)
+}
+
+function endPointer(this: any, event: any, releaseCapture: boolean) {
+    if (!this._isTrackingPointer(event)) return
     this._removePointer(event)
     switch (this._pointers.length) {
         case 0:
-            this.domElement.releasePointerCapture(event.pointerId)
+            if (releaseCapture && this.domElement?.hasPointerCapture(event.pointerId)) {
+                this.domElement.releasePointerCapture(event.pointerId)
+            }
             this.domElement.removeEventListener('pointermove', this._onPointerMove)
             this.domElement.removeEventListener('pointerup', this._onPointerUp)
-            this.dispatchEvent(_endEvent)
+            if (this.state !== _STATE.NONE) this.dispatchEvent(_endEvent)
             this.state = _STATE.NONE
             break
         case 1:
@@ -1046,5 +1090,14 @@ function interceptControlUp(this: any, event: any) {
         this._controlActive = false
         const document = this.domElement.getRootNode()
         document.removeEventListener('keyup', this._interceptControlUp, { passive: true, capture: true })
+    }
+}
+
+function onWindowBlur(this: any) {
+    this._controlActive = false
+    const document = this.domElement?.getRootNode()
+    document?.removeEventListener('keyup', this._interceptControlUp, { capture: true })
+    for (const pointerId of this._pointers.slice()) {
+        onPointerCancel.call(this, { pointerId })
     }
 }

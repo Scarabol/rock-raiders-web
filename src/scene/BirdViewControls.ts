@@ -31,6 +31,7 @@ export class BirdViewControls extends OrbitControls {
     shakeTimeout: number = 0
     bumpTimeout: number = 0
     buildingCycleIndex: number = 0
+    onCameraChange?: () => void
 
     constructor(camera: Camera, override readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
@@ -61,6 +62,12 @@ export class BirdViewControls extends OrbitControls {
             this.shakeTimeout = 1000
             this.bumpTimeout = 0
         })
+    }
+
+    override update(deltaTime: number | null = null): boolean {
+        const changed = super.update(deltaTime)
+        if (changed) this.onCameraChange?.()
+        return changed
     }
 
     private useWASDToPanAndArrowKeysToRotate() {

@@ -17,27 +17,27 @@ export class ScreenMaster {
     }
     onGlobalMouseLeaveEvent: (event: PointerEvent) => void = () => {
     }
+    private readonly focusTopLayer = () => {
+        this.getActiveLayersSorted()[0]?.element.focus({ preventScroll: true })
+    }
 
     constructor() {
         HTML_GAME_CANVAS_CONTAINER.addEventListener('contextmenu', (event: MouseEvent) => event.preventDefault())
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
-        HTML_GAME_CANVAS_CONTAINER.addEventListener('pointerdown', () => {
-            this.getActiveLayersSorted()?.[0]?.element?.focus() // always focus topmost
-        })
+        HTML_GAME_CANVAS_CONTAINER.addEventListener('pointerdown', this.focusTopLayer, true)
         // in case topmost layer does not listen for event, it reaches game-canvas-container as fallback dispatch from here
-        for (const eventType of ['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'keypress', 'wheel', 'mousemove', 'mouseleave']) {
+        for (const eventType of ['pointermove', 'pointerdown', 'pointerup', 'pointercancel', 'lostpointercapture', 'pointerleave', 'keydown', 'keyup', 'keypress', 'wheel', 'mousemove', 'mouseleave']) {
             HTML_GAME_CANVAS_CONTAINER.addEventListener(eventType, (event) => {
                 event.stopPropagation()
                 this.dispatchEvent(event)
             })
         }
-        for (const eventType of ['touchstart', 'touchmove', 'touchend']) {
+        for (const eventType of ['touchstart', 'touchmove', 'touchend', 'touchcancel']) {
             HTML_GAME_CANVAS_CONTAINER.addEventListener(eventType, (event) => {
-                event.preventDefault()
                 event.stopPropagation()
                 this.dispatchEvent(event)
-            })
+            }, { passive: false })
         }
         this.setupToolbarButtons()
         const closeButton = DebugHelper.element.querySelector<HTMLButtonElement>('button.game-debug-close-button')
@@ -90,6 +90,7 @@ export class ScreenMaster {
         // @ts-ignore // XXX maybe there is more elegant way to clone events
         const eventClone = new event.constructor(event.type, event)
         nextLayer.element.dispatchEvent(eventClone)
+        if (eventClone.defaultPrevented && event.cancelable) event.preventDefault()
     }
 
     addLayer<T extends AbstractLayer>(layer: T, zIndex: number): T {
@@ -108,6 +109,7 @@ export class ScreenMaster {
         if (this.layers.includes(layer)) {
             this.layers.remove(layer)
             HTML_GAME_CANVAS_CONTAINER.removeChild(layer.element)
+            layer.dispose()
         }
     }
 

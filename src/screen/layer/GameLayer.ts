@@ -30,6 +30,14 @@ import { SpriteImage } from '../../core/Sprite'
 
 export class GameLayer extends ScreenLayer {
     private pointerDown: { x: number, y: number } | undefined
+    private readonly unsubscribeSelectionChanged: () => void
+    private readonly onWindowBlur = () => {
+        this.pointerDown = undefined
+        this.worldMgr.sceneMgr.entityTurnSpeed = 0
+        this.worldMgr.sceneMgr.entityMoveMultiplier = 0
+        this.worldMgr.sceneMgr.birdViewControls.setAutoPan('')
+        EventBroker.publish(new SelectionFrameChangeEvent(undefined))
+    }
     private readonly beforeUnloadListener = (event: BeforeUnloadEvent): string | undefined => {
         if (DEV_MODE) return undefined
         // XXX save complete game state in local storage and allow page reload
@@ -39,12 +47,13 @@ export class GameLayer extends ScreenLayer {
     cursorRelativePos: Vector2 = new Vector2()
 
     constructor(readonly worldMgr: WorldManager) {
-        super()
+        super('GameLayer')
         this.ratio = SaveGameManager.calcScreenRatio()
-        EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
+        this.unsubscribeSelectionChanged = EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
             const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
             CursorManager.changeCursor(this.determineCursor(cursorTarget))
         })
+        window.addEventListener('blur', this.onWindowBlur)
         this.addEventListener('pointermove', (event): boolean => {
             const gameEvent = new GamePointerEvent(POINTER_EVENT.move, event);
             [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
@@ -66,6 +75,13 @@ export class GameLayer extends ScreenLayer {
             this.handlePointerUpEvent(gameEvent)
             return false
         })
+        for (const eventType of ['pointercancel', 'lostpointercapture'] as const) {
+            this.addEventListener(eventType, (): boolean => {
+                this.pointerDown = undefined
+                EventBroker.publish(new SelectionFrameChangeEvent(undefined))
+                return false
+            })
+        }
         // signal to screen master for camera controls listening on canvas for events
         for (const eventType of (['pointerleave', 'mousemove', 'mouseleave'] as (keyof HTMLElementEventMap)[])) {
             this.addEventListener(eventType, (): boolean => false)
@@ -94,7 +110,18 @@ export class GameLayer extends ScreenLayer {
 
     override hide() {
         super.hide()
+        this.pointerDown = undefined
+        this.worldMgr.sceneMgr.entityTurnSpeed = 0
+        this.worldMgr.sceneMgr.entityMoveMultiplier = 0
+        this.worldMgr.sceneMgr.birdViewControls.setAutoPan('')
+        EventBroker.publish(new SelectionFrameChangeEvent(undefined))
         window.removeEventListener('beforeunload', this.beforeUnloadListener)
+    }
+
+    override dispose() {
+        super.dispose()
+        this.unsubscribeSelectionChanged()
+        window.removeEventListener('blur', this.onWindowBlur)
     }
 
     handlePointerMoveEvent(event: GamePointerEvent): boolean {
@@ -203,7 +230,7 @@ export class GameLayer extends ScreenLayer {
                     if (this.worldMgr.entityMgr.selection.canDrill(cursorTargetSurface)) {
                         const drillJob = cursorTargetSurface.setupDrillJob()
                         if (drillJob) this.worldMgr.entityMgr.selection.assignDrillJob(drillJob)
-                    } else if (this.worldMgr.entityMgr.selection.canClear() && cursorTargetSurface.hasRubble()) {
+                    } else if (this.worldMgr.entityMgr.selection.canClear() && cursorTargetSurface.surfaceType.hasRubble) {
                         const clearJob = cursorTargetSurface.setupClearRubbleJob()
                         if (clearJob) this.worldMgr.entityMgr.selection.assignClearRubbleJob(clearJob)
                     } else if (this.worldMgr.entityMgr.selection.canClear() && !!cursorTargetSurface.site?.complete && !cursorTargetSurface.site.canceled && !cursorTargetSurface.site.buildingType) {
@@ -278,16 +305,16 @@ export class GameLayer extends ScreenLayer {
         const cameraActive = this.worldMgr.sceneMgr.cameraActive
         const selectedEntity = this.worldMgr.entityMgr.selection.getPrimarySelected()
         if ((cameraActive === this.worldMgr.sceneMgr.cameraShoulder || cameraActive === this.worldMgr.sceneMgr.cameraFPV) && !!selectedEntity) {
-            if (event.key === 'ArrowLeft' || event.key === 'a') {
+            if (event.code === 'ArrowLeft' || event.code === 'KeyA') {
                 this.worldMgr.sceneMgr.entityTurnSpeed = FPV_ENTITY_TURN_SPEED
                 return true
-            } else if (event.key === 'ArrowUp' || event.key === 'w') {
+            } else if (event.code === 'ArrowUp' || event.code === 'KeyW') {
                 this.worldMgr.sceneMgr.entityMoveMultiplier = 1
                 return true
-            } else if (event.key === 'ArrowRight' || event.key === 'd') {
+            } else if (event.code === 'ArrowRight' || event.code === 'KeyD') {
                 this.worldMgr.sceneMgr.entityTurnSpeed = -FPV_ENTITY_TURN_SPEED
                 return true
-            } else if (event.key === 'ArrowDown' || event.key === 's') {
+            } else if (event.code === 'ArrowDown' || event.code === 'KeyS') {
                 this.worldMgr.sceneMgr.entityMoveMultiplier = -1
                 return true
             }
@@ -304,9 +331,9 @@ export class GameLayer extends ScreenLayer {
                 infoComponent.hungerSprite.visible = GameState.showObjInfo && GameState.isBirdView
             }
             return true
-        } else if (['ArrowLeft', 'a', 'ArrowRight', 'd'].some((k) => event.key === k)) {
+        } else if (['ArrowLeft', 'KeyA', 'ArrowRight', 'KeyD'].some((code) => event.code === code)) {
             this.worldMgr.sceneMgr.entityTurnSpeed = 0
-        } else if (['ArrowUp', 'w', 'ArrowDown', 's'].some((k) => event.key === k)) {
+        } else if (['ArrowUp', 'KeyW', 'ArrowDown', 'KeyS'].some((code) => event.code === code)) {
             this.worldMgr.sceneMgr.entityMoveMultiplier = 0
         } else if (DEV_MODE) {
             if (this.worldMgr.entityMgr.selection.surface) {
@@ -389,7 +416,7 @@ export class GameLayer extends ScreenLayer {
                     return 'drill'
                 }
             } else if (surface.surfaceType.floor) {
-                if (surface.hasRubble() && this.worldMgr.entityMgr.selection.canClear()) {
+                if (surface.surfaceType.hasRubble && this.worldMgr.entityMgr.selection.canClear()) {
                     return 'clear'
                 }
                 return 'manGo'

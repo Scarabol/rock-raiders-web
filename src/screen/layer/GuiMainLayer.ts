@@ -30,8 +30,8 @@ export class GuiBaseLayer extends ScaledLayer {
     readonly rootElement: BaseElement
     readonly panels: Panel[] = []
 
-    constructor() {
-        super()
+    constructor(layerName?: string) {
+        super(layerName)
         this.readbackCanvas = this.createCanvas(`${this.constructor.name}-fastread`)
         this.animationFrame = new AnimationFrameReadback(this.canvas, this.readbackCanvas)
         this.rootElement = new BaseElement()
@@ -116,7 +116,7 @@ export class GuiTopLeftLayer extends GuiBaseLayer {
     readonly panelRadar: RadarPanel
 
     constructor() {
-        super()
+        super('GuiTopLeftLayer')
         this.canvas.style.justifySelf = 'start'
         this.canvas.style.alignSelf = 'start'
         this.panelRadar = this.addPanel(new RadarPanel(GameConfig.instance.panels.panelRadar, GameConfig.instance.panels.panelRadarFill, GameConfig.instance.panels.panelRadarOverlay, GameConfig.instance.buttons.panelRadar))
@@ -130,7 +130,7 @@ export class GuiTopRightLayer extends GuiBaseLayer {
     readonly panelPriorityList: PriorityListPanel
 
     constructor() {
-        super()
+        super('GuiTopRightLayer')
         this.canvas.style.justifySelf = 'end'
         this.canvas.style.alignSelf = 'start'
         this.panelPriorityList = this.addPanel(new PriorityListPanel(GameConfig.instance.panels.panelPriorityList, GameConfig.instance.buttons.panelPriorityList, GameConfig.instance.prioritiesImagePositions, GameConfig.instance.priorityImages))
@@ -179,7 +179,7 @@ export class GuiBottomRightLayer extends GuiBaseLayer {
     readonly panelCameraControl: Panel
 
     constructor() {
-        super()
+        super('GuiBottomRightLayer')
         this.canvas.style.justifySelf = 'end'
         this.canvas.style.alignSelf = 'end'
         this.panelCameraControl = this.addPanel(new CameraControlPanel(GameConfig.instance.panels.panelCameraControl, GameConfig.instance.buttons.panelCameraControl, GameConfig.instance.panelRotationControl))
@@ -195,7 +195,7 @@ export class GuiBottomLeftLayer extends GuiBaseLayer {
     readonly panelInfoDock: InfoDockPanel
 
     constructor() {
-        super()
+        super('GuiBottomLeftLayer')
         this.canvas.style.justifySelf = 'start'
         this.canvas.style.alignSelf = 'end'
         this.panelInformation = this.addPanel(new InformationPanel(GameConfig.instance.panels.panelInformation))

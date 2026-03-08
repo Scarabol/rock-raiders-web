@@ -45,11 +45,19 @@ export class SelectionFrameLayer extends ScreenLayer {
         }
         this.addEventListener('touchstart', (event: TouchEvent): boolean => this.handleTouchEvent(event))
         this.addEventListener('touchmove', (event: TouchEvent): boolean => this.handleTouchEvent(event))
-        this.addEventListener('touchend', (): boolean => {
+        this.addEventListener('touchend', (event: TouchEvent): boolean => {
             if (GameState.isBirdView) return false
             this.worldMgr.sceneMgr.entityTurnSpeed = 0
             this.worldMgr.sceneMgr.entityMoveMultiplier = 0
             this.setTouchControlled(0)
+            event.preventDefault()
+            return true
+        })
+        this.addEventListener('touchcancel', (event: TouchEvent): boolean => {
+            this.worldMgr.sceneMgr.entityTurnSpeed = 0
+            this.worldMgr.sceneMgr.entityMoveMultiplier = 0
+            this.setTouchControlled(0)
+            event.preventDefault()
             return true
         })
         EventBroker.subscribe(EventKey.SELECTION_FRAME_CHANGE, (event: SelectionFrameChangeEvent) => {
@@ -81,6 +89,7 @@ export class SelectionFrameLayer extends ScreenLayer {
             if (relX < centerX - deadCenter || relX > centerX + deadCenter || relY < centerY - deadCenter || relY > centerY + deadCenter) { // dead spot in the center
                 this.worldMgr.sceneMgr.entityTurnSpeed = Math.max(-1, Math.min(1, -(relX - centerX) / SelectionFrameLayer.touchControlMax)) * FPV_ENTITY_TURN_SPEED
                 this.worldMgr.sceneMgr.entityMoveMultiplier = Math.max(-1, Math.min(1, -(relY - centerY) / SelectionFrameLayer.touchControlMax))
+                event.preventDefault()
                 return true
             }
         } else {
@@ -88,6 +97,7 @@ export class SelectionFrameLayer extends ScreenLayer {
         }
         this.worldMgr.sceneMgr.entityTurnSpeed = 0
         this.worldMgr.sceneMgr.entityMoveMultiplier = 0
+        event.preventDefault()
         return true
     }
 

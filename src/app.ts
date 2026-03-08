@@ -23,6 +23,7 @@ import { EncodingHelper } from './resource/fileparser/EncodingHelper'
 declare global {
     interface Window {
         rr: ConsoleIntegration;
+        gameModule?: GameModule;
     }
 }
 
@@ -149,12 +150,14 @@ export async function start() {
     })
 
     let game = new GameModule(screenMaster)
+    window.gameModule = game
     if (import.meta.hot) {
         import.meta.hot.accept('./GameModule', (mNs) => {
             if (!mNs) return
             try {
                 game.dispose()
                 game = new mNs['GameModule'](screenMaster)
+                window.gameModule = game
             } catch (e) {
                 console.error(e)
             }

@@ -60,7 +60,7 @@ export class LavaErosionSystem extends AbstractGameSystem {
                             erosionComponent.erosionTimer -= erosionDelayMs
                             erosionComponent.increaseErosionLevel(true)
                         }
-                    } else if (this.triggerNewErosionTimer > (this.erodeTriggerTimeMs + (erosionComponent.surface.isPath() ? this.powerPathLockTimeMs : 0)) && erosionComponent.canStartNewErosion()) {
+                    } else if (this.triggerNewErosionTimer > (this.erodeTriggerTimeMs + (erosionComponent.surface.surfaceType.isPath ? this.powerPathLockTimeMs : 0)) && erosionComponent.canStartNewErosion()) {
                         this.triggerNewErosionTimer -= this.erodeTriggerTimeMs
                         erosionComponent.increaseErosionLevel(true)
                     } else if (canStartNewErosion || erosionComponent.canStartNewErosion()) {

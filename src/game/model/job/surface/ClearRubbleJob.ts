@@ -19,7 +19,7 @@ export class ClearRubbleJob extends Job {
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
-        if (!this.surface.hasRubble()) return undefined
+        if (!this.surface.surfaceType.hasRubble) return undefined
         if (entity.entityType === EntityType.BULLDOZER) {
             return entity.findShortestPath(PathTarget.fromLocation(this.surface.getCenterWorld2D()))?.target
         } else {
@@ -34,14 +34,14 @@ export class ClearRubbleJob extends Job {
 
     override onJobComplete(fulfiller: JobFulfiller): void {
         if (fulfiller.entityType === EntityType.BULLDOZER) {
-            while (this.surface.hasRubble()) {
+            while (this.surface.surfaceType.hasRubble) {
                 this.surface.reduceRubble()
             }
             this.surface.clearRubbleJob = undefined
             super.onJobComplete(fulfiller)
         } else {
             this.surface.reduceRubble()
-            if (!this.surface.hasRubble()) {
+            if (!this.surface.surfaceType.hasRubble) {
                 this.surface.clearRubbleJob = undefined
                 super.onJobComplete(fulfiller)
             }

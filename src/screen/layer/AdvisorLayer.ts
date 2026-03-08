@@ -87,7 +87,8 @@ export class AdvisorLayer extends ScreenLayer {
         this.renderer.stopRendering()
     }
 
-    dispose() {
+    override dispose() {
+        super.dispose()
         this.hide()
         this.scene.clear()
         this.renderer.dispose()

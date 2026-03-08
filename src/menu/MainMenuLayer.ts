@@ -29,6 +29,16 @@ export class MainMenuLayer extends ScaledLayer {
     overlay: FlicAnimOverlay | undefined
     lastScrollY: number = 0
     hasScrolled: boolean = false
+    private readonly onVisibilityChange = () => {
+        if (document.hidden) {
+            this.overlay?.stop()
+            this.overlay = undefined
+            this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
+            this.animationFrame.notifyRedraw()
+        } else if (this.cfg.playRandom && this.active) {
+            this.playRandomOverlay()
+        }
+    }
 
     constructor(menuCfg: MenuEntryCfg) {
         super()
@@ -77,16 +87,7 @@ export class MainMenuLayer extends ScaledLayer {
             this.updateItemsHoveredState(gameEvent.canvasX, gameEvent.canvasY, false)
             return true
         })
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                this.overlay?.stop()
-                this.overlay = undefined
-                this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
-                this.animationFrame.notifyRedraw()
-            } else if (this.cfg.playRandom && this.active) {
-                this.playRandomOverlay()
-            }
-        })
+        document.addEventListener('visibilitychange', this.onVisibilityChange)
     }
 
     override reset() {
@@ -112,6 +113,11 @@ export class MainMenuLayer extends ScaledLayer {
         this.overlay?.stop()
         this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
         super.hide()
+    }
+
+    override dispose() {
+        super.dispose()
+        document.removeEventListener('visibilitychange', this.onVisibilityChange)
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {

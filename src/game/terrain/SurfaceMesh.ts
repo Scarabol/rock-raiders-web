@@ -61,7 +61,7 @@ export class SurfaceMesh extends Group {
             this.proMesh = undefined
         }
         if (surface.wallType === WALL_TYPE.corner || surface.wallType === WALL_TYPE.wall || surface.wallType === WALL_TYPE.invertedCorner ||
-            (surface.wallType === WALL_TYPE.floor && surface.hasRubble())) {
+            (surface.wallType === WALL_TYPE.floor && surface.surfaceType.hasRubble)) {
             this.proMesh = ResourceManager.proMeshes.get(proMeshFilepath)?.clone(true)
             if (!this.proMesh && VERBOSE) console.warn(`Could not find surface pro mesh for "${proMeshFilepath}"`)
         }

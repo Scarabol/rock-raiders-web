@@ -76,7 +76,6 @@ export class MainMenuScreen {
         for (const l of this.menuLayers) this.screenMaster.removeLayer(l)
         this.menuLayers.length = 0
         this.screenMaster.removeLayer(this.rockWipeLayer)
-        this.rockWipeLayer.dispose()
     }
 
     private onItemAction(item: MainMenuBaseItem) {

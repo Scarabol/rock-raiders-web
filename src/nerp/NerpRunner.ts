@@ -265,7 +265,7 @@ export class NerpRunner {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         for (const t of tutoBlocks) {
             if (enabled) {
-                t.mesh.objectPointer?.setTargetPosition(t.getCenterWorld(), t)
+                t.mesh.objectPointer?.show()
             } else {
                 t.mesh.objectPointer?.hide()
             }
@@ -467,7 +467,7 @@ export class NerpRunner {
 
     getTutorialBlockIsPath(tutoBlockId: number): number {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        return tutoBlocks.count((s) => s.discovered && s.isPath())
+        return tutoBlocks.count((s) => s.discovered && s.surfaceType.isPath)
     }
 
     getTutorialBlockClicks(tutoBlockId: number): number {
@@ -513,11 +513,11 @@ export class NerpRunner {
     }
 
     getPoweredPowerStationsBuilt(): number {
-        return this.worldMgr.entityMgr.buildings.count((b) => b.isPowered() && b.entityType === EntityType.POWER_STATION)
+        return this.worldMgr.entityMgr.buildings.count((b) => b.isOperational() && b.entityType === EntityType.POWER_STATION)
     }
 
     getPoweredBarracksBuilt(): number {
-        return this.worldMgr.entityMgr.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS)
+        return this.worldMgr.entityMgr.buildings.count((b) => b.isOperational() && b.entityType === EntityType.BARRACKS)
     }
 
     getRecordObjectAtTutorial(tutoBlockId: number): number {
@@ -615,7 +615,7 @@ export class NerpRunner {
             console.warn(`Given entity ${entity} has no scene entity to point to`)
             return
         }
-        this.worldMgr.sceneMgr.objectPointer.setTargetObject(sceneEntity)
+        this.worldMgr.sceneMgr.objectPointer.showOnObject(sceneEntity)
     }
 
     /**

@@ -58,5 +58,6 @@ export class GameModule {
         this.rewardScreen.dispose()
         // TODO Stop all SFX sound too
         MusicManager.stopTracks()
+        EventBroker.init()
     }
 }

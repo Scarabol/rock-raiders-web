@@ -22,12 +22,18 @@ export class BaseRenderer {
                     this.renderer = new WebGLRenderer(this.parameters)
                     this.renderer.setSize(this.canvas.width, this.canvas.height)
                 }
-                this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
-                this.lastAnimationRequest = requestAnimationFrame(() => {
-                    this.render()
-                    resolve()
-                })
+                this.requestRender(resolve)
             }, this.redrawMs)
+        })
+    }
+
+    requestRender(onRendered?: () => void) {
+        if (!this.renderer || !this.scene || !this.camera || !this.renderInterval) return
+        this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
+        this.lastAnimationRequest = requestAnimationFrame(() => {
+            this.lastAnimationRequest = undefined
+            this.render()
+            onRendered?.()
         })
     }
 

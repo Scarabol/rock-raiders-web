@@ -72,6 +72,7 @@ export class SceneManager implements Updatable {
         this.cameraFPV = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 24 * TILESIZE)
         this.renderer = new SceneRenderer(canvas)
         this.birdViewControls = new BirdViewControls(this.cameraBird, canvas)
+        this.birdViewControls.onCameraChange = () => this.renderer.requestRender()
         if (!SaveGameManager.preferences.cameraUnlimited) this.birdViewControls.addEventListener('change', () => this.limitCameraBird())
         this.frustumUpdater = new CameraFrustumUpdater(this.cameraBird)
         this.birdViewControls.addEventListener('change', () => this.frustumUpdater.onCameraMoved())
@@ -166,6 +167,8 @@ export class SceneManager implements Updatable {
                     if (tutoBlockId) {
                         const tutoBlock = this.terrain.surfaces[x][y]
                         tutoBlock.mesh.objectPointer = new ObjectPointer()
+                        tutoBlock.mesh.objectPointer.position.set((x + 0.5) * TILESIZE, TILESIZE, (y + 0.5) * TILESIZE)
+                        tutoBlock.mesh.objectPointer.surfaceMesh = tutoBlock.mesh
                         this.scene.add(tutoBlock.mesh.objectPointer)
                         this.worldMgr.nerpRunner.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(tutoBlock)
                     }

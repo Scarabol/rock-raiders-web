@@ -23,23 +23,34 @@ export class NamingLayer extends ScaledLayer {
     constructor(readonly gameScreen: GameScreen) {
         super()
         this.animationFrame.onRedraw = (context) => this.onRedraw(context)
-        this.addEventListener('keyup', (event: KeyboardEvent): boolean => {
+        this.addEventListener('keydown', (event: KeyboardEvent): boolean => {
             if (event.key === 'Enter') {
-                return this.onEnterKeyUp()
+                if (event.repeat) {
+                    if (this.showBackdrop) event.preventDefault()
+                    return this.showBackdrop
+                }
+                const handled = this.onEnterKeyUp()
+                if (handled) event.preventDefault()
+                return handled
             } else if (this.showBackdrop && event.key === 'Backspace') {
                 if (this.firstKey) {
                     this.firstKey = false
                     this.raiderName = ''
                 } else {
-                    this.raiderName = this.raiderName.slice(0, -1)
+                    this.raiderName = Array.from(this.raiderName).slice(0, -1).join('')
                 }
                 this.animationFrame.notifyRedraw()
+                event.preventDefault()
+                return true
+            }
+            if (this.showBackdrop && !event.isComposing && !event.ctrlKey && !event.metaKey && !event.altKey && Array.from(event.key).length === 1) {
+                this.raiderName = this.firstKey ? event.key : this.raiderName + event.key
+                this.firstKey = false
+                this.animationFrame.notifyRedraw()
+                event.preventDefault()
                 return true
             }
             return false
-        })
-        this.addEventListener('keypress', (event: KeyboardEvent): boolean => {
-            return this.onKeyPress(event)
         })
     }
 
@@ -93,22 +104,6 @@ export class NamingLayer extends ScaledLayer {
             x: Math.max(this.fixedWidth * 0.1, Math.min(this.fixedWidth * 0.9, (projected.x + 1) * this.fixedWidth / 2)),
             y: Math.max(this.fixedHeight * 0.1, Math.min(this.fixedHeight * 0.85, -(projected.y - 1) * this.fixedHeight / 2)),
         }
-    }
-
-    private onKeyPress(event: KeyboardEvent): boolean {
-        if (!this.showBackdrop) return false
-        const keyCode = event.key.charCodeAt(0)
-        if (event.key.length === 1 && keyCode >= 32 && keyCode < 180) {
-            if (this.firstKey) {
-                this.firstKey = false
-                this.raiderName = event.key
-            } else {
-                this.raiderName += event.key
-            }
-            this.animationFrame.notifyRedraw()
-            return true
-        }
-        return false
     }
 
     override reset() {

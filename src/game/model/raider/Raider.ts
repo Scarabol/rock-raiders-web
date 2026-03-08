@@ -260,8 +260,8 @@ export class Raider implements Updatable, JobFulfiller {
 
     getSpeed(): number {
         const currentSurface = this.getSurface()
-        const pathMultiplier = currentSurface.isPath() ? this.stats.pathCoef : 1
-        const rubbleMultiplier = currentSurface.hasRubble() ? this.stats.rubbleCoef : 1
+        const pathMultiplier = currentSurface.surfaceType.isPath ? this.stats.pathCoef : 1
+        const rubbleMultiplier = currentSurface.surfaceType.hasRubble ? this.stats.rubbleCoef : 1
         const carriesMultiplier = !!this.carries ? RAIDER_CARRY_SLOWDOWN : 1
         return this.stats.routeSpeed[this.level] * pathMultiplier * rubbleMultiplier * carriesMultiplier
     }
@@ -269,7 +269,7 @@ export class Raider implements Updatable, JobFulfiller {
     getRouteActivity(): AnimationActivity {
         if (this.scared) {
             return RAIDER_ACTIVITY.runPanic
-        } else if (this.getSurface().hasRubble()) {
+        } else if (this.getSurface().surfaceType.hasRubble) {
             return !!this.carries ? RAIDER_ACTIVITY.carryRubble : RAIDER_ACTIVITY.routeRubble
         } else {
             return !!this.carries ? ANIM_ENTITY_ACTIVITY.carry : ANIM_ENTITY_ACTIVITY.route

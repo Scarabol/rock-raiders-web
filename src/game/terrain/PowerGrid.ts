@@ -34,7 +34,7 @@ export class PowerGrid {
     }
 
     onPathChange(surface: Surface) {
-        if (surface.isPath()) {
+        if (surface.surfaceType.isPath) {
             if (surface.neighbors.some((n) => n.energized)) {
                 this.markEnergized(surface)
             }
@@ -52,14 +52,14 @@ export class PowerGrid {
     }
 
     private static partitionPathGrid(surface: Surface, added: Set<Surface>, removed: Set<Surface>) {
-        if (!surface.isPath() || added.has(surface)) return
+        if (!surface.surfaceType.isPath || added.has(surface)) return
         added.add(surface)
         removed.delete(surface)
         for (const n of surface.neighbors) this.partitionPathGrid(n, added, removed)
     }
 
     private markEnergized(surface: Surface) {
-        if (surface.energized || !surface.isPath()) return
+        if (surface.energized || !surface.surfaceType.isPath) return
         surface.setEnergized(true)
         this.energizedSurfaces.add(surface)
         for (const n of surface.neighbors) this.markEnergized(n)

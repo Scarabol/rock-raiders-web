@@ -122,7 +122,7 @@ export class EntityManager {
     }
 
     private getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
-        return this.buildings.filter(b => b.isPowered() && buildingTypes.some(bt => b.entityType === bt))
+        return this.buildings.filter(b => b.isOperational() && buildingTypes.some(bt => b.entityType === bt))
     }
 
     getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity | undefined {
@@ -144,7 +144,7 @@ export class EntityManager {
     }
 
     private getPoweredBuildingByStatsProperty(statsKey: keyof BuildingEntityStats) {
-        return this.buildings.filter(b => b.isPowered() && b.stats[statsKey])
+        return this.buildings.filter(b => b.isOperational() && b.stats[statsKey])
     }
 
     getBuildingCarryPathTargets(entityType: EntityType): PathTarget[] {
@@ -189,7 +189,7 @@ export class EntityManager {
     }
 
     hasUpgradeSite(): boolean {
-        return this.buildings.some((b) => b.isPowered() && b.stats.upgradeBuilding)
+        return this.buildings.some((b) => b.isOperational() && b.stats.upgradeBuilding)
     }
 
     getRaiderFightTargets(): PathTarget[] {
@@ -295,7 +295,7 @@ export class EntityManager {
     }
 
     hasMaxRaiders(): boolean {
-        return this.raiders.length >= MAX_RAIDER_BASE + this.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT
+        return this.raiders.length >= MAX_RAIDER_BASE + this.buildings.count((b) => b.isOperational() && b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT
     }
 
     hasProfessional(training: RaiderTraining) {

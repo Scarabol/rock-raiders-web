@@ -80,10 +80,14 @@ export class BaseElement {
             if (!this.hover) this.pressed = false
         }
         for (const child of this.children) child.onPointerMove(event)
-        if (this.hover && this.pointerDown && (Math.abs(event.sx - this.pointerDown.x) > 5 || Math.abs(event.sy - this.pointerDown.y) > 5)) {
-            this.onDrag(event.sx, event.sy)
-        } else {
-            this.pointerDown = undefined
+        if (this.pointerDown) {
+            if (this.hover) {
+                if (Math.abs(event.sx - this.pointerDown.x) > 5 || Math.abs(event.sy - this.pointerDown.y) > 5) {
+                    this.onDrag(event.sx, event.sy)
+                }
+            } else {
+                this.pointerDown = undefined
+            }
         }
     }
 
@@ -99,7 +103,7 @@ export class BaseElement {
     onPointerDown(event: GuiPointerDownEvent): boolean {
         this.pointerDown = undefined
         if (this.isInactive()) return false
-        this.pointerDown = { x: event.sy, y: event.sy }
+        this.pointerDown = { x: event.sx, y: event.sy }
         const oldState = this.pressed
         if (this.isInRect(event.sx, event.sy)) {
             if (!this.pressed && this.onClick) {

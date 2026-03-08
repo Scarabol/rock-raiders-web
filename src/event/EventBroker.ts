@@ -33,22 +33,27 @@ export class EventBroker {
         }
         if (this.instance.blockedEvents.has(event.type)) return // event is currently blocked from publishing
         this.instance.blockedEvents.add(event.type)
-        // @ts-ignore
-        this.instance.observers[event.type].publish(event)
-        this.instance.blockedEvents.delete(event.type)
+        try {
+            // @ts-ignore
+            this.instance.observers[event.type].publish(event)
+        } finally {
+            this.instance.blockedEvents.delete(event.type)
+        }
     }
 
     static subscribe<Type extends keyof EventTypeMap>(
         type: Type,
         listener: (e: EventTypeMap[Type]) => void
-    ): void {
+    ): () => void {
         if (!this.instance.observers[type]) {
             this.instance.observers = {
                 ...this.instance.observers,
                 [type]: new Observer<Type>(),
             }
         }
-        this.instance.observers[type]?.subscribe(listener)
+        const observer = this.instance.observers[type]
+        if (!observer) throw new Error(`Failed to initialize event observer for "${String(type)}"`)
+        return observer.subscribe(listener)
     }
 
     static init() {

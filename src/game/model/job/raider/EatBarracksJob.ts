@@ -18,7 +18,7 @@ export class EatBarracksJob extends RaiderJob {
     }
 
     getWorkplace(entity: JobFulfiller): PathTarget | undefined {
-        if (!this.building?.isPowered()) this.workplaces = this.entityMgr.getRaiderEatPathTarget()
+        if (!this.building?.isOperational()) this.workplaces = this.entityMgr.getRaiderEatPathTarget()
         const target = entity.findShortestPath(this.workplaces)?.target
         this.building = target?.building
         return target

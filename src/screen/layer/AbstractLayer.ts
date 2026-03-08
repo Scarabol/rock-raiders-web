@@ -4,6 +4,7 @@ import { SpriteImage } from '../../core/Sprite'
 
 export abstract class AbstractLayer {
     readonly eventListener: Set<string> = new Set()
+    private readonly listenerDisposers: (() => void)[] = []
     screenMaster: ScreenMaster | undefined
     zIndex: number = 0
     active: boolean = false
@@ -13,14 +14,21 @@ export abstract class AbstractLayer {
 
     addEventListener<K extends keyof HTMLElementEventMap>(eventType: K, listener: (event: HTMLElementEventMap[K]) => boolean) {
         this.eventListener.add(eventType)
-        this.element.addEventListener(eventType, (event) => {
+        const handler = (event: Event) => {
             event.stopPropagation()
             if (!this.screenMaster) return
-            const consumed = this.active && listener(event)
+            const consumed = this.active && listener(event as HTMLElementEventMap[K])
             if (!consumed) this.screenMaster.dispatchEvent(event, this.zIndex)
             if (eventType === 'mousemove') this.screenMaster.onGlobalMouseMoveEvent(event as PointerEvent)
             else if (eventType === 'mouseleave') this.screenMaster.onGlobalMouseLeaveEvent(event as PointerEvent)
-        })
+        }
+        this.element.addEventListener(eventType, handler)
+        this.listenerDisposers.push(() => this.element.removeEventListener(eventType, handler))
+    }
+
+    dispose() {
+        for (const disposeListener of this.listenerDisposers.splice(0)) disposeListener()
+        this.eventListener.clear()
     }
 
     reset() {
@@ -29,7 +37,7 @@ export abstract class AbstractLayer {
     setZIndex(zIndex: number) {
         this.zIndex = zIndex
         this.element.style.zIndex = String(zIndex)
-        this.element.tabIndex = zIndex // enable keyboard input for canvas element
+        this.element.tabIndex = -1 // allow programmatic focus without disrupting normal tab order
     }
 
     abstract resize(width: number, height: number): void
