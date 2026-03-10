@@ -22,6 +22,7 @@ export interface MovableEntityStats extends PickSphereStats {
     rubbleCoef: number
     pathCoef: number
     randomEnterWall: boolean
+    enterToolStore: boolean
 }
 
 export class VehicleEntityStats implements MovableEntityStats, DoubleSelectStats, PickSphereStats, ConfigSetFromRecord {
@@ -45,6 +46,7 @@ export class VehicleEntityStats implements MovableEntityStats, DoubleSelectStats
     pathCoef: number = 1
     rubbleCoef: number = 1
     randomEnterWall: boolean = false
+    enterToolStore: boolean = false
     crossLand: boolean = false
     crossWater: boolean = false
     crossLava: boolean = false
@@ -75,6 +77,7 @@ export class VehicleEntityStats implements MovableEntityStats, DoubleSelectStats
         this.pathCoef = cfgValue.getValue('PathCoef').toNumber(this.pathCoef)
         this.rubbleCoef = cfgValue.getValue('RubbleCoef').toNumber(this.rubbleCoef)
         this.randomEnterWall = cfgValue.getValue('RandomEnterWall').toBoolean()
+        this.enterToolStore = cfgValue.getValue('EnterToolStore').toBoolean()
         this.crossLand = cfgValue.getValue('CrossLand').toBoolean()
         this.crossWater = cfgValue.getValue('CrossWater').toBoolean()
         this.crossLava = cfgValue.getValue('CrossLava').toBoolean()
@@ -159,6 +162,7 @@ export class MonsterEntityStats implements MovableEntityStats, ConfigSetFromReco
     pathCoef: number = 1
     rubbleCoef: number = 1
     randomEnterWall: boolean = false
+    enterToolStore: boolean = false
     randomMove: boolean = false
     randomMoveTime: number = 0
     crossLand: boolean = false
@@ -190,6 +194,7 @@ export class MonsterEntityStats implements MovableEntityStats, ConfigSetFromReco
         this.pathCoef = cfgValue.getValue('PathCoef').toNumber(this.pathCoef)
         this.rubbleCoef = cfgValue.getValue('RubbleCoef').toNumber(this.rubbleCoef)
         this.randomEnterWall = cfgValue.getValue('RandomEnterWall').toBoolean()
+        this.enterToolStore = cfgValue.getValue('EnterToolStore').toBoolean()
         this.randomMove = cfgValue.getValue('RandomMove').toBoolean()
         this.randomMoveTime = cfgValue.getValue('RandomMoveTime').toNumber()
         this.crossLand = cfgValue.getValue('CrossLand').toBoolean()
@@ -616,7 +621,7 @@ export class SmallTruckStats extends VehicleEntityStats { // [Carry][Scan][Speed
     useSmallTeleporter: boolean = true
     override vehicleCanBeCarried: boolean = true
     override costCrystal: number = 2
-    enterToolStore: boolean = true
+    override enterToolStore: boolean = true
     override upgradeCostOre: number[] = [5, 5, 10, 0]
     override upgradeCostStuds: number[] = [1, 1, 2, 0]
     showHealthBar: boolean = true
