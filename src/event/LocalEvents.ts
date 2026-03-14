@@ -67,7 +67,7 @@ export class SelectionChanged extends BaseEvent {
         this.isSite = !!entityMgr.selection.surface?.site
         this.hasErosion = !!entityMgr.selection.surface?.surfaceType.hasErosion
         this.hasRepairLava = !!entityMgr.selection.surface?.site
-        this.hasRubble = !!entityMgr.selection.surface?.hasRubble()
+        this.hasRubble = !!entityMgr.selection.surface?.surfaceType.hasRubble
         this.isDrillable = !!entityMgr.selection.surface?.isDigable() && (entityMgr.selection.surface?.surfaceType !== SurfaceType.HARD_ROCK || entityMgr.vehicles.some((v) => v.canDrill(entityMgr.selection.surface)))
         this.isReinforcable = !!entityMgr.selection.surface?.isReinforcable()
         this.canPlaceFence = !!entityMgr.selection.surface?.canPlaceFence()

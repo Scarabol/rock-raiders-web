@@ -203,7 +203,7 @@ export class GameLayer extends ScreenLayer {
                     if (this.worldMgr.entityMgr.selection.canDrill(cursorTargetSurface)) {
                         const drillJob = cursorTargetSurface.setupDrillJob()
                         if (drillJob) this.worldMgr.entityMgr.selection.assignDrillJob(drillJob)
-                    } else if (this.worldMgr.entityMgr.selection.canClear() && cursorTargetSurface.hasRubble()) {
+                    } else if (this.worldMgr.entityMgr.selection.canClear() && cursorTargetSurface.surfaceType.hasRubble) {
                         const clearJob = cursorTargetSurface.setupClearRubbleJob()
                         if (clearJob) this.worldMgr.entityMgr.selection.assignClearRubbleJob(clearJob)
                     } else if (this.worldMgr.entityMgr.selection.canClear() && !!cursorTargetSurface.site?.complete && !cursorTargetSurface.site.canceled && !cursorTargetSurface.site.buildingType) {
@@ -389,7 +389,7 @@ export class GameLayer extends ScreenLayer {
                     return 'drill'
                 }
             } else if (surface.surfaceType.floor) {
-                if (surface.hasRubble() && this.worldMgr.entityMgr.selection.canClear()) {
+                if (surface.surfaceType.hasRubble && this.worldMgr.entityMgr.selection.canClear()) {
                     return 'clear'
                 }
                 return 'manGo'

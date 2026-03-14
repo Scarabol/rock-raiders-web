@@ -6,6 +6,7 @@ export class SurfaceType {
     shaping: boolean = false
     matIndex: string = '00'
     floor: boolean = false
+    isPath: boolean = false
     selectable: boolean = false
     digable: boolean = false
     reinforcable: boolean = false
@@ -143,6 +144,7 @@ export class SurfaceType {
     static readonly POWER_PATH = new SurfaceType({
         name: 'surfaceTypePath',
         floor: true,
+        isPath: true,
         matIndex: '60',
         selectable: true,
         canHaveFence: true,
@@ -163,6 +165,7 @@ export class SurfaceType {
     static readonly POWER_PATH_BUILDING = new SurfaceType({
         name: 'surfaceTypePath',
         floor: true,
+        isPath: true,
         matIndex: '76',
         connectsPath: true,
         mapSurfaceColor: '#B8BBB8',

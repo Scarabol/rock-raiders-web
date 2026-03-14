@@ -432,10 +432,10 @@ export class Surface {
     }
 
     private determinePowerPathTextureNameSuffixAndRotation(rotation: number, suffix: string) {
-        const left = this.terrain.getSurface(this.x - 1, this.y).isPath()
-        const top = this.terrain.getSurface(this.x, this.y - 1).isPath()
-        const right = this.terrain.getSurface(this.x + 1, this.y).isPath()
-        const bottom = this.terrain.getSurface(this.x, this.y + 1).isPath()
+        const left = this.terrain.getSurface(this.x - 1, this.y).surfaceType.isPath
+        const top = this.terrain.getSurface(this.x, this.y - 1).surfaceType.isPath
+        const right = this.terrain.getSurface(this.x + 1, this.y).surfaceType.isPath
+        const bottom = this.terrain.getSurface(this.x, this.y + 1).surfaceType.isPath
         const pathSum = (left ? 1 : 0) + (top ? 1 : 0) + (right ? 1 : 0) + (bottom ? 1 : 0)
         if (pathSum === 0 || pathSum === 1) {
             if (left) rotation = -Math.PI / 2
@@ -508,14 +508,6 @@ export class Surface {
 
     setHighlightColor(hex: number) {
         this.mesh.setHighlightColor(hex)
-    }
-
-    hasRubble(): boolean {
-        return this.surfaceType.hasRubble
-    }
-
-    isPath(): boolean {
-        return this.surfaceType === SurfaceType.POWER_PATH || this.surfaceType === SurfaceType.POWER_PATH_BUILDING
     }
 
     isWalkable(): boolean {
@@ -605,7 +597,7 @@ export class Surface {
         this.updateObjectName()
         if (oldSurfaceType.connectsPath || this.surfaceType.connectsPath) for (const n of this.neighbors) n.updateTexture()
         EventBroker.publish(new UpdateRadarSurface(this))
-        if (wasPath !== this.isPath()) this.worldMgr.powerGrid.onPathChange(this)
+        if (wasPath !== this.surfaceType.isPath) this.worldMgr.powerGrid.onPathChange(this)
         this.terrain.pathFinder.updateSurface(this)
         if (this.selected && !this.surfaceType.selectable) EventBroker.publish(new DeselectAll())
         if (this.surfaceType === SurfaceType.LAVA5) {
@@ -674,7 +666,7 @@ export class Surface {
     }
 
     setupClearRubbleJob(): ClearRubbleJob | undefined {
-        if (!this.hasRubble()) return undefined
+        if (!this.surfaceType.hasRubble) return undefined
         if (this.clearRubbleJob) return this.clearRubbleJob
         this.clearRubbleJob = new ClearRubbleJob(this)
         this.updateJobColor()

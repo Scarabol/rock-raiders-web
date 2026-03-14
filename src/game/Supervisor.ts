@@ -200,7 +200,7 @@ export class Supervisor {
                         for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
                             for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
                                 const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
-                                if (!(surface?.hasRubble()) || !surface?.discovered) continue
+                                if (!surface || !surface.surfaceType.hasRubble || !surface.discovered) continue
                                 const clearRubbleJob = surface.setupClearRubbleJob()
                                 if (!clearRubbleJob || clearRubbleJob.hasFulfiller() || !vehicle.findShortestPath(clearRubbleJob.lastRubblePositions)) continue
                                 vehicle.setJob(clearRubbleJob)
@@ -232,7 +232,7 @@ export class Supervisor {
                     for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
                         for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
                             const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
-                            if (!surface?.hasRubble() || !surface?.discovered) continue
+                            if (!surface || !surface.surfaceType.hasRubble || !surface.discovered) continue
                             const clearRubbleJob = surface.setupClearRubbleJob()
                             if (!clearRubbleJob || clearRubbleJob.hasFulfiller()) continue
                             if (raider.hasTool(clearRubbleJob.requiredTool)) {

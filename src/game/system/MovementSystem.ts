@@ -27,7 +27,7 @@ export class MovementSystem extends AbstractGameSystem {
                 const targetWorld = terrain.getFloorPosition(worldTargetComponent.position)
                 targetWorld.y += positionComponent.floorOffset
                 const step = targetWorld.clone().sub(positionComponent.position)
-                const entitySpeed = movableComponent.getSpeed(positionComponent.surface.isPath(), positionComponent.surface.hasRubble()) * elapsedMs / NATIVE_UPDATE_INTERVAL
+                const entitySpeed = movableComponent.getSpeed(positionComponent.surface.surfaceType.isPath, positionComponent.surface.surfaceType.hasRubble) * elapsedMs / NATIVE_UPDATE_INTERVAL
                 const sceneEntityComponent = components.getOptional(AnimatedSceneEntityComponent)
                 if (targetWorld.distanceToSquared(positionComponent.position) <= worldTargetComponent.radiusSq) {
                     ecs.removeComponent(entity, WorldTargetComponent)

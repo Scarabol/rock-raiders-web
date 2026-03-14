@@ -467,7 +467,7 @@ export class NerpRunner {
 
     getTutorialBlockIsPath(tutoBlockId: number): number {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        return tutoBlocks.count((s) => s.discovered && s.isPath())
+        return tutoBlocks.count((s) => s.discovered && s.surfaceType.isPath)
     }
 
     getTutorialBlockClicks(tutoBlockId: number): number {
