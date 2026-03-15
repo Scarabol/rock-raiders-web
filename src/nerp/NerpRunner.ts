@@ -265,7 +265,7 @@ export class NerpRunner {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         for (const t of tutoBlocks) {
             if (enabled) {
-                t.mesh.objectPointer?.setTargetPosition(t.getCenterWorld(), t)
+                t.mesh.objectPointer?.show()
             } else {
                 t.mesh.objectPointer?.hide()
             }
@@ -615,7 +615,7 @@ export class NerpRunner {
             console.warn(`Given entity ${entity} has no scene entity to point to`)
             return
         }
-        this.worldMgr.sceneMgr.objectPointer.setTargetObject(sceneEntity)
+        this.worldMgr.sceneMgr.objectPointer.showOnObject(sceneEntity)
     }
 
     /**

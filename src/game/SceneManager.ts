@@ -166,6 +166,8 @@ export class SceneManager implements Updatable {
                     if (tutoBlockId) {
                         const tutoBlock = this.terrain.surfaces[x][y]
                         tutoBlock.mesh.objectPointer = new ObjectPointer()
+                        tutoBlock.mesh.objectPointer.position.set((x + 0.5) * TILESIZE, TILESIZE, (y + 0.5) * TILESIZE)
+                        tutoBlock.mesh.objectPointer.surfaceMesh = tutoBlock.mesh
                         this.scene.add(tutoBlock.mesh.objectPointer)
                         this.worldMgr.nerpRunner.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(tutoBlock)
                     }
