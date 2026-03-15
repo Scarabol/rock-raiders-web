@@ -23,7 +23,7 @@ export class ObjectPointer extends Sprite implements Updatable {
         if (!this.visible) return
         this.timer = (this.timer + elapsedMs / 120) % (2 * Math.PI)
         this.position.y = this.heightOffset + Math.sin(this.timer) * ObjectPointer.HEIGHT_OFFSET_AMPLITUDE
-        this.surface?.setHighlightColor(this.timer < Math.PI ? 0xa0a000 : 0xffffff)
+        this.surface?.mesh.setHighlightColor(this.timer < Math.PI ? 0xa0a000 : 0xffffff)
     }
 
     setTargetObject(target: Object3D) {
@@ -46,6 +46,6 @@ export class ObjectPointer extends Sprite implements Updatable {
 
     hide() {
         this.visible = false
-        this.surface?.setHighlightColor(0xffffff)
+        this.surface?.mesh.setHighlightColor(0xffffff)
     }
 }

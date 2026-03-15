@@ -481,7 +481,7 @@ export class Surface {
     select(): boolean {
         if (!this.isSelectable()) return false
         this.selected = true
-        this.setHighlightColor(0x6060a0)
+        this.mesh.setHighlightColor(0x6060a0)
         if (this.surfaceType.floor) SoundManager.playSfxSound('SFX_Floor')
         else if (this.surfaceType.shaping) SoundManager.playSfxSound('SFX_Wall')
         if (DEV_MODE) console.log(`Surface selected ${this.x}/${this.y}`, this)
@@ -503,11 +503,7 @@ export class Surface {
         } else if (this.drillJob) {
             color = 0xa0a0a0
         }
-        this.setHighlightColor(color)
-    }
-
-    setHighlightColor(hex: number) {
-        this.mesh.setHighlightColor(hex)
+        this.mesh.setHighlightColor(color)
     }
 
     isWalkable(): boolean {
