@@ -6,7 +6,7 @@ export class BitmapFontData {
     readonly alphaColor: { r: number, g: number, b: number }
     readonly spaceWidth: number
 
-    constructor(fontImageData: ImageData, readonly charHeight: number) {
+    constructor(fontImageData: ImageData, readonly charHeight: number, readonly isRTL: boolean = false) {
         if (!fontImageData) throw new Error('No font image data given')
         if (charHeight < 1) throw new Error(`Invalid char height (${charHeight}) given`)
         const cols = 10, rows = Math.floor(fontImageData.height / charHeight)
@@ -69,6 +69,9 @@ export class BitmapFont {
         if (!text) return undefined
         text = text.replace(/_/g, ' ') // TODO All underscores should be replaced in config parsing
         const rows = this.determineRows(text, maxWidth)
+        if (this.data.isRTL) {
+            rows.forEach((row) => row.text = [...row.text].reverse().join(''))
+        }
         const width = Math.max(1, ...(rows.map(r => r.width)))
         const result = new ImageData(width, this.data.charHeight * (rows.length || 1))
         rows.forEach((row, index) => {

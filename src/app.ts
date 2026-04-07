@@ -19,6 +19,7 @@ import { cacheGetData, cachePutData } from './resource/AssetCacheHelper'
 import { AnimatedCursorData } from './screen/AnimatedCursor'
 import { BitmapWithPalette } from './resource/fileparser/BitmapWithPalette'
 import { InterfaceImageEntryCfg } from './cfg/InterfaceImageCfg'
+import { EncodingHelper } from './resource/fileparser/EncodingHelper'
 
 declare global {
     interface Window {
@@ -80,7 +81,7 @@ export async function start() {
         new Promise<SpriteImage>(async (resolve) => {
             const fileData = vfs.getFile(DEFAULT_FONT_NAME).toDataView()
             const imgData = BitmapWithPalette.decode(fileData)
-            const fontData = new BitmapFontData(imgData, 14)
+            const fontData = new BitmapFontData(imgData, 14, EncodingHelper.isRTL())
             BitmapFontWorkerPool.instance.setupPool(DEFAULT_FONT_NAME, fontData)
             // waiting for actual pool here, is about 10 times longer
             const loadingText = GameConfig.instance.main.loadingText

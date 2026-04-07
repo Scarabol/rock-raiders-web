@@ -8,6 +8,10 @@ export class EncodingHelper {
         this.currentEncoding = encoding
     }
 
+    static isRTL(): boolean {
+        return this.currentEncoding === 'windows-1255'
+    }
+
     static decodeString(encoded: string): string {
         return this.decode([...encoded].map((s) => s.charCodeAt(0)))
     }

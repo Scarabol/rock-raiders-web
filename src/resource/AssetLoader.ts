@@ -12,6 +12,7 @@ import { imgDataToCanvas } from '../core/ImageHelper'
 import { SoundManager } from '../audio/SoundManager'
 import { BitmapFontData } from '../core/BitmapFont'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
+import { EncodingHelper } from './fileparser/EncodingHelper'
 import { TerrainMapData } from '../game/terrain/TerrainMapData'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 import { SpriteImage } from '../core/Sprite'
@@ -99,7 +100,7 @@ export class FontAssetLoader extends AssetLoader<BitmapFontData> {
     async exec(): Promise<BitmapFontData> {
         const data = this.assetRegistry.vfs.getFile(this.lAssetName).toBuffer()
         const bitmap = await BitmapWorkerPool.instance.decodeBitmap(data)
-        const fontData = new BitmapFontData(bitmap, this.charHeight)
+        const fontData = new BitmapFontData(bitmap, this.charHeight, EncodingHelper.isRTL())
         await BitmapFontWorkerPool.instance.addFont(this.lAssetName, fontData)
         return fontData
     }
