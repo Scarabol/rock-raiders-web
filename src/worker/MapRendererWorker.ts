@@ -180,7 +180,7 @@ export class MapRendererWorker {
         if (!this.surfaceContext) return
         this.surfaceContext.fillStyle = '#000'
         this.surfaceContext.fillRect(0, 0, this.surfaceContext.canvas.width, this.surfaceContext.canvas.height)
-        for (const r of terrain) for (const s of r) this.redrawSurface(offset, surfaceRectSize, s)
+        terrain.forEach((r) => r.forEach((s) => this.redrawSurface(offset, surfaceRectSize, s)))
     }
 
     private redrawSurface(offset: { x: number, y: number }, surfaceRectSize: number, surfaceRect: MapSurfaceRect) {
