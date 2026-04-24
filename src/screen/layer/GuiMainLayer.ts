@@ -22,14 +22,18 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 import { EventKey } from '../../event/EventKeyEnum'
+import { AnimationFrameReadback } from '../AnimationFrameReadback'
 
 export class GuiBaseLayer extends ScaledLayer {
+    readonly readbackCanvas: HTMLCanvasElement
+    override readonly animationFrame: AnimationFrameReadback
     readonly rootElement: BaseElement
     readonly panels: Panel[] = []
-    layerScale = 1 // XXX Scaled panel crystal sidebar does not fit
 
     constructor() {
         super()
+        this.readbackCanvas = this.createCanvas(`${this.constructor.name}-fastread`)
+        this.animationFrame = new AnimationFrameReadback(this.canvas, this.readbackCanvas)
         this.rootElement = new BaseElement()
         this.rootElement.notifyRedraw = () => this.animationFrame.notifyRedraw()
         this.rootElement.publishEvent = (event: BaseEvent) => {
@@ -41,18 +45,19 @@ export class GuiBaseLayer extends ScaledLayer {
         this.animationFrame.onRedraw = (context) => {
             this.rootElement.onRedraw(context)
         }
-        new Map<keyof HTMLElementEventMap, PointerEventType>([
+        const eventToType: [keyof HTMLElementEventMap, PointerEventType][] = [
             ['pointermove', POINTER_EVENT.move],
             ['pointerdown', POINTER_EVENT.down],
             ['pointerup', POINTER_EVENT.up],
             ['pointerleave', POINTER_EVENT.leave],
-        ]).forEach((eventEnum, eventType) => {
+        ]
+        for (const [eventType, eventEnum] of eventToType) {
             this.addEventListener(eventType, (event): boolean => {
                 const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent);
                 [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
                 return this.handlePointerEvent(gameEvent)
             })
-        })
+        }
         this.addEventListener('wheel', (event: WheelEvent): boolean => {
             const gameEvent = new GameWheelEvent(event);
             [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
@@ -66,11 +71,13 @@ export class GuiBaseLayer extends ScaledLayer {
     override reset() {
         super.reset()
         this.rootElement.reset()
-        this.panels.forEach((p) => p.reset())
+        for (const p of this.panels) p.reset()
     }
 
-    override resize(width: number, height: number) {
-        super.resize(width * this.layerScale, height * this.layerScale)
+    override setCanvasSize(width: number, height: number) {
+        super.setCanvasSize(width, height)
+        this.readbackCanvas.width = this.canvas.width
+        this.readbackCanvas.height = this.canvas.height
     }
 
     addPanel<T extends Panel>(panel: T): T {
@@ -138,15 +145,16 @@ export class GuiTopRightLayer extends GuiBaseLayer {
                 this.panelPriorityList.setMovedIn(true, () => this.panelMain.setMovedIn(false))
             }
         }
-        new Map<keyof HTMLElementEventMap, KeyEventType>([
+        const eventToType: [keyof HTMLElementEventMap, KeyEventType][] = [
             ['keydown', KEY_EVENT.down],
             ['keyup', KEY_EVENT.up],
-        ]).forEach((eventEnum, eventType) => {
+        ]
+        for (const [eventType, eventEnum] of eventToType) {
             this.addEventListener(eventType, (event): boolean => {
                 const gameEvent = new GameKeyboardEvent(eventEnum, event as KeyboardEvent)
                 return this.handleKeyEvent(gameEvent)
             })
-        })
+        }
     }
 
     handleKeyEvent(event: GameKeyboardEvent): boolean {

@@ -1,8 +1,8 @@
-import { MapControls } from 'three/examples/jsm/controls/MapControls'
-import { Camera, MOUSE, Object3D, Vector3 } from 'three'
+import { OrbitControls } from './OrbitControls'
+import { Camera, MOUSE, Object3D, TOUCH, Vector3 } from 'three'
 import { CAMERA_MAX_SHAKE_BUMP, CAMERA_MAX_SHAKE_TILES, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE, USE_KEYBOARD_SHORTCUTS } from '../params'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
-import { degToRad } from 'three/src/math/MathUtils'
+import { degToRad } from 'three/src/math/MathUtils.js'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { EventKey } from '../event/EventKeyEnum'
@@ -18,7 +18,7 @@ export const CAMERA_ROTATION = {
 } as const
 export type CameraRotation = typeof CAMERA_ROTATION[keyof typeof CAMERA_ROTATION]
 
-export class BirdViewControls extends MapControls {
+export class BirdViewControls extends OrbitControls {
     private readonly dummyPointerId: number
     private lockBuild: boolean = false
     moveTarget: Vector3 | undefined
@@ -35,7 +35,9 @@ export class BirdViewControls extends MapControls {
     constructor(camera: Camera, override readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
         this.dummyPointerId = this.verifyPointerId()
+        this.screenSpacePanning = false
         this.mouseButtons = { LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN }
+        this.touches = { ONE: TOUCH.PAN, TWO: TOUCH.DOLLY_ROTATE }
         this.listenToKeyEvents(domElement)
         this.keyPanSpeed = this.keyPanSpeed * KEY_PAN_SPEED
         if (!SaveGameManager.preferences.cameraUnlimited) {
@@ -62,15 +64,21 @@ export class BirdViewControls extends MapControls {
     }
 
     private useWASDToPanAndArrowKeysToRotate() {
-        this.keys = { LEFT: 'KeyA', UP: 'KeyW', RIGHT: 'KeyD', BOTTOM: 'KeyS' };
-        [{ code: 'ArrowUp', rot: CAMERA_ROTATION.up }, { code: 'ArrowLeft', rot: CAMERA_ROTATION.left }, { code: 'ArrowDown', rot: CAMERA_ROTATION.down }, { code: 'ArrowRight', rot: CAMERA_ROTATION.right }].forEach((pair) => {
+        this.keys = { LEFT: 'KeyA', UP: 'KeyW', RIGHT: 'KeyD', BOTTOM: 'KeyS' }
+        const codeToRotation: { code: string, rotation: CameraRotation }[] = [
+            { code: 'ArrowUp', rotation: CAMERA_ROTATION.up },
+            { code: 'ArrowLeft', rotation: CAMERA_ROTATION.left },
+            { code: 'ArrowDown', rotation: CAMERA_ROTATION.down },
+            { code: 'ArrowRight', rotation: CAMERA_ROTATION.right }
+        ]
+        for (const pair of codeToRotation) {
             this.domElement.addEventListener('keydown', (event: KeyboardEvent) => {
-                if (event.code === pair.code) this.rotate(pair.rot)
+                if (event.code === pair.code) this.rotate(pair.rotation)
             })
-        })
+        }
     }
 
-    setupControls() { // reset already used by base class with different meaning
+    setupControls() { // method name "reset" already used by base class with different meaning
         this.enabled = true
         this.moveTarget = undefined
         this.lockedObject = undefined

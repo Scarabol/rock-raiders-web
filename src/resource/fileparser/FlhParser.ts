@@ -1,5 +1,3 @@
-import { getPixel, setPixel } from '../../core/ImageHelper'
-
 /**
  * References for FLIC file formats (FLC, FLI and FLH)
  *
@@ -197,18 +195,32 @@ export class FlhParser {
     }
 
     private setPixel(img: ImageData, x: number, y: number, r: number, g: number, b: number, a: number = 255) {
+        if (x < 0 || y < 0 || x >= this.width || y >= this.height) return
+        const idx = (y * this.width + x) * 4
         const firstFrame = this.frames[0]
         if (this.interFrameMode && firstFrame && img !== firstFrame) {
-            const f = getPixel(firstFrame, x, y)
-            const d = Math.abs(f.r - r) + Math.abs(f.g - g) + Math.abs(f.b - b) + Math.abs(f.a - a)
+            const fr = firstFrame.data[idx]
+            const fg = firstFrame.data[idx + 1]
+            const fb = firstFrame.data[idx + 2]
+            const fa = firstFrame.data[idx + 3]
+            const d = Math.abs(fr - r) + Math.abs(fg - g) + Math.abs(fb - b) + Math.abs(fa - a)
             if (d > 1) {
-                setPixel(img, x, y, r, g, b, a)
+                img.data[idx] = r
+                img.data[idx + 1] = g
+                img.data[idx + 2] = b
+                img.data[idx + 3] = a
             } else {
-                setPixel(img, x, y, 0, 0, 0, 0)
+                img.data[idx] = 0
+                img.data[idx + 1] = 0
+                img.data[idx + 2] = 0
+                img.data[idx + 3] = 0
             }
-        } else {
-            setPixel(img, x, y, r, g, b, a)
+            return
         }
+        img.data[idx] = r
+        img.data[idx + 1] = g
+        img.data[idx + 2] = b
+        img.data[idx + 3] = a
     }
 
     private static getARGBFrom555RGB(a: DataView, offset: number): [number, number, number] {

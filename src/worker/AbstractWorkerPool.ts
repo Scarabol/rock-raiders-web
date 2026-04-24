@@ -35,16 +35,16 @@ export abstract class AbstractWorkerPool<M, R> {
 
     private sendBroadcasts(worker: TypedWorker<WorkerRequestMessage<M>>) {
         if (this.allWorkers.size < 1) throw new Error('No workers, has pool been started?')
-        this.broadcastHistory.forEach((broadcast) => {
+        for (const broadcast of this.broadcastHistory) {
             this.lastRequestId++
             const message: WorkerRequestMessage<M> = { workerRequestHash: `broadcast-${this.lastRequestId}`, request: broadcast }
             worker.sendMessage(message)
-        })
+        }
         this.processNextMessage(worker)
     }
 
     terminatePool() {
-        this.allWorkers.forEach((w) => w.terminate())
+        for (const w of this.allWorkers) w.terminate()
         this.allWorkers.clear()
     }
 
@@ -83,13 +83,13 @@ export abstract class AbstractWorkerPool<M, R> {
         if (this.allWorkers.size < 1) throw new Error('No workers, has pool been started?')
         this.broadcastHistory.add(broadcast)
         const result: Promise<R>[] = []
-        this.allWorkers.forEach((worker) => {
+        for (const worker of this.allWorkers) {
             this.lastRequestId++
             const message = { workerRequestHash: `broadcast-${this.lastRequestId}`, request: broadcast }
             result.push(new Promise<R>((resolve) => this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(resolve)))
             // response handler must be registered before sending, because send message is synchron with fallback worker
             worker.sendMessage(message)
-        })
+        }
         return result
     }
 
@@ -97,7 +97,7 @@ export abstract class AbstractWorkerPool<M, R> {
         if (response.workerRequestHash) {
             const requests = this.openRequests.get(response.workerRequestHash)
             if (requests) {
-                requests.forEach((r) => r(response.response))
+                for (const r of requests) r(response.response)
                 this.openRequests.set(response.workerRequestHash, [])
             } else {
                 // TODO When sending a broadcast, each broadcast message needs it's own request hash, otherwise two worker replying a broadcast trigger this warning. Or don't reply to broadcasts at all?

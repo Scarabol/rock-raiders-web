@@ -38,7 +38,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
 
     update(ecs: ECS, elapsedMs: number): void {
         const pathFinder = this.worldMgr.sceneMgr.terrain?.pathFinder
-        const scarerPositions = this.scaryThings.values().map((c) => c.get(BirdScarerComponent))
+        const scarerPositions = Array.from(this.scaryThings, ([, c]) => c.get(BirdScarerComponent))
         for (const [entity, components] of this.slugs) {
             try {
                 const behaviorComponent = components.get(SlugBehaviorComponent)
@@ -122,7 +122,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                         break
                     case SLUG_BEHAVIOR_STATE.goEnter:
                         if (!behaviorComponent.targetEnter) {
-                            const enterTargets = this.slugHoles.values().map((s) => PathTarget.fromLocation(s.get(SlugHoleComponent).getRandomPosition(), SLUG_ENTER_DISTANCE_SQ)).toArray()
+                            const enterTargets = Array.from(this.slugHoles, ([, s]) => PathTarget.fromLocation(s.get(SlugHoleComponent).getRandomPosition(), SLUG_ENTER_DISTANCE_SQ))
                             const path = pathFinder.findShortestPath(positionComponent.getPosition2D(), enterTargets, stats, 1)
                             if (path && path.locations.length > 0) {
                                 behaviorComponent.targetEnter = path.target

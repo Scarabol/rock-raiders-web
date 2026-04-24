@@ -1,5 +1,4 @@
 import { Vector2, Vector3 } from 'three'
-import { SoundManager } from '../../../audio/SoundManager'
 import { RaidersAmountChangedEvent, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, RAIDER_PATH_PRECISION, SPIDER_SLIP_RANGE_SQ, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -25,7 +24,7 @@ import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
-import { WorldLocationEvent } from '../../../event/WorldEvents'
+import { SceneAudioRemoveEvent, WorldLocationEvent } from '../../../event/WorldEvents'
 import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
@@ -143,7 +142,8 @@ export class Raider implements Updatable, JobFulfiller {
 
     disposeFromWorld() {
         this.worldMgr.sceneMgr.disposeSceneEntity(this.sceneEntity)
-        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
+        if (this.workAudioId) EventBroker.publish(new SceneAudioRemoveEvent(this.workAudioId))
+        this.workAudioId = undefined
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
@@ -182,7 +182,7 @@ export class Raider implements Updatable, JobFulfiller {
             }
             return false
         })
-        this.worldMgr.entityMgr.rockMonsters.forEach((rocky) => {
+        for (const rocky of this.worldMgr.entityMgr.rockMonsters) {
             const components = this.worldMgr.ecs.getComponents(rocky)
             const rockySceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
             if (rockySceneEntity.currentAnimation === ROCK_MONSTER_ACTIVITY.unpowered) {
@@ -197,7 +197,7 @@ export class Raider implements Updatable, JobFulfiller {
                     })
                 }
             }
-        })
+        }
     }
 
     private moveToClosestTargetInternal(target: PathTarget | undefined, elapsedMs: number): MoveState {
@@ -208,9 +208,9 @@ export class Raider implements Updatable, JobFulfiller {
             this.currentPath = path && path.locations.length > 0 ? path : undefined
             if (!this.currentPath) return MOVE_STATE.targetUnreachable
             const currentPath = this.currentPath
-            currentPath.locations.forEach((l, index) => {
+            for (const [index, l] of currentPath.locations.entries()) {
                 if (index < currentPath.locations.length - 1) l.add(new Vector2().random().subScalar(0.5).multiplyScalar(TILESIZE / RAIDER_PATH_PRECISION))
-            }) // XXX Externalize precision
+            } // XXX Externalize precision
             pathUpdated = true
         }
         const step = this.determineStep(elapsedMs, this.currentPath)
@@ -310,7 +310,8 @@ export class Raider implements Updatable, JobFulfiller {
         primary ? selectionFrameComponent?.select() : selectionFrameComponent?.selectSecondary()
         components.getOptional(SelectionNameComponent)?.setVisible(true)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
-        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
+        if (this.workAudioId) EventBroker.publish(new SceneAudioRemoveEvent(this.workAudioId))
+        this.workAudioId = undefined
         return true
     }
 
@@ -354,7 +355,8 @@ export class Raider implements Updatable, JobFulfiller {
 
     stopJob() {
         this.dropCarried(false)
-        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
+        if (this.workAudioId) EventBroker.publish(new SceneAudioRemoveEvent(this.workAudioId))
+        this.workAudioId = undefined
         if (!this.job) return
         this.job.unAssign(this)
         if (this.followUpJob) this.followUpJob.unAssign(this)
@@ -482,7 +484,8 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private completeJob() {
-        this.workAudioId = SoundManager.stopAudio(this.workAudioId)
+        if (this.workAudioId) EventBroker.publish(new SceneAudioRemoveEvent(this.workAudioId))
+        this.workAudioId = undefined
         this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         if (this.job?.jobState === JOB_STATE.incomplete) return

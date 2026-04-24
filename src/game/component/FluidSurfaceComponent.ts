@@ -1,5 +1,5 @@
 import { AbstractGameComponent } from '../ECS'
-import { BufferAttribute } from 'three/src/core/BufferAttribute'
+import { BufferAttribute } from 'three/src/core/BufferAttribute.js'
 import { InterleavedBufferAttribute } from 'three'
 
 export class FluidSurfaceComponent extends AbstractGameComponent {

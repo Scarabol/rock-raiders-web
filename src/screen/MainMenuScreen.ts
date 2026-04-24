@@ -24,7 +24,7 @@ export class MainMenuScreen {
     sfxAmbientLoop: AudioBufferSourceNode | undefined
 
     constructor(readonly screenMaster: ScreenMaster) {
-        GameConfig.instance.menu.mainMenuFull.menus.forEach((menuCfg) => {
+        for (const menuCfg of GameConfig.instance.menu.mainMenuFull.menus) {
             let layer: MainMenuLayer
             if (menuCfg.title.equalsIgnoreCase('Main')) {
                 layer = new MainMenuLayer(menuCfg)
@@ -45,7 +45,7 @@ export class MainMenuScreen {
                 this.onItemAction(item)
             }
             this.menuLayers.push(screenMaster.addLayer(layer, 200 + this.menuLayers.length * 10))
-        })
+        }
         this.creditsLayer = screenMaster.addLayer(new MainMenuCreditsLayer(), 200 + this.menuLayers.length * 10)
         this.creditsLayer.onExitCredits = () => this.showMainMenu()
         this.menuLayers.push(this.creditsLayer)
@@ -73,7 +73,7 @@ export class MainMenuScreen {
     dispose() {
         this.sfxAmbientLoop?.stop()
         this.sfxAmbientLoop = undefined
-        this.menuLayers.forEach((l) => this.screenMaster.removeLayer(l))
+        for (const l of this.menuLayers) this.screenMaster.removeLayer(l)
         this.menuLayers.length = 0
         this.screenMaster.removeLayer(this.rockWipeLayer)
         this.rockWipeLayer.dispose()
@@ -107,7 +107,7 @@ export class MainMenuScreen {
             timeout = Math.round(maxDurationMs / 2)
         }
         setTimeout(() => {
-            this.menuLayers.forEach((m, i) => i === index ? m.show() : m.hide())
+            for (const [i, m] of this.menuLayers.entries()) i === index ? m.show() : m.hide()
         }, timeout)
     }
 
@@ -116,7 +116,7 @@ export class MainMenuScreen {
     }
 
     showCredits() {
-        this.menuLayers.forEach((l) => l === this.creditsLayer ? l.show() : l.hide())
+        for (const l of this.menuLayers) l === this.creditsLayer ? l.show() : l.hide()
     }
 
     selectLevelRandom() {
@@ -140,7 +140,7 @@ export class MainMenuScreen {
     async startLevel(levelConf: LevelConfData) {
         this.sfxAmbientLoop?.stop()
         this.sfxAmbientLoop = undefined
-        this.menuLayers.forEach((m) => m.hide())
+        for (const m of this.menuLayers) m.hide()
         this.rockWipeLayer.hide()
         if (SaveGameManager.preferences.playVideos && levelConf.video) await this.screenMaster.videoLayer.playVideo(`data/${levelConf.video.toLowerCase()}`)
         this.screenMaster.loadingLayer.show()

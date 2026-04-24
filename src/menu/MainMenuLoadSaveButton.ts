@@ -34,7 +34,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
         this.targetIndex = index
         if (loading) {
             const overlayCfg = layer.cfg.overlays[index]
-            const flicImages = ResourceManager.getResource(overlayCfg.flhFilepath) ?? []
+            const flicImages = ResourceManager.flhFrames.get(overlayCfg.flhFilepath) ?? []
             this.overlay = new FlicAnimOverlay(this.layer.animationFrame, flicImages, overlayCfg.x, overlayCfg.y, overlayCfg.sfxName)
         }
         this.actionName = loading ? `load_game_${index}` : `save_game_${index}`

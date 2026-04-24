@@ -141,11 +141,11 @@ export class MapRendererWorker {
         context.clearRect(0, 0, context.canvas.width, context.canvas.height)
         context.fillStyle = rectColor
         const normalizedRectSize = Math.max(1, Math.round(rectSize / 15 * msg.surfaceRectSize))
-        msg.entities.forEach((e) => {
+        for (const e of msg.entities) {
             const x = Math.round(e.x * msg.surfaceRectSize / TILESIZE - msg.offset.x - normalizedRectSize / 2)
             const y = Math.round(e.z * msg.surfaceRectSize / TILESIZE - msg.offset.y - normalizedRectSize / 2)
             context.fillRect(x, y, normalizedRectSize, normalizedRectSize)
-        })
+        }
     }
 
     private redrawGeoScanContext(msg: MapRendererEntitiesRenderMessage) {
@@ -165,7 +165,7 @@ export class MapRendererWorker {
         geoScanContext.clearRect(0, 0, geoScanContext.canvas.width, geoScanContext.canvas.height)
         geoScanContext.strokeStyle = '#fff'
         geoScanContext.lineWidth = 1
-        msg.entities.forEach((e) => {
+        for (const e of msg.entities) {
             const scanRadius = Math.round(e.r * msg.surfaceRectSize)
             const x = Math.round(e.x * msg.surfaceRectSize / TILESIZE - msg.offset.x)
             const y = Math.round(e.z * msg.surfaceRectSize / TILESIZE - msg.offset.y)
@@ -173,14 +173,14 @@ export class MapRendererWorker {
             geoScanContext.setLineDash([1, 1])
             geoScanContext.ellipse(x, y, scanRadius, scanRadius, 0, 0, 2 * Math.PI)
             geoScanContext.stroke()
-        })
+        }
     }
 
     private redrawTerrain(offset: { x: number, y: number }, surfaceRectSize: number, terrain: MapSurfaceRect[][]) {
         if (!this.surfaceContext) return
         this.surfaceContext.fillStyle = '#000'
         this.surfaceContext.fillRect(0, 0, this.surfaceContext.canvas.width, this.surfaceContext.canvas.height)
-        terrain.forEach((r) => r.forEach((s) => this.redrawSurface(offset, surfaceRectSize, s)))
+        for (const r of terrain) for (const s of r) this.redrawSurface(offset, surfaceRectSize, s)
     }
 
     private redrawSurface(offset: { x: number, y: number }, surfaceRectSize: number, surfaceRect: MapSurfaceRect) {

@@ -22,7 +22,7 @@ export class ToggleButton extends Button {
             this.hover = inRect
             if (!this.hover && !this.toggleState) this.pressed = false
         }
-        this.children.forEach((child) => child.onPointerMove(event))
+        for (const child of this.children) child.onPointerMove(event)
     }
 
     override onPointerDown(event: GuiPointerDownEvent): boolean {
@@ -36,7 +36,7 @@ export class ToggleButton extends Button {
             this.pressed = false
         }
         let updated = this.pressed !== oldState
-        this.children.forEach((child) => updated = child.onPointerDown(event) || updated)
+        for (const child of this.children) updated = child.onPointerDown(event) || updated
         if (updated) this.notifyRedraw()
         return updated
     }
@@ -50,7 +50,7 @@ export class ToggleButton extends Button {
             this.pressed = updated && this.toggleState
             this.hover = inRect
         }
-        this.children.forEach((child) => updated = child.onPointerUp(event) || updated)
+        for (const child of this.children) updated = child.onPointerUp(event) || updated
         if (updated) this.notifyRedraw()
         return updated
     }

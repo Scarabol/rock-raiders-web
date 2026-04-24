@@ -147,7 +147,7 @@ export class CarryJob extends Job {
     override onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         const dropped = this.fulfiller?.dropCarried(false) || []
-        dropped.forEach((droppedItem) => {
+        for (const droppedItem of dropped) {
             if (droppedItem.carryJob) droppedItem.carryJob.jobState = JOB_STATE.complete
             if (this.target) droppedItem.setPosition(droppedItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
             const targetBuilding = this.target?.building
@@ -200,7 +200,7 @@ export class CarryJob extends Job {
                 }
                 this.target?.site?.addItem(droppedItem)
             }
-        })
+        }
     }
 
     private igniteDynamite() {

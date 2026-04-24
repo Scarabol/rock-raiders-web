@@ -63,20 +63,20 @@ export class MapView extends BaseElement {
             this.offset.x = event.focusTile.x * this.surfaceRectSize - this.width / 2
             this.offset.y = event.focusTile.y * this.surfaceRectSize - this.height / 2
             this.surfaceMap.length = 0
-            event.surfaces.forEach((s) => {
+            for (const s of event.surfaces) {
                 this.surfaceMap[s.x] = this.surfaceMap[s.x] || []
                 this.surfaceMap[s.x][s.y] = s
-            })
+            }
             this.redrawAll()
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_TERRAIN, (event: UpdateRadarTerrain) => {
             this.terrainWidth = event.terrainWidth
             this.terrainHeight = event.terrainHeight
             this.surfaceMap.length = 0
-            event.surfaces.forEach((s) => {
+            for (const s of event.surfaces) {
                 this.surfaceMap[s.x] = this.surfaceMap[s.x] || []
                 this.surfaceMap[s.x][s.y] = s
-            })
+            }
             this.mapRenderer.redrawTerrain(this.offset, this.surfaceRectSize, this.surfaceMap).then(() => this.notifyRedraw())
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_SURFACE, (event: UpdateRadarSurface) => {
@@ -155,8 +155,8 @@ export class MapView extends BaseElement {
         const inRect = super.isInRect(sx, sy)
         this.entityBelowCursor = undefined
         if (inRect) {
-            this.entitiesByOrder.forEach((entities) => {
-                entities.forEach((pos, entity) => {
+            for (const [, entities] of this.entitiesByOrder) {
+                for (const [entity, pos] of entities) {
                     const tx = (sx - this.x + this.offset.x)
                     const ty = (sy - this.y + this.offset.y)
                     const ex = pos.x / TILESIZE * this.surfaceRectSize
@@ -171,8 +171,8 @@ export class MapView extends BaseElement {
                             // TODO get entity object name and publish tooltip event
                         }
                     }
-                })
-            })
+                }
+            }
             const surfaceX = Math.floor((sx - this.x + this.offset.x) / this.surfaceRectSize)
             const surfaceY = Math.floor((sy - this.y + this.offset.y) / this.surfaceRectSize)
             const surface = this.surfaceMap[surfaceX]?.[surfaceY]

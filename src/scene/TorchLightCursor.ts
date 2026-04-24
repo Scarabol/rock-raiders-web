@@ -31,12 +31,12 @@ export class TorchLightCursor extends Object3D {
         })
 
         EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
-            this.alarmLights.forEach((l) => l.visible = event.alarmState)
+            for (const l of this.alarmLights) l.visible = event.alarmState
         })
     }
 
     update(elapsedMs: number) {
         const rotationRad = Math.PI / 1000 * elapsedMs
-        this.alarmLights.forEach((l) => l.target.position.applyAxisAngle(Object3D.DEFAULT_UP, rotationRad))
+        for (const l of this.alarmLights) l.target.position.applyAxisAngle(Object3D.DEFAULT_UP, rotationRad)
     }
 }

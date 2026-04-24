@@ -1,33 +1,34 @@
-import { DEFAULT_AUTO_GAME_SPEED, DEFAULT_GAME_BRIGHTNESS, DEFAULT_GAME_SPEED_MULTIPLIER, DEFAULT_MUSIC_TOGGLE, DEFAULT_MUSIC_VOLUME, DEFAULT_SCREEN_RATIO_FIXED, DEFAULT_SFX_TOGGLE, DEFAULT_SFX_VOLUME, DEFAULT_SHOW_HELP_WINDOW, DEFAULT_WALL_DETAILS, DEV_MODE, NUM_OF_LEVELS_TO_COMPLETE_GAME, SAVE_GAME_SCREENSHOT_HEIGHT, SAVE_GAME_SCREENSHOT_WIDTH, VERBOSE } from '../params'
+import { DEFAULT_AUTO_GAME_SPEED, DEFAULT_GAME_BRIGHTNESS, DEFAULT_GAME_SPEED_MULTIPLIER, DEFAULT_HIDE_HELP_WINDOW, DEFAULT_MUSIC_TOGGLE, DEFAULT_MUSIC_VOLUME, DEFAULT_SCREEN_RATIO_FIXED, DEFAULT_SFX_TOGGLE, DEFAULT_SFX_VOLUME, DEFAULT_WALL_DETAILS, DEV_MODE, NUM_OF_LEVELS_TO_COMPLETE_GAME, SAVE_GAME_SCREENSHOT_HEIGHT, SAVE_GAME_SCREENSHOT_WIDTH, VERBOSE } from '../params'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 
-export class SaveGamePreferences { // this gets serialized
+export const SaveGamePreferencesDefault = { // this gets serialized
     // Vanilla game preferences
-    gameSpeed: number = DEFAULT_GAME_SPEED_MULTIPLIER
-    volumeSfx: number = DEFAULT_SFX_VOLUME
-    volumeMusic: number = DEFAULT_MUSIC_VOLUME
-    gameBrightness: number = DEFAULT_GAME_BRIGHTNESS
-    showHelpWindow: boolean = DEFAULT_SHOW_HELP_WINDOW
-    wallDetails: boolean = DEFAULT_WALL_DETAILS
-    toggleMusic: boolean = DEFAULT_MUSIC_TOGGLE
-    toggleSfx: boolean = DEFAULT_SFX_TOGGLE
-    autoGameSpeed: boolean = DEFAULT_AUTO_GAME_SPEED
+    gameSpeed: DEFAULT_GAME_SPEED_MULTIPLIER,
+    volumeSfx: DEFAULT_SFX_VOLUME,
+    volumeMusic: DEFAULT_MUSIC_VOLUME,
+    gameBrightness: DEFAULT_GAME_BRIGHTNESS,
+    hideHelpWindow: DEFAULT_HIDE_HELP_WINDOW,
+    wallDetails: DEFAULT_WALL_DETAILS,
+    toggleMusic: DEFAULT_MUSIC_TOGGLE,
+    toggleSfx: DEFAULT_SFX_TOGGLE,
+    autoGameSpeed: DEFAULT_AUTO_GAME_SPEED,
     // Additional game preferences
-    screenRatio: string = '4:3' // set to 0 for responsive screen ratio
-    testLevels: boolean = false
-    cameraUnlimited: boolean = DEV_MODE
-    skipBriefings: boolean = DEV_MODE
-    muteDevSounds: boolean = DEV_MODE
-    playVideos: boolean = !DEV_MODE
-    edgeScrolling: boolean = !DEV_MODE
+    screenRatio: '4:3', // set to 0 for responsive screen ratio
+    testLevels: false,
+    cameraUnlimited: DEV_MODE,
+    skipBriefings: DEV_MODE,
+    muteDevSounds: DEV_MODE,
+    playVideos: !DEV_MODE,
+    edgeScrolling: !DEV_MODE,
 }
+export type SaveGamePreferences = typeof SaveGamePreferencesDefault
 
 type DeepPartial<T> = {
     [P in keyof T]?: T[P] extends object ? (T[P] extends Array<infer _> ? T[P] : DeepPartial<T[P]>) : T[P];
 }
 
 export class SaveGameManager {
-    static preferences: SaveGamePreferences = new SaveGamePreferences()
+    static preferences: SaveGamePreferences = { ...SaveGamePreferencesDefault }
     static screenshots: Promise<HTMLCanvasElement | undefined>[] = []
     static currentTeam: SaveGameRaider[] = []
     private static saveGames: SaveGame[] = [] // this gets serialized
@@ -45,6 +46,12 @@ export class SaveGameManager {
         } catch (e) {
             console.error('Could not load preferences', e)
         }
+    }
+
+    static resetPreferences() {
+        this.preferences = { ...SaveGamePreferencesDefault }
+        if (window?.rr) window.rr.preferences = this.preferences
+        this.savePreferences()
     }
 
     static loadSaveGames() {
@@ -172,7 +179,7 @@ export class SaveGameManager {
 
     static calcScreenRatio(): number {
         if (!this.preferences.screenRatio || this.preferences.screenRatio === 'responsive') return 0
-        const matched = this.preferences.screenRatio?.match('^\d:\d$')
+        const matched = this.preferences.screenRatio?.match(/^(\d+):(\d+)$/)
         if (matched?.length === 3) {
             const w = Number(matched[1])
             const h = Number(matched[2])
@@ -182,6 +189,11 @@ export class SaveGameManager {
         }
         return DEFAULT_SCREEN_RATIO_FIXED
     }
+
+    static getGameSpeedMultiplier(): number {
+        const gameSpeedIndex = Math.round(SaveGameManager.preferences.gameSpeed * 5)
+        return [0.33333333, 0.66666667, 1, 1.33333333, 1.66666667, 2][gameSpeedIndex]
+    }
 }
 
 class SaveGame { // this gets serialized
@@ -190,9 +202,9 @@ class SaveGame { // this gets serialized
 
     static copy(other: DeepPartial<SaveGame>): SaveGame {
         const result = new SaveGame()
-        other.levels?.forEach((l) => {
+        for (const l of other.levels ?? []) {
             if (l?.levelName && l?.levelScore) result.levels.push(new SaveGameLevel(l.levelName, l.levelScore))
-        })
+        }
         result.team = other.team?.map((t) => SaveGameRaider.copy(t)) || []
         return result
     }

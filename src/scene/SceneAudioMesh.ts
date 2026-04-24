@@ -1,9 +1,9 @@
-import { Object3D, PositionalAudio } from 'three'
+import { Object3D, Vector3 } from 'three'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { SceneMesh } from './SceneMesh'
-import { TILESIZE } from '../params'
-import { GameState } from '../game/model/GameState'
+import { EventBroker } from '../event/EventBroker'
+import { SceneAudioAddEvent, SceneAudioRemoveEvent } from '../event/WorldEvents'
 
 export interface SceneAudioMeshUserData {
     sfxNameAnimation: string | undefined
@@ -11,32 +11,20 @@ export interface SceneAudioMeshUserData {
 
 export class SceneAudioMesh extends SceneMesh {
     declare userData: SceneAudioMeshUserData
-    readonly audioId: number = SoundManager.nextAudioId
-    audioNode: PositionalAudio | undefined
+    audioId: number | undefined
     lastSfxName: string = ''
 
     override update(_elapsedMs: number) {
         const sfxVolume = SaveGameManager.getSfxVolume()
         if (sfxVolume <= 0 || !this.isVisible()) return
         const sfxName = this.userData.sfxNameAnimation || ''
-        if (!sfxName || (this.lastSfxName === sfxName && this.audioNode?.isPlaying)) return
-        this.lastSfxName = sfxName
-        const audioBuffer = SoundManager.getSoundBuffer(sfxName)
-        if (!audioBuffer) return
-        if (!this.audioNode) {
-            this.audioNode = new PositionalAudio(SoundManager.sceneAudioListener)
-            this.audioNode.setRefDistance(TILESIZE * 5)
-            this.audioNode.setRolloffFactor(10)
-            this.add(this.audioNode)
-            this.audioNode.onEnded = () => {
-                SoundManager.stopAudio(this.audioId)
-            }
+        if (!sfxName) return
+        if (this.lastSfxName !== sfxName) {
+            if (this.audioId) EventBroker.publish(new SceneAudioRemoveEvent(this.audioId))
+            this.audioId = SoundManager.nextAudioId
         }
-        this.audioNode.setVolume(sfxVolume)
-        this.audioNode.setBuffer(audioBuffer)
-        this.audioNode.playbackRate = GameState.gameSpeedMultiplier
-        this.audioNode.play()
-        SoundManager.playingAudio.set(this.audioId, this.audioNode)
+        if (this.audioId) EventBroker.publish(new SceneAudioAddEvent(this.audioId, sfxName, false, this.getWorldPosition(new Vector3())))
+        this.lastSfxName = sfxName
     }
 
     private isVisible(): boolean {
@@ -48,7 +36,8 @@ export class SceneAudioMesh extends SceneMesh {
     }
 
     override dispose() {
-        SoundManager.stopAudio(this.audioId)
+        if (this.audioId) EventBroker.publish(new SceneAudioRemoveEvent(this.audioId))
+        this.audioId = undefined
         this.lastSfxName = ''
     }
 }

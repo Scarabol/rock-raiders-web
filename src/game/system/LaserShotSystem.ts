@@ -17,7 +17,7 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { PRNG } from '../factory/PRNG'
 
 class LaserShot {
-    timeout: number = 250
+    renderShotTimeout: number = 250
 
     constructor(readonly group: Group) {
     }
@@ -53,10 +53,10 @@ export class LaserShotSystem extends AbstractGameSystem {
             this.spawnDepletedEnergyCrystal(positionComponent)
         }
         turretComponent.fireDelay = turretComponent.weaponCfg.rechargeTimeMs
-        sceneEntityComponent.sceneEntity.getFireNullParents().forEach((parent) => {
+        for (const parent of sceneEntityComponent.sceneEntity.getFireNullParents()) {
             this.worldMgr.sceneMgr.addPositionalAudio(sceneEntityComponent.sceneEntity, 'SFX_Laser', false)
             this.addLaserShot(ecs, parent, turretComponent)
-        })
+        }
     }
 
     private spawnDepletedEnergyCrystal(positionComponent: PositionComponent) {
@@ -124,14 +124,14 @@ export class LaserShotSystem extends AbstractGameSystem {
     update(_ecs: ECS, elapsedMs: number): void {
         const currentShots = [...this.laserShots]
         this.laserShots.length = 0
-        currentShots.forEach((s) => {
-            if (s.timeout > 0) {
-                s.timeout -= elapsedMs
+        for (const s of currentShots) {
+            if (s.renderShotTimeout > 0) {
+                s.renderShotTimeout -= elapsedMs
                 this.laserShots.add(s)
             } else {
                 this.worldMgr.sceneMgr.scene.remove(s.group)
             }
-        })
+        }
         for (const [_entity, components] of this.laserTurrets) {
             try {
                 const turretComponent = components.get(LaserBeamTurretComponent)

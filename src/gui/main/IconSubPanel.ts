@@ -39,14 +39,14 @@ export class IconSubPanel extends Panel {
     override toggleState(onDone?: () => void) {
         super.toggleState(onDone)
         if (this.movedIn) {
-            this.iconPanelButtons.forEach((button) => button.showDependencies = false)
+            for (const button of this.iconPanelButtons) button.showDependencies = false
         } else {
             this.updateAllButtonStates()
         }
     }
 
     updateAllButtonStates() {
-        this.iconPanelButtons.forEach((button) => button.updateState(false))
+        for (const button of this.iconPanelButtons) button.updateState(false)
         this.notifyRedraw()
     }
 

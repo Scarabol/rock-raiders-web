@@ -36,11 +36,11 @@ export class GuiManager {
         const cameraControls = sceneMgr.birdViewControls
         const entityMgr = worldMgr.entityMgr
         EventBroker.subscribe(EventKey.COMMAND_PICK_TOOL, (event: PickTool) => {
-            entityMgr.selection.raiders.forEach((r) => {
-                if (r.hasTool(event.tool)) return
+            for (const r of entityMgr.selection.raiders) {
+                if (r.hasTool(event.tool)) continue
                 const pathToToolstation = r.findShortestPath(r.worldMgr.entityMgr.getGetToolTargets())
                 if (pathToToolstation) r.setJob(new GetToolJob(entityMgr, event.tool, pathToToolstation.target.building))
-            })
+            }
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_CREATE_POWER_PATH, () => {
@@ -111,7 +111,7 @@ export class GuiManager {
             for (let c = 0; c < building.stats.costCrystal; c++) {
                 MaterialSpawner.spawnMaterial(building.worldMgr, EntityType.CRYSTAL, building.primarySurface.getRandomPosition())
             }
-            building.carriedItems.forEach((m) => building.worldMgr.entityMgr.placeMaterial(m, building.primarySurface.getRandomPosition()))
+            for (const m of building.carriedItems) building.worldMgr.entityMgr.placeMaterial(m, building.primarySurface.getRandomPosition())
             building.beamUp()
             EventBroker.publish(new DeselectAll())
         })
@@ -119,28 +119,28 @@ export class GuiManager {
             entityMgr.selection.building?.setPowerSwitch(event.state)
         })
         EventBroker.subscribe(EventKey.COMMAND_RAIDER_EAT, () => {
-            entityMgr.selection.raiders.forEach((r) => !r.isDriving() && r.setJob(new EatJob()))
+            for (const r of entityMgr.selection.raiders) if (!r.isDriving()) r.setJob(new EatJob())
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_RAIDER_UPGRADE, () => {
-            entityMgr.selection.raiders.forEach((r) => {
-                if (r.level >= r.stats.maxLevel) return
+            for (const r of entityMgr.selection.raiders) {
+                if (r.level >= r.stats.maxLevel) continue
                 const closestToolstation = r.findShortestPath(entityMgr.getRaiderUpgradePathTarget())?.target.building
                 if (closestToolstation) r.setJob(new UpgradeRaiderJob(closestToolstation))
-            })
+            }
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_RAIDER_BEAMUP, () => {
-            entityMgr.selection.raiders.forEach((r) => r.beamUp())
+            for (const r of entityMgr.selection.raiders) r.beamUp()
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_TRAIN_RAIDER, (event: TrainRaider) => {
-            entityMgr.selection.raiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainRaiderJob(entityMgr, event.training, undefined)))
+            for (const r of entityMgr.selection.raiders) if (!r.hasTraining(event.training)) r.setJob(new TrainRaiderJob(entityMgr, event.training, undefined))
             EventBroker.publish(new DeselectAll())
             return true
         })
         EventBroker.subscribe(EventKey.COMMAND_RAIDER_DROP, () => {
-            entityMgr.selection.raiders.forEach((r) => r.stopJob())
+            for (const r of entityMgr.selection.raiders) r.stopJob()
         })
         EventBroker.subscribe(EventKey.COMMAND_SELECT_BUILD_MODE, (event: SelectBuildMode) => {
             sceneMgr.setBuildModeSelection(event.entityType)
@@ -149,29 +149,29 @@ export class GuiManager {
             entityMgr.selection.surface?.site?.cancelSite()
         })
         EventBroker.subscribe(EventKey.COMMAND_VEHICLE_GET_MAN, () => {
-            entityMgr.selection.vehicles.forEach((v) => {
+            for (const v of entityMgr.selection.vehicles) {
                 if (!v.callManJob && !v.driver) EventBroker.publish(new JobCreateEvent(new ManVehicleJob(v)))
-            })
+            }
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_VEHICLE_BEAMUP, () => {
-            entityMgr.selection.vehicles.forEach((v) => {
+            for (const v of entityMgr.selection.vehicles) {
                 v.beamUp(true)
-            })
+            }
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT, () => {
-            entityMgr.selection.vehicles.forEach((v) => v.dropDriver())
+            for (const v of entityMgr.selection.vehicles) v.dropDriver()
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_VEHICLE_UNLOAD, () => {
-            entityMgr.selection.vehicles.forEach((v) => {
+            for (const v of entityMgr.selection.vehicles) {
                 v.stopJob()
                 v.unloadVehicle()
-            })
+            }
         })
         EventBroker.subscribe(EventKey.COMMAND_VEHICLE_LOAD, () => {
-            entityMgr.selection.vehicles.forEach((v) => v.pickupNearbyEntity())
+            for (const v of entityMgr.selection.vehicles) v.pickupNearbyEntity()
         })
         EventBroker.subscribe(EventKey.COMMAND_CAMERA_CONTROL, (event: CameraControl) => {
             if (event.args.zoom) {
@@ -207,21 +207,15 @@ export class GuiManager {
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             SaveGameManager.savePreferences()
             SoundManager.setupSfxAudioTarget()
-            const gameSpeedIndex = Math.round(SaveGameManager.preferences.gameSpeed * 5)
-            GameState.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
-            const sfxVolume = SaveGameManager.getSfxVolume()
-            SoundManager.playingAudio.forEach((a) => {
-                a.setVolume(sfxVolume)
-                a.setPlaybackRate(GameState.gameSpeedMultiplier)
-            })
+            GameState.gameSpeedMultiplier = SaveGameManager.getGameSpeedMultiplier()
         })
         EventBroker.subscribe(EventKey.COMMAND_UPGRADE_VEHICLE, (event: UpgradeVehicle) => {
             entityMgr.selection.assignUpgradeJob(event.upgrade)
             EventBroker.publish(new DeselectAll())
         })
         EventBroker.subscribe(EventKey.COMMAND_DROP_BIRD_SCARER, () => {
-            entityMgr.selection.raiders.forEach((r) => {
-                if (!r.hasTool(RAIDER_TOOL.birdScarer)) return
+            for (const r of entityMgr.selection.raiders) {
+                if (!r.hasTool(RAIDER_TOOL.birdScarer)) continue
                 r.removeTool(RAIDER_TOOL.birdScarer)
                 if (r.selected) EventBroker.publish(new SelectionChanged(entityMgr))
                 const position = r.getPosition()
@@ -242,7 +236,7 @@ export class GuiManager {
                         })
                     })
                 })
-            })
+            }
         })
         EventBroker.subscribe(EventKey.COMMAND_CAMERA_VIEW, (event: ChangeCameraEvent) => {
             const entity = entityMgr.selection.getPrimarySelected()

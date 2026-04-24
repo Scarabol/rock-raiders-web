@@ -18,7 +18,6 @@ import { SpriteImage } from './core/Sprite'
 import { cacheGetData, cachePutData } from './resource/AssetCacheHelper'
 import { AnimatedCursorData } from './screen/AnimatedCursor'
 import { BitmapWithPalette } from './resource/fileparser/BitmapWithPalette'
-import { InterfaceImageEntryCfg } from './cfg/InterfaceImageCfg'
 import { EncodingHelper } from './resource/fileparser/EncodingHelper'
 
 declare global {
@@ -43,7 +42,7 @@ export async function start() {
     if (SaveGameManager.preferences.playVideos) await screenMaster.videoLayer.playVideo(`data/${GameConfig.instance.main.rrAvi}`)
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')
     const cursorImageName = GameConfig.instance.pointers.standard.fileName
-    await cacheGetData<AnimatedCursorData>(cursorImageName).then((animatedCursorData) => {
+    await cacheGetData<AnimatedCursorData>(`cursorDataUrls-standard`).then((animatedCursorData) => {
         if (!animatedCursorData) {
             const fileData = vfs.getFile(cursorImageName).toDataView()
             const imgData = BitmapWithPalette.decode(fileData).applyAlpha()
@@ -54,8 +53,8 @@ export async function start() {
             } else {
                 context.putImageData(imgData, 0, 0)
             }
-            animatedCursorData = new AnimatedCursorData([cursorImage])
-            cachePutData(cursorImageName, animatedCursorData).then()
+            animatedCursorData = new AnimatedCursorData([cursorImage.toDataURL()])
+            cachePutData(`cursorDataUrls-standard`, animatedCursorData).then()
         }
         CursorManager.addCursor('standard', animatedCursorData.dataUrls)
         CursorManager.changeCursor('standard')
@@ -128,9 +127,9 @@ export async function start() {
     console.log(`Loading of about ${(assetLoaders.length)} assets complete!`)
     vfs.dispose()
     screenMaster.loadingLayer.hide()
-    Array.from(document.getElementsByClassName('hide-after-loading-assets')).forEach((e) => {
+    for (const e of document.getElementsByClassName('hide-after-loading-assets')) {
         (e as HTMLElement).style.visibility = 'hidden'
-    })
+    }
 
     const teleportManConfig = GameConfig.instance.interfaceImages.teleportMan
     const teleportManNormal = ResourceManager.getImageData(teleportManConfig.normalFile)
@@ -138,9 +137,9 @@ export async function start() {
     const teleportManImageData: Map<string, [ImageData, ImageData]> = new Map()
     teleportManImageData.set('Interface_MenuItem_TeleportMan'.toLowerCase(), [teleportManNormal, teleportManDisabled])
     const depInterfaceBuildImageData: Map<string, [ImageData, ImageData]> = new Map()
-    Object.entries(GameConfig.instance.interfaceBuildImages).forEach(([key, cfg]: [string, InterfaceImageEntryCfg]) => {
+    for (const [key, cfg] of Object.entries(GameConfig.instance.interfaceBuildImages)) {
         depInterfaceBuildImageData.set(key, [ResourceManager.getImageData(cfg.normalFile), ResourceManager.getImageData(cfg.disabledFile)])
-    })
+    }
     DependencySpriteWorkerPool.instance.setupPool({
         teleportManImageData: teleportManImageData,
         tooltipFontData: await assetRegistry.tooltipFontLoader.wait(),

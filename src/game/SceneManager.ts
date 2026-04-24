@@ -1,4 +1,4 @@
-import { Color, FogExp2, Group, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
+import { Color, FogExp2, Group, Object3D, PerspectiveCamera, Quaternion, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
 import { LevelConfData } from './LevelLoader'
 import { BirdViewControls } from '../scene/BirdViewControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
@@ -13,7 +13,8 @@ import { SceneRenderer } from '../scene/SceneRenderer'
 import { Updatable, updateSafe } from './model/Updateable'
 import { CAMERA_FOV, CAMERA_MAX_SHAKE_BUMP, CAMERA_MIN_HEIGHT_ABOVE_TERRAIN, CAMERA_PAN_LIMIT_MARGIN, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
-import { SoundManager } from '../audio/SoundManager'
+import { SceneAudioAddEvent, SceneAudioListenerEvent } from '../event/WorldEvents'
+import { SceneAudioProxy } from '../scene/SceneAudioProxy'
 import { SceneEntity } from './SceneEntity'
 import { AnimationGroup } from '../scene/AnimationGroup'
 import { createCanvas } from '../core/ImageHelper'
@@ -47,6 +48,8 @@ export class SceneManager implements Updatable {
     readonly tempBirdTargetDelta: Vector3 = new Vector3()
     readonly cameraMinPos = new Vector3()
     readonly cameraMaxPos = new Vector3()
+    readonly lastCameraPos: Vector3 = new Vector3()
+    readonly audioProxies: SceneAudioProxy[] = []
     ambientLight: LeveledAmbientLight = new LeveledAmbientLight()
     terrain!: Terrain // TODO Refactor terrain handling, split into data and mesh
     floorGroup: Group = new Group()
@@ -108,16 +111,17 @@ export class SceneManager implements Updatable {
             this.scene.fog = new FogExp2(this.fogColor, 0.0025)
         }
         // TODO Refactor raider info component updates with ECS
-        this.worldMgr.entityMgr?.selection.raiders.forEach((r) => this.worldMgr.ecs.getComponents(r.entity).getOptional(SelectionNameComponent)?.setVisible(GameState.isBirdView))
-        this.worldMgr.entityMgr?.raiders.forEach((r) => {
+        for (const r of this.worldMgr.entityMgr.selection.raiders) {
+            this.worldMgr.ecs.getComponents(r.entity).getOptional(SelectionNameComponent)?.setVisible(GameState.isBirdView)
+        }
+        for (const r of this.worldMgr.entityMgr.raiders) {
             const infoComponent = r.worldMgr.ecs.getComponents(r.entity).getOptional(RaiderInfoComponent)
             if (infoComponent) {
                 infoComponent.bubbleSprite.updateVisibleState()
                 infoComponent.hungerSprite.visible = GameState.showObjInfo && GameState.isBirdView
             }
-        })
+        }
         this.cameraActive = camera
-        this.cameraActive.add(SoundManager.sceneAudioListener)
         this.renderer.camera = camera
     }
 
@@ -176,18 +180,26 @@ export class SceneManager implements Updatable {
     }
 
     update(elapsedMs: number) {
-        this.sceneObjects.forEach((e) => updateSafe(e, elapsedMs))
-        this.sprites.forEach((s) => updateSafe(s, elapsedMs))
+        for (const e of this.sceneObjects) updateSafe(e, elapsedMs)
+        for (const s of this.sprites) updateSafe(s, elapsedMs)
         updateSafe(this.torchLightCursor, elapsedMs)
         this.birdViewControls?.updateControlsSafe(elapsedMs)
         this.objectPointer.update(elapsedMs)
-        Array.from(this.worldMgr.nerpRunner.tutoBlocksById.values()).forEach((s) => s.forEach((t) => {
-            t.mesh.objectPointer?.update(elapsedMs)
-        }))
+        for (const [, s] of this.worldMgr.nerpRunner.tutoBlocksById) {
+            for (const t of s) {
+                t.mesh.objectPointer?.update(elapsedMs)
+            }
+        }
         const selectedEntity = this.worldMgr.entityMgr.selection.getPrimarySelected()
         if (selectedEntity && (this.cameraActive === this.cameraShoulder || this.cameraActive === this.cameraFPV)) {
             this.updateEgoMovement(selectedEntity, elapsedMs)
         }
+        const currentCameraPos = this.cameraActive.getWorldPosition(new Vector3())
+        if (this.lastCameraPos.distanceToSquared(currentCameraPos)) {
+            EventBroker.publish(new SceneAudioListenerEvent(currentCameraPos.clone(), this.cameraActive.getWorldQuaternion(new Quaternion())))
+            this.lastCameraPos.copy(currentCameraPos)
+        }
+        for (const a of this.audioProxies) a.update(elapsedMs)
     }
 
     private updateEgoMovement(selectedEntity: Raider | VehicleEntity, elapsedMs: number) {
@@ -226,7 +238,7 @@ export class SceneManager implements Updatable {
         this.followerRenderer?.dispose()
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
-        this.sceneObjects.forEach((e) => e.dispose())
+        for (const e of this.sceneObjects) e.dispose()
         this.sceneObjects.length = 0
     }
 
@@ -289,27 +301,11 @@ export class SceneManager implements Updatable {
     }
 
     addPositionalAudio(parent: Object3D, sfxName: string, loop: boolean): number {
-        const audio = new PositionalAudio(SoundManager.sceneAudioListener)
-        audio.setRefDistance(TILESIZE * 5)
-        audio.setRolloffFactor(10)
-        const sfxVolume = SaveGameManager.getSfxVolume()
-        audio.setVolume(sfxVolume)
-        audio.loop = loop
-        const audioId = SoundManager.nextAudioId
-        SoundManager.playingAudio.set(audioId, audio)
-        if (!audio.loop) {
-            audio.onEnded = () => {
-                parent.remove(audio)
-                SoundManager.playingAudio.delete(audioId)
-            }
-        }
-        const audioBuffer = SoundManager.getSoundBuffer(sfxName)
-        if (audioBuffer) {
-            audio.setBuffer(audioBuffer)
-            parent.add(audio)
-            if (sfxVolume > 0) audio.play()
-        }
-        return audioId
+        const proxy = new SceneAudioProxy()
+        this.audioProxies.push(proxy)
+        parent.add(proxy)
+        EventBroker.publish(new SceneAudioAddEvent(proxy.audioId, sfxName, loop, parent.getWorldPosition(new Vector3())))
+        return proxy.audioId
     }
 
     private limitCameraBird() {

@@ -17,16 +17,16 @@ export class PriorityListPanel extends Panel {
 
     constructor(panelCfg: PanelCfg, buttonsCfg: ButtonPriorityListCfg, cfgPos: PrioritiesImagePositionsCfg, cfg: PriorityButtonListCfg) {
         super(panelCfg)
-        buttonsCfg.panelButtonPriorityListDisable.forEach((buttonCfg, index) => {
+        for (const [index, buttonCfg] of buttonsCfg.panelButtonPriorityListDisable.entries()) {
             this.addChild(new Button(buttonCfg)).onClick = () => {
                 GameState.priorityList.toggle(index)
             }
-        })
-        buttonsCfg.panelButtonPriorityListUpOne.forEach((buttonCfg, index) => {
+        }
+        for (const [index, buttonCfg] of buttonsCfg.panelButtonPriorityListUpOne.entries()) {
             this.addChild(new Button(buttonCfg)).onClick = () => {
                 GameState.priorityList.upOne(index)
             }
-        })
+        }
         this.addChild(new Button(buttonsCfg.panelButtonPriorityListReset)).onClick = () => {
             GameState.priorityList.reset()
         }
@@ -41,21 +41,21 @@ export class PriorityListPanel extends Panel {
         this.prioByName.set(PRIORITY_IDENTIFIER.construction, this.addChild(new Button(cfg.aiPriorityConstruction)))
         this.prioByName.set(PRIORITY_IDENTIFIER.reinforce, this.addChild(new Button(cfg.aiPriorityReinforce)))
         this.prioByName.set(PRIORITY_IDENTIFIER.recharge, this.addChild(new Button(cfg.aiPriorityRecharge)))
-        this.prioByName.forEach((btn) => btn.hoverFrame = true)
+        for (const [, btn] of this.prioByName) btn.hoverFrame = true
         this.registerEventListener(EventKey.UPDATE_PRIORITIES, (event: UpdatePriorities) => {
             this.updateList(event.priorityList)
         })
     }
 
     private updateList(priorityList: PriorityEntry[]) {
-        this.prioByName.forEach((btn) => btn.hidden = true)
+        for (const [, btn] of this.prioByName) btn.hidden = true
         let btnIndex = 0
         let updated = false
-        priorityList.forEach((prioEntry, prioIndex) => {
+        for (const [prioIndex, prioEntry] of priorityList.entries()) {
             const prioButton = this.prioByName.get(prioEntry.key)
             if (!prioButton) {
                 if (VERBOSE) console.warn(`Could not find button for priority "${prioEntry.key}"`)
-                return
+                continue
             }
             updated = updated || prioButton.hidden || prioButton.disabled !== !prioEntry.enabled
             prioButton.hidden = false
@@ -68,7 +68,7 @@ export class PriorityListPanel extends Panel {
                 GameState.priorityList.pushToTop(prioIndex)
             }
             btnIndex++
-        })
+        }
         if (updated) this.notifyRedraw()
     }
 

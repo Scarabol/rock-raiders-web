@@ -47,7 +47,7 @@ export class DebugHelper {
             if (DebugHelper.messageContainer.children.length > 100 && DebugHelper.messageContainer.lastChild) DebugHelper.messageContainer.removeChild(DebugHelper.messageContainer.lastChild)
             const msg = DebugHelper.messageContainer.insertBefore(document.createElement('div'), DebugHelper.messageContainer.firstChild)
             msg.innerText = message
-            optionalParams.forEach((p) => msg.innerText += `\n${JSON.stringify(p)}`)
+            for (const p of optionalParams) msg.innerText += `\n${JSON.stringify(p)}`
             msg.style.padding = '0.1em'
             msg.style.color = color
             msg.style.userSelect = 'none'

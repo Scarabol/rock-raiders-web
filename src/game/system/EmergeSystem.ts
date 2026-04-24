@@ -41,9 +41,10 @@ export class EmergeSystem extends AbstractGameSystem {
 
     update(ecs: ECS, elapsedMs: number): void {
         if (!this.emergeCreature) return
-        const busySurfaces = new Set<Surface>();
-        [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles] // TODO Replace with entity filter
-            .forEach((e) => busySurfaces.add(ecs.getComponents(e.entity).get(PositionComponent).surface))
+        const busySurfaces = new Set<Surface>()
+        for (const e of [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles]) {
+            busySurfaces.add(ecs.getComponents(e.entity).get(PositionComponent).surface)
+        }
         const emergeSpawns: Map<number, Surface[]> = new Map()
         const triggeredEmerges: Set<EmergeComponent> = new Set()
         for (const [_entity, components] of this.activeEmerges) {
@@ -63,13 +64,13 @@ export class EmergeSystem extends AbstractGameSystem {
                 console.error(e)
             }
         }
-        triggeredEmerges.forEach((emergeComponent) => {
-            emergeSpawns.getOrUpdate(emergeComponent.emergeSpawnId, () => []).forEach((surface) => {
+        for (const emergeComponent of triggeredEmerges) {
+            for (const surface of emergeSpawns.getOrUpdate(emergeComponent.emergeSpawnId, () => [])) {
                 emergeComponent.emergeDelayMs = this.emergeTimeoutMs
-                if (surface.wallType !== WALL_TYPE.wall || surface.reinforced) return // walls might change from undiscovered or inverted corner to actual wall or rocky removes reinforcement
+                if (surface.wallType !== WALL_TYPE.wall || surface.reinforced) continue // walls might change from undiscovered or inverted corner to actual wall or rocky removes reinforcement
                 EventBroker.publish(new MonsterEmergeEvent(surface))
-            })
-        })
+            }
+        }
     }
 
     emergeFromSurface(spawn: Surface) {
@@ -91,7 +92,7 @@ export class EmergeSystem extends AbstractGameSystem {
     }
 
     emergeSlug() {
-        const slugHole = PRNG.nerp.sample(this.slugHoles.values().map((c) => c.get(SlugHoleComponent)).toArray())
+        const slugHole = PRNG.nerp.sample(Array.from(this.slugHoles, ([, c]) => c.get(SlugHoleComponent)))
         if (!slugHole) return
         const slug = MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SLUG, slugHole.getRandomPosition(), PRNG.animation.random() * 2 * Math.PI)
         const behaviorComponent = this.worldMgr.ecs.addComponent(slug, new SlugBehaviorComponent())

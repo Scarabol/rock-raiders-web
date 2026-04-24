@@ -67,9 +67,9 @@ export class TeleportSystem extends AbstractGameSystem {
 
     update(ecs: ECS, elapsedMs: number): void {
         const teleports: TeleportComponent[] = []
-        this.teleporter.forEach((t, e) => { // TODO Replace by using powered component from yet to implement energy system
+        for (const [e, t] of this.teleporter.entries()) { // TODO Replace by using powered component from yet to implement energy system
             if (this.poweredBuildings.has(e)) teleports.add(t.get(TeleportComponent))
-        })
+        }
         try {
             for (this.spawnRaiderTimer += elapsedMs; this.spawnRaiderTimer >= CHECK_SPAWN_RAIDER_TIMER; this.spawnRaiderTimer -= CHECK_SPAWN_RAIDER_TIMER) {
                 if (this.requestedRaiders > 0 && !this.worldMgr.entityMgr.hasMaxRaiders()) {

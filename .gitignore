@@ -4,5 +4,6 @@ dist
 .idea
 
 .vitest-attachments
+coverage
 
 /wad

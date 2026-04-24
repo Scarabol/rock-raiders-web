@@ -18,7 +18,7 @@ export class LevelSelectLayer extends MainMenuLayer {
         levelTextWindow.setFirstLine(onlyTutorials ? levelTextCfg.level : levelTextCfg.tutorial)
         levelTextWindow.setSecondLine(' ')
         this.items.push(levelTextWindow)
-        GameConfig.instance.levels.forEach((level) => {
+        for (const level of GameConfig.instance.levels) {
             const levelButton = new MainMenuLevelButton(this, level, onlyTutorials)
             levelButton.onHoverChange = () => {
                 const levelScore = SaveGameManager.getLevelScoreString(level.levelName)
@@ -31,7 +31,7 @@ export class LevelSelectLayer extends MainMenuLayer {
                 SoundManager.playVoice(`Stream_LevelName_${tutPrefix}Level${!!tutPrefix ? levelNum : swapped}`)
             }
             this.items.push(levelButton)
-        })
+        }
         this.items.push(new MainMenuBaseItem(517, 11, 36, 36, 'selectrandomlevel')) // New easter egg to start random level
     }
 

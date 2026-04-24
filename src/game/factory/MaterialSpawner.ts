@@ -57,10 +57,10 @@ export class MaterialSpawner {
             case EntityType.CRYSTAL:
                 const energyCrystalMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.crystal)
                 if (!energyCrystalMesh) throw new Error(`Cannot spawn energy crystal missing mesh "${GameConfig.instance.miscObjects.crystal}"`)
-                energyCrystalMesh.material.forEach((m) => {
+                for (const m of energyCrystalMesh.material) {
                     m.color.fromArray(GameConfig.instance.main.powerCrystalRGB)
                     m.emissive.fromArray(GameConfig.instance.main.powerCrystalRGB)
-                })
+                }
                 material.sceneEntity.add(energyCrystalMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, { gameEntity: material.entity, entityType: material.entityType }, GameConfig.instance.stats.powerCrystal))
                 // Do not set priority identifier before workplace
@@ -69,10 +69,10 @@ export class MaterialSpawner {
             case EntityType.DEPLETED_CRYSTAL:
                 const depletedCrystalMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.crystal)
                 if (!depletedCrystalMesh) throw new Error(`Cannot spawn energy crystal missing mesh "${GameConfig.instance.miscObjects.crystal}"`)
-                depletedCrystalMesh.material.forEach((m) => {
+                for (const m of depletedCrystalMesh.material) {
                     m.color.fromArray(GameConfig.instance.main.unpoweredCrystalRGB)
                     m.emissive.fromArray(GameConfig.instance.main.unpoweredCrystalRGB)
-                })
+                }
                 material.sceneEntity.add(depletedCrystalMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, { gameEntity: material.entity, entityType: material.entityType }, GameConfig.instance.stats.powerCrystal))
                 material.priorityIdentifier = PRIORITY_IDENTIFIER.recharge

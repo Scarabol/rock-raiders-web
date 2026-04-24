@@ -73,9 +73,9 @@ export class SelectionChanged extends BaseEvent {
         this.canPlaceFence = !!entityMgr.selection.surface?.canPlaceFence()
         this.someCarries = entityMgr.selection.raiders.some((r) => !!r.carries)
         this.everyHasMaxLevel = entityMgr.selection.raiders.every((r) => r.level >= r.stats.maxLevel)
-        RaiderTrainings.values.forEach((training) => this.canDoTraining.set(training, entityMgr.hasTrainingSite(training) && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
-        RaiderTools.values.forEach((tool) => this.everyHasTool.set(tool, entityMgr.selection.raiders.every((r) => r.hasTool(tool))))
-        VehicleUpgrades.values.forEach((upgrade) => this.canInstallUpgrade.set(upgrade, entityMgr.selection.vehicles.some((v) => v.canUpgrade(upgrade))))
+        for (const training of RaiderTrainings.values) this.canDoTraining.set(training, entityMgr.hasTrainingSite(training) && entityMgr.selection.raiders.some((r) => !r.hasTraining(training)))
+        for (const tool of RaiderTools.values) this.everyHasTool.set(tool, entityMgr.selection.raiders.every((r) => r.hasTool(tool)))
+        for (const upgrade of VehicleUpgrades.values) this.canInstallUpgrade.set(upgrade, entityMgr.selection.vehicles.some((v) => v.canUpgrade(upgrade)))
         this.hasUpgradeSite = entityMgr.hasUpgradeSite()
         this.buildingCanUpgrade = !!entityMgr.selection.building?.canUpgrade()
         this.buildingMissingOreForUpgrade = entityMgr.selection.building?.missingOreForUpgrade() || 0
@@ -106,7 +106,7 @@ export class BuildingsChangedEvent extends BaseEvent {
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.BUILDINGS_CHANGED)
-        entityMgr.buildings.forEach((b) => {
+        for (const b of entityMgr.buildings) {
             if (b.isReady()) {
                 this.placedVisibleBuildings.add(b.entity)
                 this.discoveredBuildingsMaxLevel.upsert(b.entityType, (current) => Math.max(current || 0, b.level))
@@ -115,7 +115,7 @@ export class BuildingsChangedEvent extends BaseEvent {
                 this.poweredBuildings.add(b.entity)
                 this.usableBuildingsMaxLevel.upsert(b.entityType, (current) => Math.max(current || 0, b.level))
             }
-        })
+        }
     }
 
     // needs static, because events might get de-/serialized, which removes class methods

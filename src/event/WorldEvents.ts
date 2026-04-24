@@ -2,7 +2,7 @@ import { EntityType } from '../game/model/EntityType'
 import { GameState } from '../game/model/GameState'
 import { Job } from '../game/model/job/Job'
 import { EventKey } from './EventKeyEnum'
-import { Vector2 } from 'three'
+import { Quaternion, Vector2, Vector3 } from 'three'
 import { GameResultState } from '../game/model/GameResult'
 import { LevelConfData } from '../game/LevelLoader'
 import { BaseEvent, WorldLocationEventMap } from './EventTypeMap'
@@ -137,5 +137,35 @@ export class MonsterLaserHitEvent extends BaseEvent {
 export class WorldLocationEvent extends BaseEvent {
     constructor(eventType: keyof WorldLocationEventMap, readonly location: PositionComponent) {
         super(eventType)
+    }
+}
+
+export class SceneAudioListenerEvent extends BaseEvent {
+    constructor(readonly position: Vector3, readonly quaternion: Quaternion) {
+        super(EventKey.SCENE_AUDIO_LISTENER)
+    }
+}
+
+export class SceneAudioAddEvent extends BaseEvent {
+    constructor(readonly audioId: number, readonly sfxName: string, readonly loop: boolean, readonly position: Vector3) {
+        super(EventKey.SCENE_AUDIO_ADD)
+    }
+}
+
+export class SceneAudioRemoveEvent extends BaseEvent {
+    constructor(readonly audioId: number) {
+        super(EventKey.SCENE_AUDIO_REMOVE)
+    }
+}
+
+export class SceneAudioStateEvent extends BaseEvent {
+    constructor(readonly play: boolean) {
+        super(EventKey.SCENE_AUDIO_STATE)
+    }
+}
+
+export class SceneAudioMoveEvent extends BaseEvent {
+    constructor(readonly audioId: number, readonly position: Vector3) {
+        super(EventKey.SCENE_AUDIO_MOVE)
     }
 }

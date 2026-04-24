@@ -17,12 +17,12 @@ export function getFilename(url: string): string {
 }
 
 export function iGet(obj: any, ...keys: string[]): any {
-    keys.forEach((keyName) => {
+    for (const keyName of keys) {
         obj = Object.keys(obj)
             .filter((key) => key.toLowerCase() === keyName.toLowerCase())
             .map((key) => obj[key])
         obj = obj ? obj[0] : obj
-    })
+    }
     return obj
 }
 

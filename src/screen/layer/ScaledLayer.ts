@@ -4,18 +4,18 @@ import { ScreenLayer } from './ScreenLayer'
 
 export class ScaledLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrame
-    fixedWidth: number = NATIVE_SCREEN_WIDTH
-    fixedHeight: number = NATIVE_SCREEN_HEIGHT
+    readonly fixedWidth: number = NATIVE_SCREEN_WIDTH
+    readonly fixedHeight: number = NATIVE_SCREEN_HEIGHT
     scaleX: number = 1
     scaleY: number = 1
 
     constructor(layerName?: string) {
         super(layerName)
         this.updateScale()
-        this.animationFrame = new AnimationFrame(this.canvas, this.readbackCanvas)
+        this.animationFrame = new AnimationFrame(this.canvas)
     }
 
-    private updateScale() {
+    updateScale() {
         this.scaleX = this.canvas.width / this.fixedWidth
         this.scaleY = this.canvas.height / this.fixedHeight
     }

@@ -26,7 +26,7 @@ export class BaseElement {
         this.disabled = false
         this.hover = false
         this.pressed = false
-        this.children.forEach((c) => c.reset())
+        for (const c of this.children) c.reset()
     }
 
     addChild<T extends BaseElement>(child: T): T {
@@ -38,8 +38,8 @@ export class BaseElement {
 
     onRedraw(context: SpriteContext) {
         if (this.hidden) return
-        this.children.forEach((child) => child.onRedraw(context))
-        this.children.forEach((child) => child.drawHover(context))
+        for (const child of this.children) child.onRedraw(context)
+        for (const child of this.children) child.drawHover(context)
     }
 
     drawHover(_context: SpriteContext) {
@@ -52,18 +52,18 @@ export class BaseElement {
 
     hide() {
         this.hidden = true
-        this.children.forEach((child) => child.hide())
+        for (const child of this.children) child.hide()
     }
 
     show() {
         this.hidden = false
-        this.children.forEach((child) => child.show())
+        for (const child of this.children) child.show()
     }
 
     updatePosition() {
         this.x = this.parent ? this.parent.x + this.relX : this.relX
         this.y = this.parent ? this.parent.y + this.relY : this.relY
-        this.children.forEach((child) => child.updatePosition())
+        for (const child of this.children) child.updatePosition()
     }
 
     isInRect(sx: number, sy: number) {
@@ -79,7 +79,7 @@ export class BaseElement {
             this.hover = inRect
             if (!this.hover) this.pressed = false
         }
-        this.children.forEach((child) => child.onPointerMove(event))
+        for (const child of this.children) child.onPointerMove(event)
         if (this.hover && this.pointerDown && (Math.abs(event.sx - this.pointerDown.x) > 5 || Math.abs(event.sy - this.pointerDown.y) > 5)) {
             this.onDrag(event.sx, event.sy)
         } else {
@@ -109,7 +109,7 @@ export class BaseElement {
             this.pressed = false
         }
         let stateChanged = this.pressed !== oldState
-        this.children.forEach((child) => stateChanged = child.onPointerDown(event) || stateChanged)
+        for (const child of this.children) stateChanged = child.onPointerDown(event) || stateChanged
         return stateChanged
     }
 
@@ -118,7 +118,7 @@ export class BaseElement {
         if (this.isInactive()) return false
         const inRect = this.isInRect(event.sx, event.sy)
         let stateChanged = false
-        this.children.forEach((child) => stateChanged = child.onPointerUp(event) || stateChanged)
+        for (const child of this.children) stateChanged = child.onPointerUp(event) || stateChanged
         if (!stateChanged && inRect && this.pressed) {
             this.clicked(event)
         }
@@ -139,7 +139,7 @@ export class BaseElement {
         let stateChanged = this.pressed || this.hover
         this.pressed = false
         this.hover = false
-        this.children.forEach((child) => stateChanged = child.onPointerLeave() || stateChanged)
+        for (const child of this.children) stateChanged = child.onPointerLeave() || stateChanged
         return stateChanged
     }
 

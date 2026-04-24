@@ -39,35 +39,36 @@ export class MainMenuLayer extends ScaledLayer {
             BitmapFontWorkerPool.instance.createTextImage(menuCfg.loFont, menuCfg.fullName) // TODO create all images in loading phase
                 .then((img) => titleImage = img)
         }
-        menuCfg.itemsLabel.forEach((item) => {
+        for (const item of menuCfg.itemsLabel) {
             if (item.label) {
                 this.items.push(new MainMenuLabelButton(this, item))
             } else {
                 this.items.push(new MainMenuIconButton(this, item))
             }
-        })
-        this.cfg.overlays.forEach((flic) => {
-            const flicImages = ResourceManager.getResource(flic.flhFilepath) ?? []
+        }
+        for (const flic of this.cfg.overlays) {
+            const flicImages = ResourceManager.flhFrames.get(flic.flhFilepath) ?? []
             this.overlays.push(new FlicAnimOverlay(this.animationFrame, flicImages, flic.x, flic.y, flic.sfxName))
-        })
+        }
         if (this.cfg.playRandom) PRNG.unsafe.shuffle(this.cfg.overlays)
         this.animationFrame.onRedraw = (context) => {
             if (this.menuImage) context.drawImage(this.menuImage, 0, -this.scrollY)
             this.overlay?.draw(context)
             if (titleImage) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position.y)
-            this.items.forEach((_item, index) => (this.items[this.items.length - 1 - index]).draw(context))
+            for (const [index] of this.items.entries()) this.items[this.items.length - 1 - index].draw(context)
         }
-        new Map<keyof HTMLElementEventMap, PointerEventType>([
+        const eventToType: [keyof HTMLElementEventMap, PointerEventType][] = [
             ['pointermove', POINTER_EVENT.move],
             ['pointerdown', POINTER_EVENT.down],
             ['pointerup', POINTER_EVENT.up],
-        ]).forEach((eventEnum, eventType) => {
+        ]
+        for (const [eventType, eventEnum] of eventToType) {
             this.addEventListener(eventType, (event): boolean => {
                 const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent);
                 [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
                 return this.handlePointerEvent(gameEvent)
             })
-        })
+        }
         this.addEventListener('wheel', (event: WheelEvent): boolean => {
             if (!this.cfg.canScroll) return false
             const gameEvent = new GameWheelEvent(event);
@@ -90,7 +91,7 @@ export class MainMenuLayer extends ScaledLayer {
 
     override reset() {
         super.reset()
-        this.items.forEach((item) => item.reset())
+        for (const item of this.items) item.reset()
         this.scrollY = 0
         this.scrollSpeedY = 0
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)
@@ -105,7 +106,7 @@ export class MainMenuLayer extends ScaledLayer {
     }
 
     override hide() {
-        this.items.forEach((item) => item.reset())
+        for (const item of this.items) item.reset()
         this.scrollSpeedY = 0
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)
         this.overlay?.stop()
@@ -138,7 +139,7 @@ export class MainMenuLayer extends ScaledLayer {
             this.updateItemsHoveredState(event.canvasX, event.canvasY, false)
             if (event.button === MOUSE_BUTTON.main) {
                 let needsRedraw = false
-                this.items.forEach((item) => needsRedraw = item.onMouseDown() || needsRedraw)
+                for (const item of this.items) needsRedraw = item.onMouseDown() || needsRedraw
                 if (needsRedraw) {
                     this.animationFrame.notifyRedraw()
                     return true
@@ -149,7 +150,7 @@ export class MainMenuLayer extends ScaledLayer {
             this.updateItemsHoveredState(event.canvasX, event.canvasY, this.hasScrolled)
             if (event.button === MOUSE_BUTTON.main && !this.hasScrolled) {
                 let needsRedraw = false
-                this.items.forEach((item) => needsRedraw = item.onMouseUp() || needsRedraw)
+                for (const item of this.items) needsRedraw = item.onMouseUp() || needsRedraw
                 if (needsRedraw) {
                     this.animationFrame.notifyRedraw()
                     return true
@@ -178,7 +179,7 @@ export class MainMenuLayer extends ScaledLayer {
     private updateItemsHoveredState(sx: number, sy: number, forceRelease: boolean) {
         let needsRedraw = false
         let hasHovered = forceRelease
-        this.items.forEach((item) => {
+        for (const item of this.items) {
             if (!hasHovered) {
                 const absY = sy + (item.scrollAffected ? this.scrollY : 0)
                 hasHovered = item.isHovered(sx, absY)
@@ -187,7 +188,7 @@ export class MainMenuLayer extends ScaledLayer {
                 item.setHovered(false)
             }
             needsRedraw = needsRedraw || item.needsRedraw
-        })
+        }
         if (needsRedraw) this.animationFrame.notifyRedraw()
     }
 
@@ -202,7 +203,7 @@ export class MainMenuLayer extends ScaledLayer {
     }
 
     set onItemAction(callback: (item: MainMenuBaseItem) => void) {
-        this.items.forEach((item) => item.onPressed = () => callback(item))
+        for (const item of this.items) item.onPressed = () => callback(item)
     }
 
     playRandomOverlay(): void {

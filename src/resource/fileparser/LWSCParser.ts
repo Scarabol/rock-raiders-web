@@ -5,7 +5,7 @@
  */
 
 import { Euler, KeyframeTrack, Matrix4, NumberKeyframeTrack, Quaternion, QuaternionKeyframeTrack, StringKeyframeTrack, Vector3, VectorKeyframeTrack } from 'three'
-import { degToRad } from 'three/src/math/MathUtils'
+import { degToRad } from 'three/src/math/MathUtils.js'
 import { getFilename } from '../../core/Util'
 import { VERBOSE } from '../../params'
 

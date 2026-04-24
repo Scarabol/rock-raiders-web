@@ -22,10 +22,11 @@ declare global {
 }
 
 Array.prototype.add = function <T>(...items: T[]): void {
-    items?.forEach((item) => {
+    if (!items) return
+    for (const item of items) {
         const index = this.indexOf(item)
         if (index === -1) this.push(item)
-    })
+    }
 }
 
 Array.prototype.remove = function <T>(element: T): void {
@@ -51,13 +52,13 @@ Array.prototype.last = function <T>(): T | undefined {
 
 Array.prototype.count = function <T>(callback: (element: T) => boolean): number {
     let counter = 0
-    this.forEach((e: T) => callback(e) && counter++)
+    for (const e of this) if (callback(e)) counter++
     return counter
 }
 
 Array.prototype.partition = function <T>(filter: (element: T) => boolean): [T[], T[]] {
     const left: T[] = [], right: T[] = []
-    this.forEach((a: T) => filter(a) ? left.push(a) : right.push(a))
+    for (const a of this) filter(a) ? left.push(a) : right.push(a)
     return [left, right]
 }
 

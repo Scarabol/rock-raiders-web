@@ -1,8 +1,7 @@
 import { Vector2, Vector3 } from 'three'
-import { SoundManager } from '../../../audio/SoundManager'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { BuildingsChangedEvent, DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
-import { MaterialAmountChanged, UsedCrystalsChanged } from '../../../event/WorldEvents'
+import { MaterialAmountChanged, SceneAudioRemoveEvent, UsedCrystalsChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BubbleSprite } from '../../../scene/BubbleSprite'
@@ -79,8 +78,8 @@ export class BuildingEntity {
             this.setEnergized(false)
             this.sceneEntity.setAnimation(BUILDING_ACTIVITY.explode, () => this.disposeFromWorld())
             this.powerOffSprite.setEnabled(false)
-            this.surfaces.forEach((s) => s.setBuilding(undefined))
-            this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
+            for (const s of this.surfaces) s.setBuilding(undefined)
+            for (const s of this.surfaces) this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s)
             this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
             EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         }))
@@ -126,7 +125,7 @@ export class BuildingEntity {
             this.waterPathSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
             this.pathSurfaces.push(this.waterPathSurface)
         }
-        this.surfaces.forEach((s) => s.setBuilding(this))
+        for (const s of this.surfaces) s.setBuilding(this)
         const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity, {
             gameEntity: this.entity,
             entityType: this.entityType
@@ -156,7 +155,9 @@ export class BuildingEntity {
             this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
             this.onPlaceDown()
         }
-        this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
+        for (const s of this.surfaces) {
+            this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s)
+        }
         this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
     }
 
@@ -247,8 +248,8 @@ export class BuildingEntity {
         this.setEnergized(false)
         this.sceneEntity.setAnimation(BUILDING_ACTIVITY.stand)
         this.powerOffSprite.setEnabled(false)
-        this.surfaces.forEach((s) => s.setBuilding(undefined))
-        this.surfaces.forEach((s) => this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s))
+        for (const s of this.surfaces) s.setBuilding(undefined)
+        for (const s of this.surfaces) this.worldMgr.sceneMgr.terrain.pathFinder.updateSurface(s)
         this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
         this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
         EventBroker.publish(new UpdateRadarEntityEvent(MAP_MARKER_TYPE.scanner, this.entity, MAP_MARKER_CHANGE.remove))
@@ -259,7 +260,8 @@ export class BuildingEntity {
     disposeFromWorld() {
         this.worldMgr.sceneMgr.disposeSceneEntity(this.sceneEntity)
         this.worldMgr.sceneMgr.removeSprite(this.powerOffSprite)
-        this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
+        if (this.engineSoundId) EventBroker.publish(new SceneAudioRemoveEvent(this.engineSoundId))
+        this.engineSoundId = undefined
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
@@ -295,9 +297,9 @@ export class BuildingEntity {
     }
 
     spawnBarriers(barrierLocations: Vector2[], site: BuildingSite) {
-        barrierLocations.forEach((l) => {
+        for (const l of barrierLocations) {
             MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.BARRIER, this.getDropPosition2D(), undefined, undefined, l, site)
-        })
+        }
     }
 
     spawnFence(targetSurface: Surface) {
@@ -334,7 +336,8 @@ export class BuildingEntity {
             } else {
                 this.changeUsedCrystals(-this.crystalDrain)
                 if (this.stats.powerBuilding) this.worldMgr.powerGrid.removeEnergySource(this.surfaces)
-                this.engineSoundId = SoundManager.stopAudio(this.engineSoundId)
+                if (this.engineSoundId) EventBroker.publish(new SceneAudioRemoveEvent(this.engineSoundId))
+                this.engineSoundId = undefined
                 this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
             }
         }
@@ -342,7 +345,7 @@ export class BuildingEntity {
             this.sceneEntity.setAnimation(this.isPowered() ? BUILDING_ACTIVITY.stand : BUILDING_ACTIVITY.unpowered)
         }
         this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
-        this.surfaces.forEach((s) => s.updateTexture())
+        for (const s of this.surfaces) s.updateTexture()
         if (stateChanged) EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         if (this.selected || (this.entityType === EntityType.UPGRADE && this.worldMgr.entityMgr.selection.vehicles.length > 0)) {
             EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
@@ -362,11 +365,13 @@ export class BuildingEntity {
     private onPlaceDown() {
         this.sceneEntity.setAnimation(BUILDING_ACTIVITY.stand)
         this.updateEnergyState()
-        this.surfaces.forEach((surface) => {
+        for (const surface of this.surfaces) {
             surface.updateTexture()
-            if (surface.surfaceType.connectsPath) surface.neighbors.forEach((n) => n.updateTexture())
+            if (surface.surfaceType.connectsPath) {
+                for (const n of surface.neighbors) n.updateTexture()
+            }
             this.worldMgr.powerGrid.onPathChange(surface)
-        })
+        }
         this.getToolPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())
         this.carryPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())
         if (this.buildingType.teleportedEntityTypes.length > 0 && this.primaryPathSurface) this.worldMgr.ecs.addComponent(this.entity, new TeleportComponent(this.buildingType.teleportedEntityTypes, this.pathSurfaces, this.sceneEntity.heading, this.primaryPathSurface, this.waterPathSurface))
@@ -405,9 +410,9 @@ export class BuildingEntity {
         if (this.entityType === EntityType.ORE_REFINERY) {
             MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.BRICK, this.getDropPosition2D())
         } else {
-            this.carriedItems.forEach((m) => this.worldMgr.depositItem(m))
+            for (const m of this.carriedItems) this.worldMgr.depositItem(m)
         }
-        this.carriedItems.forEach((m) => m.disposeFromWorld())
+        for (const m of this.carriedItems) m.disposeFromWorld()
         this.carriedItems.length = 0
     }
 

@@ -8,17 +8,16 @@ import { AVIFile, AVIParser } from './fileparser/avi/AVIParser'
 import { AssetRegistry } from './AssetRegistry'
 import { ResourceManager } from './ResourceManager'
 import { FlhParser } from './fileparser/FlhParser'
-import { imgDataToCanvas } from '../core/ImageHelper'
 import { SoundManager } from '../audio/SoundManager'
 import { BitmapFontData } from '../core/BitmapFont'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 import { EncodingHelper } from './fileparser/EncodingHelper'
 import { TerrainMapData } from '../game/terrain/TerrainMapData'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
-import { SpriteImage } from '../core/Sprite'
 import { SurfaceMeshPro } from '../game/terrain/SurfaceMesh'
 import { LWOBParser, LWOBTextureLoader } from './fileparser/LWOBParser'
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { cacheGetData, cachePutData } from './AssetCacheHelper'
 
 export abstract class AssetLoader<T> {
     readonly lAssetName: string
@@ -165,7 +164,7 @@ export class SoundAssetLoader extends AssetLoader<AudioBuffer> {
         }
         const audioBuffer = await AudioContext.getContext().decodeAudioData(data)
         ResourceManager.resourceByName.set(this.lAssetName, audioBuffer) // TODO Add only to sound buffer
-        this.sndKeys.forEach((sndKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sndKey, () => []).push(audioBuffer))
+        for (const sndKey of this.sndKeys) SoundManager.sfxBuffersByKey.getOrUpdate(sndKey, () => []).push(audioBuffer)
         return audioBuffer
     }
 }
@@ -188,26 +187,29 @@ export class LWOAssetLoader extends AssetLoader<ArrayBuffer> {
     }
 }
 
-export class FlhAssetLoader extends AssetLoader<SpriteImage[]> {
+export class FlhAssetLoader extends AssetLoader<ImageData[]> {
     constructor(assetName: string, optional: boolean, readonly interFrameMode: boolean) {
         super(assetName, optional)
     }
 
-    async exec(): Promise<SpriteImage[]> {
-        let flhContent: DataView
-        try {
-            flhContent = this.assetRegistry.vfs.getFile(this.lAssetName).toDataView()
-        } catch (e) {
+    async exec(): Promise<ImageData[]> {
+        let imgData = await cacheGetData<ImageData[]>(this.lAssetName)
+        if (!imgData) {
+            let flhContent: DataView
             try {
                 flhContent = this.assetRegistry.vfs.getFile(this.lAssetName).toDataView()
             } catch (e) {
-                flhContent = this.assetRegistry.vfs.getFile(`Data/${(this.lAssetName)}`).toDataView()
+                try {
+                    flhContent = this.assetRegistry.vfs.getFile(this.lAssetName).toDataView()
+                } catch (e) {
+                    flhContent = this.assetRegistry.vfs.getFile(`Data/${(this.lAssetName)}`).toDataView()
+                }
             }
+            imgData = new FlhParser(flhContent, this.interFrameMode).parse()
+            cachePutData(this.lAssetName, imgData).then()
         }
-        const imgData = new FlhParser(flhContent, this.interFrameMode).parse()
-        const images = imgData.map((i) => imgDataToCanvas(i))
-        ResourceManager.resourceByName.set(this.lAssetName, images) // TODO Add images to cache instead
-        return images
+        ResourceManager.flhFrames.set(this.lAssetName, imgData)
+        return imgData
     }
 }
 

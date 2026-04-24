@@ -20,7 +20,7 @@ import { WALL_TYPE, WallType } from './WallType'
 import { Job } from '../model/job/Job'
 import { JOB_STATE } from '../model/job/JobState'
 import { MaterialSpawner } from '../factory/MaterialSpawner'
-import { degToRad } from 'three/src/math/MathUtils'
+import { degToRad } from 'three/src/math/MathUtils.js'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimationGroup } from '../../scene/AnimationGroup'
 import { GameConfig } from '../../cfg/GameConfig'
@@ -128,11 +128,11 @@ export class Surface {
                 }
             }
         }
-        walls.forEach((w) => {
+        for (const [, w] of walls) {
             w.markDiscovered()
             w.needsMeshUpdate = true
-        })
-        walls.forEach((w) => w.isUnstable() && w.collapse())
+        }
+        for (const [, w] of walls) if (w.isUnstable()) w.collapse()
         EventBroker.publish(new UpdateRadarTerrain(this.terrain))
         return caveFound
     }
@@ -603,7 +603,7 @@ export class Surface {
         }
         this.updateTexture()
         this.updateObjectName()
-        if (oldSurfaceType.connectsPath || this.surfaceType.connectsPath) this.neighbors.forEach((n) => n.updateTexture())
+        if (oldSurfaceType.connectsPath || this.surfaceType.connectsPath) for (const n of this.neighbors) n.updateTexture()
         EventBroker.publish(new UpdateRadarSurface(this))
         if (wasPath !== this.isPath()) this.worldMgr.powerGrid.onPathChange(this)
         this.terrain.pathFinder.updateSurface(this)
@@ -614,9 +614,9 @@ export class Surface {
             this.containedCrystals = 0
             this.site?.cancelSite()
             const materials = [...this.worldMgr.entityMgr.materials] // list will be changed by dispose below
-            materials.forEach((m) => { // XXX Optimize performance
+            for (const m of materials) { // XXX Optimize performance
                 const materialSurface = m.getSurface()
-                if (materialSurface !== this) return
+                if (materialSurface !== this) continue
                 m.carryJob?.target?.site?.unAssign(m)
                 m.disposeFromWorld()
                 if (m.entityType === EntityType.DEPLETED_CRYSTAL || m.entityType === EntityType.CRYSTAL) {
@@ -626,7 +626,7 @@ export class Surface {
                 } else if (m.entityType === EntityType.BRICK) {
                     GameState.totalOres -= BRICK_ORE_VALUE
                 }
-            })
+            }
         } else if ([SurfaceType.RUBBLE4, SurfaceType.RUBBLE3, SurfaceType.RUBBLE2, SurfaceType.RUBBLE1].includes(this.surfaceType)) {
             if (this.rubblePositions.length < 1) this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
             if (oldSurfaceType === SurfaceType.POWER_PATH) {
@@ -686,7 +686,7 @@ export class Surface {
         if (!this.site?.complete || this.site.canceled) return undefined
         if (this.completeSurfaceJob) return this.completeSurfaceJob
         const items: MaterialEntity[] = []
-        this.site.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
+        for (const [, itemsOnSite] of this.site.onSiteByType) items.push(...itemsOnSite)
         this.completeSurfaceJob = new CompleteSurfaceJob(this, items)
         EventBroker.publish(new JobCreateEvent(this.completeSurfaceJob))
         return this.completeSurfaceJob

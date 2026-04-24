@@ -1,4 +1,5 @@
 export class VirtualFile {
+    static readonly textDecoder = new TextDecoder('utf-16le')
     readonly lFileName: string
     private buffer?: ArrayBuffer
     private text?: string
@@ -42,8 +43,7 @@ export class VirtualFile {
 
     toText(): string {
         if (this.text !== undefined && this.text !== null) return this.text
-        this.text = '' // otherwise text starts with 'undefined'
-        this.toArray().forEach((c) => this.text += String.fromCharCode(c)) // Shorthand with spread operator (...) exceeds call stack size
+        this.text = VirtualFile.textDecoder.decode(new Uint16Array(this.toArray())) // Inner array needed for byte alignment - still fast
         return this.text
     }
 }

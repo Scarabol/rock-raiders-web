@@ -1,9 +1,11 @@
 import { ScaledLayer } from './ScaledLayer'
 import { GameConfig } from '../../cfg/GameConfig'
 import { SpriteImage } from '../../core/Sprite'
+import { NATIVE_UPDATE_INTERVAL } from '../../params'
 
 export class LoadingLayer extends ScaledLayer {
     progress: number = 0
+    lastRenderedTime: number = 0
 
     constructor() {
         super()
@@ -39,6 +41,10 @@ export class LoadingLayer extends ScaledLayer {
 
     setLoadingProgress(progress: number) {
         this.progress = Math.max(0, Math.min(1, progress))
-        this.animationFrame.notifyRedraw()
+        const currentTime = performance.now()
+        if (this.lastRenderedTime === 0 || currentTime - this.lastRenderedTime > NATIVE_UPDATE_INTERVAL) {
+            this.lastRenderedTime = currentTime
+            this.animationFrame.notifyRedraw()
+        }
     }
 }

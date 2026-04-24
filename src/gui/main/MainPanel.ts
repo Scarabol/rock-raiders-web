@@ -176,7 +176,7 @@ export class MainPanel extends Panel {
     }
 
     selectSubPanel(targetPanel: IconSubPanel) {
-        this.subPanels.forEach((subPanel) => subPanel !== targetPanel && subPanel.setMovedIn(true))
+        for (const subPanel of this.subPanels) if (subPanel !== targetPanel) subPanel.setMovedIn(true)
         targetPanel.setMovedIn(false)
     }
 

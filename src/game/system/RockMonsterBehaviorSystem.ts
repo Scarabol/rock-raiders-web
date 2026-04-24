@@ -46,7 +46,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
     constructor(readonly worldMgr: WorldManager) {
         super()
         EventBroker.subscribe(EventKey.DYNAMITE_EXPLOSION, (event: DynamiteExplosionEvent) => {
-            this.worldMgr.entityMgr.rockMonsters.forEach((m) => {
+            for (const m of this.worldMgr.entityMgr.rockMonsters) {
                 const components = worldMgr.ecs.getComponents(m)
                 const positionComponent = components.get(PositionComponent)
                 if (positionComponent.getPosition2D().distanceToSquared(event.position) < Math.pow(GameConfig.instance.main.DynamiteDamageRadius, 2)) {
@@ -56,7 +56,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                     })
                 }
-            })
+            }
         })
         EventBroker.subscribe(EventKey.MONSTER_LASER_HIT, (event: MonsterLaserHitEvent) => {
             const components = worldMgr.ecs.getComponents(event.entity)
@@ -335,7 +335,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                             behaviorComponent.boulder = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.boulder)
                                             if (!behaviorComponent.boulder) throw new Error(`Cannot spawn boulder missing mesh "${GameConfig.instance.miscObjects.boulder}"`)
                                             const boulderTexture = ResourceManager.getTexture('Creatures/RMonster/greyrock.bmp') // XXX Read boulder texture from config?
-                                            if (boulderTexture) behaviorComponent.boulder.material.forEach((m) => m.map = boulderTexture)
+                                            if (boulderTexture) for (const m of behaviorComponent.boulder.material) m.map = boulderTexture
                                             sceneEntity.pickupEntity(behaviorComponent.boulder)
                                             behaviorComponent.changeToIdle()
                                         })

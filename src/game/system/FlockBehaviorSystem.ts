@@ -25,17 +25,17 @@ export class FlockBehaviorSystem extends AbstractGameSystem {
                     dir: new Vector3(0, 0, 1).applyEuler(e.sceneEntity.rotation),
                 }))
                 let avgDir = new Vector3()
-                flockEntities.forEach((e) => avgDir.add(e.dir))
+                for (const e of flockEntities) avgDir.add(e.dir)
                 avgDir.normalize()
 
                 for (const flockEntity of flockEntities) {
                     let minDist: Vector3 | undefined
-                    flockEntities.forEach((e) => {
-                        if (Object.is(e.sceneEntity, flockEntity.sceneEntity)) return
+                    for (const e of flockEntities) {
+                        if (Object.is(e.sceneEntity, flockEntity.sceneEntity)) continue
                         const dist = e.pos.clone().sub(flockEntity.pos)
                         if (!minDist || minDist.lengthSq() > dist.lengthSq())
                             minDist = dist
-                    })
+                    }
 
                     let newDir = new Vector3()
                     if (minDist) {

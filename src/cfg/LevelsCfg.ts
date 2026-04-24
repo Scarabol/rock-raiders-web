@@ -170,11 +170,11 @@ export class LevelEntryCfg implements ConfigSetFromRecord {
         )
     }
 
-    public static isLevel(levelName: string | undefined): boolean {
+    static isLevel(levelName: string | undefined): boolean {
         return !!levelName?.toLowerCase().startsWith('level')
     }
 
-    public static isTutorial(levelName: string | undefined): boolean {
+    static isTutorial(levelName: string | undefined): boolean {
         return !!levelName?.toLowerCase().startsWith('tutorial')
     }
 }

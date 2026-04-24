@@ -66,7 +66,7 @@ export class EntityManager {
             EventBroker.publish(new SelectionChanged(this))
         })
         EventBroker.subscribe(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
-            this.buildings.forEach((b) => b.updateEnergyState())
+            for (const b of this.buildings) b.updateEnergyState()
         })
     }
 
@@ -96,9 +96,9 @@ export class EntityManager {
     }
 
     update(elapsedMs: number) {
-        this.raiders.forEach((r) => updateSafe(r, elapsedMs))
-        this.vehicles.forEach((v) => updateSafe(v, elapsedMs))
-        this.completedBuildingSites.forEach((b) => updateSafe(b, elapsedMs))
+        for (const r of this.raiders) updateSafe(r, elapsedMs)
+        for (const v of this.vehicles) updateSafe(v, elapsedMs)
+        for (const b of this.completedBuildingSites) updateSafe(b, elapsedMs)
     }
 
     disposeAll() {
@@ -117,7 +117,7 @@ export class EntityManager {
 
     private static disposeAll(list: { disposeFromWorld: () => unknown }[]) {
         const copy = [...list]
-        copy.forEach((e) => e.disposeFromWorld())
+        for (const e of copy) e.disposeFromWorld()
         list.length = 0
     }
 
@@ -128,14 +128,14 @@ export class EntityManager {
     getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity | undefined {
         const buildings = this.getBuildingsByType(...buildingTypes)
         let closest: BuildingEntity | undefined, minDist: number = Infinity
-        buildings.forEach((b) => {
+        for (const b of buildings) {
             const bPos = b.getPosition()
             const dist = position.distanceToSquared(bPos)
             if (dist < minDist) {
                 closest = b
                 minDist = dist
             }
-        })
+        }
         return closest
     }
 
@@ -178,7 +178,9 @@ export class EntityManager {
 
     getTrainingSiteTargets(training: RaiderTraining): PathTarget[] {
         const targets: PathTarget[] = []
-        this.buildings.filter((b) => b.isTrainingSite(training)).map((b) => b.getTrainingTargets().forEach((t) => targets.push(t)))
+        this.buildings.filter((b) => b.isTrainingSite(training)).map((b) => {
+            for (const t of b.getTrainingTargets()) targets.push(t)
+        })
         return targets
     }
 

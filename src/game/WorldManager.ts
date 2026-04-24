@@ -107,8 +107,7 @@ export class WorldManager {
         this.gameTimeMs = 0
         this.nerpRunner = new NerpRunner(this, levelConf.nerpScript, levelConf.nerpMessages)
         this.firstUnpause = true
-        const gameSpeedIndex = Math.round(SaveGameManager.preferences.gameSpeed * 5)
-        GameState.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
+        GameState.gameSpeedMultiplier = SaveGameManager.getGameSpeedMultiplier()
         this.crystalsQuota = levelConf.reward?.quota?.crystals || 0
     }
 
@@ -141,8 +140,10 @@ export class WorldManager {
     }
 
     async teleportEnd(): Promise<void> {
-        PRNG.animation.shuffle([...this.entityMgr.raiders.filter((r) => !r.vehicle), ...this.entityMgr.vehicles, ...this.entityMgr.buildings])
-            .forEach((e, i) => setTimeout(() => e.beamUp(), i * 200))
+        const entities = [...this.entityMgr.raiders.filter((r) => !r.vehicle), ...this.entityMgr.vehicles, ...this.entityMgr.buildings]
+        for (const [i, e] of PRNG.animation.shuffle(entities).entries()) {
+            setTimeout(() => e.beamUp(), i * 200)
+        }
         return new Promise((resolve) => setTimeout(() => resolve(), 10000))
     }
 

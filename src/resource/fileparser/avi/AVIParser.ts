@@ -40,16 +40,16 @@ export class AVIParser {
         this.parseHeaderList()
         this.parseStreamData()
         // XXX handle optional avi index entries?
-        this.videoStreams.forEach((stream) => {
+        for (const stream of this.videoStreams) {
             const chunks = this.chunksByStreamIndex.get(stream.streamIndex)
             if (!chunks) throw new Error(`No chunks for stream ${stream.streamIndex} provided`)
             stream.setFrameChunks(chunks)
-        })
-        this.audioStreams.forEach((stream) => {
+        }
+        for (const stream of this.audioStreams) {
             const chunks = this.chunksByStreamIndex.get(stream.streamIndex)
             if (!chunks) throw new Error(`No chunks for stream ${stream.streamIndex} provided`)
             stream.setFrameChunks(chunks)
-        })
+        }
         return { videoStreams: this.videoStreams, audioStreams: this.audioStreams }
     }
 

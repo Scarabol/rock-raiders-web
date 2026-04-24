@@ -75,7 +75,7 @@ export class SelectFilesModal {
         this.zipFilesProgress = new SelectFilesProgress()
         this.btnContainer = this.zipFilesPanel.appendChild(document.createElement('div'))
         this.btnContainer.classList.add('select-button-container')
-        SelectFilesModal.zipPacks.forEach((f) => {
+        for (const f of SelectFilesModal.zipPacks) {
             const btn = this.btnContainer.appendChild(document.createElement('button'))
             this.buttons.push(btn)
             btn.innerText = f.flag
@@ -83,7 +83,7 @@ export class SelectFilesModal {
             btn.setAttribute('download-name', f.name)
             btn.addEventListener('click', async () => {
                 try {
-                    this.buttons.forEach((btn) => btn.disabled = true)
+                    for (const btn1 of this.buttons) btn1.disabled = true
                     this.zipFilesPanel.replaceChildren(this.zipFilesProgress.root)
                     const buffers = await Promise.all([0, 1].map((n) => {
                         const url = `https://scarabol.github.io/wad-editor/mirror-archive.org/Rock%20Raiders%20%28${f.name}%29%20small.zip.part${n}`
@@ -92,27 +92,27 @@ export class SelectFilesModal {
                     const zipFileLength = buffers.reduce((prev, file) => prev + file.byteLength, 0)
                     const zipFileContent = new Uint8Array(zipFileLength)
                     let offset = 0
-                    buffers.forEach((b) => {
+                    for (const b of buffers) {
                         zipFileContent.set(new Uint8Array(b), offset)
                         offset += b.byteLength
-                    })
+                    }
                     console.log('ZIP download complete')
                     const vfs = new VirtualFileSystem(f.encoding)
                     await new ZipFileParser(this.zipFilesProgress).readZipFile(vfs, zipFileContent)
                     this.onFilesLoaded(vfs)
                 } finally {
-                    this.buttons.forEach((btn) => btn.disabled = false)
+                    for (const btn1 of this.buttons) btn1.disabled = false
                     this.zipFilesPanel.replaceChildren(this.btnContainer)
                     this.zipFilesProgress.reset()
                 }
             })
-        })
+        }
         const hintWadFiles = this.zipFilesPanel.appendChild(document.createElement('div'))
         hintWadFiles.innerHTML = 'Use WAD game files hosted on <a href="https://archive.org/details/lego-rr-0_20250425">archive.org</a> <b>(one-click-setup, no music/videos, no streamed voice lines)</b>:'
         hintWadFiles.style.padding = '10px 0'
         const wadContainer = this.zipFilesPanel.appendChild(document.createElement('div'))
         wadContainer.classList.add('select-button-container')
-        SelectFilesModal.wadFiles.forEach((f) => {
+        for (const f of SelectFilesModal.wadFiles) {
             const btn = wadContainer.appendChild(document.createElement('button'))
             this.buttons.push(btn)
             btn.innerText = f.flag || f.code
@@ -120,7 +120,7 @@ export class SelectFilesModal {
             btn.setAttribute('download-name', f.name)
             btn.addEventListener('click', async () => {
                 try {
-                    this.buttons.forEach((btn) => btn.disabled = true)
+                    for (const btn1 of this.buttons) btn1.disabled = true
                     this.zipFilesPanel.replaceChildren(this.zipFilesProgress.root)
                     const vfs = new VirtualFileSystem(f.encoding)
                     await Promise.all([0, 1].map(async (n) => {
@@ -134,12 +134,12 @@ export class SelectFilesModal {
                     console.log('WAD download complete')
                     this.onFilesLoaded(vfs)
                 } finally {
-                    this.buttons.forEach((btn) => btn.disabled = false)
+                    for (const btn1 of this.buttons) btn1.disabled = false
                     this.zipFilesPanel.replaceChildren(wadContainer)
                     this.zipFilesProgress.reset()
                 }
             })
-        })
+        }
         this.optionList.addOption('Use repacked game files hosted on <a href="https://archive.org/details/LEGORockRaiders-gamefiles-Eng">archive.org</a> <b>(one-click-setup, no music/videos)</b>:', this.zipFilesPanel)
         const cueBinFilesPanel = document.createElement('div')
         const cueBinFilesProgress = new SelectFilesProgress()

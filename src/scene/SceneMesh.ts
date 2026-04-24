@@ -10,10 +10,10 @@ export class SceneMesh extends Mesh<BufferGeometry, SequenceTextureMaterial[]> {
     dispose() {
         this.removeFromParent()
         // do not dispose geometries since they're handled as singletons to save memory
-        this.material?.forEach((m) => m.dispose())
+        for (const m of this.material) m.dispose()
     }
 
     update(elapsedMs: number) {
-        this.material?.forEach((m) => m.isSequenceTextureMaterial && m.update(elapsedMs))
+        for (const m of this.material) m.isSequenceTextureMaterial && m.update(elapsedMs)
     }
 }

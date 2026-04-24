@@ -2,13 +2,11 @@ import { AbstractLayer } from './AbstractLayer'
 import { SpriteImage } from '../../core/Sprite'
 
 export class ScreenLayer extends AbstractLayer {
-    canvas: HTMLCanvasElement
-    readbackCanvas: HTMLCanvasElement
+    readonly canvas: HTMLCanvasElement
 
     constructor(layerName?: string) {
         super()
         this.canvas = this.createCanvas(layerName || this.constructor.name)
-        this.readbackCanvas = this.createCanvas(`${layerName || this.constructor.name}-fastread`)
     }
 
     createCanvas(layerName: string): HTMLCanvasElement {
@@ -31,10 +29,12 @@ export class ScreenLayer extends AbstractLayer {
                 height = idealHeight
             }
         }
+        this.setCanvasSize(width, height)
+    }
+
+    setCanvasSize(width: number, height: number): void {
         this.canvas.width = width
         this.canvas.height = height
-        this.readbackCanvas.width = this.canvas.width
-        this.readbackCanvas.height = this.canvas.height
     }
 
     transformCoords(clientX: number, clientY: number) {
@@ -42,7 +42,7 @@ export class ScreenLayer extends AbstractLayer {
         return [clientX - clientRect.left, clientY - clientRect.top]
     }
 
-    takeScreenshotFromLayer(): Promise<SpriteImage | undefined> {
-        return Promise.resolve(this.canvas)
+    async takeScreenshotFromLayer(): Promise<SpriteImage | undefined> {
+        return this.canvas
     }
 }

@@ -123,9 +123,9 @@ export class VideoLayer extends AbstractLayer {
         }
     }
 
-    takeScreenshotFromLayer(): Promise<SpriteImage> {
+    async takeScreenshotFromLayer(): Promise<SpriteImage> {
         const context = createContext(this.video.width, this.video.height)
         context.drawImage(this.video, 0, 0)
-        return Promise.resolve(context.canvas)
+        return context.canvas
     }
 }

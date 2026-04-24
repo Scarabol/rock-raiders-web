@@ -19,11 +19,11 @@ export class RaiderScareSystem extends AbstractGameSystem {
                 const positionComponent = components.get(PositionComponent)
                 const scareComponent = components.get(RaiderScareComponent)
                 let selectionChanged: boolean = false
-                this.worldMgr.entityMgr.raiders.forEach((r) => {
-                    if (!r.canBeScared()) return
+                for (const r of this.worldMgr.entityMgr.raiders) {
+                    if (!r.canBeScared()) continue
                     const raiderPos = ecs.getComponents(r.entity).get(PositionComponent)
                     const distanceSq = raiderPos.getPosition2D().distanceToSquared(positionComponent.getPosition2D())
-                    if (distanceSq >= scareComponent.scareRadiusSq) return
+                    if (distanceSq >= scareComponent.scareRadiusSq) continue
                     r.scared = true
                     if (r.selected) {
                         r.deselect()
@@ -35,7 +35,7 @@ export class RaiderScareSystem extends AbstractGameSystem {
                     const safeNeighbors = raiderPos.surface.neighbors.filter((s) => s !== positionComponent.surface && !scareNeighbors.includes(s))
                     const runTarget = ([...safeNeighbors, ...scareNeighbors].find((s) => s.isWalkable()) ?? raiderPos.surface).getRandomPosition()
                     r.setJob(new RunPanicJob(runTarget))
-                })
+                }
                 if (selectionChanged) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
             } catch (e) {
                 console.error(e)

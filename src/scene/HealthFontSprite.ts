@@ -38,10 +38,10 @@ export class HealthFontSprite extends Sprite {
             totalWidth += img.width
         }
         let x = (HealthFontSprite.textureSize - totalWidth) / 2
-        numImg.forEach((img) => {
+        for (const img of numImg) {
             this.textureContext.drawImage(img, x, (HealthFontSprite.textureSize - img.height) / 2)
             x += img.width
-        })
+        }
         if (this.material.map) this.material.map.needsUpdate = true
         const r = healthNumber < 0 ? 255 : 0
         const g = Math.max(0, Math.min((100 + healthNumber) / 50 * 255, 255))

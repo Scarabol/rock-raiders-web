@@ -54,18 +54,19 @@ export class OverlayLayer extends ScaledLayer {
         }
         this.animationFrame.notifyRedraw()
         EventBroker.subscribe(EventKey.SHOW_OPTIONS, () => this.setActivePanel(this.panelOptions))
-        new Map<keyof HTMLElementEventMap, PointerEventType>([
+        const eventToType: [keyof HTMLElementEventMap, PointerEventType][] = [
             ['pointermove', POINTER_EVENT.move],
             ['pointerdown', POINTER_EVENT.down],
             ['pointerup', POINTER_EVENT.up],
             ['pointerleave', POINTER_EVENT.leave],
-        ]).forEach((eventEnum, eventType) => {
+        ]
+        for (const [eventType, eventEnum] of eventToType) {
             this.addEventListener(eventType, (event): boolean => {
                 const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent);
                 [gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
                 return this.handlePointerEvent(gameEvent)
             })
-        })
+        }
         this.addEventListener('keyup', (event: KeyboardEvent): boolean => {
             if (event.key === 'Escape' && this.panelBriefing.hidden) {
                 this.setActivePanel(this.panelPause.hidden && this.panelOptions.hidden ? this.panelPause : undefined)
@@ -113,7 +114,7 @@ export class OverlayLayer extends ScaledLayer {
     }
 
     setActivePanel(panel: Panel | undefined) {
-        this.panels.forEach(p => p !== panel && p.hide())
+        for (const p of this.panels) p !== panel && p.hide()
         if (panel) {
             panel.show()
             CursorManager.changeCursor('standard')
@@ -125,7 +126,7 @@ export class OverlayLayer extends ScaledLayer {
 
     override reset(): void {
         this.rootElement.reset()
-        this.panels.forEach((p) => p.reset())
+        for (const p of this.panels) p.reset()
         this.setActivePanel(SaveGameManager.preferences.skipBriefings ? undefined : this.panelBriefing)
     }
 

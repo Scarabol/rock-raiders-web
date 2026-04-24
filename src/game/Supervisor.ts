@@ -44,16 +44,16 @@ export class Supervisor {
             this.jobs.push(event.job)
         })
         EventBroker.subscribe(EventKey.UPDATE_PRIORITIES, (event: UpdatePriorities) => {
-            event.priorityList.forEach((p) => {
+            for (const p of event.priorityList) {
                 if (!p.enabled) {
-                    this.worldMgr.entityMgr.raiders.forEach((r) => {
+                    for (const r of this.worldMgr.entityMgr.raiders) {
                         if (r.job?.priorityIdentifier === p.key) r.stopJob()
-                    })
-                    this.worldMgr.entityMgr.vehicles.forEach((v) => {
+                    }
+                    for (const v of this.worldMgr.entityMgr.vehicles) {
                         if (v.job?.priorityIdentifier === p.key) v.stopJob()
-                    })
+                    }
                 }
-            })
+            }
             this.priorityIndexList = GameState.priorityList.current.map((p) => p.key)
         })
         EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event) => {
@@ -85,23 +85,23 @@ export class Supervisor {
         availableJobs.sort((left, right) => {
             return Math.sign(GameState.priorityList.getPriority(left.priorityIdentifier) - GameState.priorityList.getPriority(right.priorityIdentifier))
         })
-        this.worldMgr.entityMgr.raiders.forEach((raider) => {
-            if (!raider.isReadyToTakeAJob() || raider.foodLevel > 0.25) return
+        for (const raider of this.worldMgr.entityMgr.raiders) {
+            if (!raider.isReadyToTakeAJob() || raider.foodLevel > 0.25) continue
             const barracks = this.worldMgr.entityMgr.getClosestBuildingByType(raider.getPosition(), EntityType.BARRACKS)
             if (barracks) raider.setJob(new EatBarracksJob(this.worldMgr.entityMgr, barracks))
-        })
+        }
         const unemployedRaider = new Set(this.worldMgr.entityMgr.raiders.filter((r) => r.isReadyToTakeAJob()))
         const unemployedVehicles = new Set(this.worldMgr.entityMgr.vehicles.filter((v) => v.isReadyToTakeAJob()))
-        availableJobs.forEach((job) => { // XXX better use estimated time to complete job as metric
+        for (const job of availableJobs) { // XXX better use estimated time to complete job as metric
             try {
                 let closestVehicle: VehicleEntity | undefined
                 let closestVehicleDistance: number = Infinity
-                unemployedVehicles.forEach((vehicle) => {
+                for (const vehicle of unemployedVehicles) {
                     try {
                         const pathToWorkplace = vehicle.findShortestPath(job.getWorkplace(vehicle))
-                        if (!pathToWorkplace) return
+                        if (!pathToWorkplace) continue
                         const pathToJob = job.carryItem ? vehicle.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : pathToWorkplace
-                        if (!pathToJob) return
+                        if (!pathToJob) continue
                         if (vehicle.isPrepared(job)) {
                             const dist = pathToJob.lengthSq
                             if (dist < closestVehicleDistance) {
@@ -112,11 +112,11 @@ export class Supervisor {
                     } catch (e) {
                         console.error(e)
                     }
-                })
+                }
                 if (closestVehicle) {
                     closestVehicle.setJob(job)
                     unemployedVehicles.delete(closestVehicle)
-                    return // if vehicle found do not check for raider
+                    continue // if vehicle found do not check for raider
                 }
                 let closestRaider: Raider | undefined
                 let minDistance: number = Infinity
@@ -128,12 +128,12 @@ export class Supervisor {
                 let minTrainingDistance: number = Infinity
                 let closestTrainingArea: BuildingEntity | undefined
                 const requiredTraining = job.requiredTraining
-                unemployedRaider.forEach((raider) => {
+                for (const raider of unemployedRaider) {
                     try {
                         const pathToWorkplace = raider.findShortestPath(job.getWorkplace(raider))
-                        if (!pathToWorkplace) return
+                        if (!pathToWorkplace) continue
                         const pathToJob = job.carryItem ? raider.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : pathToWorkplace
-                        if (!pathToJob) return
+                        if (!pathToJob) continue
                         if (raider.isPrepared(job)) {
                             const dist = pathToJob.lengthSq
                             if (dist < minDistance) {
@@ -164,7 +164,7 @@ export class Supervisor {
                     } catch (e) {
                         console.error(e)
                     }
-                })
+                }
                 if (closestRaider) {
                     closestRaider.setJob(job)
                     unemployedRaider.delete(closestRaider)
@@ -178,8 +178,8 @@ export class Supervisor {
             } catch (e) {
                 console.error(e)
             }
-        })
-        unemployedRaider.forEach((raider) => {
+        }
+        for (const raider of unemployedRaider) {
             try {
                 const raiderSurface = raider.getSurface()
                 const blockedSite = raiderSurface.site
@@ -191,8 +191,8 @@ export class Supervisor {
             } catch (e) {
                 console.error(e)
             }
-        })
-        unemployedVehicles.forEach((vehicle) => {
+        }
+        for (const vehicle of unemployedVehicles) {
             try {
                 if (vehicle.isReadyToTakeAJob() && vehicle.canClear()) {
                     const startSurface = vehicle.getSurface()
@@ -217,16 +217,16 @@ export class Supervisor {
             } catch (e) {
                 console.error(e)
             }
-        })
+        }
     }
 
     checkUnclearedRubble(elapsedMs: number) {
         this.checkClearRubbleTimer += elapsedMs
         if (this.checkClearRubbleTimer < CHECK_CLEAR_RUBBLE_INTERVAL) return
         this.checkClearRubbleTimer %= CHECK_CLEAR_RUBBLE_INTERVAL
-        this.worldMgr.entityMgr.raiders.forEach((raider) => {
+        for (const raider of this.worldMgr.entityMgr.raiders) {
             try {
-                if (!raider.isReadyToTakeAJob()) return
+                if (!raider.isReadyToTakeAJob()) continue
                 const startSurface = raider.getSurface()
                 for (let rad = 0; rad < 10; rad++) {
                     for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
@@ -239,12 +239,10 @@ export class Supervisor {
                                 if (GameState.priorityList.isEnabled(PRIORITY_IDENTIFIER.clearing) && this.autoClearRubble && raider.findShortestPath(clearRubbleJob.lastRubblePositions)) {
                                     raider.setJob(clearRubbleJob)
                                 }
-                                return
                             } else {
                                 const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
                                 if (pathToToolstation) {
                                     raider.setJob(new GetToolJob(this.worldMgr.entityMgr, clearRubbleJob.requiredTool, pathToToolstation.target.building))
-                                    return
                                 }
                             }
                         }
@@ -253,6 +251,6 @@ export class Supervisor {
             } catch (e) {
                 console.error(e)
             }
-        })
+        }
     }
 }

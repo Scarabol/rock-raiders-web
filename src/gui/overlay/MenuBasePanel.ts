@@ -8,8 +8,8 @@ export class MenuBasePanel extends Panel {
     constructor(cfg: MenuCfg) {
         super()
         this.hidden = true
-        cfg.menus.forEach((menuCfg, index) => this.layersByKey.set(`menu${index + 1}`, this.addChild(new MenuLayer(menuCfg))))
-        this.layersByKey.forEach((layer) => layer.itemsNext.forEach((item) => item.onClick = () => this.selectLayer(item.target)))
+        for (const [index, menuCfg] of cfg.menus.entries()) this.layersByKey.set(`menu${index + 1}`, this.addChild(new MenuLayer(menuCfg)))
+        for (const [, layer] of this.layersByKey) for (const item of layer.itemsNext) item.onClick = () => this.selectLayer(item.target)
     }
 
     override reset() {
@@ -33,7 +33,7 @@ export class MenuBasePanel extends Panel {
             console.error(`Could not find layer with key "${key}"`)
             return
         }
-        this.layersByKey.forEach(l => l !== layer && l.hide())
+        for (const [, l] of this.layersByKey) if (l !== layer) l.hide()
         layer.show()
         this.notifyRedraw()
     }

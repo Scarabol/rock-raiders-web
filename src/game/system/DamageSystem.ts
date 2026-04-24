@@ -34,13 +34,13 @@ export class DamageSystem extends AbstractGameSystem {
                 const positionComponent = components.get(PositionComponent)
                 const healthComponent = components.get(HealthComponent)
                 const position = positionComponent.getPosition2D()
-                this.dynamiteExplosions.forEach((explosion) => {
+                for (const explosion of this.dynamiteExplosions) {
                     const distanceSq = position.distanceToSquared(explosion.position)
                     const inRangeSq = 1 - distanceSq / this.dynamiteRadiusSq
                     if (inRangeSq > 0) {
                         healthComponent.changeHealth(-this.dynamiteMaxDamage * Math.pow(inRangeSq, 2))
                     }
-                })
+                }
                 if (healthComponent.hitByLavaTimeoutMs > 0) {
                     healthComponent.hitByLavaTimeoutMs -= elapsedMs
                 } else {
@@ -50,10 +50,10 @@ export class DamageSystem extends AbstractGameSystem {
                         healthComponent.hitByLavaTimeoutMs = 2000
                     }
                 }
-                this.landslides.forEach((landslide) => {
-                    if (positionComponent.surface !== landslide.surface) return
+                for (const landslide of this.landslides) {
+                    if (positionComponent.surface !== landslide.surface) continue
                     healthComponent.changeHealth(-healthComponent.rockFallDamage * 50) // TODO balance fall in damage
-                })
+                }
             } catch (e) {
                 console.error(e)
             }

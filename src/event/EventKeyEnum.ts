@@ -102,4 +102,11 @@ export const enum EventKey {
     RESTART_GAME = 'restart-game',
     SHOOT_LASER = 'shoot-laser',
     MONSTER_LASER_HIT = 'monster-laser-hit',
+
+    // Scene events
+    SCENE_AUDIO_LISTENER = 'scene-audio-listener',
+    SCENE_AUDIO_ADD = 'scene-audio-add',
+    SCENE_AUDIO_REMOVE = 'scene-audio-remove',
+    SCENE_AUDIO_STATE = 'scene-audio-state',
+    SCENE_AUDIO_MOVE = 'scene-audio-move',
 }

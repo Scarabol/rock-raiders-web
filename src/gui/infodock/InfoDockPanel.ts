@@ -88,13 +88,15 @@ export class InfoDockPanel extends Panel {
     }
 
     private slideInButton(button: InfoDockButton) {
-        this.stackButtons.forEach(btn => btn.disabled = true)
+        for (const btn of this.stackButtons) btn.disabled = true
         const targetY = -this.stackButtons.map(b => b.height).reduce((prev, cur) => prev + cur, 0)
         this.stackButtons.push(button)
         button.relX = -button.width
         button.relY = targetY - button.height
         button.updatePosition()
-        button.slideToTarget(0, targetY).then(() => this.stackButtons.forEach(btn => btn.disabled = false))
+        button.slideToTarget(0, targetY).then(() => {
+            for (const btn of this.stackButtons) btn.disabled = false
+        })
     }
 
     buttonClicked(button: InfoDockButton) {
@@ -116,7 +118,7 @@ export class InfoDockPanel extends Panel {
     }
 
     private slideStackIntoPosition() {
-        this.stackButtons.forEach(btn => btn.disabled = true)
+        for (const btn of this.stackButtons) btn.disabled = true
         let relY = 0
         const promises = this.stackButtons.map(btn => {
             const p = btn.slideToTarget(0, relY)
@@ -125,7 +127,7 @@ export class InfoDockPanel extends Panel {
         })
         return new Promise<void>((resolve) => {
             Promise.all(promises).then(() => {
-                this.stackButtons.forEach(btn => btn.disabled = false)
+                for (const btn of this.stackButtons) btn.disabled = false
                 resolve()
             })
         })
