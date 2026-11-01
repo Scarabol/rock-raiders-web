@@ -83,7 +83,6 @@ Browsers without the Keyboard Lock API keep their native fullscreen Escape behav
 
 - Adjust entities rotation speed and play turnLeft, turnRight animations
 - Advisor not shown in tutorials near icon panel
-- Two buttons in priority list can be hovered/pressed/released at the same time
 
 ### Authentic
 

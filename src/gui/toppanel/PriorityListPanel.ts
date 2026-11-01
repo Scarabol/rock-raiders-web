@@ -1,3 +1,4 @@
+import { BaseButtonCfg } from '../../cfg/ButtonCfg'
 import { ButtonPriorityListCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { PrioritiesImagePositionsCfg, PriorityButtonListCfg, PriorityPositionsEntry } from '../../cfg/PriorityButtonsCfg'
@@ -11,36 +12,74 @@ import { PriorityEntry } from '../../game/model/job/PriorityEntry'
 import { VERBOSE } from '../../params'
 import { SpriteContext } from '../../core/Sprite'
 
+class PriorityControlButton extends Button {
+    constructor(
+        buttonCfg: Partial<BaseButtonCfg>,
+        private readonly precedence: number,
+        private readonly order: number,
+        private readonly controls: PriorityControlButton[],
+    ) {
+        super(buttonCfg)
+    }
+
+    override isInRect(sx: number, sy: number): boolean {
+        if (!super.isInRect(sx, sy)) return false
+        return !this.controls.some((control) =>
+            control !== this &&
+            !control.hidden &&
+            !control.disabled &&
+            (control.precedence < this.precedence || (control.precedence === this.precedence && control.order < this.order)) &&
+            sx >= control.x &&
+            sy >= control.y &&
+            sx < control.x + control.width &&
+            sy < control.y + control.height,
+        )
+    }
+}
+
 export class PriorityListPanel extends Panel {
     readonly prioPositions: PriorityPositionsEntry[] = []
     readonly prioByName: Map<PriorityIdentifier, Button> = new Map()
 
     constructor(panelCfg: PanelCfg, buttonsCfg: ButtonPriorityListCfg, cfgPos: PrioritiesImagePositionsCfg, cfg: PriorityButtonListCfg) {
         super(panelCfg)
+        const priorityControls: PriorityControlButton[] = []
+        let controlOrder = 0
         for (const [index, buttonCfg] of buttonsCfg.panelButtonPriorityListDisable.entries()) {
-            this.addChild(new Button(buttonCfg)).onClick = () => {
+            const button = this.addChild(new PriorityControlButton(buttonCfg, 1, controlOrder++, priorityControls))
+            priorityControls.push(button)
+            button.onClick = () => {
                 GameState.priorityList.toggle(index)
             }
         }
         for (const [index, buttonCfg] of buttonsCfg.panelButtonPriorityListUpOne.entries()) {
-            this.addChild(new Button(buttonCfg)).onClick = () => {
+            const button = this.addChild(new PriorityControlButton(buttonCfg, 2, controlOrder++, priorityControls))
+            priorityControls.push(button)
+            button.onClick = () => {
                 GameState.priorityList.upOne(index)
             }
         }
-        this.addChild(new Button(buttonsCfg.panelButtonPriorityListReset)).onClick = () => {
+        const resetButton = this.addChild(new PriorityControlButton(buttonsCfg.panelButtonPriorityListReset, 0, controlOrder++, priorityControls))
+        priorityControls.push(resetButton)
+        resetButton.onClick = () => {
             GameState.priorityList.reset()
         }
 
         this.prioPositions = cfgPos.positionByIndex
-        this.prioByName.set(PRIORITY_IDENTIFIER.getIn, this.addChild(new Button(cfg.aiPriorityGetIn)))
-        this.prioByName.set(PRIORITY_IDENTIFIER.crystal, this.addChild(new Button(cfg.aiPriorityCrystal)))
-        this.prioByName.set(PRIORITY_IDENTIFIER.ore, this.addChild(new Button(cfg.aiPriorityOre)))
-        this.prioByName.set(PRIORITY_IDENTIFIER.repair, this.addChild(new Button(cfg.aiPriorityRepair)))
-        this.prioByName.set(PRIORITY_IDENTIFIER.clearing, this.addChild(new Button(cfg.aiPriorityClearing)))
-        this.prioByName.set(PRIORITY_IDENTIFIER.destruction, this.addChild(new Button(cfg.aiPriorityDestruction)))
-        this.prioByName.set(PRIORITY_IDENTIFIER.construction, this.addChild(new Button(cfg.aiPriorityConstruction)))
-        this.prioByName.set(PRIORITY_IDENTIFIER.reinforce, this.addChild(new Button(cfg.aiPriorityReinforce)))
-        this.prioByName.set(PRIORITY_IDENTIFIER.recharge, this.addChild(new Button(cfg.aiPriorityRecharge)))
+        const addPriorityButton = (identifier: PriorityIdentifier, buttonCfg: Partial<BaseButtonCfg>) => {
+            const button = this.addChild(new PriorityControlButton(buttonCfg, 3, controlOrder++, priorityControls))
+            priorityControls.push(button)
+            this.prioByName.set(identifier, button)
+        }
+        addPriorityButton(PRIORITY_IDENTIFIER.getIn, cfg.aiPriorityGetIn)
+        addPriorityButton(PRIORITY_IDENTIFIER.crystal, cfg.aiPriorityCrystal)
+        addPriorityButton(PRIORITY_IDENTIFIER.ore, cfg.aiPriorityOre)
+        addPriorityButton(PRIORITY_IDENTIFIER.repair, cfg.aiPriorityRepair)
+        addPriorityButton(PRIORITY_IDENTIFIER.clearing, cfg.aiPriorityClearing)
+        addPriorityButton(PRIORITY_IDENTIFIER.destruction, cfg.aiPriorityDestruction)
+        addPriorityButton(PRIORITY_IDENTIFIER.construction, cfg.aiPriorityConstruction)
+        addPriorityButton(PRIORITY_IDENTIFIER.reinforce, cfg.aiPriorityReinforce)
+        addPriorityButton(PRIORITY_IDENTIFIER.recharge, cfg.aiPriorityRecharge)
         for (const [, btn] of this.prioByName) btn.hoverFrame = true
         this.registerEventListener(EventKey.UPDATE_PRIORITIES, (event: UpdatePriorities) => {
             this.updateList(event.priorityList)
