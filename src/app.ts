@@ -19,6 +19,7 @@ import { cacheGetData, cachePutData } from './resource/AssetCacheHelper'
 import { AnimatedCursorData } from './screen/AnimatedCursor'
 import { BitmapWithPalette } from './resource/fileparser/BitmapWithPalette'
 import { EncodingHelper } from './resource/fileparser/EncodingHelper'
+import { WebGLHelper } from './screen/WebGLHelper'
 
 declare global {
     interface Window {
@@ -30,6 +31,7 @@ declare global {
 export async function start() {
     if (window) window.rr = new ConsoleIntegration()
     SaveGameManager.loadPreferences()
+    if (!WebGLHelper.checkAvailability()) return
     const screenMaster = new ScreenMaster()
     const vfs = await new GameFilesLoader(screenMaster.loadingLayer).loadGameFiles()
     screenMaster.loadingLayer.show()
