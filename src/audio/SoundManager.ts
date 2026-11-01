@@ -10,6 +10,9 @@ export class SoundManager {
     static readonly sfxBuffersByKey: Map<string, AudioBuffer[]> = new Map()
     private static audioId: number = 1 // start with 1 for truthiness safety
     private static voiceSource: AudioBufferSourceNode | undefined
+    private static voiceBuffer: AudioBuffer | undefined
+    private static voiceOffset = 0
+    private static voiceStartedAt = 0
     private static voiceTimeout: NodeJS.Timeout | undefined
     static sfxAudioTarget: GainNode
     static skipVoiceLines: boolean = false
@@ -27,27 +30,65 @@ export class SoundManager {
 
     static playVoice(soundName: string): AudioBufferSourceNode | undefined {
         if (this.skipVoiceLines) return undefined
-        const sound = this.playSfxSound(soundName)
+        const buffer = this.getSoundBuffer(soundName)
+        if (!buffer) return undefined
+        this.voiceBuffer = buffer
+        this.voiceOffset = 0
+        const sound = this.startVoice(buffer, this.voiceOffset)
         if (!sound) return undefined
         this.skipVoiceLines = true
-        this.voiceSource = sound
-        sound.addEventListener('ended', () => {
-            if (this.voiceSource !== sound) return
-            this.voiceSource = undefined
-            this.voiceTimeout = setTimeout(() => {
-                this.voiceTimeout = undefined
-                this.skipVoiceLines = false
-            }, NerpRunner.timeAddedAfterSample)
-        }, { once: true })
         return sound
+    }
+
+    static pauseVoice(): void {
+        if (!this.voiceSource || !this.voiceBuffer) return
+        this.voiceOffset += AudioContext.getContext().currentTime - this.voiceStartedAt
+        const voiceSource = this.voiceSource
+        this.voiceSource = undefined
+        voiceSource.stop()
+    }
+
+    static resumeVoice(): void {
+        if (this.voiceSource || !this.voiceBuffer) return
+        this.startVoice(this.voiceBuffer, this.voiceOffset)
     }
 
     static stopVoice(): void {
         const voiceSource = this.voiceSource
         this.voiceSource = undefined
+        this.voiceBuffer = undefined
+        this.voiceOffset = 0
+        this.voiceStartedAt = 0
         this.voiceTimeout = clearTimeoutSafe(this.voiceTimeout)
         this.skipVoiceLines = false
         voiceSource?.stop()
+    }
+
+    private static startVoice(buffer: AudioBuffer, offset: number): AudioBufferSourceNode | undefined {
+        try {
+            const sound = AudioContext.getContext().createBufferSource()
+            sound.buffer = buffer
+            sound.connect(this.setupSfxAudioTarget())
+            sound.addEventListener('ended', () => {
+                if (this.voiceSource !== sound) return
+                this.voiceSource = undefined
+                this.voiceBuffer = undefined
+                this.voiceOffset = 0
+                this.voiceStartedAt = 0
+                this.voiceTimeout = setTimeout(() => {
+                    this.voiceTimeout = undefined
+                    this.skipVoiceLines = false
+                }, NerpRunner.timeAddedAfterSample)
+            }, { once: true })
+            sound.start(0, offset)
+            this.voiceSource = sound
+            this.voiceStartedAt = AudioContext.getContext().currentTime
+            return sound
+        } catch (e) {
+            console.error('Could not play voice line', e)
+            this.voiceBuffer = undefined
+            return undefined
+        }
     }
 
     static playLoopSound(soundName: string): AudioBufferSourceNode | undefined {

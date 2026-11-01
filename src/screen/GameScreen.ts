@@ -63,6 +63,8 @@ export class GameScreen {
             this.startEndgameSequence(event.result).then()
         })
         EventBroker.subscribe(EventKey.RESTART_GAME, () => this.restartLevel())
+        EventBroker.subscribe(EventKey.PAUSE_GAME, () => SoundManager.pauseVoice())
+        EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => SoundManager.resumeVoice())
         EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
             this.levelConf = event.levelConf
             this.setupAndStartLevel()
