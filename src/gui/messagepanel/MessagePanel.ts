@@ -15,6 +15,7 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { Button } from '../base/Button'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseEvent } from '../../event/EventTypeMap'
+import { SoundManager } from '../../audio/SoundManager'
 
 export class MessagePanel extends Panel {
     private readonly maxAirLevelWidth = 236
@@ -33,6 +34,9 @@ export class MessagePanel extends Panel {
     btnNext: Button
     btnRepeat: Button
     suppressArrow: boolean = false
+    currentMessageCfg: TextInfoMessageEntryCfg | undefined
+    currentMessageTimeout = 0
+    currentMessageArrowHidden = false
 
     constructor(panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageCfg) {
         super(panelCfg)
@@ -57,8 +61,11 @@ export class MessagePanel extends Panel {
             tooltipText: GameConfig.instance.getTooltipText('ToolTip_Back')
         }))
         this.btnRepeat.onClick = () => {
-            // TODO Restart message animation and voice line
-            console.warn('Not yet implemented')
+            if (this.currentMessageCfg) {
+                const hasVoice = !!this.currentMessageCfg.sfxName
+                if (hasVoice) SoundManager.stopVoice()
+                this.setTimedMessage(this.currentMessageCfg, this.currentMessageTimeout, this.currentMessageArrowHidden, true)
+            }
         }
 
         this.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(textInfoMessageConfig.textCrystalFound))
@@ -75,7 +82,8 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessageEvent) => {
             const customMessageCfg = new TextInfoMessageEntryCfg()
             customMessageCfg.text = event.text
-            this.setTimedMessage(customMessageCfg, event.arrowDisabled ? event.messageTimeoutMs : 0, event.arrowDisabled)
+            customMessageCfg.sfxName = event.sfxSample || ''
+            this.setTimedMessage(customMessageCfg, event.arrowDisabled ? event.messageTimeoutMs : 0, event.arrowDisabled, false)
         })
         this.registerEventListener(EventKey.NERP_MESSAGE_NEXT, () => {
             this.removeMessage()
@@ -119,6 +127,7 @@ export class MessagePanel extends Panel {
         this.blinkLabel = false
         this.blinkInterval = clearIntervalSafe(this.blinkInterval)
         this.currentMessage = undefined
+        this.currentMessageCfg = undefined
         this.btnNext.hidden = true
         this.btnRepeat.hidden = true
         this.suppressArrow = false
@@ -129,7 +138,10 @@ export class MessagePanel extends Panel {
         this.setTimedMessage(cfg, GameConfig.instance.main.textPauseTimeMs, true)
     }
 
-    private setTimedMessage(cfg: TextInfoMessageEntryCfg, timeout: number, arrowHidden: boolean) {
+    private setTimedMessage(cfg: TextInfoMessageEntryCfg, timeout: number, arrowHidden: boolean, playSound = true) {
+        this.currentMessageCfg = cfg
+        this.currentMessageTimeout = timeout
+        this.currentMessageArrowHidden = arrowHidden
         this.btnNext.hidden = arrowHidden || this.suppressArrow
         this.btnRepeat.hidden = !!cfg.imageFilename
         const maxMessageWidth = GameConfig.instance.main.nextButtonPos.x - this.x - 20
@@ -140,7 +152,7 @@ export class MessagePanel extends Panel {
             this.yOut = Math.max(480 - 409, 480 - 26 - textImageHeight)
             this.setMovedIn(textImageHeight <= 42)
             this.notifyRedraw()
-            if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample, true))
+            if (playSound && this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample, true))
             if (timeout > 0) {
                 this.messageTimeout = setTimeout(() => {
                     this.messageTimeout = undefined
@@ -157,7 +169,9 @@ export class MessagePanel extends Panel {
     }
 
     private removeMessage() {
+        this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
         this.currentMessage = undefined
+        this.currentMessageCfg = undefined
         this.setMovedIn(true)
         this.btnNext.hidden = true
         this.btnRepeat.hidden = true

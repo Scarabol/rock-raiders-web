@@ -105,7 +105,7 @@ export class MonsterEmergeEvent extends BaseEvent {
 }
 
 export class NerpMessageEvent extends BaseEvent {
-    constructor(readonly text: string, readonly messageTimeoutMs: number, readonly arrowDisabled: boolean) {
+    constructor(readonly text: string, readonly messageTimeoutMs: number, readonly arrowDisabled: boolean, readonly sfxSample?: string) {
         super(EventKey.NERP_MESSAGE)
     }
 }

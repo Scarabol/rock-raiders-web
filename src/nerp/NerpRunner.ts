@@ -411,6 +411,7 @@ export class NerpRunner {
             if (msg.txt) EventBroker.publish(new NerpMessageEvent(msg.txt, this.messageTimerMs, !!arrowDisabled))
         }
         if (!arrowDisabled) this.messageTimerMs = Infinity
+        if (msg.txt) EventBroker.publish(new NerpMessageEvent(msg.txt, this.messageTimerMs, !!arrowDisabled, msg.snd))
     }
 
     advanceMessage(): void {
