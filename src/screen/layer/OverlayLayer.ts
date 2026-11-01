@@ -17,6 +17,7 @@ import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 import { SaveGameManager } from '../../resource/SaveGameManager'
+import { HTML_GAME_CONTAINER } from '../../core'
 
 export class OverlayLayer extends ScaledLayer {
     rootElement: BaseElement
@@ -24,6 +25,7 @@ export class OverlayLayer extends ScaledLayer {
     panelBriefing: BriefingPanel
     panelOptions: OptionsPanel
     panelPause: PausePanel
+    private escapePressedInFullscreen = false
 
     constructor() {
         super()
@@ -67,8 +69,19 @@ export class OverlayLayer extends ScaledLayer {
                 return this.handlePointerEvent(gameEvent)
             })
         }
+        this.addEventListener('keydown', (event: KeyboardEvent): boolean => {
+            if (event.key === 'Escape' && !this.escapePressedInFullscreen) {
+                this.escapePressedInFullscreen = document.fullscreenElement === HTML_GAME_CONTAINER
+            }
+            return false
+        })
         this.addEventListener('keyup', (event: KeyboardEvent): boolean => {
+            const exitedFullscreenWithEscape = event.key === 'Escape'
+                && this.escapePressedInFullscreen
+                && document.fullscreenElement !== HTML_GAME_CONTAINER
+            if (event.key === 'Escape') this.escapePressedInFullscreen = false
             if (event.key === 'Escape' && this.panelBriefing.hidden) {
+                if (exitedFullscreenWithEscape) return true
                 this.setActivePanel(this.panelPause.hidden && this.panelOptions.hidden ? this.panelPause : undefined)
                 return true
             } else if (event.key === ' ' && !this.panelBriefing.hidden) { // space

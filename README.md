@@ -54,6 +54,17 @@ using modern web technologies.
 <img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2025-02-03%2001.png?raw=true" width="360" alt="Screenshot">
 </a>
 
+## Recommended Browser
+
+The game is developed with Chromium-based browsers, so Chromium is recommended for the best-tested experience. It should
+generally work in other modern browsers as well.
+
+### Known Differences
+
+In Chromium-based browsers, Escape is captured while the game is fullscreen so a normal press opens the in-game pause
+menu. Holding Escape until the browser exits fullscreen only exits fullscreen; it does not also open the pause menu.
+Browsers without the Keyboard Lock API keep their native fullscreen Escape behavior.
+
 ## Development Roadmap
 
 ### v0.9.x - Polishing

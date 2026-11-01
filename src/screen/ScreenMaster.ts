@@ -20,10 +20,16 @@ export class ScreenMaster {
     private readonly focusTopLayer = () => {
         this.getActiveLayersSorted()[0]?.element.focus({ preventScroll: true })
     }
+    private readonly onFullscreenChange = () => {
+        if (document.fullscreenElement !== HTML_GAME_CONTAINER) {
+            this.getKeyboardLock()?.unlock()
+        }
+    }
 
     constructor() {
         HTML_GAME_CANVAS_CONTAINER.addEventListener('contextmenu', (event: MouseEvent) => event.preventDefault())
         window.addEventListener('resize', () => this.onWindowResize())
+        document.addEventListener('fullscreenchange', this.onFullscreenChange)
         this.onWindowResize()
         HTML_GAME_CANVAS_CONTAINER.addEventListener('pointerdown', this.focusTopLayer, true)
         // in case topmost layer does not listen for event, it reaches game-canvas-container as fallback dispatch from here
@@ -67,8 +73,19 @@ export class ScreenMaster {
         })
         this.setupButton('button-fullscreen', () => {
             if (document.fullscreenElement === HTML_GAME_CONTAINER) document.exitFullscreen().then()
-            else HTML_GAME_CONTAINER.requestFullscreen().then()
+            else HTML_GAME_CONTAINER.requestFullscreen().then(() => {
+                this.focusTopLayer()
+                this.getKeyboardLock()?.lock(['Escape']).catch((error: unknown) => {
+                    console.error('Unable to capture Escape while fullscreen', error)
+                })
+            })
         })
+    }
+
+    private getKeyboardLock(): { lock: (keyCodes?: string[]) => Promise<void>, unlock: () => void } | undefined {
+        return (navigator as Navigator & {
+            keyboard?: { lock: (keyCodes?: string[]) => Promise<void>, unlock: () => void }
+        }).keyboard
     }
 
     private setupButton(clsName: string, onClickCallback: () => void): void {
