@@ -23,6 +23,7 @@ import { NamingLayer } from './layer/NamingLayer'
 import { SceneAudioManager } from '../scene/SceneAudioManager'
 import { PRNG } from '../game/factory/PRNG'
 import { EncodingHelper } from '../resource/fileparser/EncodingHelper'
+import { SoundManager } from '../audio/SoundManager'
 
 export class GameScreen {
     readonly worldMgr: WorldManager
@@ -148,6 +149,7 @@ export class GameScreen {
     }
 
     hide() {
+        SoundManager.stopVoice()
         this.sceneAudioMgr.dispose()
         this.entityMgr.disposeAll()
         this.worldMgr.stop()
