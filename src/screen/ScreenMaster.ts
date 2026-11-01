@@ -6,6 +6,8 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { HTML_GAME_CANVAS_CONTAINER, HTML_GAME_CONTAINER } from '../core'
 import { VideoLayer } from './layer/VideoLayer'
 import { DebugHelper } from './DebugHelper'
+import { ChangePreferences } from '../event/GuiCommand'
+import { EventBroker } from '../event/EventBroker'
 
 export class ScreenMaster {
     readonly layers: AbstractLayer[] = []
@@ -80,6 +82,25 @@ export class ScreenMaster {
                 })
             })
         })
+        this.setupButton('button-audio', () => {
+            SaveGameManager.preferences.muteAll = !SaveGameManager.preferences.muteAll
+            SaveGameManager.savePreferences()
+            this.updateAudioButtonState()
+            this.videoLayer.video.muted = SaveGameManager.preferences.muteAll
+            EventBroker.publish(new ChangePreferences())
+        })
+        this.updateAudioButtonState()
+    }
+
+    private updateAudioButtonState() {
+        const muted = SaveGameManager.preferences.muteAll
+        for (const button of Array.from(document.getElementsByClassName('button-audio')) as HTMLButtonElement[]) {
+            const label = muted ? 'Unmute audio' : 'Mute audio'
+            button.classList.toggle('is-muted', muted)
+            button.setAttribute('aria-pressed', String(muted))
+            button.setAttribute('aria-label', label)
+            button.title = label
+        }
     }
 
     private getKeyboardLock(): { lock: (keyCodes?: string[]) => Promise<void>, unlock: () => void } | undefined {

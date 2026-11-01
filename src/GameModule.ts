@@ -10,6 +10,7 @@ import { EventBroker } from './event/EventBroker'
 import { TooltipLayer } from './screen/layer/TooltipLayer'
 import { EventKey } from './event/EventKeyEnum'
 import { MusicManager } from './audio/MusicManager'
+import { SoundManager } from './audio/SoundManager'
 
 export class GameModule {
     readonly tooltipLayer: TooltipLayer
@@ -21,6 +22,8 @@ export class GameModule {
         EventBroker.init()
         EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             screenMaster.onWindowResize()
+            screenMaster.videoLayer.video.muted = SaveGameManager.preferences.muteAll
+            SoundManager.setupSfxAudioTarget()
         })
         SaveGameManager.loadSaveGames()
         SaveGameManager.loadSaveGameScreenshots()

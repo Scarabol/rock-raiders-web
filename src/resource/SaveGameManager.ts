@@ -20,6 +20,7 @@ export const SaveGamePreferencesDefault = { // this gets serialized
     muteDevSounds: DEV_MODE,
     playVideos: !DEV_MODE,
     edgeScrolling: !DEV_MODE,
+    muteAll: false,
 }
 export type SaveGamePreferences = typeof SaveGamePreferencesDefault
 
@@ -170,11 +171,11 @@ export class SaveGameManager {
     }
 
     static getSfxVolume(): number {
-        return this.preferences.toggleSfx ? this.preferences.volumeSfx : 0
+        return !this.preferences.muteAll && this.preferences.toggleSfx ? this.preferences.volumeSfx : 0
     }
 
     static getMusicVolume(): number {
-        return this.preferences.toggleMusic ? this.preferences.volumeMusic : 0
+        return !this.preferences.muteAll && this.preferences.toggleMusic ? this.preferences.volumeMusic : 0
     }
 
     static calcScreenRatio(): number {

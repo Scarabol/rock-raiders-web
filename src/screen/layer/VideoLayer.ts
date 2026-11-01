@@ -4,6 +4,7 @@ import { SpriteImage } from '../../core/Sprite'
 import { getFilename } from '../../core/Util'
 import { FFmpegWasm } from '../../resource/fileparser/avi/FFmpegWasm'
 import { createContext } from '../../core/ImageHelper'
+import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class VideoLayer extends AbstractLayer {
     readonly video: HTMLVideoElement
@@ -50,6 +51,7 @@ export class VideoLayer extends AbstractLayer {
             return
         }
         this.show()
+        this.video.muted = SaveGameManager.preferences.muteAll
 
         const videoFileName = getFilename(videoFilePath)
 
