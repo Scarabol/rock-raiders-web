@@ -388,7 +388,7 @@ export class NerpRunner {
     }
 
     setMessage(messageNumber: number, arrowDisabled: number): void {
-        if (!this.messagePermit) return
+        if (!this.messagePermit || this.objectiveShowing) return
         if (messageNumber === 0) messageNumber = 1 // XXX Remove workaround for level 07
         if (messageNumber < 1) {
             console.warn(`Unexpected message number ${messageNumber} given`)
