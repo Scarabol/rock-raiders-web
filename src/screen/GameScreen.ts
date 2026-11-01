@@ -73,6 +73,7 @@ export class GameScreen {
 
     dispose() {
         this.hide()
+        this.sceneMgr.dispose()
         this.screenMaster.removeLayer(this.gameLayer)
         this.screenMaster.removeLayer(this.selectionFrameLayer)
         this.screenMaster.removeLayer(this.advisorLayer)

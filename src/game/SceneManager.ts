@@ -236,13 +236,20 @@ export class SceneManager implements Updatable {
     }
 
     disposeScene() {
+        this.renderer.stopRendering() // do not dispose renderer here, as it might be used by other scenes
+        this.buildMarker?.dispose()
+        this.buildMarker = undefined
         this.scene.clear()
-        this.renderer.dispose()
         this.followerRenderer?.dispose()
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         for (const e of this.sceneObjects) e.dispose()
         this.sceneObjects.length = 0
+    }
+
+    dispose() {
+        this.birdViewControls.dispose()
+        this.renderer.dispose()
     }
 
     resize(width: number, height: number) {

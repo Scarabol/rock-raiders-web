@@ -20,6 +20,7 @@ export type CameraRotation = typeof CAMERA_ROTATION[keyof typeof CAMERA_ROTATION
 
 export class BirdViewControls extends OrbitControls {
     private readonly dummyPointerId: number
+    private readonly keyboardRotationListeners: ((event: KeyboardEvent) => void)[] = []
     private lockBuild: boolean = false
     moveTarget: Vector3 | undefined
     lastPanKey: string = ''
@@ -79,10 +80,20 @@ export class BirdViewControls extends OrbitControls {
             { code: 'ArrowRight', rotation: CAMERA_ROTATION.right }
         ]
         for (const pair of codeToRotation) {
-            this.domElement.addEventListener('keydown', (event: KeyboardEvent) => {
+            const listener = (event: KeyboardEvent) => {
                 if (event.code === pair.code) this.rotate(pair.rotation)
-            })
+            }
+            this.keyboardRotationListeners.push(listener)
+            this.domElement.addEventListener('keydown', listener)
         }
+    }
+
+    override dispose() {
+        for (const listener of this.keyboardRotationListeners) {
+            this.domElement.removeEventListener('keydown', listener)
+        }
+        this.keyboardRotationListeners.length = 0
+        super.dispose()
     }
 
     setupControls() { // method name "reset" already used by base class with different meaning

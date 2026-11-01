@@ -50,6 +50,15 @@ export class BuildPlacementMarker {
         this.markers.push(marker)
     }
 
+    dispose() {
+        for (const marker of this.markers) {
+            marker.removeFromParent()
+            marker.geometry.dispose()
+            marker.material.dispose()
+        }
+        this.markers.length = 0
+    }
+
     updatePosition(worldPosition?: Vector3) {
         if (!worldPosition || !this.buildingType) {
             this.hideAllMarker()
