@@ -84,7 +84,6 @@ export class NerpRunner {
     timeForNoSample: number = 0
     currentMessage: number = -1
     messageTimerMs: number = 0
-    messageSfx: AudioBufferSourceNode | undefined
     tutoBlocksById: Map<number, Surface[]> = new Map()
     iconClicked: Map<string, number> = new Map()
     buildingsTeleported: number = 0
@@ -96,8 +95,7 @@ export class NerpRunner {
         EventBroker.subscribe(EventKey.NERP_MESSAGE_NEXT, () => {
             this.currentMessage = -1
             this.messageTimerMs = 0
-            this.messageSfx?.stop()
-            this.messageSfx = undefined
+            SoundManager.stopVoice()
         })
         EventBroker.subscribe(EventKey.GAME_RESULT_STATE, () => {
             this.stop()
@@ -403,8 +401,8 @@ export class NerpRunner {
         }
         let sampleLength = this.timeForNoSample / 1000
         if (!SaveGameManager.preferences.muteDevSounds && msg.snd) {
-            this.messageSfx = SoundManager.playVoice(msg.snd) || this.messageSfx
-            sampleLength = this.messageSfx?.buffer?.duration || sampleLength
+            const messageSfx = SoundManager.playVoice(msg.snd)
+            sampleLength = messageSfx?.buffer?.duration || sampleLength
         }
         const sampleTimeoutMs = sampleLength * this.sampleLengthMultiplier + NerpRunner.timeAddedAfterSample
         this.messageTimerMs = sampleTimeoutMs || GameConfig.instance.main.textPauseTimeMs

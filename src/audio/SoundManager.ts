@@ -3,11 +3,14 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { NerpRunner } from '../nerp/NerpRunner'
 import { VERBOSE } from '../params'
 import { PRNG } from '../game/factory/PRNG'
+import { clearTimeoutSafe } from '../core/Util'
 
 export class SoundManager {
     private static readonly MISSING_SFX = ['SurfaceSFX_Tunnel'].map((n) => n.toLowerCase()) // ignore known sfx issues
     static readonly sfxBuffersByKey: Map<string, AudioBuffer[]> = new Map()
     private static audioId: number = 1 // start with 1 for truthiness safety
+    private static voiceSource: AudioBufferSourceNode | undefined
+    private static voiceTimeout: NodeJS.Timeout | undefined
     static sfxAudioTarget: GainNode
     static skipVoiceLines: boolean = false
 
@@ -27,12 +30,24 @@ export class SoundManager {
         const sound = this.playSfxSound(soundName)
         if (!sound) return undefined
         this.skipVoiceLines = true
+        this.voiceSource = sound
         sound.addEventListener('ended', () => {
-            setTimeout(() => {
+            if (this.voiceSource !== sound) return
+            this.voiceSource = undefined
+            this.voiceTimeout = setTimeout(() => {
+                this.voiceTimeout = undefined
                 this.skipVoiceLines = false
             }, NerpRunner.timeAddedAfterSample)
-        })
+        }, { once: true })
         return sound
+    }
+
+    static stopVoice(): void {
+        const voiceSource = this.voiceSource
+        this.voiceSource = undefined
+        this.voiceTimeout = clearTimeoutSafe(this.voiceTimeout)
+        this.skipVoiceLines = false
+        voiceSource?.stop()
     }
 
     static playLoopSound(soundName: string): AudioBufferSourceNode | undefined {
