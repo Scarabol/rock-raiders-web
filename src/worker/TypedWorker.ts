@@ -25,7 +25,7 @@ export class TypedWorkerFrontend<M, R> implements TypedWorker<M> {
     }
 
     sendMessage(message: M, transfer?: (Transferable | OffscreenCanvas)[]) {
-        this.worker.postMessage(message, transfer)
+        this.worker.postMessage(message, transfer ? { transfer } : undefined)
     }
 
     terminate() {
@@ -49,7 +49,7 @@ export class TypedWorkerThreaded<M, R> implements TypedWorkerBackend<M, R> {
     }
 
     sendResponse(response: R, transfer?: Transferable[]) {
-        this.worker.postMessage(response, transfer)
+        this.worker.postMessage(response, transfer ? { transfer } : undefined)
     }
 }
 

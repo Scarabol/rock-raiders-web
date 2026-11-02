@@ -223,10 +223,11 @@ export class SurfaceMesh extends Group {
         this.lowMesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
     }
 
-    dispose() {
+    override dispose() {
         this.removeFromParent()
         this.lowMesh.dispose()
         this.proMesh?.dispose()
+        super.dispose()
     }
 }
 
@@ -252,10 +253,11 @@ class SurfaceMeshLow extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
         this.geometry.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
     }
 
-    dispose() {
+    override dispose() {
         this.removeFromParent()
         this.geometry.dispose()
         this.material.dispose()
+        super.dispose()
     }
 }
 
@@ -267,10 +269,11 @@ export class SurfaceMeshPro extends Mesh<BufferGeometry, SequenceTextureMaterial
         return clone
     }
 
-    dispose() {
+    override dispose() {
         this.removeFromParent()
         this.geometry?.dispose()
         for (const m of this.material) m.dispose()
+        super.dispose()
     }
 }
 
@@ -284,9 +287,10 @@ export class RoofMesh extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
         this.geometry.setHeights(wallType, topLeft.flipY(), topRight.flipY(), bottomRight.flipY(), bottomLeft.flipY())
     }
 
-    dispose() {
+    override dispose() {
         this.removeFromParent()
         this.geometry.dispose()
         this.material.dispose()
+        super.dispose()
     }
 }

@@ -3,7 +3,7 @@ import { BitmapWorkerPool } from '../worker/BitmapWorkerPool'
 import { LevelObjectiveTexts, ObjectiveTextParser } from './fileparser/ObjectiveTextParser'
 import { WadParser } from './fileparser/WadParser'
 import { LWOUVParser, UVData } from './fileparser/LWOUVParser'
-import { AudioContext, BufferGeometry, NearestFilter, RepeatWrapping, SRGBColorSpace, Texture } from 'three'
+import { BufferGeometry, NearestFilter, RepeatWrapping, SRGBColorSpace, Texture } from 'three'
 import { AVIFile, AVIParser } from './fileparser/avi/AVIParser'
 import { AssetRegistry } from './AssetRegistry'
 import { ResourceManager } from './ResourceManager'
@@ -18,6 +18,7 @@ import { SurfaceMeshPro } from '../game/terrain/SurfaceMesh'
 import { LWOBParser, LWOBTextureLoader } from './fileparser/LWOBParser'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
+import { getAudioContext } from '../audio/AudioContext'
 
 export abstract class AssetLoader<T> {
     readonly lAssetName: string
@@ -162,7 +163,7 @@ export class SoundAssetLoader extends AssetLoader<AudioBuffer> {
             }
             if (!data) return Promise.reject(`Could not find sound ${(this.lAssetName)}:\n` + errors.join('\n'))
         }
-        const audioBuffer = await AudioContext.getContext().decodeAudioData(data)
+        const audioBuffer = await getAudioContext().decodeAudioData(data)
         ResourceManager.resourceByName.set(this.lAssetName, audioBuffer) // TODO Add only to sound buffer
         for (const sndKey of this.sndKeys) SoundManager.sfxBuffersByKey.getOrUpdate(sndKey, () => []).push(audioBuffer)
         return audioBuffer

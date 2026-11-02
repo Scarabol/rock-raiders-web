@@ -1,5 +1,5 @@
 import { ByteStreamReader } from '../../core/ByteStreamReader'
-import Pako from 'pako'
+import { inflate } from 'pako'
 import { cacheGetData } from '../AssetCacheHelper'
 import { VirtualFile } from './VirtualFile'
 import { SelectFilesProgress } from '../selectfiles/SelectFilesProgress'
@@ -224,7 +224,7 @@ export class CabFile {
             const chunkBuffer = this.volumeReader.readBytes(chunkSize)
             if (this.verbose) console.log('chunkBuffer', chunkBuffer)
             if (file.compressed) {
-                const inflated = Pako.inflate(chunkBuffer, { raw: true })
+                const inflated = inflate(chunkBuffer, { raw: true })
                 if (this.verbose) console.log(`Inflated chunk from ${chunkBuffer.byteLength} to ${inflated.byteLength}`)
                 fileData.set(inflated, offset)
                 offset += inflated.byteLength

@@ -37,7 +37,7 @@ export class SceneAudioManager {
             audioNode.position.copy(event.position)
             audioNode.setVolume(SaveGameManager.getSfxVolume())
             audioNode.setPlaybackRate(SaveGameManager.getGameSpeedMultiplier())
-            audioNode.loop = event.loop
+            audioNode.setLoop(event.loop)
             if (!event.loop) {
                 audioNode.onEnded = () => {
                     this.audioIdToAudio.delete(event.audioId)

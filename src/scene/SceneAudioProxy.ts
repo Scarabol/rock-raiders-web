@@ -32,10 +32,11 @@ export class SceneAudioProxy extends Object3D implements Updatable {
         return !hiddenObj
     }
 
-    dispose() {
+    override dispose() {
         EventBroker.publish(new SceneAudioRemoveEvent(this.audioId))
         this.lastPos.set(0, 0, 0)
         this.lastActive = true
         this.lastSfxName = ''
+        super.dispose()
     }
 }

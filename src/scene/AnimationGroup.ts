@@ -114,8 +114,9 @@ export class AnimationGroup extends SceneEntity {
         }
     }
 
-    dispose() {
+    override dispose() {
         for (const m of this.meshList) m.dispose()
+        super.dispose()
     }
 
     play(): this {

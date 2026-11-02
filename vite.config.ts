@@ -13,10 +13,15 @@ export default defineConfig({
     },
     build: {
         sourcemap: true,
-        rollupOptions: {
+        rolldownOptions: {
             output: {
-                manualChunks: {
-                    three: ['three']
+                codeSplitting: {
+                    groups: [
+                        {
+                            name: 'three',
+                            test: /node_modules[\\/]three[\\/]/
+                        }
+                    ]
                 }
             }
         }

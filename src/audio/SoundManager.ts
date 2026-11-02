@@ -1,4 +1,4 @@
-import { AudioContext } from 'three'
+import { getAudioContext } from './AudioContext'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { NerpRunner } from '../nerp/NerpRunner'
 import { VERBOSE } from '../params'
@@ -18,10 +18,10 @@ export class SoundManager {
     static skipVoiceLines: boolean = false
 
     static setupSfxAudioTarget(): GainNode {
-        this.sfxAudioTarget = this.sfxAudioTarget || AudioContext.getContext().createGain()
+        this.sfxAudioTarget = this.sfxAudioTarget || getAudioContext().createGain()
         this.sfxAudioTarget.gain.value = SaveGameManager.getSfxVolume()
         if (SaveGameManager.preferences.toggleSfx) {
-            this.sfxAudioTarget.connect(AudioContext.getContext().destination)
+            this.sfxAudioTarget.connect(getAudioContext().destination)
         } else {
             this.sfxAudioTarget.disconnect()
         }
@@ -42,7 +42,7 @@ export class SoundManager {
 
     static pauseVoice(): void {
         if (!this.voiceSource || !this.voiceBuffer) return
-        this.voiceOffset += AudioContext.getContext().currentTime - this.voiceStartedAt
+        this.voiceOffset += getAudioContext().currentTime - this.voiceStartedAt
         const voiceSource = this.voiceSource
         this.voiceSource = undefined
         voiceSource.stop()
@@ -66,7 +66,7 @@ export class SoundManager {
 
     private static startVoice(buffer: AudioBuffer, offset: number): AudioBufferSourceNode | undefined {
         try {
-            const sound = AudioContext.getContext().createBufferSource()
+            const sound = getAudioContext().createBufferSource()
             sound.buffer = buffer
             sound.connect(this.setupSfxAudioTarget())
             sound.addEventListener('ended', () => {
@@ -82,7 +82,7 @@ export class SoundManager {
             }, { once: true })
             sound.start(0, offset)
             this.voiceSource = sound
-            this.voiceStartedAt = AudioContext.getContext().currentTime
+            this.voiceStartedAt = getAudioContext().currentTime
             return sound
         } catch (e) {
             console.error('Could not play voice line', e)
@@ -101,7 +101,7 @@ export class SoundManager {
         try {
             const audioBuffer = this.getSoundBuffer(soundName)
             if (!audioBuffer) return undefined
-            const source = AudioContext.getContext().createBufferSource()
+            const source = getAudioContext().createBufferSource()
             source.buffer = audioBuffer
             source.connect(this.setupSfxAudioTarget())
             source.start()

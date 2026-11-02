@@ -261,9 +261,10 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.carriedByIndex.clear()
     }
 
-    dispose() {
+    override dispose() {
         for (const a of this.animationGroups) a.dispose()
         this.animationGroups.length = 0
+        super.dispose()
     }
 
     get heading(): number {
