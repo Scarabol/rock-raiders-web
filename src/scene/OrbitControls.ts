@@ -37,19 +37,41 @@ const _STATE = {
 }
 const _EPS = 0.000001
 
+type OrbitControlsEvent = { type: string, target?: OrbitControls }
+type OrbitControlsEventListener = (...args: any[]) => void
+
 export class OrbitControls {
     domElement: HTMLElement | null
     object: Object3D & { zoom?: number, updateProjectionMatrix?: () => void }
     enabled: boolean = true
+    private readonly _listeners = new Map<string, Set<OrbitControlsEventListener>>()
 
     // Event API (three's EventDispatcher shape)
-    addEventListener(_type: string, _listener: (...args: any[]) => void): void {
+    addEventListener(type: string, listener: OrbitControlsEventListener): void {
+        let listeners = this._listeners.get(type)
+        if (!listeners) {
+            listeners = new Set()
+            this._listeners.set(type, listeners)
+        }
+        listeners.add(listener)
     }
 
-    removeEventListener(_type: string, _listener: (...args: any[]) => void): void {
+    removeEventListener(type: string, listener: OrbitControlsEventListener): void {
+        const listeners = this._listeners.get(type)
+        if (!listeners) return
+        listeners.delete(listener)
+        if (listeners.size === 0) this._listeners.delete(type)
     }
 
-    dispatchEvent(_event: any): void {
+    dispatchEvent(event: OrbitControlsEvent): void {
+        const listeners = this._listeners.get(event.type)
+        if (!listeners) return
+        const dispatchedEvent: OrbitControlsEvent = { ...event, target: this }
+        try {
+            for (const listener of Array.from(listeners)) listener(dispatchedEvent)
+        } finally {
+            delete dispatchedEvent.target
+        }
     }
 
     state: number
