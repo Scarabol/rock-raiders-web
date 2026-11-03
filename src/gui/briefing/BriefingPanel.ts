@@ -36,6 +36,10 @@ export class BriefingPanel extends Panel {
         this.hidden = true
     }
 
+    override isClickAllowed(): boolean {
+        return true
+    }
+
     override reset() {
         super.reset()
         this.hidden = true

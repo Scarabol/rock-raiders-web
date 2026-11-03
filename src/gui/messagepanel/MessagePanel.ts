@@ -26,6 +26,10 @@ export class MessagePanel extends Panel {
     currentMessage: TextInfoMessage | undefined
     messageTimeout: NodeJS.Timeout | undefined
 
+    override isClickAllowed(): boolean {
+        return true
+    }
+
     airLevelWidth: number = this.maxAirLevelWidth
     nextAirWarning: number = 1 - AIR_LEVEL_WARNING_STEP
     blinkLabel: boolean = false

@@ -4,6 +4,7 @@ import { CursorManager } from '../../screen/CursorManager'
 import { GuiHoverEvent, GuiPointerDownEvent, GuiPointerUpEvent } from '../event/GuiEvent'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 import { EventBroker } from '../../event/EventBroker'
+import { GameState } from '../../game/model/GameState'
 
 export class BaseElement {
     parent: BaseElement | undefined
@@ -106,7 +107,9 @@ export class BaseElement {
         this.pointerDown = { x: event.sx, y: event.sy }
         const oldState = this.pressed
         if (this.isInRect(event.sx, event.sy)) {
-            if (!this.pressed && this.onClick) {
+            if (!this.isClickAllowed()) {
+                this.pressed = false
+            } else if (!this.pressed && this.onClick) {
                 this.pressed = true
             }
         } else {
@@ -117,13 +120,17 @@ export class BaseElement {
         return stateChanged
     }
 
+    isClickAllowed(): boolean {
+        return GameState.isGuiClickAllowed() || !!this.parent?.isClickAllowed()
+    }
+
     onPointerUp(event: GuiPointerUpEvent): boolean {
         this.pointerDown = undefined
         if (this.isInactive()) return false
         const inRect = this.isInRect(event.sx, event.sy)
         let stateChanged = false
         for (const child of this.children) stateChanged = child.onPointerUp(event) || stateChanged
-        if (!stateChanged && inRect && this.pressed) {
+        if (!stateChanged && inRect && this.pressed && this.isClickAllowed()) {
             this.clicked(event)
         }
         stateChanged = this.pressed || stateChanged

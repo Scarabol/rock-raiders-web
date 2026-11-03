@@ -23,6 +23,7 @@ import { EventBroker } from '../../event/EventBroker'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 import { EventKey } from '../../event/EventKeyEnum'
 import { AnimationFrameReadback } from '../AnimationFrameReadback'
+import { GameState } from '../../game/model/GameState'
 
 export class GuiBaseLayer extends ScaledLayer {
     readonly readbackCanvas: HTMLCanvasElement
@@ -99,7 +100,7 @@ export class GuiBaseLayer extends ScaledLayer {
             } else if (event.eventEnum === POINTER_EVENT.up) {
                 if (event.button === MOUSE_BUTTON.main) {
                     const stateChanged = this.rootElement.onPointerUp(new GuiPointerUpEvent(event.canvasX, event.canvasY, event.button))
-                    if (!stateChanged) {
+                    if (!stateChanged && GameState.isGuiClickAllowed()) {
                         CursorManager.changeCursor('notOkay', 1000)
                         this.rootElement.publishEvent(new PlaySoundEvent('SFX_NotOkay', false))
                     }

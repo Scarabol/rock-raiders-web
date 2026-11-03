@@ -15,7 +15,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { CursorManager } from '../CursorManager'
 import { CursorTarget, SelectionRaycaster } from '../../scene/SelectionRaycaster'
 import { WorldManager } from '../../game/WorldManager'
-import { GameState } from '../../game/model/GameState'
+import { ClickOnly, GameState } from '../../game/model/GameState'
 import { MoveJob } from '../../game/model/job/MoveJob'
 import { MaterialEntity } from '../../game/model/material/MaterialEntity'
 import { RaiderInfoComponent } from '../../game/component/RaiderInfoComponent'
@@ -125,7 +125,7 @@ export class GameLayer extends ScreenLayer {
     }
 
     handlePointerMoveEvent(event: GamePointerEvent): boolean {
-        if (this.pointerDown && event.pointerType === 'mouse' && !GameState.noMultiSelect) {
+        if (this.pointerDown && event.pointerType === 'mouse' && !GameState.noMultiSelect && GameState.isWorldClickAllowed()) {
             const w = event.canvasX - this.pointerDown.x
             const h = event.canvasY - this.pointerDown.y
             EventBroker.publish(new SelectionFrameChangeEvent(new Rect(this.pointerDown.x, this.pointerDown.y, w, h)))
@@ -164,9 +164,24 @@ export class GameLayer extends ScreenLayer {
     }
 
     private handlePointerUpEvent(event: GamePointerEvent) {
+        if (!GameState.isWorldClickAllowed()) {
+            this.pointerDown = undefined
+            EventBroker.publish(new SelectionFrameChangeEvent(undefined))
+            return
+        }
         const x = event.canvasX / (this.canvas.width / 2) - 1
         const y = -event.canvasY / (this.canvas.height / 2) + 1
-        const cursorTargetSurface = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y)).surface
+        const selectionRaycaster = new SelectionRaycaster(this.worldMgr)
+        const cursorTargetSurface = selectionRaycaster.getSelectionByRay(new Vector2(x, y)).surface
+        if (GameState.clickOnly !== ClickOnly.ANY) {
+            const cursorTarget = selectionRaycaster.getFirstCursorTarget(new Vector2(x, y), true)
+            const isValidTarget = !!(cursorTarget.surface || cursorTarget.raider || cursorTarget.material || cursorTarget.vehicle || cursorTarget.building || cursorTarget.fence)
+            if (!isValidTarget) {
+                this.pointerDown = undefined
+                EventBroker.publish(new SelectionFrameChangeEvent(undefined))
+                return
+            }
+        }
         if (cursorTargetSurface) {
             for (const [tutoBlockId, surfaces] of this.worldMgr.nerpRunner.tutoBlocksById) {
                 if (surfaces.includes(cursorTargetSurface)) {
@@ -191,7 +206,7 @@ export class GameLayer extends ScreenLayer {
             if (this.worldMgr.sceneMgr.hasBuildModeSelection()) {
                 this.worldMgr.sceneMgr.setBuildModeSelection(undefined)
             } else if (this.worldMgr.entityMgr.selection.raiders.length > 0 || this.worldMgr.entityMgr.selection.vehicles.length > 0) {
-                const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
+                const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, true)
                 const cursorTargetSurface = cursorTarget.surface
                 if (cursorTargetSurface) {
                     for (const [tutoBlockId, surfaces] of this.worldMgr.nerpRunner.tutoBlocksById) {
@@ -268,6 +283,11 @@ export class GameLayer extends ScreenLayer {
             const r2x = (event.canvasX / this.canvas.width) * 2 - 1
             const r2y = -(event.canvasY / this.canvas.height) * 2 + 1
             const selection = this.getEntitiesInFrustum(r1x, r1y, r2x, r2y)
+            if (!GameState.isGuiClickAllowed() && selection.isEmpty()) {
+                this.pointerDown = undefined
+                EventBroker.publish(new SelectionFrameChangeEvent(undefined))
+                return
+            }
             this.worldMgr.entityMgr.selection.set(selection)
             EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
         }
@@ -276,20 +296,22 @@ export class GameLayer extends ScreenLayer {
     }
 
     getEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number): GameSelection {
+        if (!GameState.isWorldClickAllowed()) return new GameSelection()
+        const selectionRaycaster = new SelectionRaycaster(this.worldMgr)
         const frustum = this.worldMgr.sceneMgr.cameraBird.getFrustum(r1x, r1y, r2x, r2y)
         const selection = new GameSelection()
         selection.raiders.push(...this.worldMgr.entityMgr.raiders.filter((r) => {
             const pickSphere = this.worldMgr.ecs.getComponents(r.entity).get(SceneSelectionComponent).pickSphere
-            return r.isInSelection() && GameLayer.isInFrustum(pickSphere, frustum)
+            return r.isInSelection() && (GameState.isGuiClickAllowed() || selectionRaycaster.isObjectOnPointer(r.entity)) && GameLayer.isInFrustum(pickSphere, frustum)
         }))
         const hasRaiderSelected = selection.raiders.length > 0
         selection.vehicles.push(...this.worldMgr.entityMgr.vehicles.filter((v) => {
             const pickSphere = this.worldMgr.ecs.getComponents(v.entity).get(SceneSelectionComponent).pickSphere
-            return v.isInSelection() && (!hasRaiderSelected || v.driver) && GameLayer.isInFrustum(pickSphere, frustum)
+            return v.isInSelection() && (GameState.isGuiClickAllowed() || selectionRaycaster.isObjectOnPointer(v.entity)) && (!hasRaiderSelected || v.driver) && GameLayer.isInFrustum(pickSphere, frustum)
         }))
         if (selection.isEmpty()) selection.building = this.worldMgr.entityMgr.buildings.find((b) => {
             const pickSphere = this.worldMgr.ecs.getComponents(b.entity).get(SceneSelectionComponent).pickSphere
-            return GameLayer.isInFrustum(pickSphere, frustum)
+            return (GameState.isGuiClickAllowed() || selectionRaycaster.isObjectOnPointer(b.entity)) && GameLayer.isInFrustum(pickSphere, frustum)
         })
         return selection
     }

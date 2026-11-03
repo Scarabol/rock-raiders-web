@@ -11,7 +11,10 @@ import { EntityType } from '../game/model/EntityType'
 import { PickSphereMesh, SceneSelectionComponent } from '../game/component/SceneSelectionComponent'
 import { GameEntity } from '../game/ECS'
 import { SelectionFrameComponent } from '../game/component/SelectionFrameComponent'
+import { ClickOnly, GameState } from '../game/model/GameState'
 import { SurfaceMesh } from '../game/terrain/SurfaceMesh'
+import { PositionComponent } from '../game/component/PositionComponent'
+import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEntityComponent'
 
 export interface CursorTarget {
     raider?: Raider
@@ -36,36 +39,52 @@ export class SelectionRaycaster {
     getSelectionByRay(origin: Vector2): GameSelection {
         const raycaster = new SceneRaycaster(this.worldMgr, origin)
         const selection = new GameSelection()
-        selection.raiders.push(...raycaster.getEntities(this.worldMgr.entityMgr.raiders.filter((r) => !r.vehicle), false))
-        if (selection.isEmpty()) selection.vehicles.push(...raycaster.getEntities(this.worldMgr.entityMgr.vehicles, true))
-        if (selection.isEmpty()) selection.building = raycaster.getEntities(this.worldMgr.entityMgr.buildings, true)[0]
-        if (selection.isEmpty()) selection.fence = raycaster.getEntities(this.worldMgr.entityMgr.placedFences, false)[0]
-        if (selection.isEmpty() && this.terrain) selection.surface = raycaster.getSurfaceIntersection(this.worldMgr.sceneMgr.floorGroup.children)
+        const allowClicks = GameState.isWorldClickAllowed()
+        if (allowClicks) selection.raiders.push(...raycaster.getEntities(this.getSelectableObjects(this.worldMgr.entityMgr.raiders.filter((r) => !r.vehicle)), false))
+        if (selection.isEmpty() && allowClicks) selection.vehicles.push(...raycaster.getEntities(this.getSelectableObjects(this.worldMgr.entityMgr.vehicles), true))
+        if (selection.isEmpty() && allowClicks) selection.building = raycaster.getEntities(this.getSelectableObjects(this.worldMgr.entityMgr.buildings), true)[0]
+        if (selection.isEmpty() && allowClicks) selection.fence = raycaster.getEntities(this.getSelectableObjects(this.worldMgr.entityMgr.placedFences), false)[0]
+        if (selection.isEmpty() && this.terrain && allowClicks) {
+            selection.surface = raycaster.getSurfaceIntersection(
+                this.worldMgr.sceneMgr.floorGroup.children,
+                GameState.isObjectPointerRequired() ? (surface) => !!surface.mesh.objectPointer?.visible : undefined,
+            )
+        }
         return selection
     }
 
-    getFirstCursorTarget(origin: Vector2): CursorTarget {
+    getFirstCursorTarget(origin: Vector2, forClick: boolean = false): CursorTarget {
         const raycaster = new SceneRaycaster(this.worldMgr, origin)
-        const raider = raycaster.getFirstEntity(this.worldMgr.entityMgr.raiders.filter((r) => !r.vehicle))
-        if (raider) return { raider: raider, entityType: raider.entityType }
-        const material = raycaster.getFirstEntity(this.worldMgr.entityMgr.materials)
-        if (material) return { material: material, entityType: material.entityType }
-        const vehicle = raycaster.getFirstEntity(this.worldMgr.entityMgr.vehicles)
-        if (vehicle) return { vehicle: vehicle, entityType: vehicle.entityType }
-        const monster = raycaster.getFirstEntity(this.worldMgr.entityMgr.rockMonsters.map((m) => ({ entity: m })))
-        if (monster) return { monster: monster, entityType: EntityType.ROCK_MONSTER }
-        const fence = raycaster.getFirstEntity(this.worldMgr.entityMgr.placedFences)
-        if (fence) return { fence: fence, entityType: EntityType.ELECTRIC_FENCE }
-        const slug = raycaster.getFirstEntity(this.worldMgr.entityMgr.slugs.map((m) => ({ entity: m })))
-        if (slug) return { slug: slug, entityType: EntityType.SLUG }
-        const building = raycaster.getFirstEntity(this.worldMgr.entityMgr.buildings)
-        if (building) return { building: building, entityType: building.entityType }
-        if (this.terrain) {
-            const intersection = raycaster.raycaster.intersectObjects<SurfaceMesh>(this.worldMgr.sceneMgr.floorGroup.children, true)[0]
+        const allowClicks = !forClick || GameState.isWorldClickAllowed()
+        const objectPointerRequired = forClick && GameState.isObjectPointerRequired()
+        if (allowClicks) {
+            const raider = raycaster.getFirstEntity(this.getSelectableObjects(this.worldMgr.entityMgr.raiders.filter((r) => !r.vehicle), objectPointerRequired))
+            if (raider) return { raider: raider, entityType: raider.entityType }
+            const material = raycaster.getFirstEntity(this.getSelectableObjects(this.worldMgr.entityMgr.materials, objectPointerRequired))
+            if (material) return { material: material, entityType: material.entityType }
+            const vehicle = raycaster.getFirstEntity(this.getSelectableObjects(this.worldMgr.entityMgr.vehicles, objectPointerRequired))
+            if (vehicle) return { vehicle: vehicle, entityType: vehicle.entityType }
+            const monster = raycaster.getFirstEntity(this.getSelectableObjects(this.worldMgr.entityMgr.rockMonsters.map((m) => ({ entity: m })), objectPointerRequired))
+            if (monster) return { monster: monster, entityType: EntityType.ROCK_MONSTER }
+            const fence = raycaster.getFirstEntity(this.getSelectableObjects(this.worldMgr.entityMgr.placedFences, objectPointerRequired))
+            if (fence) return { fence: fence, entityType: EntityType.ELECTRIC_FENCE }
+            const slug = raycaster.getFirstEntity(this.getSelectableObjects(this.worldMgr.entityMgr.slugs.map((m) => ({ entity: m })), objectPointerRequired))
+            if (slug) return { slug: slug, entityType: EntityType.SLUG }
+            const building = raycaster.getFirstEntity(this.getSelectableObjects(this.worldMgr.entityMgr.buildings, objectPointerRequired))
+            if (building) return { building: building, entityType: building.entityType }
+        }
+        if (this.terrain && allowClicks) {
+            const intersections = raycaster.raycaster.intersectObjects<SurfaceMesh>(this.worldMgr.sceneMgr.floorGroup.children, true)
+            const intersection = objectPointerRequired
+                ? intersections.find(({ object }) => {
+                    const surface = object.userData.selectable
+                    return surface?.discovered && !!surface.mesh.objectPointer?.visible
+                })
+                : intersections[0]
             if (intersection) {
                 const surface = intersection.object.userData.selectable
                 if (surface?.discovered) {
-                    if (surface.building && surface.pathBlockedByBuilding) {
+                    if ((!forClick || GameState.clickOnly === ClickOnly.ANY) && surface.building && surface.pathBlockedByBuilding) {
                         return { building: surface.building, entityType: surface.building.entityType }
                     }
                     return { surface: surface, intersectionPoint: intersection.point }
@@ -73,6 +92,19 @@ export class SelectionRaycaster {
             }
         }
         return {}
+    }
+
+    private getSelectableObjects<T extends { entity: GameEntity }>(entities: T[], objectPointerRequired: boolean = GameState.isObjectPointerRequired()): T[] {
+        if (!objectPointerRequired) return entities
+        return entities.filter(({ entity }) => this.isObjectOnPointer(entity))
+    }
+
+    isObjectOnPointer(entity: GameEntity): boolean {
+        const components = this.worldMgr.ecs.getComponents(entity)
+        const surface = components.getOptional(PositionComponent)?.surface
+        if (surface?.mesh.objectPointer?.visible) return true
+        const sceneEntity = components.getOptional(AnimatedSceneEntityComponent)?.sceneEntity
+        return !!sceneEntity && this.worldMgr.sceneMgr.objectPointer.visible && this.worldMgr.sceneMgr.objectPointer.parent === sceneEntity
     }
 }
 
@@ -107,9 +139,11 @@ class SceneRaycaster {
         return entities.find((e) => e.entity === gameEntity)
     }
 
-    getSurfaceIntersection(surfaces: Object3D[]): Surface | undefined {
-        const intersection = this.raycaster.intersectObjects<SurfaceMesh>(surfaces, true)[0]
-        if (intersection) return intersection?.object?.userData?.selectable
+    getSurfaceIntersection(surfaces: Object3D[], isAllowed?: (surface: Surface) => boolean): Surface | undefined {
+        for (const intersection of this.raycaster.intersectObjects<SurfaceMesh>(surfaces, true)) {
+            const surface = intersection.object.userData.selectable
+            if (surface && (!isAllowed || isAllowed(surface))) return surface
+        }
         return undefined
     }
 }

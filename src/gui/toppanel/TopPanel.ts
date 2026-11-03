@@ -6,6 +6,7 @@ import { ToggleButton } from '../base/ToggleButton'
 import { ToggleAlarmEvent } from '../../event/WorldEvents'
 import { ShowOptionsEvent } from '../../event/LocalEvents'
 import { EventKey } from '../../event/EventKeyEnum'
+import { ClickOnly, GameState } from '../../game/model/GameState'
 
 export class TopPanel extends Panel {
     btnCallToArms: ToggleButton
@@ -15,6 +16,7 @@ export class TopPanel extends Panel {
     constructor(panelCfg: PanelCfg, buttonsCfg: ButtonTopCfg) {
         super(panelCfg)
         this.btnCallToArms = this.addChild(new ToggleButton(buttonsCfg.panelButtonTopPanelCallToArms))
+        this.btnCallToArms.isClickAllowed = () => GameState.clickOnly === ClickOnly.CALL_TO_ARMS || GameState.isGuiClickAllowed()
         this.btnCallToArms.onClick = () => {
             this.publishEvent(new ToggleAlarmEvent(this.btnCallToArms.toggleState))
         }

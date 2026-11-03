@@ -4,6 +4,14 @@ import { BRICK_ORE_VALUE, DEV_MODE } from '../../params'
 import { GameEntity } from '../ECS'
 import { SaveGameRaider } from '../../resource/SaveGameManager'
 
+export enum ClickOnly {
+    ANY,
+    DISALLOW_ALL,
+    MAP,
+    OBJECTS,
+    CALL_TO_ARMS,
+}
+
 export class GameState {
     static gameSpeedMultiplier: number = 1
     static numCrystal: number = 0
@@ -25,6 +33,7 @@ export class GameState {
     static tutoBlockClicks: Map<number, number> = new Map()
     static noMultiSelect: boolean = false
     static monsterAttackPowerStation: boolean = false
+    static clickOnly: ClickOnly = ClickOnly.ANY
     static isBirdView: boolean = true
     static unassignedTeam: SaveGameRaider[] = []
     static raiderSaveGameMap: Map<GameEntity, SaveGameRaider> = new Map()
@@ -49,6 +58,7 @@ export class GameState {
         this.tutoBlockClicks = new Map()
         this.noMultiSelect = false
         this.monsterAttackPowerStation = false
+        this.clickOnly = ClickOnly.ANY
         this.isBirdView = true
         this.unassignedTeam.length = 0
         this.raiderSaveGameMap = new Map()
@@ -58,6 +68,18 @@ export class GameState {
         if (!DEV_MODE) return fallback
         const params = new URLSearchParams(window.location.search)
         return Number(params.get(paramName)) || fallback
+    }
+
+    static isGuiClickAllowed(): boolean {
+        return this.clickOnly === ClickOnly.ANY
+    }
+
+    static isWorldClickAllowed(): boolean {
+        return this.clickOnly !== ClickOnly.DISALLOW_ALL && this.clickOnly !== ClickOnly.CALL_TO_ARMS
+    }
+
+    static isObjectPointerRequired(): boolean {
+        return this.clickOnly === ClickOnly.MAP || this.clickOnly === ClickOnly.OBJECTS
     }
 
     static get numOreValue(): number {

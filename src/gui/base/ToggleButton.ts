@@ -29,7 +29,9 @@ export class ToggleButton extends Button {
         if (this.isInactive()) return false
         const oldState = this.pressed
         if (this.isInRect(event.sx, event.sy) || this.toggleState) {
-            if (!this.pressed && this.onClick) {
+            if (!this.isClickAllowed()) {
+                this.pressed = false
+            } else if (!this.pressed && this.onClick) {
                 this.pressed = true
             }
         } else {
@@ -44,11 +46,13 @@ export class ToggleButton extends Button {
     override onPointerUp(event: GuiPointerUpEvent): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(event.sx, event.sy)
-        let updated = inRect && this.pressed
+        let updated = inRect && this.pressed && this.isClickAllowed()
         if (updated) {
             this.clicked(event)
             this.pressed = updated && this.toggleState
             this.hover = inRect
+        } else if (!this.isClickAllowed()) {
+            this.pressed = false
         }
         for (const child of this.children) updated = child.onPointerUp(event) || updated
         if (updated) this.notifyRedraw()

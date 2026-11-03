@@ -12,6 +12,10 @@ export class MenuBasePanel extends Panel {
         for (const [, layer] of this.layersByKey) for (const item of layer.itemsNext) item.onClick = () => this.selectLayer(item.target)
     }
 
+    override isClickAllowed(): boolean {
+        return true
+    }
+
     override reset() {
         super.reset()
         this.hidden = true

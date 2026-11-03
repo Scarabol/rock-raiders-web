@@ -77,6 +77,11 @@ export class Button extends BaseElement {
         }
     }
 
+    // flashing buttons stay clickable, because they hint the player what to click next
+    override isClickAllowed(): boolean {
+        return super.isClickAllowed() || !!this.blinkInterval
+    }
+
     override onHoverStart(): void {
         super.onHoverStart()
         if (this.isInactive()) {

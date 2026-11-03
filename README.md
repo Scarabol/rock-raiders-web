@@ -69,7 +69,6 @@ Browsers without the Keyboard Lock API keep their native fullscreen Escape behav
 
 ### v0.9.x - Polishing
 
-- Implement clickOnly... methods for tutorials and disable all non-flashing UI elements in tutorial mode
 - Fix balancing for lava erosion, see [#35](https://github.com/Scarabol/rock-raiders-web/issues/35)
 - Fix clear rubble job priority not effective, see [#43](https://github.com/Scarabol/rock-raiders-web/issues/43)
 

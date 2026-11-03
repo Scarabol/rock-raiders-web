@@ -8,7 +8,7 @@
 import { WorldManager } from '../game/WorldManager'
 import { EntityType } from '../game/model/EntityType'
 import { GAME_RESULT_STATE } from '../game/model/GameResult'
-import { GameState } from '../game/model/GameState'
+import { ClickOnly, GameState } from '../game/model/GameState'
 import { NerpReturnType, NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL } from '../params'
 import { GameResultEvent, MaterialAmountChanged, MonsterEmergeEvent, NerpMessageEvent, NerpSuppressArrowEvent, RequestedRaidersChanged } from '../event/WorldEvents'
@@ -508,7 +508,7 @@ export class NerpRunner {
     }
 
     disallowAll(): void {
-        // TODO Only used in tutorials
+        GameState.clickOnly = ClickOnly.DISALLOW_ALL
     }
 
     getPoweredPowerStationsBuilt(): number {
@@ -618,29 +618,26 @@ export class NerpRunner {
     }
 
     /**
-     * Tutorial01
+     * Only used in tutorials
      * - Allow to select only raiders
      */
     clickOnlyObjects(): void {
-        // TODO Only used in tutorials
-        console.warn('NERP function "clickOnlyObjects" not yet implemented')
+        GameState.clickOnly = ClickOnly.OBJECTS
     }
 
     /**
-     * Tutorial01
+     * Only used in tutorials
      * - Allow to select only surfaces
      */
     clickOnlyMap(): void {
-        // TODO Only used in tutorials
-        console.warn('NERP function "clickOnlyMap" not yet implemented')
+        GameState.clickOnly = ClickOnly.MAP
     }
 
     /**
-     * Tutorial08
+     * Only used in Tutorial08
      */
     clickOnlyCallToArms(): void {
-        // TODO Only used in tutorials
-        console.warn('NERP function "clickOnlyMap" not yet implemented')
+        GameState.clickOnly = ClickOnly.CALL_TO_ARMS
     }
 
     setCallToArms(args: any[]): void {
