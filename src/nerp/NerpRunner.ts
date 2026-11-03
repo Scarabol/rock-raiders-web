@@ -683,7 +683,8 @@ export class NerpRunner {
     makeSomeoneOnThisBlockPickUpSomethingOnThisBlock(tutoBlockId: number): void {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         for (const t of tutoBlocks) {
-            const raider = PRNG.nerp.sample(this.worldMgr.entityMgr.raiders.filter((r) => r.getSurface() === t && r.isReadyToTakeAJob()))
+            // Tutorial08 has armed raiders who must be able to pick up crystals.
+            const raider = PRNG.nerp.sample(this.worldMgr.entityMgr.raiders.filter((r) => r.getSurface() === t))
             if (!raider) continue
             const material = PRNG.nerp.sample(this.worldMgr.entityMgr.materials.filter((m) => m.getSurface() === t && !m.carryJob?.hasFulfiller()))
             if (!material) continue
