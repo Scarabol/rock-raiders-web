@@ -131,6 +131,7 @@ export class WorldManager {
 
     private mainLoop() {
         const elapsedGameTimeMs = UPDATE_INTERVAL_MS * GameState.gameSpeedMultiplier
+        if (elapsedGameTimeMs <= 0) return // NERP might set game speed to 0, in which case we don't want to update the game state
         this.gameTimeMs += elapsedGameTimeMs
         this.ecs.update(elapsedGameTimeMs)
         updateSafe(this.entityMgr, elapsedGameTimeMs)
