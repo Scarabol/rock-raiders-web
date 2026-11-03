@@ -62,6 +62,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             const components = worldMgr.ecs.getComponents(event.entity)
             const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
             sceneEntity.removeAllCarried()
+            worldMgr.ecs.removeComponent(event.entity, WorldTargetComponent)
+            worldMgr.ecs.removeComponent(event.entity, HeadingComponent)
             let behaviorComponent = components.getOptional(RockMonsterBehaviorComponent)
             if (behaviorComponent) {
                 behaviorComponent.boulder = undefined
@@ -180,6 +182,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 if (closestBuilding) {
                                     behaviorComponent.targetBuilding = closestBuilding.obj
                                 } else {
+                                    ecs.removeComponent(entity, WorldTargetComponent)
+                                    ecs.removeComponent(entity, HeadingComponent)
                                     behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.goHome
                                 }
                             } else if (ecs.getComponents(targetBuilding.entity).has(BeamUpComponent) || !monsterTargetBuildings.includes(targetBuilding)) {
@@ -264,6 +268,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     if (closestBuilding) {
                                         behaviorComponent.targetBuilding = closestBuilding.obj
                                     } else {
+                                        ecs.removeComponent(entity, WorldTargetComponent)
+                                        ecs.removeComponent(entity, HeadingComponent)
                                         behaviorComponent.state = ROCK_MONSTER_BEHAVIOR_STATE.goHome
                                     }
                                 } else if (ecs.getComponents(targetBuilding.entity).has(BeamUpComponent) || !monsterTargetBuildings.includes(targetBuilding)) {
@@ -405,7 +411,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             } else {
                 behaviorComponent.state = PRNG.movement.random() < 0.2 ? ROCK_MONSTER_BEHAVIOR_STATE.boulderAttack : ROCK_MONSTER_BEHAVIOR_STATE.meleeAttack
             }
-        } else if (GameState.monsterCongregation && GameState.monsterCongregation.distanceToSquared(rockyPos) > TILESIZE) {
+        } else if (GameState.monsterCongregation && GameState.monsterCongregation.distanceToSquared(rockyPos) > TILESIZE && !ecs.getComponents(entity).has(WorldTargetComponent)) {
             const path = pathFinder.findShortestPath(rockyPos, [PathTarget.fromLocation(GameState.monsterCongregation)], stats, 1)
             if (path && path.locations.length > 0) {
                 const targetLocation = path.locations[0]
