@@ -1,15 +1,22 @@
 import { ByteStreamReader } from '../../core/ByteStreamReader'
 import { VERBOSE } from '../../params'
+import { SelectFilesProgress } from '../selectfiles/SelectFilesProgress'
 
 export interface CueFile {
     isoFile: ArrayBuffer
     audioTracks: ArrayBuffer[]
 }
 
+const CHUNKS_PER_YIELD = 2000
+
+function yieldToUi(): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, 0))
+}
+
 export class CueFileParser {
     readonly hdrParser: CueHdrFileParser
 
-    constructor(cueFileBuffer: ArrayBuffer, readonly binFileBuffer: ArrayBuffer) {
+    constructor(cueFileBuffer: ArrayBuffer, readonly binFileBuffer: ArrayBuffer, readonly progress?: SelectFilesProgress) {
         this.hdrParser = new CueHdrFileParser(cueFileBuffer)
     }
 
@@ -19,6 +26,7 @@ export class CueFileParser {
         const cueEntries = this.hdrParser.parseEntries()
         if (VERBOSE) console.log('Entries found in CUE file', cueEntries)
         const binFileBuffer = this.binFileBuffer
+        const binBytes = new Uint8Array(binFileBuffer)
         for (let c = 0; c < cueEntries.length; c++) {
             const cueEntry = cueEntries[c]
             switch (cueEntry.track.type) {
@@ -34,18 +42,26 @@ export class CueFileParser {
                     const entryData = new Uint8Array(entryLength)
                     console.log(`Reading ISO with chunk size ${cueEntry.track.bitrate} from start offset ${startOffset} sector ${startSector} to end offset ${endOffset} sector ${endSector} and final iso length ${entryLength}`)
                     let writeOffset = 32 * 1024
-                    for (let c = startOffset; c < endOffset; c += chunkSize) {
-                        const isoBuffer = binFileBuffer.slice(c, c + 2048)
-                        entryData.set(new Uint8Array(isoBuffer), writeOffset)
+                    const totalChunks = Math.max(1, Math.ceil((endOffset - startOffset) / chunkSize))
+                    let chunkIndex = 0
+                    this.progress?.setProgress('Reading ISO image from BIN file...', 0, totalChunks)
+                    for (let o = startOffset; o < endOffset; o += chunkSize) {
+                        entryData.set(binBytes.subarray(o, o + 2048), writeOffset)
                         writeOffset += 2048
+                        chunkIndex++
+                        if (chunkIndex % CHUNKS_PER_YIELD === 0) {
+                            this.progress?.setProgress('Reading ISO image from BIN file...', chunkIndex, totalChunks)
+                            await yieldToUi()
+                        }
                     }
+                    this.progress?.setProgress('Reading ISO image from BIN file...', totalChunks, totalChunks)
                     isoFile = entryData.buffer
                     break
                 }
                 case 'AUDIO': {
                     const startOffset = cueEntries[c].index.sector * 2352
                     const endOffset = !!cueEntries[c + 1] ? cueEntries[c + 1].index.sector * 2352 : binFileBuffer.byteLength
-                    const audioBuffer = this.readAudioEntry(binFileBuffer, startOffset, endOffset)
+                    const audioBuffer = await this.readAudioEntry(binBytes, startOffset, endOffset, `Reading audio track ${audioTracks.length + 1} from BIN file...`)
                     audioTracks.push(audioBuffer)
                     break
                 }
@@ -57,7 +73,7 @@ export class CueFileParser {
         return { isoFile: isoFile, audioTracks: audioTracks }
     }
 
-    private readAudioEntry(binFileBuffer: ArrayBuffer, startOffset: number, endOffset: number): ArrayBuffer {
+    private async readAudioEntry(binBytes: Uint8Array, startOffset: number, endOffset: number, label: string): Promise<ArrayBuffer> {
         const headerLen = 44
         const entryDataLength = endOffset - startOffset
         const trackArr = new Uint8Array(headerLen + entryDataLength)
@@ -77,10 +93,18 @@ export class CueFileParser {
         trackView.setUint16(34, 16, true) // bits per channel
         trackArr.set(encoder.encode('data'), 36) // DATA header
         trackView.setUint32(40, entryDataLength, true)
+        const totalChunks = Math.max(1, Math.ceil(entryDataLength / 2352))
+        let chunkIndex = 0
+        this.progress?.setProgress(label, 0, totalChunks)
         for (let offset = startOffset; offset < endOffset; offset += 2352) {
-            const read = binFileBuffer.slice(offset, offset + 2352)
-            trackArr.set(new Uint8Array(read), headerLen + offset - startOffset)
+            trackArr.set(binBytes.subarray(offset, offset + 2352), headerLen + offset - startOffset)
+            chunkIndex++
+            if (chunkIndex % CHUNKS_PER_YIELD === 0) {
+                this.progress?.setProgress(label, chunkIndex, totalChunks)
+                await yieldToUi()
+            }
         }
+        this.progress?.setProgress(label, totalChunks, totalChunks)
         return trackArr.buffer
     }
 }

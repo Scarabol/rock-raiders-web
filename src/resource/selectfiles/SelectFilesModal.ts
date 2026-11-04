@@ -147,20 +147,29 @@ export class SelectFilesModal {
             if (files.length !== 2) throw new Error(`Unexpected number of files (${files.length}) given`)
             try {
                 cueBinFilesPanel.replaceChildren(cueBinFilesProgress.root)
+                cueBinFilesProgress.setProgress('Reading CUE/BIN files from disk...', 0, 1)
+                await new Promise((resolve) => setTimeout(resolve, 0)) // let the progress bar render
                 const cueFileBuffer = await files[0].arrayBuffer()
                 const binFileBuffer = await files[1].arrayBuffer()
-                const cueFile = await new CueFileParser(cueFileBuffer, binFileBuffer).parse()
+                cueBinFilesProgress.setProgress('Reading CUE/BIN files from disk...', 1, 1)
+                const cueFile = await new CueFileParser(cueFileBuffer, binFileBuffer, cueBinFilesProgress).parse()
                 // Parse files from ISO image
                 const isoFile = new IsoFileParser(cueFile.isoFile)
                 const allFiles = await isoFile.loadAllFiles(cueBinFilesProgress)
                 const vfs = new VirtualFileSystem() // TODO Set encoding when starting from CUE/BIN
-                await Promise.all(allFiles.map(async (f) => {
-                    if (f.lFileName === 'data1.hdr' || f.lFileName === 'data1.cab') return // only cache unpacked files
+                const cacheLabel = 'Caching files in browser...'
+                const filesToCache = allFiles.filter((f) => f.lFileName !== 'data1.hdr' && f.lFileName !== 'data1.cab') // only cache unpacked files
+                const totalToCache = filesToCache.length + cueFile.audioTracks.length
+                let cached = 0
+                cueBinFilesProgress.setProgress(cacheLabel, 0, totalToCache)
+                await Promise.all(filesToCache.map(async (f) => {
                     await cachePutData(f.lFileName, f.toBuffer())
                     vfs.registerFile(f)
+                    cueBinFilesProgress.setProgress(cacheLabel, ++cached, totalToCache)
                 }))
                 await Promise.all(cueFile.audioTracks.map(async (audioBuffer, c) => {
-                    return await cachePutData(`musictrack${c}`, audioBuffer)
+                    await cachePutData(`musictrack${c}`, audioBuffer)
+                    cueBinFilesProgress.setProgress(cacheLabel, ++cached, totalToCache)
                 }))
                 this.onFilesLoaded(vfs)
             } finally {

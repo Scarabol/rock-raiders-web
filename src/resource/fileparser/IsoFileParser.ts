@@ -14,6 +14,8 @@ export class IsoFileParser {
     }
 
     async loadAllFiles(progress: SelectFilesProgress | undefined): Promise<VirtualFile[]> {
+        progress?.setProgress('Parsing ISO file system...', 0, 1)
+        await new Promise((resolve) => setTimeout(resolve, 0)) // let the progress bar render before blocking work
         console.time('Parsing ISO file directory entries')
         for (let offset = 32 * 1024; offset < this.buffer.byteLength; offset += 2048) { // skip first 32 kB for system area
             this.reader.seek(offset)
@@ -40,9 +42,13 @@ export class IsoFileParser {
         const cabVolumeFile = this.files.find((f) => f.lFileName === 'data1.cab')
         if (!cabVolumeFile) throw new Error(`Invalid ISO file without data1.cab file given in ${fileNames.join(', ')}`)
         console.timeEnd('Extracting CAB files from ISO file listing')
+        progress?.setProgress('Parsing ISO file system...', 1, 1)
+        progress?.setProgress('Parsing CAB header...', 0, 1)
+        await new Promise((resolve) => setTimeout(resolve, 0))
         console.time('Parsing CAB header and volume files')
         const cabFile = new CabFile(cabHeaderFile.toBuffer(), cabVolumeFile.toBuffer()).parse()
         console.timeEnd('Parsing CAB header and volume files')
+        progress?.setProgress('Parsing CAB header...', 1, 1)
         console.time('Loading all files from CAB file listing')
         const cabFiles = await cabFile.loadAllFiles(progress)
         console.timeEnd('Loading all files from CAB file listing')
