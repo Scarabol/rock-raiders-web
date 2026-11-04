@@ -171,6 +171,12 @@ export class GameScreen {
 
     async startEndgameSequence(resultState: GameResultState) {
         if (!this.levelConf) throw new Error('No level config given')
+        const params = new URLSearchParams(window.location.search)
+        if (params.get('entry') === this.levelConf.levelName) {
+            params.delete('entry')
+            const query = params.toString()
+            history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`)
+        }
         this.selectionFrameLayer.active = false
         this.guiTopLeftLayer.active = false
         this.guiTopRightLayer.active = false
