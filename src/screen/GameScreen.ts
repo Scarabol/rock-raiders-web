@@ -143,7 +143,12 @@ export class GameScreen {
         this.sceneAudioMgr.startScene()
         this.sceneMgr.startScene().then(() => {
             this.worldMgr.start()
-            this.overlayLayer.setActivePanel(SaveGameManager.preferences.skipBriefings ? undefined : this.overlayLayer.panelBriefing)
+            this.overlayLayer.setActivePanel(this.overlayLayer.panelBriefing)
+            if (DEV_MODE && SaveGameManager.preferences.skipBriefings) {
+                setTimeout(() => {
+                    if (!this.overlayLayer.panelBriefing.hidden) this.overlayLayer.panelBriefing.onContinueMission()
+                }, 100)
+            }
             this.screenMaster.loadingLayer.hide()
         }).catch((e) => {
             console.error(e)

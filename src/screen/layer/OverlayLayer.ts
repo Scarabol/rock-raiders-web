@@ -16,7 +16,6 @@ import { GameResultEvent, RestartGameEvent } from '../../event/WorldEvents'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
 import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
-import { SaveGameManager } from '../../resource/SaveGameManager'
 import { HTML_GAME_CONTAINER } from '../../core'
 
 export class OverlayLayer extends ScaledLayer {
@@ -140,7 +139,7 @@ export class OverlayLayer extends ScaledLayer {
     override reset(): void {
         this.rootElement.reset()
         for (const p of this.panels) p.reset()
-        this.setActivePanel(SaveGameManager.preferences.skipBriefings ? undefined : this.panelBriefing)
+        this.setActivePanel(this.panelBriefing)
     }
 
     addPanel<T extends Panel>(panel: T): T {
