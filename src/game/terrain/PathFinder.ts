@@ -112,7 +112,7 @@ export class PathFinder {
         const endTileX = Math.floor(gridEnd.x / precision) * precision
         const endTileY = Math.floor(gridEnd.y / precision) * precision
         if (startTileX === endTileX && startTileY === endTileY) return [targetLocation]
-        const graphKey = `${precision} ${stats.crossLand} ${stats.crossWater} ${stats.crossLava}`
+        const graphKey = `${precision} ${stats.crossLand} ${stats.crossWater} ${stats.crossLava} ${stats.pathCoef} ${stats.rubbleCoef}`
         const pathKey = `${graphKey} ${startTileX}/${startTileY} -> ${endTileX}/${endTileY}`
         const resultPath = this.cachedPathsByKey.getOrUpdate(pathKey, () => {
             const graph = this.graphByCacheKey.getOrUpdate(graphKey, () => this.createGraph(stats, precision))
@@ -128,7 +128,12 @@ export class PathFinder {
                     }
                 }
                 startNode.weight = 1
-                const freshPath = astar.search(graph, startNode, endNode)
+                // The diagonal heuristic must not overestimate the cheapest possible terrain cost.
+                const minWeight = Math.min(1, 1 / (stats.pathCoef || 1), 1 / (stats.rubbleCoef || 1))
+                const freshPath = astar.search(graph, startNode, endNode, {
+                    heuristic: (a: { x: number, y: number }, b: { x: number, y: number }) =>
+                        astar.heuristics.diagonal(a, b) * minWeight,
+                })
                 if (freshPath.length < 1) return undefined // no path found
                 freshPath.pop() // last node is replaced with actual target position
                 return freshPath.map((n) => new Vector2(n.x + 0.5, n.y + 0.5))

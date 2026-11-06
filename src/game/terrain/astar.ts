@@ -1,7 +1,7 @@
-// javascript-astar 0.4.1 (converted to typescript by Scarabol)
+// javascript-astar 0.4.1 (converted to TypeScript by Scarabol)
 // http://github.com/bgrins/javascript-astar
 // Freely distributable under the MIT License.
-// Implements the astar search algorithm in javascript using a Binary Heap.
+// Implements the astar search algorithm in JavaScript using a Binary Heap.
 // Includes Binary Heap (with modifications) from Marijn Haverbeke.
 // http://eloquentjavascript.net/appendix2.html
 
@@ -288,7 +288,7 @@ class GridNode {
     getCost(fromNeighbor: GridNode) {
         // Take diagonal weight into consideration.
         if (fromNeighbor && fromNeighbor.x != this.x && fromNeighbor.y != this.y) {
-            return this.weight * 1.41421
+            return this.weight * Math.SQRT2
         }
         return this.weight
     }
