@@ -1,4 +1,5 @@
-import { Scene } from 'three'
+import { Material, Mesh, PCFShadowMap, Scene, WebGLRenderer } from 'three'
+import { SaveGameManager } from '../resource/SaveGameManager'
 import { DebugHelper } from '../screen/DebugHelper'
 import { createContext } from '../core/ImageHelper'
 import { BaseRenderer } from '../screen/BaseRenderer'
@@ -11,9 +12,12 @@ export class SceneRenderer extends BaseRenderer {
 
     constructor(canvas: SpriteImage) {
         super(1000 / SceneRenderer.MAX_FPS, canvas, { antialias: true, powerPreference: 'high-performance' })
-        // this.shadowMap.enabled = true // XXX enable shadows here
-        // this.shadowMap.type = PCFSoftShadowMap // XXX set shadow quality here
         this.debugHelper = new DebugHelper()
+    }
+
+    protected override onRendererCreated(renderer: WebGLRenderer) {
+        renderer.shadowMap.enabled = SaveGameManager.preferences.shadows
+        renderer.shadowMap.type = PCFShadowMap
     }
 
     override async startRendering(scene: Scene): Promise<void> {
@@ -22,10 +26,23 @@ export class SceneRenderer extends BaseRenderer {
     }
 
     override render() {
+        this.updateShadowsEnabled()
         this.debugHelper.onRenderStart()
         super.render()
         this.debugHelper.onRenderDone()
         this.checkForScreenshot()
+    }
+
+    private updateShadowsEnabled() {
+        const enabled = SaveGameManager.preferences.shadows
+        if (!this.renderer || this.renderer.shadowMap.enabled === enabled) return
+        this.renderer.shadowMap.enabled = enabled
+        // materials must be recompiled for the shadow change to take effect
+        this.scene?.traverse((o) => {
+            const material = (o as Mesh).material as Material | Material[] | undefined
+            if (Array.isArray(material)) material.forEach((m) => m.needsUpdate = true)
+            else if (material) material.needsUpdate = true
+        })
     }
 
     private checkForScreenshot() {

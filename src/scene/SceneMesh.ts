@@ -5,6 +5,8 @@ export class SceneMesh extends Mesh<BufferGeometry, SequenceTextureMaterial[]> {
     constructor(geometry?: BufferGeometry, material?: SequenceTextureMaterial[], name?: string) {
         super(geometry, material ?? [])
         this.name = name ?? ''
+        this.castShadow = true
+        this.receiveShadow = true
     }
 
     override dispose() {

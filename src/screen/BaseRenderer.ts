@@ -21,10 +21,14 @@ export class BaseRenderer {
                 if (!this.renderer) {
                     this.renderer = new WebGLRenderer(this.parameters)
                     this.renderer.setSize(this.canvas.width, this.canvas.height)
+                    this.onRendererCreated(this.renderer)
                 }
                 this.requestRender(resolve)
             }, this.redrawMs)
         })
+    }
+
+    protected onRendererCreated(_renderer: WebGLRenderer) {
     }
 
     requestRender(onRendered?: () => void) {

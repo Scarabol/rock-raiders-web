@@ -21,6 +21,7 @@ export const SaveGamePreferencesDefault = { // this gets serialized
     playVideos: !DEV_MODE,
     edgeScrolling: !DEV_MODE,
     muteAll: false,
+    shadows: false,
 }
 export type SaveGamePreferences = typeof SaveGamePreferencesDefault
 

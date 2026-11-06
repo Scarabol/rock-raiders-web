@@ -52,8 +52,6 @@ export class AnimationGroup extends SceneEntity {
                 }
             }
             mesh.name = obj.lowerName
-            mesh.castShadow = obj.castShadow
-            mesh.receiveShadow = obj.receiveShadow
             this.meshList.push(mesh)
         }
     }

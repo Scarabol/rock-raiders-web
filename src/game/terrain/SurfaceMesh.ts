@@ -237,6 +237,7 @@ class SurfaceMeshLow extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
     constructor(_x: number, _y: number, userData: SurfaceMeshUserData) {
         super(new SurfaceGeometry(), new MeshPhongMaterial({ shininess: 0 }))
         this.userData = userData
+        this.receiveShadow = true
     }
 
     setHighlightColor(hex: number) {
@@ -262,6 +263,11 @@ class SurfaceMeshLow extends Mesh<SurfaceGeometry, MeshPhongMaterial> {
 }
 
 export class SurfaceMeshPro extends Mesh<BufferGeometry, SequenceTextureMaterial[]> {
+    constructor(geometry?: BufferGeometry, material?: SequenceTextureMaterial[]) {
+        super(geometry, material)
+        this.receiveShadow = true
+    }
+
     override clone(recursive?: boolean): this {
         const clone = super.clone(recursive)
         clone.geometry = this.geometry.clone()
