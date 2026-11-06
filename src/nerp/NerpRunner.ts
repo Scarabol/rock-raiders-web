@@ -423,7 +423,11 @@ export class NerpRunner {
         for (const t of tutoBlocks) EventBroker.publish(new MonsterEmergeEvent(t))
     }
 
-    setCongregationAtTutorial(tutoBlockId: number): void {
+    setCongregationAtTutorial(tutoBlockId: number, enabled: number): void {
+        if (!enabled) {
+            GameState.monsterCongregation = undefined
+            return
+        }
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} as congregation, using only first one`)
         const targetBlock = tutoBlocks[0]
@@ -479,8 +483,18 @@ export class NerpRunner {
 
     getUnitAtBlock(tutoBlockId: number): number {
         const tutoBlocks = this.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        return [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles].count((e): boolean => {
-            const surface = this.worldMgr.ecs.getComponents(e.entity).get(PositionComponent).surface
+        const entityMgr = this.worldMgr.entityMgr
+        return [
+            ...entityMgr.raiders.map((e) => e.entity),
+            ...entityMgr.vehicles.map((e) => e.entity),
+            ...entityMgr.buildings.map((e) => e.entity),
+            ...entityMgr.materials.map((e) => e.entity),
+            ...entityMgr.placedFences.map((e) => e.entity),
+            ...entityMgr.rockMonsters,
+            ...entityMgr.slugs,
+            ...entityMgr.spiders,
+        ].count((entity): boolean => {
+            const surface = this.worldMgr.ecs.getComponents(entity).get(PositionComponent).surface
             return tutoBlocks.some((tutoBlock) => tutoBlock.discovered && surface === tutoBlock)
         })
     }
