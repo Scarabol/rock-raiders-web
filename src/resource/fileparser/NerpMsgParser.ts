@@ -10,9 +10,13 @@ export class NerpMsgParser {
 
     static parseNerpMessages(wadData: string): NerpMessage[] {
         const result: NerpMessage[] = []
-        for (const line of wadData.split(/[\r\n]/).map((l) => l?.trim()).filter((l) => !!l && l !== '-')) {
-            const index = wadData.split(/[\r\n]/).map((l) => l?.trim()).filter((l) => !!l && l !== '-').indexOf(line)
-            if (line.startsWith('$')) {
+        // lone dash lines are placeholders, that keep the 1-based message numbers of the scripts aligned
+        const lines = wadData.split(/[\r\n]/).map((l) => l?.trim()).filter((l) => !!l)
+        for (let index = 0; index < lines.length; index++) {
+            const line = lines[index]
+            if (line === '-') {
+                result[index] = result[index] || { txt: '', sndNum: '', snd: '' }
+            } else if (line.startsWith('$')) {
                 const sndMatch = line.match(/\$(\S+)\s+(\S+)/)
                 if (!sndMatch) continue
                 result.some((e) => {
