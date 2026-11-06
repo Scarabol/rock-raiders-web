@@ -13,6 +13,7 @@ export default defineConfig({
     },
     build: {
         sourcemap: true,
+        chunkSizeWarningLimit: 1000,
         rolldownOptions: {
             output: {
                 codeSplitting: {
