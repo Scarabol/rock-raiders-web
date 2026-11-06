@@ -37,6 +37,7 @@ export class PanelCrystalSideBar extends Panel {
         })
         this.registerEventListener(EventKey.USED_CRYSTALS_CHANGED, (event: UsedCrystalsChanged) => {
             this.usedCrystals = event.usedCrystals
+            this.notifyRedraw()
         })
         this.registerEventListener(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
             this.neededCrystals = event.levelConf.reward?.quota?.crystals || 0
