@@ -1,12 +1,13 @@
 import { OrbitControls } from './OrbitControls'
 import { Camera, MOUSE, Object3D, TOUCH, Vector3 } from 'three'
-import { CAMERA_MAX_SHAKE_BUMP, CAMERA_MAX_SHAKE_TILES, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE, USE_KEYBOARD_SHORTCUTS } from '../params'
+import { CAMERA_MAX_SHAKE_BUMP, CAMERA_MAX_SHAKE_TILES, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE, UPDATE_INTERVAL_MS, USE_KEYBOARD_SHORTCUTS } from '../params'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { degToRad } from 'three/src/math/MathUtils.js'
 import { GameConfig } from '../cfg/GameConfig'
 import { EventBroker } from '../event/EventBroker'
 import { EventKey } from '../event/EventKeyEnum'
 import { DynamiteExplosionEvent } from '../event/WorldEvents'
+import { GameState } from '../game/model/GameState'
 import { SaveGameManager } from '../resource/SaveGameManager'
 
 export const CAMERA_ROTATION = {
@@ -167,11 +168,11 @@ export class BirdViewControls extends OrbitControls {
                     this.updateEnabled()
                 } else {
                     const nextCameraTargetPos = this.target.clone().add(moveTarget.clone().sub(this.target)
-                        .clampLength(0, GameConfig.instance.main.CameraSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL))
+                        .clampLength(0, 2 * GameConfig.instance.main.CameraSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL))
                     this.jumpTo(nextCameraTargetPos)
                 }
             } else {
-                this.updateAutoPan() // XXX This should consider elapsed time independent for game speed
+                this.updateAutoPan(elapsedMs / UPDATE_INTERVAL_MS / GameState.gameSpeedMultiplier)
             }
             this.shakeCamera(elapsedMs)
         } catch (e) {
@@ -224,10 +225,10 @@ export class BirdViewControls extends OrbitControls {
         this.lastPanKey = key
     }
 
-    updateAutoPan() {
+    updateAutoPan(autoPanMultiplier: number) {
         if (!this.lastPanKey) return
         const panSpeed = this.keyPanSpeed
-        this.keyPanSpeed = 24
+        this.keyPanSpeed = 24 * autoPanMultiplier
         this.domElement.dispatchEvent(new KeyboardEvent('keydown', { code: this.lastPanKey, key: this.lastPanKey }))
         this.keyPanSpeed = panSpeed
     }
